@@ -240,6 +240,34 @@ void test_starting_map() {
           "impassable terrain blocks movement");
 }
 
+void test_static_map_catalog_and_edges() {
+    check(yipe::original_map(1).has_value() && yipe::original_map(0x85).has_value(),
+          "generated catalog exposes the first and last static map IDs");
+    check(!yipe::original_map(0x76).has_value() && !yipe::original_map(0x78).has_value(),
+          "runtime-generated map IDs are not mislabeled as static maps");
+
+    yipe::WorldLocation location;
+    location.position = {12, 5};
+    check(yipe::cross_map_edge(location) && location.map_id == 0x12
+              && location.region_x == 1 && location.position == yipe::MapPosition{1, 5},
+          "east edge wraps into map 0x12");
+    location.position = {0, 5};
+    check(yipe::cross_map_edge(location) && location.map_id == 0x11
+              && location.region_x == 0 && location.position == yipe::MapPosition{11, 5},
+          "west edge returns to the starting map");
+
+    location = {};
+    location.position = {5, 0};
+    check(yipe::cross_map_edge(location) && location.map_id == 0x0b
+              && location.position == yipe::MapPosition{5, 10},
+          "north edge uses the original negative-six map stride");
+    location = {};
+    location.position = {5, 11};
+    check(yipe::cross_map_edge(location) && location.map_id == 0x17
+              && location.position == yipe::MapPosition{5, 1},
+          "south edge uses the original positive-six map stride");
+}
+
 void test_starting_shop() {
     const auto& stock = yipe::freds_miscellaneous_stock();
     check(stock.size() == 11, "Fred's shop exposes all original stock rows");
@@ -268,6 +296,7 @@ int main() {
     test_native_save();
     test_original_auxiliary_data();
     test_starting_map();
+    test_static_map_catalog_and_edges();
     test_starting_shop();
 
     if (failures != 0) {

@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SDL2 CONFIG REQUIRED)
 
 add_library(yipe_core
+    src/generated/original_maps.cpp
     src/auxiliary_data.cpp
     src/item_names.cpp
     src/map.cpp
@@ -30,7 +31,8 @@ target_compile_options(yipe3 PRIVATE
 
 set(YIPE_RUNTIME_ASSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/assets")
 file(MAKE_DIRECTORY "${YIPE_RUNTIME_ASSET_DIR}")
-foreach(YIPE_BITMAP_ID 133 134 137 139 141 142 326 377 379 406 418)
+foreach(YIPE_BITMAP_ID 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147
+                       153 326 377 379 406 418 460)
     configure_file(assets/embedded/bitmaps/${YIPE_BITMAP_ID}-1033.bmp
                    "${YIPE_RUNTIME_ASSET_DIR}/${YIPE_BITMAP_ID}-1033.bmp" COPYONLY)
 endforeach()

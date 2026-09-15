@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
@@ -10,6 +11,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace {
 
@@ -150,29 +153,30 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
 }
 
 struct GameTextures {
-    Texture terrain_133;
-    Texture terrain_134;
-    Texture terrain_137;
-    Texture terrain_139;
-    Texture terrain_141;
-    Texture terrain_142;
-    Texture special_377;
-    Texture special_418;
+    std::vector<std::pair<int, Texture>> terrain;
     Texture warrior;
+
+    [[nodiscard]] SDL_Texture* find(int resource_id) const {
+        for (const auto& [id, texture] : terrain) {
+            if (id == resource_id) {
+                return texture.get();
+            }
+        }
+        throw std::runtime_error("missing terrain bitmap resource "
+                                 + std::to_string(resource_id));
+    }
 };
 
 GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::path& assets) {
-    return {
-        load_bitmap(renderer, assets / "133-1033.bmp"),
-        load_bitmap(renderer, assets / "134-1033.bmp"),
-        load_bitmap(renderer, assets / "137-1033.bmp"),
-        load_bitmap(renderer, assets / "139-1033.bmp"),
-        load_bitmap(renderer, assets / "141-1033.bmp"),
-        load_bitmap(renderer, assets / "142-1033.bmp"),
-        load_bitmap(renderer, assets / "377-1033.bmp"),
-        load_bitmap(renderer, assets / "418-1033.bmp"),
-        load_bitmap(renderer, assets / "406-1033.bmp", true),
-    };
+    constexpr std::array resource_ids{133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+                                      143, 144, 145, 146, 147, 153, 377, 418, 460};
+    std::vector<std::pair<int, Texture>> terrain;
+    terrain.reserve(resource_ids.size());
+    for (const int id : resource_ids) {
+        terrain.emplace_back(
+            id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp")));
+    }
+    return {std::move(terrain), load_bitmap(renderer, assets / "406-1033.bmp", true)};
 }
 
 struct TileGraphic {
@@ -181,46 +185,172 @@ struct TileGraphic {
 };
 
 TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
+    const auto graphic = [&textures](int resource_id, int x, int y) {
+        return TileGraphic{textures.find(resource_id), {x, y, tile_size, tile_size}};
+    };
     switch (tile) {
     case 1:
-        return {textures.terrain_137.get(), {0, 0, tile_size, tile_size}};
+    case 4:
+        return graphic(137, 0, 0);
     case 2:
-        return {textures.terrain_133.get(), {0, 0, tile_size, tile_size}};
+    case 0x46:
+        return graphic(133, 0, 0);
     case 3:
-        return {textures.terrain_139.get(), {0, 32, tile_size, tile_size}};
+    case 0x45:
+        return graphic(139, 0, 32);
     case 5:
-        return {textures.terrain_137.get(), {32, 0, tile_size, tile_size}};
+        return graphic(137, 32, 0);
     case 6:
-        return {textures.terrain_137.get(), {0, 32, tile_size, tile_size}};
+        return graphic(137, 0, 32);
     case 7:
-        return {textures.terrain_137.get(), {32, 32, tile_size, tile_size}};
+        return graphic(137, 32, 32);
     case 8:
-        return {textures.terrain_142.get(), {32, 0, tile_size, tile_size}};
+        return graphic(142, 32, 0);
+    case 9:
+        return graphic(143, 32, 32);
     case 10:
-        return {textures.special_418.get(), {0, 0, tile_size, tile_size}};
+    case 0x41:
+        return graphic(418, 0, 0);
     case 0x0b:
-        return {textures.terrain_133.get(), {0, 32, tile_size, tile_size}};
+        return graphic(133, 0, 32);
+    case 0x0c:
+    case 0x0d:
+        return graphic(134, 0, 0);
     case 0x0e:
     case 0x59:
-        return {textures.terrain_134.get(), {0, 32, tile_size, tile_size}};
+        return graphic(134, 0, 32);
     case 0x0f:
-        return {textures.terrain_141.get(), {0, 32, tile_size, tile_size}};
+        return graphic(141, 0, 32);
     case 0x10:
-        return {textures.terrain_141.get(), {32, 32, tile_size, tile_size}};
+        return graphic(141, 32, 32);
+    case 0x11:
+    case 0x58:
+        return graphic(144, 32, 0);
+    case 0x12:
+        return graphic(144, 0, 32);
+    case 0x13:
+        return graphic(144, 0, 0);
+    case 0x14:
+        return graphic(141, 0, 0);
+    case 0x15:
+        return graphic(141, 32, 0);
     case 0x16:
-        return {textures.terrain_142.get(), {0, 0, tile_size, tile_size}};
+        return graphic(142, 0, 0);
+    case 0x17:
+        return graphic(142, 0, 32);
+    case 0x18:
+        return graphic(142, 32, 32);
     case 0x19:
-        return {textures.terrain_134.get(), {32, 0, tile_size, tile_size}};
+        return graphic(134, 32, 0);
     case 0x1a:
-        return {textures.terrain_134.get(), {32, 32, tile_size, tile_size}};
+        return graphic(134, 32, 32);
+    case 0x1b:
+        return graphic(138, 0, 0);
+    case 0x1c:
+        return graphic(138, 32, 0);
+    case 0x1d:
+        return graphic(138, 0, 32);
+    case 0x1e:
+        return graphic(138, 32, 32);
+    case 0x1f:
+    case 0x69:
+        return graphic(143, 0, 0);
+    case 0x20:
+        return graphic(143, 32, 0);
+    case 0x21:
+        return graphic(143, 0, 32);
+    case 0x22:
+    case 0x43:
+        return graphic(145, 0, 0);
+    case 0x23:
+    case 0x44:
+        return graphic(145, 32, 0);
+    case 0x24:
+        return graphic(145, 0, 32);
+    case 0x25:
+    case 0x5a:
+        return graphic(145, 32, 32);
+    case 0x26:
+        return graphic(139, 32, 0);
+    case 0x27:
+    case 0x47:
+    case 0x54:
+    case 0x55:
+    case 0x5d:
+        return graphic(136, 0, 0);
+    case 0x28:
+    case 0x48:
+    case 0x52:
+    case 0x5e:
+    case 0x61:
+        return graphic(136, 32, 0);
+    case 0x29:
+    case 0x2a:
+        return graphic(136, 0, 32);
+    case 0x2b:
+        return graphic(136, 32, 32);
+    case 0x2c:
+        return graphic(135, 32, 32);
+    case 0x2d:
+    case 0x42:
+        return graphic(135, 32, 0);
+    case 0x2e:
+    case 0x57:
+        return graphic(135, 0, 0);
+    case 0x2f:
+        return graphic(135, 0, 32);
     case 0x30:
-        return {textures.special_377.get(), {0, 0, tile_size, tile_size}};
+        return graphic(377, 0, 0);
+    case 0x31:
+    case 0x56:
+        return graphic(133, 32, 32);
     case 0x32:
-        return {textures.terrain_133.get(), {32, 0, tile_size, tile_size}};
+        return graphic(133, 32, 0);
+    case 0x33:
+        return graphic(144, 32, 32);
+    case 0x34:
+        return graphic(140, 32, 0);
+    case 0x35:
+        return graphic(140, 0, 32);
+    case 0x36:
+        return graphic(140, 0, 0);
     case 0x39:
-        return {textures.terrain_139.get(), {0, 0, tile_size, tile_size}};
+        return graphic(139, 0, 0);
+    case 0x3e:
+    case 0x3f:
+    case 0x40:
+        return graphic(139, 32, 32);
+    case 0x49:
+    case 0x53:
+    case 0x5f:
+    case 0x62:
+        return graphic(140, 32, 32);
+    case 0x4a:
+        return graphic(146, 0, 0);
+    case 0x4b:
+        return graphic(146, 32, 0);
+    case 0x4c:
+        return graphic(146, 0, 32);
+    case 0x4d:
+        return graphic(146, 32, 32);
+    case 0x4e:
+        return graphic(147, 0, 0);
+    case 0x4f:
+        return graphic(147, 32, 0);
+    case 0x50:
+        return graphic(147, 0, 32);
+    case 0x51:
+        return graphic(147, 32, 32);
+    case 0x65:
+        return graphic(460, 0, 0);
+    case 0x66:
+        return graphic(460, 32, 0);
+    case 0x67:
+        return graphic(460, 0, 32);
+    case 0x68:
+        return graphic(460, 32, 32);
     default:
-        throw std::runtime_error("starting map contains an unmapped tile graphic");
+        return graphic(153, 32, 32);
     }
 }
 
@@ -262,9 +392,9 @@ void show_freds_shop(SDL_Window* window) {
 
 void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures) {
     prepare_game_view(window, renderer);
-    const yipe::Map map = yipe::starting_map();
-    yipe::MapPosition player{5, 5};
-    render_game(renderer, map, textures, player);
+    yipe::WorldLocation location;
+    yipe::Map map = yipe::starting_map();
+    render_game(renderer, map, textures, location.position);
 
     while (true) {
         SDL_Event event{};
@@ -275,7 +405,7 @@ void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             return;
         }
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
-            render_game(renderer, map, textures, player);
+            render_game(renderer, map, textures, location.position);
         }
         if (event.type != SDL_KEYDOWN) {
             continue;
@@ -306,12 +436,22 @@ void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         default:
             continue;
         }
-        const yipe::MovementResult result = yipe::try_move(map, player, delta_x, delta_y);
+        const yipe::WorldLocation previous_location = location;
+        const yipe::MovementResult result =
+            yipe::try_move(map, location.position, delta_x, delta_y);
         if (result.position_changed) {
-            render_game(renderer, map, textures, player);
-        } else if (result.original_code == 8) {
+            if (result.original_code == 2 && yipe::cross_map_edge(location)) {
+                const std::optional<yipe::Map> next_map = yipe::original_map(location.map_id);
+                if (next_map) {
+                    map = *next_map;
+                } else {
+                    location = previous_location;
+                }
+            }
+            render_game(renderer, map, textures, location.position);
+        } else if (result.original_code == 8 && location.map_id == 0x11) {
             show_freds_shop(window);
-            render_game(renderer, map, textures, player);
+            render_game(renderer, map, textures, location.position);
         }
     }
 }
@@ -351,7 +491,12 @@ int main(int argc, char* argv[]) {
         if (smoke_test) {
             render_startup(renderer.get(), menu.get(), copyright.get());
             prepare_game_view(window.get(), renderer.get());
-            render_game(renderer.get(), yipe::starting_map(), game_textures, {5, 5});
+            for (int map_id = 0; map_id <= 0x85; ++map_id) {
+                const std::optional<yipe::Map> map = yipe::original_map(map_id);
+                if (map) {
+                    render_game(renderer.get(), *map, game_textures, {5, 5});
+                }
+            }
             return 0;
         }
 

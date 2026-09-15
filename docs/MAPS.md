@@ -25,13 +25,25 @@ Regenerate it from a current Ghidra C export:
 ```bash
 ./tools/extract_map_tables.py \
   --decompiled-dir /Users/baouchiy/Downloads/YipeIII-analysis/decompiled \
-  --output assets/maps/original-map-tables.json
+  --output assets/maps/original-map-tables.json \
+  --cpp-output src/generated/original_maps.cpp
 ```
 
 The extractor requires every loader to produce all 156 values and stops on an
 incomplete table. Map IDs `0x76` through `0x78` are generated at runtime by
 `0x0041e0f0` instead of appearing in the static dispatcher, so they are outside
-this catalog.
+this catalog. The generated C++ copy lets the core load those same tables without
+a JSON dependency at runtime.
+
+Surface-map transitions use player offsets `+0x46` and `+0x48` as wrapped region
+coordinates. `0x00444b50` moves a player arriving at an outer border back to the
+opposite inner border, and `0x00444ad0` calculates the next map as
+`region_x - 6 * region_y + 0x11` for layer zero. The core preserves the original
+region-coordinate wrapping and the additional layer and alternate-map offsets.
+The SDL application follows these exits and can render every static table. Its
+headless smoke test renders all 112 maps, exercising the recovered tile-to-bitmap
+switch and every required terrain sheet. Runtime-generated maps and the dynamic
+monster-overlay tiles remain separate follow-up work.
 
 ## Starting area
 

@@ -15,7 +15,7 @@ ctest --test-dir build --output-on-failure
 ./build/yipe3
 ```
 
-The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the recovered New Game, Load Game, or Quit rows, or use N, L, Q, and Escape. New Game enters the recovered starting area at the original `(5,5)` position; move with the arrow keys or WASD and exit with Q or Escape. Load Game remains pending while the legacy import path is reconstructed. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
+The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the recovered New Game, Load Game, or Quit rows, or use N, L, Q, and Escape. New Game enters the recovered starting area at the original `(5,5)` position; move with the arrow keys or WASD, cross passable map edges, and exit with Q or Escape. The starting building displays Fred's recovered shop stock. Load Game remains pending while the legacy import path is reconstructed. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
 
 ## Evidence and status
 

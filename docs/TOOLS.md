@@ -50,7 +50,8 @@ The resulting `assets/embedded/ui-catalog.json` records all dialog/control geome
 ```bash
 ./tools/extract_map_tables.py \
   --decompiled-dir /Users/baouchiy/Downloads/YipeIII-analysis/decompiled \
-  --output assets/maps/original-map-tables.json
+  --output assets/maps/original-map-tables.json \
+  --cpp-output src/generated/original_maps.cpp
 ```
 
 The command reads the map dispatcher and its static loader functions from the

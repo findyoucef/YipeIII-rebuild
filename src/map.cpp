@@ -6,22 +6,6 @@
 namespace yipe {
 namespace {
 
-constexpr Map::Tiles starting_tiles{
-    3,  3,  2, 2, 2, 2,  2,  2,  2,  2,  2,  2,
-    3,  57, 8, 8, 8, 8,  25, 2,  2,  50, 2,  2,
-    3,  3,  2, 2, 15, 14, 11, 89, 89, 89, 14, 14,
-    14, 14, 14, 11, 16, 2, 22, 2,  2,  2,  2,  2,
-    2,  2,  2, 2, 2, 2,  22, 2,  2,  2,  2,  2,
-    2,  2,  2, 2, 2, 2,  22, 2,  2,  2,  2,  2,
-    2,  2,  2, 2, 5, 8,  1,  8,  25, 2,  2,  2,
-    8,  25, 2, 2, 22, 2, 22, 2,  26, 8,  8,  8,
-    2,  26, 8, 8, 6, 8,  7,  2,  2,  2,  2,  2,
-    2,  2,  2, 2, 2, 2,  2,  2,  2,  2,  2,  2,
-    3,  2,  2, 2, 2, 2,  2,  2,  2,  2,  2,  3,
-    3,  48, 2, 2, 2, 2,  2,  2,  2,  2,  10, 3,
-    3,  3,  2, 2, 2, 2,  2,  2,  2,  3,  3,  3,
-};
-
 bool is_interior(MapPosition position) {
     return position.x != 0 && position.x != Map::width - 1 && position.y != 0
            && position.y != Map::height - 1;
@@ -50,7 +34,53 @@ std::uint16_t Map::tile(MapPosition position) const {
 }
 
 Map starting_map() {
-    return Map(0x11, 0, starting_tiles);
+    std::optional<Map> map = original_map(0x11);
+    if (!map) {
+        throw std::logic_error("generated map catalog does not contain the starting map");
+    }
+    return *map;
+}
+
+bool cross_map_edge(WorldLocation& location) {
+    bool crossed = false;
+    if (location.position.x == 0) {
+        --location.region_x;
+        location.position.x = Map::width - 2;
+        crossed = true;
+    } else if (location.position.x == Map::width - 1) {
+        ++location.region_x;
+        location.position.x = 1;
+        crossed = true;
+    }
+
+    if (location.position.y == 0) {
+        ++location.region_y;
+        location.position.y = Map::height - 2;
+        crossed = true;
+    } else if (location.position.y == Map::height - 1) {
+        --location.region_y;
+        location.position.y = 1;
+        crossed = true;
+    }
+    if (!crossed) {
+        return false;
+    }
+
+    if (location.region_x == 2) {
+        location.region_x = -4;
+    } else if (location.region_x == -5) {
+        location.region_x = 1;
+    }
+    if (location.region_y == 3) {
+        location.region_y = -3;
+    } else if (location.region_y == -4) {
+        location.region_y = 2;
+    }
+
+    location.map_id = location.region_x - location.region_y * 6 + 0x11
+                      + location.map_layer * 0x28
+                      + (location.alternate_map_set ? 0x62 : 0);
+    return true;
 }
 
 MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int delta_y,
