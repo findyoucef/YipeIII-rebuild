@@ -58,6 +58,27 @@ The command reads the map dispatcher and its static loader functions from the
 Ghidra C export. It validates every 13×12 table before writing deterministic
 JSON. Runtime-generated map IDs `0x76`–`0x78` are intentionally excluded.
 
+## Recover monster catalogs
+
+```bash
+./tools/extract_monster_placements.py \
+  --source /Users/baouchiy/Downloads/YipeIII-analysis/decompiled/functions/0041ec40.c \
+  --output assets/maps/original-monster-placements.json \
+  --cpp-output src/generated/original_monsters.cpp
+
+./tools/extract_monster_definitions.py \
+  --stats-source /Users/baouchiy/Downloads/YipeIII-analysis/decompiled/functions/00405640.c \
+  --damage-source /Users/baouchiy/Downloads/YipeIII-analysis/decompiled/functions/004042e0.c \
+  --strings /Users/baouchiy/Downloads/YipeIII-analysis/resources/strings.jsonl \
+  --output assets/game-data/original-monster-definitions.json \
+  --cpp-output src/generated/original_monster_definitions.cpp
+```
+
+The placement extractor validates all 186 records before generating the runtime
+catalog. The definition extractor joins the 41 setup-stat records, damage
+ranges, resource names, and bitmap IDs, and fails when any required field is
+missing.
+
 ## Re-export the preserved Ghidra project
 
 Close the project in the Ghidra GUI first. The canonical generated output remains in `/Users/baouchiy/Downloads/YipeIII-analysis`; the copy under `evidence/analysis-snapshot` is a point-in-time snapshot.

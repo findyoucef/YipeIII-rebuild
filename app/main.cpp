@@ -389,7 +389,7 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
             copy_texture(renderer, graphic.texture, &graphic.source, &destination);
         }
     }
-    if (!giant_beetle_defeated) {
+    if (!giant_beetle_defeated && map.id() == 0x0b) {
         for (const yipe::MonsterPlacement& monster :
              yipe::original_monsters_for_map(map.id())) {
             const SDL_Rect destination{monster.position.x * tile_size,
@@ -650,7 +650,7 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
 }
 
 bool has_encounter_at(const yipe::GameState& game) {
-    if (game.giant_beetle_defeated) {
+    if (game.giant_beetle_defeated || game.location.map_id != 0x0b) {
         return false;
     }
     for (const yipe::MonsterPlacement& monster :

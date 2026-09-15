@@ -70,11 +70,41 @@ consumables use the first free slot among the 13 carried-item slots, while the
 four equipment rows update their matching slot only when the purchased tier is
 an improvement. Failed purchases do not deduct gold.
 
-The first reachable static encounter is the Giant Beetle placed by `0x0041ec40`
-on map `0x0b` at `(2,8)`. The route from the north-edge entry at `(5,10)` is
-covered by the playable-flow test. Bitmap resource 175 is drawn at the placement
-until the encounter is won; the version-2 native save preserves its defeated
-state.
+## Monster catalogs
+
+The event initializer at `0x0041ec40` creates 186 monster placements on 84 maps,
+with up to five slots per map. The generated catalogs preserve each monster
+type, tile coordinate, slot, encounter size, and the original `+0x36c` and
+`+0x371` flags. Difficulty changes some group sizes and late-game monster types;
+player level changes the selections on maps `0x39` and `0x75`. Maps `0x76`
+through `0x78` receive types 32, 33, and 34 even though their terrain is generated
+separately.
+
+Regenerate the placement catalog with:
+
+```bash
+./tools/extract_monster_placements.py \
+  --source /Users/baouchiy/Downloads/YipeIII-analysis/decompiled/functions/0041ec40.c \
+  --output assets/maps/original-monster-placements.json \
+  --cpp-output src/generated/original_monsters.cpp
+```
+
+Sixteen records use the extended writer at `0x0041d780`. Its additional
+coordinate expressions remain in the JSON evidence, while their gameplay
+meaning remains unresolved and they are not exposed by `MonsterPlacement`.
+
+The setup table at `0x00405640` and attack table at `0x004042e0` provide all 41
+monster definitions. The generated definition catalog joins their names from
+string resources 230–270, bitmaps 174–214, base health, health random range,
+attack, defense, special rating, and ordinary minimum/maximum damage. Combat
+setup can materialize every definition, although special attacks and multiple
+opponents still need reconstruction before the application enables all of these
+encounters.
+
+The first reachable static encounter is the Giant Beetle on map `0x0b` at
+`(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
+playable-flow test. Bitmap resource 175 is drawn at the placement until the
+encounter is won; the version-2 native save preserves its defeated state.
 
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.

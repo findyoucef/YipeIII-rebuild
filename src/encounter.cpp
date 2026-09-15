@@ -1,15 +1,10 @@
 #include "yipe/encounter.hpp"
 
 #include <algorithm>
-#include <array>
 #include <stdexcept>
 
 namespace yipe {
 namespace {
-
-constexpr std::array map_0b_monsters{
-    MonsterPlacement{2, {2, 8}, 1, false},
-};
 
 int roll(MsvcRandom& random, int bound) {
     return random.next() % std::max(bound, 1);
@@ -151,10 +146,11 @@ int calculate_player_damage(const Player& player, const Monster& monster,
 }
 
 std::pair<int, int> monster_damage_range(int type_id) {
-    if (type_id == 2) {
-        return {1, 3};
+    const std::optional<MonsterDefinition> definition = original_monster_definition(type_id);
+    if (!definition) {
+        throw std::runtime_error("monster type is outside the recovered table");
     }
-    throw std::runtime_error("monster damage table is not recovered for this type");
+    return {definition->damage_minimum, definition->damage_maximum};
 }
 
 int low_level_defense_range(int level) {
@@ -339,24 +335,19 @@ CombatReward award_victory(Player& player, const Monster& monster, MsvcRandom& r
 
 } // namespace
 
-std::span<const MonsterPlacement> original_monsters_for_map(int map_id) {
-    if (map_id == 0x0b) {
-        return map_0b_monsters;
-    }
-    return {};
-}
-
 Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {
-    if (type_id != 2) {
-        throw std::runtime_error("monster combat record is not recovered for this type");
+    const std::optional<MonsterDefinition> definition = original_monster_definition(type_id);
+    if (!definition) {
+        throw std::runtime_error("monster type is outside the recovered table");
     }
-    Monster monster{2, "Giant Beetle", 175};
-    monster.health = 14 + roll(random, 2);
+    Monster monster{definition->type_id, definition->name, definition->bitmap_resource_id};
+    monster.health = definition->health_base
+        + roll(random, definition->rank_and_health_range);
     monster.maximum_health = monster.health;
-    monster.special_rating = 0;
-    monster.rank = 2;
-    monster.attack_rating = 8 + roll(random, 2);
-    monster.defense_rating = 3 + roll(random, 2);
+    monster.special_rating = definition->special_rating;
+    monster.rank = definition->rank_and_health_range;
+    monster.attack_rating = definition->attack_base + roll(random, 2);
+    monster.defense_rating = definition->defense_base + roll(random, 2);
     static_cast<void>(roll(random, 100));
     return monster;
 }

@@ -355,7 +355,9 @@ void test_starting_shop() {
 void test_giant_beetle_encounter() {
     const auto placements = yipe::original_monsters_for_map(0x0b);
     check(placements.size() == 1 && placements[0].type_id == 2
-              && placements[0].position == yipe::MapPosition{2, 8},
+              && placements[0].position == yipe::MapPosition{2, 8}
+              && placements[0].slot == 0 && placements[0].encounter_size == 1
+              && !placements[0].flag_36c && !placements[0].flag_371,
           "map 0x0b exposes the recovered Giant Beetle placement");
     check(yipe::original_monsters_for_map(0x11).empty(),
           "maps without recovered placements remain empty");
@@ -392,6 +394,69 @@ void test_giant_beetle_encounter() {
     const yipe::FleeResult fled = yipe::try_flee(fleeing_player, fleeing_monster, flee_random);
     check(fled.escaped && fleeing_player.gold == 9 && fleeing_player.health == 13,
           "low-level flee succeeds and applies the original gold loss");
+}
+
+void test_monster_placement_catalog() {
+    std::size_t placement_count = 0;
+    int flag_36c_count = 0;
+    int flag_371_count = 0;
+    for (int map_id = 0; map_id <= 0x85; ++map_id) {
+        for (const yipe::MonsterPlacement& placement :
+             yipe::original_monsters_for_map(map_id)) {
+            ++placement_count;
+            flag_36c_count += placement.flag_36c ? 1 : 0;
+            flag_371_count += placement.flag_371 ? 1 : 0;
+        }
+    }
+    check(placement_count == 186 && flag_36c_count == 23 && flag_371_count == 16,
+          "generated catalog exposes every recovered monster placement and flag");
+
+    check(yipe::original_monsters_for_map(8, 3, 1)[1].encounter_size == 3,
+          "difficulty controls dynamic encounter size");
+    check(yipe::original_monsters_for_map(0x39, 2, 6)[1].type_id == 1
+              && yipe::original_monsters_for_map(0x39, 2, 7)[1].type_id == 5,
+          "map 0x39 changes its monster type at level 7");
+    check(yipe::original_monsters_for_map(0x75, 2, 2)[0].type_id == 3
+              && yipe::original_monsters_for_map(0x75, 2, 17)[0].type_id == 18
+              && yipe::original_monsters_for_map(0x75, 2, 21)[0].type_id == 20,
+          "map 0x75 preserves its level-dependent monster normalization");
+    check(yipe::original_monsters_for_map(0x76, 2, 1)[0].type_id == 32
+              && yipe::original_monsters_for_map(0x77, 2, 1)[0].type_id == 33
+              && yipe::original_monsters_for_map(0x78, 2, 1)[0].type_id == 34,
+          "generated maps select their distinct monster types");
+    check(yipe::original_monsters_for_map(0x79, 3, 1)[0].type_id == 38
+              && yipe::original_monsters_for_map(0x7f, 3, 1)[0].type_id == 39,
+          "late special encounters derive monster types from difficulty");
+}
+
+void test_monster_definition_catalog() {
+    const auto bunny = yipe::original_monster_definition(1);
+    const auto beetle = yipe::original_monster_definition(2);
+    const auto gatekeeper = yipe::original_monster_definition(41);
+    check(bunny && bunny->name == "Small Bunny" && bunny->bitmap_resource_id == 174
+              && bunny->health_base == 10 && bunny->rank_and_health_range == 1
+              && bunny->damage_minimum == 1 && bunny->damage_maximum == 3,
+          "monster catalog starts with the Small Bunny record");
+    check(beetle && beetle->name == "Giant Beetle" && beetle->string_resource_id == 231
+              && beetle->health_base == 14 && beetle->attack_base == 8
+              && beetle->defense_base == 3 && beetle->special_rating == 0
+              && beetle->damage_minimum == 1 && beetle->damage_maximum == 3,
+          "monster catalog preserves the Giant Beetle record");
+    check(gatekeeper && gatekeeper->name == "Gatekeeper"
+              && gatekeeper->bitmap_resource_id == 214
+              && gatekeeper->health_base == 315 && gatekeeper->special_rating == 50
+              && gatekeeper->damage_minimum == 15 && gatekeeper->damage_maximum == 22,
+          "monster catalog ends with the Gatekeeper record");
+    check(!yipe::original_monster_definition(0)
+              && !yipe::original_monster_definition(42),
+          "monster catalog rejects out-of-range type IDs");
+
+    yipe::MsvcRandom random(1);
+    const yipe::Monster monster = yipe::start_single_monster_encounter(41, random);
+    check(monster.name == "Gatekeeper" && monster.health == 331 && monster.rank == 25
+              && monster.attack_rating == 26 && monster.defense_rating == 25
+              && monster.special_rating == 50,
+          "generic setup applies the recovered table and random sequence");
 }
 
 void test_first_playable_flow() {
@@ -470,6 +535,8 @@ int main() {
     test_static_map_catalog_and_edges();
     test_starting_shop();
     test_giant_beetle_encounter();
+    test_monster_placement_catalog();
+    test_monster_definition_catalog();
     test_first_playable_flow();
 
     if (failures != 0) {

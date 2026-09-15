@@ -4,22 +4,26 @@
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
 
-#include <span>
+#include <optional>
 #include <string_view>
+#include <vector>
 
 namespace yipe {
 
 struct MonsterPlacement {
     int type_id = 0;
     MapPosition position;
+    int slot = 0;
     int encounter_size = 0;
-    bool large = false;
+    bool flag_36c = false;
+    bool flag_371 = false;
 };
 
 // Static placements reconstructed from the map-event initializer at 0x0041ec40.
-// The catalog currently exposes the first reachable encounter while the rest of
-// the event routine is being converted to generated data.
-[[nodiscard]] std::span<const MonsterPlacement> original_monsters_for_map(int map_id);
+// A few original records derive monster type or group size from difficulty and
+// player level, so those values are supplied when materializing a map's records.
+[[nodiscard]] std::vector<MonsterPlacement> original_monsters_for_map(
+    int map_id, int difficulty = 2, int player_level = 1);
 
 struct Monster {
     int type_id = 0;
@@ -32,6 +36,24 @@ struct Monster {
     int attack_rating = 0;  // Original combat-record field +0x308.
     int defense_rating = 0; // Original combat-record field +0x30c.
 };
+
+struct MonsterDefinition {
+    int type_id = 0;
+    std::string_view name;
+    int string_resource_id = 0;
+    int bitmap_resource_id = 0;
+    int health_base = 0;
+    int rank_and_health_range = 0;
+    int attack_base = 0;
+    int defense_base = 0;
+    int special_rating = 0;
+    int damage_minimum = 0;
+    int damage_maximum = 0;
+};
+
+// Stats come from 0x00405640, damage ranges from 0x004042e0, names from
+// resources 230-270, and matching bitmaps from resources 174-214.
+[[nodiscard]] std::optional<MonsterDefinition> original_monster_definition(int type_id);
 
 enum class EquipmentUpgrade {
     none,
@@ -70,9 +92,9 @@ struct FleeResult {
 // the combat-dialog constructor at 0x004025e0.
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
-// Current combat coverage is the first reachable Giant Beetle encounter. These
-// routines preserve the original random-call order for its ordinary attack,
-// counterattack, rewards, equipment-upgrade roll, and flee action.
+// Ordinary combat formulas currently cover the first reachable Giant Beetle.
+// Setup supports every recovered monster definition and preserves its original
+// random-call order.
 [[nodiscard]] CombatTurn resolve_attack_turn(Player& player, Monster& monster,
                                               MsvcRandom& random);
 [[nodiscard]] CombatTurn resolve_monster_turn(Player& player, const Monster& monster,

@@ -2,7 +2,7 @@
 
 This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1.1.6.0 from the supplied 2003 Windows executable. The original binary is an input and reference; generated decompiler output is evidence, not compilable source.
 
-The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, the external item-name parser, map grids, movement, Fred's shop purchases, and the first Giant Beetle encounter. Its SDL2 application renders the recovered startup menu, all 112 static map tables, the starting shop, and the first enemy from original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
+The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, the external item-name parser, map grids, movement, Fred's shop purchases, and the first Giant Beetle encounter. Generated catalogs preserve all 186 recovered monster placements and all 41 monster definitions, including setup stats and ordinary damage ranges. Its SDL2 application renders the recovered startup menu, all 112 static map tables, the starting shop, and the first enemy from original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
 
 ## Build and test
 

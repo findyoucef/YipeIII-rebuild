@@ -10,6 +10,8 @@ find_package(SDL2 CONFIG REQUIRED)
 
 add_library(yipe_core
     src/generated/original_maps.cpp
+    src/generated/original_monster_definitions.cpp
+    src/generated/original_monsters.cpp
     src/auxiliary_data.cpp
     src/encounter.cpp
     src/item_names.cpp
