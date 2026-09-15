@@ -1,4 +1,5 @@
 #include "yipe/map.hpp"
+#include "yipe/shop.hpp"
 
 #include <SDL.h>
 
@@ -6,6 +7,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -246,6 +248,18 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
     SDL_RenderPresent(renderer);
 }
 
+void show_freds_shop(SDL_Window* window) {
+    std::ostringstream message;
+    for (const yipe::ShopStockItem& item : yipe::freds_miscellaneous_stock()) {
+        message << item.name << "  " << item.price << " gold\n";
+    }
+    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Fred's Miscellaneous Shop",
+                                 message.str().c_str(), window)
+        != 0) {
+        throw std::runtime_error(std::string("could not show shop: ") + SDL_GetError());
+    }
+}
+
 void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures) {
     prepare_game_view(window, renderer);
     const yipe::Map map = yipe::starting_map();
@@ -294,6 +308,9 @@ void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         const yipe::MovementResult result = yipe::try_move(map, player, delta_x, delta_y);
         if (result.position_changed) {
+            render_game(renderer, map, textures, player);
+        } else if (result.original_code == 8) {
+            show_freds_shop(window);
             render_game(renderer, map, textures, player);
         }
     }

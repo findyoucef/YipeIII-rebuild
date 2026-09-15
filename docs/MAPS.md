@@ -48,6 +48,14 @@ art and the type-1 character bitmap. Arrow keys or WASD move the character acros
 ordinary walkable tiles. Special result codes are available to the core but their
 area transitions and dialogs are still being connected.
 
+The central tile with ID `1` returns action code `8`. The action dispatcher at
+`0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current
+map ID is `0x11`, `0x004402b0` selects the title resource “Fred's Miscellaneous
+Shop,” stock builder `0x00440e50`, and the map-specific price slice in
+`0x00441010`. The SDL build now displays all 11 recovered stock rows and prices
+when the player enters that tile. Purchase and equipment mutation remain part of
+the economy work in P6.
+
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.
 Tile-to-source-rectangle mappings come from the draw switch at `0x0040cc10`, and

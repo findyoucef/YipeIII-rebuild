@@ -4,6 +4,7 @@
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
+#include "yipe/shop.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -239,6 +240,22 @@ void test_starting_map() {
           "impassable terrain blocks movement");
 }
 
+void test_starting_shop() {
+    const auto& stock = yipe::freds_miscellaneous_stock();
+    check(stock.size() == 11, "Fred's shop exposes all original stock rows");
+    check(stock[0].name == "French Fries" && stock[0].price == 75
+              && stock[0].type == 1,
+          "Fred's shop preserves the first consumable and price");
+    check(stock[6].name == "Return to Surface Potion" && stock[6].price == 250
+              && stock[6].type == 5,
+          "Fred's shop preserves its last consumable");
+    check(stock[7].name == "Wet Mittens" && stock[7].price == 50
+              && stock[7].kind == yipe::ShopItemKind::equipment && stock[7].tier == 1,
+          "Fred's shop preserves equipment type and tier");
+    check(stock[10].name == "Plain Necklace" && stock[10].price == 75,
+          "Fred's shop preserves its final row");
+}
+
 } // namespace
 
 int main() {
@@ -251,6 +268,7 @@ int main() {
     test_native_save();
     test_original_auxiliary_data();
     test_starting_map();
+    test_starting_shop();
 
     if (failures != 0) {
         std::cerr << failures << " test(s) failed\n";
