@@ -1,0 +1,11 @@
+{
+  "original_sha256": "6e309aeedc59d80470e0d5edb4be2fe165de5c36d5ad29aa7bdd4a39272f3286",
+  "original_unchanged": true,
+  "exported_functions": 4999,
+  "analyst_names": 15,
+  "function_files_and_line_indexes_match": true,
+  "resources_match_input": 301,
+  "resource_strings": 741,
+  "project_save_confirmed": true,
+  "documentation_links_valid": true
+}

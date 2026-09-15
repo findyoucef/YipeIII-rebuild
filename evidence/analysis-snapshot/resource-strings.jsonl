@@ -1,0 +1,741 @@
+{"id": 128, "language": 1033, "value": "Yipe! III\n\n\nYipe! III Files(*.yp3)\n.yp3\nYipeIII.Document\nYipe! III Document"}
+{"id": 129, "language": 1033, "value": "You are standing on a water hole."}
+{"id": 133, "language": 1033, "value": "Rainbow Key"}
+{"id": 134, "language": 1033, "value": "Underworld Key"}
+{"id": 136, "language": 1033, "value": "A rare stamp!"}
+{"id": 137, "language": 1033, "value": "OUCH!  You burn your hand slightly on the fire wall."}
+{"id": 138, "language": 1033, "value": "You can't carry any more items."}
+{"id": 139, "language": 1033, "value": "Yipe! Snack Shop"}
+{"id": 140, "language": 1033, "value": "Maynard Snacks and Stuff"}
+{"id": 141, "language": 1033, "value": "Quizilog Healthy Treats"}
+{"id": 142, "language": 1033, "value": "You can now learn the spell:"}
+{"id": 143, "language": 1033, "value": "You can not learn any new spells at this time."}
+{"id": 144, "language": 1033, "value": "You have learned all the magic that you possibly can."}
+{"id": 145, "language": 1033, "value": "Spell Learned"}
+{"id": 146, "language": 1033, "value": "You pile up the coins scattered about the floor and put them into your pocket.  In all, it looks like you gained about 180 coins."}
+{"id": 147, "language": 1033, "value": "You search the floor again.  It looks like you've already gathered up all the loose gold."}
+{"id": 148, "language": 1033, "value": "You are already on the surface."}
+{"id": 149, "language": 1033, "value": "You can't use this spell from here."}
+{"id": 150, "language": 1033, "value": "Almost no monsters will dare go near you as long as you smell like this."}
+{"id": 151, "language": 1033, "value": "The terrible smell that was around you seems to have faded away."}
+{"id": 152, "language": 1033, "value": "You can't use this spell unless you are on the surface."}
+{"id": 153, "language": 1033, "value": "You are healed for xx points."}
+{"id": 154, "language": 1033, "value": "The fire from a nearby wall spreads over where you are standing and burns you!"}
+{"id": 155, "language": 1033, "value": "Non-Combat"}
+{"id": 156, "language": 1033, "value": "Combat"}
+{"id": 157, "language": 1033, "value": "Either"}
+{"id": 158, "language": 1033, "value": "A small note is nailed to the tree here.  It seems to be asking you for some type of secret code."}
+{"id": 159, "language": 1033, "value": "After entering the code, nothing seems to happen."}
+{"id": 161, "language": 1033, "value": "This character is good at using weapons and hand to hand combat.  Your overall health is slightly higher, but you are not as good at using spells."}
+{"id": 162, "language": 1033, "value": "This character has a higher dexterity, which helps avoids attacks and also gives you an edge when using special abilities.  You have average spell and combat skills."}
+{"id": 163, "language": 1033, "value": "This character excells in the magical arts.  You will have more spell points and cast spells at a lower cost.  You will have a lower skill in combat."}
+{"id": 164, "language": 1033, "value": "Press the reroll button to try and get the stats you want.\n15 = High (For starters)\n13 = Average\n11 = Low"}
+{"id": 165, "language": 1033, "value": "The King has a surprise party to honor your 100th level!"}
+{"id": 166, "language": 1033, "value": "You hear distanst clapping in honor of becoming level 50."}
+{"id": 167, "language": 1033, "value": "You've rescued all the princesses!!"}
+{"id": 168, "language": 1033, "value": "You are the hero of the entire world!!"}
+{"id": 169, "language": 1033, "value": "No need to attack the bunnies, they are all friendly now that you have killed the evil Gatekeeper!"}
+{"id": 171, "language": 1033, "value": "Backstab"}
+{"id": 172, "language": 1033, "value": "Frighten"}
+{"id": 173, "language": 1033, "value": "Invisibility"}
+{"id": 174, "language": 1033, "value": "Enrage"}
+{"id": 175, "language": 1033, "value": "You can use this skill to backstab your enemy in combat.  The more powerful the monster, the more damage you will do with a backstab."}
+{"id": 176, "language": 1033, "value": "Use the frighten skill to scare away a monster.  It will only work when you are fighting three monsters at the same time, and will always scare off the third monster."}
+{"id": 177, "language": 1033, "value": "When you use this skill in combat your character will become invisible for a short period of time.  During this time, no monsters will be able to hit you and you will have a higher chance of hitting your enemies."}
+{"id": 178, "language": 1033, "value": "Use this skill to become a fierce warrior for a short time.  All of your skills will briefly go up and you will tend to do more damage when you hit your enemies."}
+{"id": 179, "language": 1033, "value": "You are already trained in this ability."}
+{"id": 180, "language": 1033, "value": "You don't have enough gold to purchase this special ability."}
+{"id": 181, "language": 1033, "value": "You need a rainbow key to open this door."}
+{"id": 182, "language": 1033, "value": "You need an underworld key to open this door."}
+{"id": 183, "language": 1033, "value": "Due to a worldwide shortage of supplies the price for certain items has increased."}
+{"id": 184, "language": 1033, "value": "  The townspeople thank you greatly for freeing the town!  All monsters have been defeated and the town can now live in peace and quiet once again."}
+{"id": 185, "language": 1033, "value": "  As a special reward, the townspeople give you a special set of tools that can be used to climb certain trees around the world of Yipe!"}
+{"id": 186, "language": 1033, "value": "  The townspeople of Quizilog are being harassed by evil monsters surrounding their city.  They are so busy trying to fight the monsters that they have no time to sell you anything from the local shops."}
+{"id": 187, "language": 1033, "value": "  They ask you to lend them a hand in getting rid of the monsters.  Once the monsters are gone, they will once again open up their shops for business."}
+{"id": 188, "language": 1033, "value": "You are able to climb over this tree by using your special tree-climbing shoes."}
+{"id": 189, "language": 1033, "value": "Fool!  You have killed off all of my pets.  Bah.  I can make more.  Now... just go away!"}
+{"id": 190, "language": 1033, "value": "  I am the Gatekeeper.  You have been summoned here because your health has run out.  From here, only I can send you back to your world.  For a small fee of xx gold, I will send you back fully healed."}
+{"id": 191, "language": 1033, "value": "  I am the Gatekeeper.  I see that you have found a secret entrance to find me!  From here, only I can send you back to your world.  For a small fee of xx gold, I will send you back fully healed."}
+{"id": 192, "language": 1033, "value": "You must sell your old armor before buying something new."}
+{"id": 193, "language": 1033, "value": "You have no armor to sell."}
+{"id": 194, "language": 1033, "value": "You must first sell your current armor before buying something new."}
+{"id": 195, "language": 1033, "value": "You must sell your old weapon before buying a new one."}
+{"id": 196, "language": 1033, "value": "You have no weapon to sell."}
+{"id": 197, "language": 1033, "value": "Fred's Miscellaneous Shop"}
+{"id": 198, "language": 1033, "value": "Outback Shop"}
+{"id": 199, "language": 1033, "value": "Maynard Supplies Shop"}
+{"id": 200, "language": 1033, "value": "Quizilog Random Items Shop"}
+{"id": 201, "language": 1033, "value": "You already have a helmet this strong!"}
+{"id": 202, "language": 1033, "value": "You already have gloves of equal or greater strength!"}
+{"id": 203, "language": 1033, "value": "You already have a ring of equal or higher value!"}
+{"id": 204, "language": 1033, "value": "You already have a better pair of boots!"}
+{"id": 205, "language": 1033, "value": "You already have an amulet with this much power!"}
+{"id": 206, "language": 1033, "value": "You have already purchased a rainbow key."}
+{"id": 207, "language": 1033, "value": "You put the item aside to sell to a shop."}
+{"id": 208, "language": 1033, "value": "Total score: xx.  Good score, but not quite good enough."}
+{"id": 209, "language": 1033, "value": "You win nothing with your low dart score of xx."}
+{"id": 210, "language": 1033, "value": "Total score: xx.  You must have tried really hard to get a score so bad!"}
+{"id": 211, "language": 1033, "value": "Welcome to the Dart Room!"}
+{"id": 212, "language": 1033, "value": "You can also use the arrow keys to move your dart before throwing."}
+{"id": 217, "language": 1033, "value": "Ryan Woodworth ..."}
+{"id": 218, "language": 1033, "value": "... Liz Toolan ..."}
+{"id": 219, "language": 1033, "value": "... Jeff Marra ..."}
+{"id": 220, "language": 1033, "value": "... Jeffrey Schroeder ..."}
+{"id": 221, "language": 1033, "value": "... Dan Rabbers ..."}
+{"id": 222, "language": 1033, "value": "... Nick Wagener ..."}
+{"id": 223, "language": 1033, "value": "... Steven Pilc ..."}
+{"id": 224, "language": 1033, "value": "... Michael Silk"}
+{"id": 230, "language": 1033, "value": "Small Bunny"}
+{"id": 231, "language": 1033, "value": "Giant Beetle"}
+{"id": 232, "language": 1033, "value": "Attack Weasel"}
+{"id": 233, "language": 1033, "value": "Mystic Moose"}
+{"id": 234, "language": 1033, "value": "Rabid Bat"}
+{"id": 235, "language": 1033, "value": "Ancient Seagull"}
+{"id": 236, "language": 1033, "value": "Mouth Man"}
+{"id": 237, "language": 1033, "value": "Stone Golem"}
+{"id": 238, "language": 1033, "value": "Hairy One-Eye"}
+{"id": 239, "language": 1033, "value": "Baby Gargoyle"}
+{"id": 240, "language": 1033, "value": "Adult Gargoyle"}
+{"id": 241, "language": 1033, "value": "Evil Wizard"}
+{"id": 242, "language": 1033, "value": "Fire Bug"}
+{"id": 243, "language": 1033, "value": "Flame Flier"}
+{"id": 244, "language": 1033, "value": "Cloaked Stallion"}
+{"id": 245, "language": 1033, "value": "Burning Skeleton"}
+{"id": 246, "language": 1033, "value": "Venus Man Trap"}
+{"id": 247, "language": 1033, "value": "Little Daemon"}
+{"id": 248, "language": 1033, "value": "Snow Monster"}
+{"id": 249, "language": 1033, "value": "Fire Lord"}
+{"id": 250, "language": 1033, "value": "Evil Air Wave"}
+{"id": 251, "language": 1033, "value": "Air Thing"}
+{"id": 252, "language": 1033, "value": "Tongue Toad"}
+{"id": 253, "language": 1033, "value": "Squawker"}
+{"id": 254, "language": 1033, "value": "Water Ghost"}
+{"id": 255, "language": 1033, "value": "Wisp"}
+{"id": 256, "language": 1033, "value": "Ice Cave Crab"}
+{"id": 257, "language": 1033, "value": "Electric Eel"}
+{"id": 258, "language": 1033, "value": "Merman"}
+{"id": 259, "language": 1033, "value": "Hand Head"}
+{"id": 260, "language": 1033, "value": "Lump"}
+{"id": 261, "language": 1033, "value": "Earl Earthworm"}
+{"id": 262, "language": 1033, "value": "Muscles"}
+{"id": 263, "language": 1033, "value": "Axe Man"}
+{"id": 264, "language": 1033, "value": "Wormoid"}
+{"id": 265, "language": 1033, "value": "Stone King"}
+{"id": 266, "language": 1033, "value": "Flame Beast"}
+{"id": 267, "language": 1033, "value": "Air Dragon"}
+{"id": 268, "language": 1033, "value": "Soaked Spike"}
+{"id": 269, "language": 1033, "value": "Earth Giant"}
+{"id": 270, "language": 1033, "value": "Gatekeeper"}
+{"id": 301, "language": 1033, "value": "Hands"}
+{"id": 302, "language": 1033, "value": "Small Dagger"}
+{"id": 303, "language": 1033, "value": "Sling"}
+{"id": 304, "language": 1033, "value": "Dull Sword"}
+{"id": 305, "language": 1033, "value": "Axe"}
+{"id": 306, "language": 1033, "value": "Short Sword"}
+{"id": 307, "language": 1033, "value": "Black Mace"}
+{"id": 308, "language": 1033, "value": "Shiny Sword"}
+{"id": 309, "language": 1033, "value": "Flail"}
+{"id": 310, "language": 1033, "value": "Broadsword"}
+{"id": 311, "language": 1033, "value": "Spear"}
+{"id": 312, "language": 1033, "value": "Nunchucks"}
+{"id": 313, "language": 1033, "value": "Mystic Sword"}
+{"id": 314, "language": 1033, "value": "Two-Handed Axe"}
+{"id": 315, "language": 1033, "value": "Bow and Arrows"}
+{"id": 316, "language": 1033, "value": "Longsword"}
+{"id": 317, "language": 1033, "value": "Two-Handed Sword"}
+{"id": 318, "language": 1033, "value": "Jeweled Dagger"}
+{"id": 319, "language": 1033, "value": "Magic Mace"}
+{"id": 320, "language": 1033, "value": "Giant Sword"}
+{"id": 321, "language": 1033, "value": "Magic Spear"}
+{"id": 322, "language": 1033, "value": "Enhanced Spear"}
+{"id": 323, "language": 1033, "value": "Crossbow and Bolts"}
+{"id": 324, "language": 1033, "value": "Sai Swords"}
+{"id": 325, "language": 1033, "value": "Dragonsword"}
+{"id": 326, "language": 1033, "value": "Mystic Mace"}
+{"id": 327, "language": 1033, "value": "Magic Yipe! Flail"}
+{"id": 328, "language": 1033, "value": "Magic Yipe! Sword"}
+{"id": 329, "language": 1033, "value": "Deathsword"}
+{"id": 330, "language": 1033, "value": "Maynard Light Sword"}
+{"id": 331, "language": 1033, "value": "Quizilog Mystic Sword"}
+{"id": 332, "language": 1033, "value": "Fire Battle Axe"}
+{"id": 333, "language": 1033, "value": "Razor Boomerangs"}
+{"id": 334, "language": 1033, "value": "King's Sword"}
+{"id": 335, "language": 1033, "value": "Frost Sword"}
+{"id": 336, "language": 1033, "value": "Yipe! Deathblade"}
+{"id": 337, "language": 1033, "value": "Manynard Power Sword"}
+{"id": 338, "language": 1033, "value": "Almighty Longsword"}
+{"id": 339, "language": 1033, "value": "weap39"}
+{"id": 340, "language": 1033, "value": "weap40"}
+{"id": 341, "language": 1033, "value": "weap41"}
+{"id": 342, "language": 1033, "value": "weap42"}
+{"id": 343, "language": 1033, "value": "IDS_WEAPON43"}
+{"id": 344, "language": 1033, "value": "weap44"}
+{"id": 345, "language": 1033, "value": "weap45"}
+{"id": 351, "language": 1033, "value": "T-Shirt"}
+{"id": 352, "language": 1033, "value": "Robe"}
+{"id": 353, "language": 1033, "value": "Cloth Armor"}
+{"id": 354, "language": 1033, "value": "Leather Jacket"}
+{"id": 355, "language": 1033, "value": "Leather Armor"}
+{"id": 356, "language": 1033, "value": "Padded Armor"}
+{"id": 357, "language": 1033, "value": "Magician's Robe"}
+{"id": 358, "language": 1033, "value": "Chainmail"}
+{"id": 359, "language": 1033, "value": "Scale Armor"}
+{"id": 360, "language": 1033, "value": "Platemail"}
+{"id": 361, "language": 1033, "value": "Heavy Platemail"}
+{"id": 362, "language": 1033, "value": "Mithril Mail"}
+{"id": 363, "language": 1033, "value": "Enhanced Chainmail"}
+{"id": 364, "language": 1033, "value": "Fighter's Armor"}
+{"id": 365, "language": 1033, "value": "Magic Scale Armor"}
+{"id": 366, "language": 1033, "value": "Magic Chainmail"}
+{"id": 367, "language": 1033, "value": "Magic Platemail"}
+{"id": 368, "language": 1033, "value": "Glow Plate"}
+{"id": 369, "language": 1033, "value": "Spiked Scale Armor"}
+{"id": 370, "language": 1033, "value": "Spiked Chainmail"}
+{"id": 371, "language": 1033, "value": "Spiked Platemail"}
+{"id": 372, "language": 1033, "value": "Royal Knight's Armor"}
+{"id": 373, "language": 1033, "value": "Majestic Chainmail"}
+{"id": 374, "language": 1033, "value": "Majestic Platemail"}
+{"id": 375, "language": 1033, "value": "King's Armor"}
+{"id": 376, "language": 1033, "value": "Yipe! Magic Armor"}
+{"id": 377, "language": 1033, "value": "Armor of Maynard"}
+{"id": 378, "language": 1033, "value": "Holy Yipe! Armor"}
+{"id": 379, "language": 1033, "value": "Quizilog Platemail"}
+{"id": 380, "language": 1033, "value": "Dragonscale Armor"}
+{"id": 401, "language": 1033, "value": "French Fries"}
+{"id": 402, "language": 1033, "value": "Juicy Cheeseburger"}
+{"id": 403, "language": 1033, "value": "Potion of SP Healing"}
+{"id": 404, "language": 1033, "value": "Stink Potion"}
+{"id": 405, "language": 1033, "value": "Return to Surface Potion"}
+{"id": 406, "language": 1033, "value": "Strength Potion"}
+{"id": 407, "language": 1033, "value": "Dexterity Potion"}
+{"id": 408, "language": 1033, "value": "Intelligence Potion"}
+{"id": 409, "language": 1033, "value": "Potion of HP Increase"}
+{"id": 410, "language": 1033, "value": "Potion of SP Increase"}
+{"id": 451, "language": 1033, "value": "Waterproof Shoe Spray"}
+{"id": 452, "language": 1033, "value": "King's Lucky Rabbit Foot"}
+{"id": 453, "language": 1033, "value": "Ring of Bonus Healing"}
+{"id": 454, "language": 1033, "value": "Tree Climbing Tools"}
+{"id": 501, "language": 1033, "value": "Cheap Ring"}
+{"id": 502, "language": 1033, "value": "Aluminum Ring"}
+{"id": 503, "language": 1033, "value": "Platinum Ring"}
+{"id": 504, "language": 1033, "value": "Glowing Ring"}
+{"id": 505, "language": 1033, "value": "Protection Ring"}
+{"id": 511, "language": 1033, "value": "Yipe! Baseball Hat"}
+{"id": 512, "language": 1033, "value": "Shower Cap"}
+{"id": 513, "language": 1033, "value": "Sombrero"}
+{"id": 514, "language": 1033, "value": "Miner's Helmet"}
+{"id": 515, "language": 1033, "value": "Raiders Hard Hat"}
+{"id": 516, "language": 1033, "value": "Horned Wooden Helmet"}
+{"id": 517, "language": 1033, "value": "Double Horned Helmet"}
+{"id": 521, "language": 1033, "value": "Wet Mittens"}
+{"id": 522, "language": 1033, "value": "Kitchen Gloves"}
+{"id": 523, "language": 1033, "value": "Working Gloves"}
+{"id": 524, "language": 1033, "value": "Leather Gloves"}
+{"id": 525, "language": 1033, "value": "Magical Spiked Gloves"}
+{"id": 531, "language": 1033, "value": "Sandals"}
+{"id": 532, "language": 1033, "value": "Leather Boots"}
+{"id": 533, "language": 1033, "value": "Steel Toe Boots"}
+{"id": 534, "language": 1033, "value": "Strong Hiking Boots"}
+{"id": 535, "language": 1033, "value": "Combat Boots"}
+{"id": 536, "language": 1033, "value": "Speedy Boots"}
+{"id": 551, "language": 1033, "value": "Plain Necklace"}
+{"id": 552, "language": 1033, "value": "Gold Medallion"}
+{"id": 553, "language": 1033, "value": "Protection Chain"}
+{"id": 554, "language": 1033, "value": "Glowing Amulet"}
+{"id": 555, "language": 1033, "value": "Fire Amulet"}
+{"id": 556, "language": 1033, "value": "Eye-Piercing Amulet"}
+{"id": 600, "language": 1033, "value": "Unknown"}
+{"id": 601, "language": 1033, "value": "Return to Surface"}
+{"id": 602, "language": 1033, "value": "Small Heal"}
+{"id": 603, "language": 1033, "value": "Gobbler Attack"}
+{"id": 604, "language": 1033, "value": "Insect Attack"}
+{"id": 605, "language": 1033, "value": "Stinky Smell"}
+{"id": 606, "language": 1033, "value": "Full Heal"}
+{"id": 607, "language": 1033, "value": "Brain Crush"}
+{"id": 608, "language": 1033, "value": "Health Suction"}
+{"id": 609, "language": 1033, "value": "Return to Yipe"}
+{"id": 610, "language": 1033, "value": "Super Heal"}
+{"id": 611, "language": 1033, "value": "HP Shuffle"}
+{"id": 612, "language": 1033, "value": "Rabbit Replacement"}
+{"id": 615, "language": 1033, "value": "This spell returns you from an underground cave or dungeon back to the surface of Yipe!"}
+{"id": 616, "language": 1033, "value": "You can use this spell to heal some of your health points.  Using the spell on high power increases the healing amount."}
+{"id": 617, "language": 1033, "value": "This spell gobbles up some of your enemies' health.  Use on high power to gobble all enemies present."}
+{"id": 618, "language": 1033, "value": "This spell creates an alien insect cloud that attacks your enemy.  Use on high power to attack all enemies present at once."}
+{"id": 619, "language": 1033, "value": "Upon casting this spell a very stinky smell will surround you and keep monsters from appearing for a short time."}
+{"id": 620, "language": 1033, "value": "This spell will completely heal your health points."}
+{"id": 621, "language": 1033, "value": "We all know monsters have small brains in the first place.  Using this spell will further shrink those little brains causing massive damage!"}
+{"id": 622, "language": 1033, "value": "This bizarre spell will suck health out of your enemy and heal you by that same amount.  Use on high power for higher damage/healing."}
+{"id": 623, "language": 1033, "value": "After casting this spell you will end up back in the town of Yipe!  It can only be cast on the surface of the world."}
+{"id": 624, "language": 1033, "value": "This powerful healing spell will heal some of your health points as well as restoring your ability points.  However, it costs a lot of spell points to cast."}
+{"id": 625, "language": 1033, "value": "This spell will cause the health points of all monsters you are currently fighting to randomly switch around."}
+{"id": 626, "language": 1033, "value": "If there are two or three monsters one of them will be turned into a rabbit.  The spell won't work with only one monster."}
+{"id": 631, "language": 1033, "value": "You notice a crack in the wall to the north of you."}
+{"id": 632, "language": 1033, "value": "You find a small pile of coins on the floor.  Hit the 'Other' button if you would like to take them."}
+{"id": 633, "language": 1033, "value": "Suddenly you sense that you are not yet strong or powerful enough to survive in this dungeon.  Yet, you can try if you really want to."}
+{"id": 634, "language": 1033, "value": "You hear the faint cry of a young female."}
+{"id": 635, "language": 1033, "value": "You sense that this space seems different.  It seems like there was once a wall here."}
+{"id": 636, "language": 1033, "value": "You notice that the wall next to you could be pushed open.  Unfortunately you do not have enough strength to do so."}
+{"id": 637, "language": 1033, "value": "You notice six tally marks etched into the strangely shaped wall in front of you."}
+{"id": 638, "language": 1033, "value": "You feel very small standing in front of this giant monster."}
+{"id": 639, "language": 1033, "value": "You notice something strange about the flowers and mountains around this area."}
+{"id": 640, "language": 1033, "value": "A message on the wall says:  A group of stones holds the entrance."}
+{"id": 641, "language": 1033, "value": "The three stones surrounding you start to glow.  Perhaps there is some 'other' thing you are supposed to do here."}
+{"id": 651, "language": 1033, "value": "Welcome to the town of Maynard."}
+{"id": 652, "language": 1033, "value": "A princess has blessed these waters."}
+{"id": 653, "language": 1033, "value": "Notice:     Anyone who can rescue all my daughters will be rewarded.      -The King"}
+{"id": 654, "language": 1033, "value": "In a language only you seem to be able to understand:    Skill shop moved secretly north."}
+{"id": 655, "language": 1033, "value": "Welcome to Yipe Hell!                                          Gatekeeper ahead."}
+{"id": 656, "language": 1033, "value": "Only experienced adventurers should travel beyond this sign."}
+{"id": 657, "language": 1033, "value": "Beware:  Unstable floor ahead."}
+{"id": 658, "language": 1033, "value": "Monster breeding grounds."}
+{"id": 659, "language": 1033, "value": "I left everything behind the tree.  Make sure to know the co...  Ahhhhhhhh...."}
+{"id": 660, "language": 1033, "value": "Beware:   This lake has been known to have strange and random currents that leave adventurers stranded for days."}
+{"id": 661, "language": 1033, "value": "Stone Cave"}
+{"id": 662, "language": 1033, "value": "Zephyr Cave"}
+{"id": 663, "language": 1033, "value": "Fire Cave"}
+{"id": 664, "language": 1033, "value": "Welcome to the bizarre final cave!"}
+{"id": 665, "language": 1033, "value": "Stay out of my lair!"}
+{"id": 666, "language": 1033, "value": "From the top:   2, 3, 1, 3, 2"}
+{"id": 667, "language": 1033, "value": "Turn back while you can!"}
+{"id": 668, "language": 1033, "value": "I'll be in Hell..."}
+{"id": 669, "language": 1033, "value": "Exit back to Yipe!"}
+{"id": 670, "language": 1033, "value": "The sign says 'Yipe!'."}
+{"id": 671, "language": 1033, "value": "Princess Holding Cell:  West"}
+{"id": 701, "language": 1033, "value": "Your character has run out of health points!  In the future, you will want to 'Run' away from monsters when you notice your health points (HP) start to run out."}
+{"id": 702, "language": 1033, "value": "Your health has run out once again.  Make sure to purchase snacks in the Yipe! healing shop.  You may also have some items in your inventory that you could eat to regain your HP."}
+{"id": 703, "language": 1033, "value": "Try purchasing the basic armor items in Fred's Miscellaneous shop.  These armor items will help protect you from being killed by the monsters."}
+{"id": 704, "language": 1033, "value": "Maybe you should invest some money into increasing your strength and dexterity.  These skills will help you in combat."}
+{"id": 705, "language": 1033, "value": "The monsters wish there were more players like you they could feed upon.  Perhaps you should run from monsters that look too difficult."}
+{"id": 706, "language": 1033, "value": "Maybe you should go back to fighting little bunnies."}
+{"id": 707, "language": 1033, "value": "You have died many times.  You may want to start a brand new game so that your character can start off with a full amount of gold."}
+{"id": 708, "language": 1033, "value": "Make sure to go back to town and heal yourself before continuing to fight."}
+{"id": 709, "language": 1033, "value": "The townspeople are starting to wonder if you're really cut out for saving them."}
+{"id": 710, "language": 1033, "value": "I've seen bunnies with more combat skills than you!  Okay, maybe not that bad.  But you might want to consider running a little more often."}
+{"id": 711, "language": 1033, "value": "Just in case you forgot, the idea is to not be killed while in combat.  It's quite okay to 'Run' away if you are low on health points."}
+{"id": 712, "language": 1033, "value": "Hmm.  Are you feeling a little embarrassed about dying to this monster?  Hopefully nobody else is around to see!"}
+{"id": 713, "language": 1033, "value": "The more armor you have, the less likely you will be hit by a monster.  Thus, before you continue fighting you should buy all the basic items you can in Fred's Miscellaneous shop."}
+{"id": 714, "language": 1033, "value": "It is very impressive that you have lasted this long in the world of Yipe! without a single death.  Don't let this first setback discourage you!"}
+{"id": 715, "language": 1033, "value": "\n\nThe Gatekeeper laughs at your feeble attempts to destroy him.  You are still stuck here in Yipe! Hell."}
+{"id": 716, "language": 1033, "value": "Too bad there is not a high score category for deaths.  It looks like you're well on your way to achieving the all time high score in that category!"}
+{"id": 717, "language": 1033, "value": "The gatekeeper is going to make a fortune from healing you each time you die.  Perhaps you could invest your money into healing snacks instead."}
+{"id": 718, "language": 1033, "value": "In order to start killing the more difficult monsters in the game you may want to consider raising your Dexterity and Strength."}
+{"id": 719, "language": 1033, "value": "In order to help prevent so many deaths, you may want to try purchasing a more expensive suit of armor.  Check the Armor Shop in the town of Yipe!"}
+{"id": 720, "language": 1033, "value": "When your HP are running low during combat you could try casting a healing spell.  If you haven't learned one yet, visit Epiy in the town of Yipe!"}
+{"id": 721, "language": 1033, "value": "Welcome"}
+{"id": 722, "language": 1033, "value": "Hi"}
+{"id": 723, "language": 1033, "value": "Hello"}
+{"id": 724, "language": 1033, "value": "Hello again"}
+{"id": 725, "language": 1033, "value": "Howdy"}
+{"id": 726, "language": 1033, "value": "Good morning"}
+{"id": 727, "language": 1033, "value": "Afternoon"}
+{"id": 728, "language": 1033, "value": "Good evening"}
+{"id": 731, "language": 1033, "value": "Thank you for coming to the aid of Yipe!  We are in desperate need of your help!  Strange monsters have been attacking the innocent people of Yipe!  Even worse, my collection of six rare stamps has been stolen!"}
+{"id": 732, "language": 1033, "value": "Last time I talked to you I got a little carried away.  I forgot to mention the other problem I have.  All of my daughters are missing!  I figure that some were kidnapped, others are lost, and some just ran away.  Unfortunately, I forget how many I have."}
+{"id": 733, "language": 1033, "value": "Wow!  You have found one of my rare stamps!  I only need five more before my life can return to normal.  Have you tried searching in any of the other caves around the world?"}
+{"id": 734, "language": 1033, "value": "Thank you for trying to help the town.  I am totally unable to rule as King without my stamps.  Of course, it would also be nice to have all my daughters back."}
+{"id": 735, "language": 1033, "value": "You've done well in the quests that I have given you.  Keep up your good work and I'm sure that Yipe! will return to its normal peaceful state."}
+{"id": 736, "language": 1033, "value": "Thank you for returning me some of the princesses!  It sure is much more pleasant having my daughters running around the castle again!  One daughter has told me that there are many more still in need of rescuing."}
+{"id": 737, "language": 1033, "value": "Three stamps!  You have returned half of my stamps to me!  This is cause for celebration!  I will organize a party tonight in your honor.  But, don't get too carried away, there are still more stamps to find!"}
+{"id": 738, "language": 1033, "value": "It seems that each main cave holds one of my rare stamps.  There must be more caves somewhere out in the world of Yipe!  Have you searched everywhere?  Oh how I long to have my precious stamps back!"}
+{"id": 739, "language": 1033, "value": "Thank you so much for saving around 10 of my daughters.  They tell me that there are still many more of their sisters around the world.  One princess suggested that I give you my lucky rabbit foot to help you out."}
+{"id": 740, "language": 1033, "value": "You have returned to me five of my rare stamps!  There is only one stamp left out there!  I pray that it is not lost or too hard to find.  If you can't find it I don't think anyone can do it."}
+{"id": 741, "language": 1033, "value": "The cave directly to the east of Yipe! is probably the next best place to look for another one of my rare stamps.  You probably are not strong enough to explore the rest of the world."}
+{"id": 742, "language": 1033, "value": "I have heard rumors that a huge monster lives deep in the cave that is located right here in the town of Yipe!  Perhaps somewhere beyond this monster may be the answers to finding my stamps and daughters."}
+{"id": 743, "language": 1033, "value": "I have been told that the entrance to the final cave is in the middle of a tall mountain range.  The only way to enter is through a portal that appears near a group of small rocks."}
+{"id": 744, "language": 1033, "value": "I wish that I could follow you into the caves and seek revenge on these evil monsters myself.  However, I am old and not as strong as you are.  It is up to you to find the last few remaining stamps!"}
+{"id": 745, "language": 1033, "value": "You are truly a brave adventurer!  I thank you for everything that you have done for me and the entire city of Yipe!"}
+{"id": 746, "language": 1033, "value": "Ah ha... I see you found the water proof shoe spray.  Did you know that with the spray you will be able to cross over certain streams around the world?  I hear north of Yipe! there is another cave surrounding by water."}
+{"id": 747, "language": 1033, "value": "Four stamps!  It is soooo great to have almost all of my stamps back.  Have you been checking all the treasure chests you find along the way?  You may need some of the items you find in the chests to be able to find the rest of my stamps."}
+{"id": 748, "language": 1033, "value": "The Gatekeeper is responsible!  I should have known someone living in Hell must be evil!  Did you know there is more than one way to enter Hell?  One doesn't have to die to get there."}
+{"id": 749, "language": 1033, "value": "Holy Cow!  You have returned all six stamps to me.  This is perhaps the best day of my life!  Well... it might be another good day if you could return all my daughters to me."}
+{"id": 750, "language": 1033, "value": "Congratulations!  You have defeated the evil Gatekeeper!  I'm sure the world will soon be peaceful once again.  Now, if only you could find the rest of my daughters for me."}
+{"id": 751, "language": 1033, "value": "All of my princesses are back and happily living in the castle!  You have also killed off the evil gatekeeper and returned all my stamps!  Our world is now peaceful, however take this weapon and armor as my thanks to you."}
+{"id": 752, "language": 1033, "value": "Those princesses sure are hard to find.  Have you looked for secret walls?  Sailed all the rafts?  Looked behind every door?  Fallen through traps?  Who knows where they all might be."}
+{"id": 753, "language": 1033, "value": "How strange!  There is a stamp stuck to the back of your armor.  You must have found one of my rare stamps somewhere in one of the caves.  I guess it ended up sticking to you before you had a chance to find it."}
+{"id": 754, "language": 1033, "value": "If you are bored of fighting monsters and searching for stamps and princesses, perhaps you could spend some time at the Yipe! casino.  It is located just a short distance from my castle."}
+{"id": 755, "language": 1033, "value": "One of the townsfolk recently escaped from the cave here in town.  He told me a huge monster at the very end of the cave was holding something small and square."}
+{"id": 756, "language": 1033, "value": "It seems that only the largest of the monsters in this world are holding stamps.  You'll need more protection to kill these larger monsters.  Try equiping yourself with helmets, gloves, boots and magical rings."}
+{"id": 757, "language": 1033, "value": "Two caves fully explored and two stamps found.  Only seems logical that the next cave will have another stamp of mine.  Have I ever shown you the current value of my stamps in the latest Stamp Price Guide?"}
+{"id": 758, "language": 1033, "value": "There is a post-it note on the King's throne.  A servant named Eric takes the note and walks it over to you.  The note says:"}
+{"id": 759, "language": 1033, "value": "Wow!  You have found two of my rare stamps!  You seem to have a great knack for finding rare stamps!  I only need four more before my life can return to normal."}
+{"id": 760, "language": 1033, "value": "I hear that you have defeated the gatekeeper in the past.  Remember that each time you defeat him, he grows stronger.  Make sure to carry lots of healing potions before dealing with him again!"}
+{"id": 761, "language": 1033, "value": "One of my daughters told me that her younger sister is still missing.  She also tells me that this missing princess was very fond of water.  Perhaps she wandered north into the water cave?"}
+{"id": 762, "language": 1033, "value": "Still looking for princesses?  When I wanted to hide from the world I used to enter the stone cave, go north, go past a door and through a secret wall.  Maybe try looking there?"}
+{"id": 763, "language": 1033, "value": "Is there something I can help you with?  I'm really quite busy playing with my entire stamp collection.  Maybe you could go catch a bunny for my daughters to play with."}
+{"id": 764, "language": 1033, "value": "An assistant to the King comes out and tells you that until a new problem arises in the world of Yipe! that the King has no need for your services."}
+{"id": 766, "language": 1033, "value": "Please, help me find my stamps!"}
+{"id": 767, "language": 1033, "value": "Find them, and I shall reward you!"}
+{"id": 768, "language": 1033, "value": "Here is 500 gold to reward you for your good deeds!"}
+{"id": 769, "language": 1033, "value": "I wish you luck my friend."}
+{"id": 770, "language": 1033, "value": "We all owe you greatly for your good deeds."}
+{"id": 771, "language": 1033, "value": "Princesses are well known for hiding in tricky spots."}
+{"id": 772, "language": 1033, "value": "The King give you 1000 gold coins!"}
+{"id": 773, "language": 1033, "value": "The breeding grounds are not one of the main caves."}
+{"id": 774, "language": 1033, "value": "The King gives you his Lucky Rabbit Foot."}
+{"id": 775, "language": 1033, "value": "The King looks hopefully at you."}
+{"id": 776, "language": 1033, "value": "You must first travel south, then east, and then north to reach the cave."}
+{"id": 777, "language": 1033, "value": "I hope you don't give up.  The city is counting on you!"}
+{"id": 778, "language": 1033, "value": "Search and you shall find!"}
+{"id": 779, "language": 1033, "value": "I wish you luck!"}
+{"id": 780, "language": 1033, "value": "You have finished Yipe! III"}
+{"id": 781, "language": 1033, "value": "Prepare to get wet..."}
+{"id": 782, "language": 1033, "value": "I wish I could help you more myself."}
+{"id": 783, "language": 1033, "value": "You might need to climb over a tree or cross a stream."}
+{"id": 784, "language": 1033, "value": "Take this 5000 gold pieces as a token of my gratitude."}
+{"id": 785, "language": 1033, "value": "The King gives you a better weapon!"}
+{"id": 786, "language": 1033, "value": "-The End"}
+{"id": 787, "language": 1033, "value": "Try walking into all the walls.  You might be able to go through some."}
+{"id": 788, "language": 1033, "value": "Thanks for finding another rare stamp!"}
+{"id": 789, "language": 1033, "value": "My favorite game is darts!"}
+{"id": 790, "language": 1033, "value": "Something small and square sure sounds like one of my stamps!!"}
+{"id": 791, "language": 1033, "value": "You can purchase some of these things in some of the shops."}
+{"id": 792, "language": 1033, "value": "This might be a good time to sneak out of the castle."}
+{"id": 793, "language": 1033, "value": "'Organizing stamp collection.  Back in 5 minutes.'"}
+{"id": 794, "language": 1033, "value": "Here is 500 gold to reward you for your good deeds!"}
+{"id": 795, "language": 1033, "value": "Spell point healing potions can only be purchased in Quizilog."}
+{"id": 796, "language": 1033, "value": "You don't need a boat to travel to some areas of the water cave."}
+{"id": 797, "language": 1033, "value": "One time I even saw a princess blessing the water in that room."}
+{"id": 798, "language": 1033, "value": "You have completed everything in Yipe! III"}
+{"id": 799, "language": 1033, "value": "I guess you'll have to wait for Yipe! IV..."}
+{"id": 801, "language": 1033, "value": "Quest of Yipe! III\n\n  The city of Yipe! has become wealthy and prosperous.  Many people consider Yipe! their beloved home, including you.  Unfortunately, many bad things have happened to the innocent city over the years.  At one point an evil wizard trapped the town with landslides; another time the city was out of simple supplies like food and water. But, as the sign of a great city, Yipe! has fought and grown stronger rather than become a ghost town.\n\n  Over the past few months there have been reports of more and more monster attacks in the areas around Yipe!  The beautiful caves normally used for shelter and exploration appear to be the homeland of these awful monsters."}
+{"id": 802, "language": 1033, "value": "  Knowing that you are a brave adventurer, the King has once again come to you for help.  The King's rare stamp collection has been stolen.  This collection of six stamps is very dear to the King.  He believes the sudden increase in the monster population and the disappearance of his stamps is no coincidence.\n\n  On a side note, the King also informs you that all of his daughters are missing.  He thinks that the monsters may have kidnapped some of them, while others may have run away or are just lost.  The King is not really sure how many daughters he has, but will reward you if you can ever find them all.  (Only the daughters themselves will know when you rescue them all.)"}
+{"id": 803, "language": 1033, "value": "  The King will give you a simple weapon and piece of armor along with a warm hat to get you started.  He suggests that you start looking in the cave that is located right next to the city of Yipe!  Follow the path from the town buildings across the small bridge and into this normally peaceful cave.\n\n  The King tells you that there are many caves located throughout the world.  There are also other towns that might carry special items that Yipe! does not produce.  He warns you of a place called Yipe! Hell where a gatekeeper charges a fee to return wounded adventurers.\n\n  You must now choose what type of character you would like to use in Quest of Yipe! III."}
+{"id": 804, "language": 1033, "value": "  The new character setup window allows you to start creating a new adventurer.  You have the choice of three different pre-set characters, or you can build your own.\n\n  The three types are: Combat, Quickness, and Magic.\n  While you are in this window, click on any of the types to find out more information on that particular type.\n  In general, all different types of characters are of equal ability.\n\n  Once you have selected your character type you will go on to the next window.  From here you should first select what difficulty level you want and then pick what you want your character to look like."}
+{"id": 805, "language": 1033, "value": "  Strength (Str):  The stronger you are the more likely you will hit your enemies.  You will also hit for more damage as you gain strength.  If you selected the 'Combat' type of character, you will be more likely to gain strength.\n\n  Dexterity (Dex):  Dexterity represents how agile and quick you are.  The higher this stat is the harder it will be for monsters to hit you.  Dexterity is also used with some of the special abilities (talked about later).  The 'Quickness' type of character relies on this stat.\n\n  Intelligence (Int):  This stat is important for casting spells.  The higher this stat is the more powerful your spells will be.  Intelligence is also used when using special potions and in all aspects of healing.  The 'Magic' type of character will want a high intelligence.\t"}
+{"id": 806, "language": 1033, "value": "  Level:  This is a representation of how powerful your character is.  In the beginning you will start out as a level one adventurer.  The only way to raise this stat is by killing monsters and gaining experience.\n\n  Experience (Exp):  You will gain experience for each monster you kill.  The harder the monster is to kill the more experience you will earn.  After you gain a certain amount of Exp, your level will increase.\n\n  Kills:  This is a count of how many times you have killed each type of monster.  It is just for your information.  The list of kills is in order of how powerful each monster is, except for the final monsters, which are all listed at the end.\n  If you have not actually gone into combat with a particular monster you will see '?????' in the place of where the monster's name will go in the kills list."}
+{"id": 807, "language": 1033, "value": "  You can use the mouse button to move around the world.  Your character will always try to move in the direction that you click the mouse.  You don't have to click right next to the character for him/her to move.\n\n  You can also use the keyboard to move around.  Use the 'Set Keys...' option from the menu bar to pick the keys you want to use to move around.  The number pad can always be used to move your character around (with NUM Lock on).\n\n  Your character can walk through most areas of the game.  You can't walk on water,  mountains, trees, and cave walls.  Be careful of what you walk on in the caves!"}
+{"id": 808, "language": 1033, "value": "  Sometimes you will see a chest on the ground.  Walk into it to open up the chest and you will receive whatever treasure is inside.\n\n  There are also signs in certain places.  Just walk onto the sign to read it.  The information that is on the sign will be displayed on the lower left hand side of the main window.\n\n  You can find out a little more information about most of the different types of terrain in the game.  For example, try clicking the 'Other' button when you are standing on a flower.  In the same area that the signs are displayed (the lower left hand side of the main window), you will see a short message about what you are standing on."}
+{"id": 809, "language": 1033, "value": "  You can equip yourself with several different types of items.  If you press the 'Stats' button on the lower left section of the main screen and then press the 'Equipment' button you will see a list of all the types of items you can use.  (For quick access to this list you can select it from the menu bar, or type 'Ctrl' E).\n\n  The two main things you need are a sturdy weapon and some solid body armor.  You can find these items for sale in the shops in town.  You will also find a monster carrying an item you can use from time to time.  When you go back to a shop after finding new items, the shop owner will automatically pay you for your old items.  Generally in a shop, the more expensive the item is, the better it is."}
+{"id": 810, "language": 1033, "value": "  The other types of items you can wear are:  helmets, gloves, rings, amulets, and boots.  You can find a few of these items in the miscellaneous shop in town.  These items primarily provide you with protection from monsters.  A few special items help protect you and help you attack.  You will notice in the 'Equipment' list, each item has a WC and an AC number.\n\n\t     WC = Weapon class.  (As this increases you will be more likely to hit a monster)\n\t     AC = Armor class.  (The higher this is the less likely a monster will hit you) \n\n  You will find other types of items in the game that are not for armor or fighting.  These include healing items and other types of special magic potions. "}
+{"id": 811, "language": 1033, "value": "  There are a few special types of items that don't fall into any of the other categories.\n\n  At some point you will stumble upon a door.  Many of the doors are unlocked and just waiting for you to open them up.  However, some doors are locked with one of the two types of keys in the world of Yipe!  Somewhere in the game you will find these keys.\n\n  Other special items that you may collect later will help you get to places that you could not reach before.  For instance, you may be able to cross streams or climb certain trees with the special items that you find.\n  These special items are not always that easy to find."}
+{"id": 812, "language": 1033, "value": "  There are four main types of shops.  These include:  A weapon shop, an armor shop, a healing shop, and a miscellaneous shop.\n\n  The weapon and armor shops both list the available weapons or armors for sale.  Before you purchase a new item you must first sell your old weapon or armor.  Note the WC or AC values to the side of each number.  When you go to buy a new item make sure it has a higher WC or AC than the item you already have.\n\n  The healing shop sells four food items.  The more expensive the food item, the more points your character will be healed.  Note:  There are no 'Take Out' orders available from the healing shops."}
+{"id": 813, "language": 1033, "value": "  The last main shop type is the miscellaneous shop.  This shop carries all sorts of random items.  Items available include everything from healing items that can be taken with you to potions for scaring off monsters or returning you to the surface.  Some of these miscellaneous shops carry items that you can wear.  For instance, they might sell a very powerful helmet or amulet.\n\n  There are a few other types of buildings you will find along your journey.  In the main town of Yipe! there is the spell hut.  There are also specialty buildings in some of the caves.  Both of these types of buildings will be talked about later.\n\n  There is also a Yipe! Casino that is located fairly close to the main town."}
+{"id": 814, "language": 1033, "value": "  After you have equipped yourself, you are ready to go out and kill some evil monsters.  In the beginning look for the little bunnies and then the cave beetles.\n\n  To attack the monsters just walk into them.  At this point a new window will come up with a picture of the monster(s), a picture of you, and the health information about all of you.  If there is more than 1 monster attacking you, you can click on the picture of the one you want to attack first.\n\n  Now press the attack button or press the attack key (initially set to 'a').  You get the first attack, and then each monster still alive on the screen gets one shot at you.  You can take as long as you want to attack."}
+{"id": 815, "language": 1033, "value": "  There are five different options for you while you are attacking.  As mentioned above, you can attack the monster by hitting the attack button.  You can also cast spells, try to run away, use an item, and later in the game, use special abilities.\n\n  Hit the cast button or press the cast key (initially set to 'c') to cast a spell.  More info on spells later.\n\n  Hit the run button or press the run key (initially set to 'r') to try to run away.  Sometimes a monster won't let you run away, but you can keep trying until you escape.  Beware:  if the monster doesn't let you run, it still gets a chance to hit you."}
+{"id": 816, "language": 1033, "value": "  Hit the 'items' button or press the items key (initially set to 'i') to use an item.  You may use one item per attack round.\n\n  Once you learn a special ability a new button will appear in your attack window.  Hit this button to use your special attack.  Or press the special ability key (initially set to 's').  Special abilities will be talked about later.\n\n  After you have killed all the enemies in the attack window a message will pop up telling you how much gold and experience you have collected.  A new button will appear that says 'Done'.  Hit this button or press the 'Enter' or 'Return' key to exit the attack window and return to the main window."}
+{"id": 817, "language": 1033, "value": "  You can learn spells from the magic temple in the main town.  As you become more experienced you will be able to learn more powerful spells.\n\n  Epiy is the town wizard.  In his temple you can heal your spell points and learn new spells.  Your spell points will gradually heal over time, or you can pay Epiy to heal them for you.  There is a rumor that some store sells a spell point potion that can heal your spell points.\n\n  Each spell has a low power and high power setting.  With attacking spells, a low power spell will hit only the monster you are currently attacking.  A high power spell will hit all the monsters on the screen.  For healing spells, the high power just increases the amount of healing you receive."}
+{"id": 818, "language": 1033, "value": "  In the spells window you will notice a 'Status' area for each spell on the far right hand side.  This tells you when you will be able to cast certain spells.\n\n  The three status options are:  Combat, Either, and Non-Combat.  Either means you can cast the spell either in combat or while exploring.  Non-Combat spells are only allowed to be cast while exploring.  For instance the 'Return to Surface' spell is a Non-Combat spell.  Finally, combat means the spell can only be cast while fighting.\n\n  High power spells will cost twice as much to cast as low power.  If the cost doesn't change when you switch to high power, the spell has the same effect for both power levels."}
+{"id": 819, "language": 1033, "value": "  There are four different special abilities that your character will be able to learn throughout the game.  You will find shops in certain caves that can train your character in one of the abilities.\n\n  Your character can only know one ability at a time.  However, you are free to learn one ability and then go back and relearn an old ability that you used to know.  Typically, the more dangerous caves will contain more powerful abilities.\n\n  The first ability you will encounter is the 'Backstab'.  When you use this ability your character will sneak around the first monster in the combat window and stab them causing a certain amount of damage.  The backstab has a greater affect against more powerful enemies."}
+{"id": 820, "language": 1033, "value": "  Your character will have either 5 or 6 maximum ability points (AP) at the start of the game.  The cost to use an ability is always 3 AP.  There are very few ways to heal your ability points.\n\n  The most common way for your AP to heal is through time.  As time passes while you are exploring the world your AP will slowly regenerate.  It is also possible that a princess might heal your ability points.  There is no way to ever increase your AP past 6 points.\n\n  One benefit of using a special ability is that when you use it, none of the monsters in the attack window will get to attack you during the round that you used your ability."}
+{"id": 821, "language": 1033, "value": "In the shops:\n  The escape (Esc) key will exit the shop.\n  The up and down arrow keys can be used to move up and down the list of items for sale.\n\nAttacking:\n  After you have killed all the enemies, the Enter or Esc key will bring you out of attack mode.\n  The left and right arrow keys can be used to switch which monter you are currently attacking when you are fighting more than one at a time.\n\nMovement:\n  You don't need to set keys to use the number pad to move around.\n\nKeyboard commands can be changed from the options menu: 'Edit Keyboard Commands...'"}
+{"id": 822, "language": 1033, "value": "  This game is shareware.  That means if you like it you must pay for it.  Paying for shareware games inspires me to continue programming.\n\n  Then again, you don't have to.  The first part of this game is free.  Unfortunately you won't be able to finish the game unless you register.\n\n  With an unregistered copy, you will be able to explore the entire first three caves.  You will also be able to explore part of the fourth cave.\n\n  With partial registration, you will be able to explore the rest of cave four as well as cave five.  With full registration you can explore the entire world as well as be able to complete the game and register your high score."}
+{"id": 823, "language": 1033, "value": "  I like to give people an option for payment since not everyone has the same budget.\n\n  These first few levels of price all include:\n\n  The full registration code for Yipe! III.  The code will be either emailed to you or sent in a letter if you don't have email access.\n\n$5 -  This game needs lots of improvements... (or I am really broke)\n$6 -  Nice game.  The game is entertaining... but needs a little more.\n$7 -  Great game!  Continue making Quest of Yipe! games.\n\n  If you have registered for previous Yipe! games you may cut the above prices in half."}
+{"id": 824, "language": 1033, "value": "  The following registration payments include:\n\n  A disk with fully registered copies of the most recent versions of Yipe! I, II, and III.\n  You will also be sent an email message with any registration codes that you request for those people who can't wait for the disk to arrive.\n\n  $9   - Send the disk!\n  $10 - Send the disk!  (The extra dollar is because I love the game!)\n\n  Click 'Next' for even more registration options."}
+{"id": 825, "language": 1033, "value": "  The following option includes:\n\n  The disk with all three Yipe! games (I, II, and III).\n  The disk will also include a special Yipe! character editor!\n  An email message with registration codes if you have email.\n  The Yipe! III Manual and Hintbook!\n\n  $15  -  Yes... I love Yipe! Software... Please send me everything!"}
+{"id": 826, "language": 1033, "value": "\tSend your payment to:\n\n  Kevin Kinell\n  P.O. Box 7717\n  Chico,  CA  95927-7717\n\nIf possible, please check the following website to make sure the above address is still current:\nhttp://www.yipesoftware.com/address.htm\n\n  It is a good idea to email me (yipesft@aol.com) when you send your registration.\n  Also, feel free to send: Comments/suggestions/bugs/typos/complaints/whatever.\n\n  There should be a registration form included with your Yipe! III game files."}
+{"id": 827, "language": 1033, "value": "\n  The manual/hintbook will provide you with more information about Yipe! III.\n  Some of the topics in the book include:\n    Hints for how to gain some extra money early in the game.\n    Where to get some extra free healing.\n    Tips on general game play.\n    Hints on where some of the princesses are.\n    And much more!\n\n  Yipe! III gives people the chance to create their own set of monsters.  You will be able to draw and release your own artwork to online services.  The hintbook gives complete instructions on how to do this."}
+{"id": 828, "language": 1033, "value": "  You may distribute this product to electronic information service distribution, bulletin board distribution, and magnetic or optical medium distribution or any of the like as long as the software is not modified in any way, and the complete works of the software are included in the distribution package.  Out of courtesy, if you do distribute this software, Yipe Software would like to be notified.\n\n  Notify:  YipeSFT@aol.com\n\n  Registered versions of Yipe! Software are not to be distributed under any circumstances."}
+{"id": 901, "language": 1033, "value": "Background"}
+{"id": 902, "language": 1033, "value": "Your Yipe! III Quests"}
+{"id": 903, "language": 1033, "value": "Getting Started"}
+{"id": 904, "language": 1033, "value": "New Character Creation"}
+{"id": 905, "language": 1033, "value": "Character Attributes"}
+{"id": 906, "language": 1033, "value": "Other Character Stats"}
+{"id": 907, "language": 1033, "value": "Movement"}
+{"id": 908, "language": 1033, "value": "The Terrain of Yipe!"}
+{"id": 909, "language": 1033, "value": "Equipment"}
+{"id": 910, "language": 1033, "value": "Other Equipment"}
+{"id": 911, "language": 1033, "value": "Special Items"}
+{"id": 912, "language": 1033, "value": "Shops"}
+{"id": 913, "language": 1033, "value": "Miscellaneous Shops"}
+{"id": 914, "language": 1033, "value": "Attacking Monsters"}
+{"id": 915, "language": 1033, "value": "Combat Info"}
+{"id": 916, "language": 1033, "value": "More Combat Info"}
+{"id": 917, "language": 1033, "value": "Learning Spells"}
+{"id": 918, "language": 1033, "value": "More Spells Info"}
+{"id": 919, "language": 1033, "value": "Special Abilities"}
+{"id": 920, "language": 1033, "value": "Ability Points"}
+{"id": 921, "language": 1033, "value": "Keyboard Shortcuts"}
+{"id": 922, "language": 1033, "value": "Shareware"}
+{"id": 923, "language": 1033, "value": "Registration Options"}
+{"id": 924, "language": 1033, "value": "More Registration Options"}
+{"id": 925, "language": 1033, "value": "Even More Registration Options!"}
+{"id": 926, "language": 1033, "value": "Payment Address"}
+{"id": 927, "language": 1033, "value": "Yipe! III Hintbook"}
+{"id": 928, "language": 1033, "value": "Distribution"}
+{"id": 1001, "language": 1033, "value": "You are standing on a water hole.  If you would like to drink from the water hole, click on the 'Other' button above this message."}
+{"id": 1002, "language": 1033, "value": "You find nothing of interest right here."}
+{"id": 1003, "language": 1033, "value": "Yummm!  That water sure tastes refreshing!"}
+{"id": 1004, "language": 1033, "value": "You find nothing of interest underneath the bridge."}
+{"id": 1005, "language": 1033, "value": "You are standing in a narrow crack in the wall.  This must be some type of secret passage."}
+{"id": 1006, "language": 1033, "value": "You lie down and make a pretty snow angel in the cool winter snow."}
+{"id": 1007, "language": 1033, "value": "Looking under the bridge you find a small pile of gold!  You take a quick look to see that nobody is looking and you pocket the 600 gold pieces."}
+{"id": 1008, "language": 1033, "value": "Not only does the water taste great, but it heals some of your wounds!"}
+{"id": 1009, "language": 1033, "value": "The water hole is temporarily dry."}
+{"id": 1010, "language": 1033, "value": "You take a moment to rest on the warm rock."}
+{"id": 1011, "language": 1033, "value": "The pretty flowers smell as good as they look."}
+{"id": 1012, "language": 1033, "value": "These flowers give off no distinctive smell, but they sure look nice."}
+{"id": 1013, "language": 1033, "value": "Upon looking at the skull closely, you decide you have no idea what type of animal it came from."}
+{"id": 1014, "language": 1033, "value": "The small plant you are standing on tickles your leg."}
+{"id": 1015, "language": 1033, "value": "You are standing on an old desert plant.  There is nothing of importance about it."}
+{"id": 1016, "language": 1033, "value": "A spike seems to be coming out of the wall right towards you!  You better move fast!"}
+{"id": 1017, "language": 1033, "value": "There is an interesting crack in the ground here.  At the moment it doesn't seem big enough for you to fall into it."}
+{"id": 1018, "language": 1033, "value": "You don't notice anything out of the ordinary on the small stone path that you are standing on."}
+{"id": 1020, "language": 1033, "value": "You find a special tunnel leading down into the depths of the underworld.  Hit the other button if you would like to travel to Yipe! Hell..."}
+{"id": 1021, "language": 1033, "value": "You have cracked the secret tree code!  You find 1500 gold pieces and a ring of bonus healing!  The ring will enhance the use of all healing items and spells."}
+{"id": 1022, "language": 1033, "value": "The tree shakes for a minute but nothing seems to happen."}
+{"id": 1023, "language": 1033, "value": "The grounds shakes for a minute and suddenly part of the mountain range lowers into the ground before you!"}
+{"id": 1024, "language": 1033, "value": "As you take a closer look at the flower, a bee pops out and stings you on the nose.  Ouch!!"}
+{"id": 1025, "language": 1033, "value": "You notice that the sand feels soft under your feet."}
+{"id": 1026, "language": 1033, "value": "The sand feels warm from the hot sun."}
+{"id": 1027, "language": 1033, "value": "You pick up some sand and let it trickle through your fingers."}
+{"id": 1028, "language": 1033, "value": "Not finding anything of interest, you decide to sing a short song."}
+{"id": 1029, "language": 1033, "value": "After paying the Gatekeeper the small fee, he somehow vanishes and leaves a path back to Yipe! before you."}
+{"id": 1030, "language": 1033, "value": "You don't notice anything around you, however you do seem to feel a little safer standing on this road."}
+{"id": 1031, "language": 1033, "value": "This section of the road looks to be in good shape.  Some of the other sections don't seem to be as nice as this particular part."}
+{"id": 1032, "language": 1033, "value": "You have a nice view of the land from up here in this tree.  Sure is a pretty world.  Too bad there are so many monsters wandering around."}
+{"id": 1033, "language": 1033, "value": "From up in this tree it looks like something is moving down in the sand below you.  It's probably just a little sand bug."}
+{"id": 1034, "language": 1033, "value": "You get a nice warm feeling inside yourself when you look out upon the world of Yipe!  You feel pride in knowing that you're the one who saved the world!"}
+{"id": 1035, "language": 1033, "value": "You are standing at the bottom of a mountain.  A few pebbles lay scattered around the sandy area below you."}
+{"id": 1036, "language": 1033, "value": "Some sand comes up onto the grass right here.  You don't find anything else interesting."}
+{"id": 1037, "language": 1033, "value": "You are standing right on top of a small plant in the middle of a grassy area.  You do not notice anything unusual about the plant."}
+{"id": 1038, "language": 1033, "value": "Below you is a sturdy rock that is halfway buried into the ground.  It looks just right for sitting on."}
+{"id": 1039, "language": 1033, "value": "You find nothing of interest in the grassy area that you are currently standing on."}
+{"id": 1040, "language": 1033, "value": "You have discovered a secret little path through the mountains right here.  There was no way to see this path from below."}
+{"id": 1041, "language": 1033, "value": "You find nothing of interest in this part of the cave."}
+{"id": 1042, "language": 1033, "value": "The cave floor below you feels a little chilly.  Other than that, there's nothing particularly interesting right here."}
+{"id": 1043, "language": 1033, "value": "You can't quite tell what seems so strange about the mountains right here.  Perhaps you should keep looking around this area."}
+{"id": 1044, "language": 1033, "value": "How did you get up on this mountain?!?  Hopefully you have a way to climb down from up here!"}
+{"id": 1045, "language": 1033, "value": "The cave floor below you is surprisingly smooth.  Perhaps it has been worn down by the high number of monsters that have walked through here!"}
+{"id": 1046, "language": 1033, "value": "Below you is a patch of snow.  Digging around in the snow you do not find anything of interest."}
+{"id": 1047, "language": 1033, "value": "The snow starts to melt away into the grass right here."}
+{"id": 1048, "language": 1033, "value": "You dig around in the snow for a few minutes and your work pays off.  Below the snow was a pile of around 400 gold coins!!"}
+{"id": 1049, "language": 1033, "value": "After checking one more time in the snow, it looks like you missed a few gold coins the first time you checked.  You've found another 100 coins!"}
+{"id": 1050, "language": 1033, "value": "At this point your hand is starting to get cold.  You should probably stop searching for gold coins."}
+{"id": 1051, "language": 1033, "value": "Ouch!!!  It looks like you've got frost bite!  The pain in your hand is just a little too much to keep searching.  You take a small amount of damange."}
+{"id": 1052, "language": 1033, "value": "As you take a moment to notice, you feel a slight breeze blowing throughout this cave."}
+{"id": 1053, "language": 1033, "value": "You are standing right on the entrance to an underground cave."}
+{"id": 1054, "language": 1033, "value": "While looking at the tally marks you notice the shape of the walls around you seem to be in the shape of a letter."}
+{"id": 1055, "language": 1033, "value": "Other than what you've already discovered, there is nothing else of interest here."}
+{"id": 1100, "language": 1033, "value": "The Princess gives you xx gold pieces!"}
+{"id": 1101, "language": 1033, "value": "The Princess rewards you with xx experience points!"}
+{"id": 1102, "language": 1033, "value": "The Princess gives you a polite kiss on the cheek.  You feel healed from her gentle touch."}
+{"id": 1103, "language": 1033, "value": "The Princess gives you xx gold pieces and wishes you luck in your journey."}
+{"id": 1104, "language": 1033, "value": "The Princess looks at you and winks her eye.  You notice your maximum health has gone up a little."}
+{"id": 1105, "language": 1033, "value": "The Princess makes some kind of motion with her hand.  Your health and spell points have been healed."}
+{"id": 1106, "language": 1033, "value": "The Princess tells you that one of her sisters carries a key.  Ask her for the Mystery gift and she shall give it to you."}
+{"id": 1107, "language": 1033, "value": "The Princess takes off her shiny ring and gives it to you."}
+{"id": 1108, "language": 1033, "value": "The Princess nods at you and opens up a small pouch she is carrying.  From it she takes a rainbow key and hands it to you."}
+{"id": 1201, "language": 1033, "value": "Hands"}
+{"id": 1202, "language": 1033, "value": "Thumbtack"}
+{"id": 1203, "language": 1033, "value": "Nail Clippers"}
+{"id": 1204, "language": 1033, "value": "Pencap"}
+{"id": 1205, "language": 1033, "value": "Toothbrush"}
+{"id": 1206, "language": 1033, "value": "Big Pillow"}
+{"id": 1207, "language": 1033, "value": "Mousepad"}
+{"id": 1208, "language": 1033, "value": "Drumstick"}
+{"id": 1209, "language": 1033, "value": "Scissors (Dull)"}
+{"id": 1210, "language": 1033, "value": "Scissors (Sharp)"}
+{"id": 1211, "language": 1033, "value": "Pencil Sharpener"}
+{"id": 1212, "language": 1033, "value": "Frying Pan"}
+{"id": 1213, "language": 1033, "value": "Fish Net"}
+{"id": 1214, "language": 1033, "value": "Car Antenna"}
+{"id": 1215, "language": 1033, "value": "Egg Beater"}
+{"id": 1216, "language": 1033, "value": "Dog Leash"}
+{"id": 1217, "language": 1033, "value": "Dustpan"}
+{"id": 1218, "language": 1033, "value": "Cookie Jar"}
+{"id": 1219, "language": 1033, "value": "Phonecord Whip"}
+{"id": 1220, "language": 1033, "value": "Ping-Pong Paddle"}
+{"id": 1221, "language": 1033, "value": "Rubber Hose"}
+{"id": 1222, "language": 1033, "value": "Broken Flower Pot"}
+{"id": 1223, "language": 1033, "value": "Universal TV Remote"}
+{"id": 1224, "language": 1033, "value": "Pool Cue"}
+{"id": 1225, "language": 1033, "value": "Rusty Horseshoe"}
+{"id": 1226, "language": 1033, "value": "Curtain Rod"}
+{"id": 1227, "language": 1033, "value": "Electric Toothbrush"}
+{"id": 1228, "language": 1033, "value": "Cattle Prod"}
+{"id": 1229, "language": 1033, "value": "Pepper Spray"}
+{"id": 1230, "language": 1033, "value": "Gardening Hoe"}
+{"id": 1231, "language": 1033, "value": "Cordless Drill"}
+{"id": 1232, "language": 1033, "value": "Insect Spray"}
+{"id": 1233, "language": 1033, "value": "Five-Iron"}
+{"id": 1234, "language": 1033, "value": "Monkey Wrench"}
+{"id": 1235, "language": 1033, "value": "Stun Gun"}
+{"id": 1236, "language": 1033, "value": "Zulu Spear"}
+{"id": 1237, "language": 1033, "value": "Lawn Mower"}
+{"id": 1238, "language": 1033, "value": "Bottle Rockets"}
+{"id": 1251, "language": 1033, "value": "T-Shirt"}
+{"id": 1252, "language": 1033, "value": "T-Shirt with Pocket"}
+{"id": 1253, "language": 1033, "value": "Tank Top"}
+{"id": 1254, "language": 1033, "value": "Pillow Case"}
+{"id": 1255, "language": 1033, "value": "Collared Shirt"}
+{"id": 1256, "language": 1033, "value": "Potato Sack"}
+{"id": 1257, "language": 1033, "value": "Red Turtle Neck"}
+{"id": 1258, "language": 1033, "value": "Sleeveless Sweater"}
+{"id": 1259, "language": 1033, "value": "Soccer Jersey"}
+{"id": 1260, "language": 1033, "value": "Hooded Sweatshirt"}
+{"id": 1261, "language": 1033, "value": "Swimsuit"}
+{"id": 1262, "language": 1033, "value": "Muscle Shirt"}
+{"id": 1263, "language": 1033, "value": "Toga Sheet"}
+{"id": 1264, "language": 1033, "value": "Electric Blanket"}
+{"id": 1265, "language": 1033, "value": "Rain Jacket"}
+{"id": 1266, "language": 1033, "value": "Life Preserver"}
+{"id": 1267, "language": 1033, "value": "Apron"}
+{"id": 1268, "language": 1033, "value": "Hunt Coat"}
+{"id": 1269, "language": 1033, "value": "Batman Cape"}
+{"id": 1270, "language": 1033, "value": "Wedding Dress"}
+{"id": 1271, "language": 1033, "value": "Camouflage Jacket"}
+{"id": 1272, "language": 1033, "value": "Police Uniform"}
+{"id": 1273, "language": 1033, "value": "Suit and Tie"}
+{"id": 1274, "language": 1033, "value": "Birthday Suit"}
+{"id": 1275, "language": 1033, "value": "Spaghetti Plate"}
+{"id": 1276, "language": 1033, "value": "Scuba Gear"}
+{"id": 1277, "language": 1033, "value": "Army Uniform"}
+{"id": 1278, "language": 1033, "value": "King's Yipe! Armor"}
+{"id": 1279, "language": 1033, "value": "Quizilog Magic Armor"}
+{"id": 1280, "language": 1033, "value": "Magic Yipe! Armor"}
+{"id": 2109, "language": 1033, "value": "Your registration has been invalidated.  Please re-enter your registration code."}
+{"id": 2110, "language": 1033, "value": "You may not enter this area of Yipe! III until you are registered."}
+{"id": 32771, "language": 1033, "value": "Displays high scores window"}
+{"id": 32772, "language": 1033, "value": "Edit keys used in Yipe! III"}
+{"id": 32773, "language": 1033, "value": "Turns on/off sound"}
+{"id": 32774, "language": 1033, "value": "Display window for entering full registration code"}
+{"id": 32775, "language": 1033, "value": "Help and Info on Yipe! III"}
+{"id": 32776, "language": 1033, "value": "Reads a sign if a player is standing on one."}
+{"id": 32778, "language": 1033, "value": "View the player stats window."}
+{"id": 32779, "language": 1033, "value": "View the 'Use Item' window."}
+{"id": 32780, "language": 1033, "value": "View the 'Cast Spell' window."}
+{"id": 32783, "language": 1033, "value": "View the Stats - Equipment' window."}
+{"id": 32784, "language": 1033, "value": "Switches between silly and normal weapon/armor names."}
+{"id": 57344, "language": 1033, "value": "Yipe! III"}
+{"id": 57345, "language": 1033, "value": "Ready"}
+{"id": 57600, "language": 1033, "value": "Create a new document\nNew"}
+{"id": 57601, "language": 1033, "value": "Open an existing document\nOpen"}
+{"id": 57602, "language": 1033, "value": "Close the active document\nClose"}
+{"id": 57603, "language": 1033, "value": "Save the active document\nSave"}
+{"id": 57604, "language": 1033, "value": "Save the active document with a new name\nSave As"}
+{"id": 57605, "language": 1033, "value": "Change the printing options\nPage Setup"}
+{"id": 57606, "language": 1033, "value": "Change the printer and printing options\nPrint Setup"}
+{"id": 57607, "language": 1033, "value": "Print the active document\nPrint"}
+{"id": 57609, "language": 1033, "value": "Display full pages\nPrint Preview"}
+{"id": 57616, "language": 1033, "value": "Open this document"}
+{"id": 57617, "language": 1033, "value": "Open this document"}
+{"id": 57618, "language": 1033, "value": "Open this document"}
+{"id": 57619, "language": 1033, "value": "Open this document"}
+{"id": 57620, "language": 1033, "value": "Open this document"}
+{"id": 57621, "language": 1033, "value": "Open this document"}
+{"id": 57622, "language": 1033, "value": "Open this document"}
+{"id": 57623, "language": 1033, "value": "Open this document"}
+{"id": 57624, "language": 1033, "value": "Open this document"}
+{"id": 57625, "language": 1033, "value": "Open this document"}
+{"id": 57626, "language": 1033, "value": "Open this document"}
+{"id": 57627, "language": 1033, "value": "Open this document"}
+{"id": 57628, "language": 1033, "value": "Open this document"}
+{"id": 57629, "language": 1033, "value": "Open this document"}
+{"id": 57630, "language": 1033, "value": "Open this document"}
+{"id": 57631, "language": 1033, "value": "Open this document"}
+{"id": 57632, "language": 1033, "value": "Erase the selection\nErase"}
+{"id": 57633, "language": 1033, "value": "Erase everything\nErase All"}
+{"id": 57634, "language": 1033, "value": "Copy the selection and put it on the Clipboard\nCopy"}
+{"id": 57635, "language": 1033, "value": "Cut the selection and put it on the Clipboard\nCut"}
+{"id": 57636, "language": 1033, "value": "Find the specified text\nFind"}
+{"id": 57637, "language": 1033, "value": "Insert Clipboard contents\nPaste"}
+{"id": 57640, "language": 1033, "value": "Repeat the last action\nRepeat"}
+{"id": 57641, "language": 1033, "value": "Replace specific text with different text\nReplace"}
+{"id": 57642, "language": 1033, "value": "Select the entire document\nSelect All"}
+{"id": 57643, "language": 1033, "value": "Undo the last action\nUndo"}
+{"id": 57644, "language": 1033, "value": "Redo the previously undone action\nRedo"}
+{"id": 57653, "language": 1033, "value": "Split the active window into panes\nSplit"}
+{"id": 57664, "language": 1033, "value": "Display program information and credits\nAbout"}
+{"id": 57665, "language": 1033, "value": "Quit the application; prompts to save documents\nExit"}
+{"id": 57680, "language": 1033, "value": "Switch to the next window pane\nNext Pane"}
+{"id": 57681, "language": 1033, "value": "Switch back to the previous window pane\nPrevious Pane"}
+{"id": 59136, "language": 1033, "value": "EXT"}
+{"id": 59137, "language": 1033, "value": "CAP"}
+{"id": 59138, "language": 1033, "value": "NUM"}
+{"id": 59139, "language": 1033, "value": "SCRL"}
+{"id": 59140, "language": 1033, "value": "OVR"}
+{"id": 59141, "language": 1033, "value": "REC"}
+{"id": 59393, "language": 1033, "value": "Show or hide the status bar\nToggle StatusBar"}
+{"id": 61184, "language": 1033, "value": "Change the window size"}
+{"id": 61185, "language": 1033, "value": "Change the window position"}
+{"id": 61186, "language": 1033, "value": "Reduce the window to an icon"}
+{"id": 61187, "language": 1033, "value": "Enlarge the window to full size"}
+{"id": 61188, "language": 1033, "value": "Switch to the next document window"}
+{"id": 61189, "language": 1033, "value": "Switch to the previous document window"}
+{"id": 61190, "language": 1033, "value": "Close the active window and prompts to save the documents"}
+{"id": 61202, "language": 1033, "value": "Restore the window to normal size"}
+{"id": 61203, "language": 1033, "value": "Activate Task List"}
+{"id": 61440, "language": 1033, "value": "Open"}
+{"id": 61441, "language": 1033, "value": "Save As"}
+{"id": 61442, "language": 1033, "value": "All Files (*.*)"}
+{"id": 61443, "language": 1033, "value": "Untitled"}
+{"id": 61445, "language": 1033, "value": "Close print preview mode\nCancel Preview"}
+{"id": 61446, "language": 1033, "value": "an unnamed file"}
+{"id": 61457, "language": 1033, "value": "&Hide"}
+{"id": 61472, "language": 1033, "value": "No error message is available."}
+{"id": 61473, "language": 1033, "value": "An unsupported operation was attempted."}
+{"id": 61474, "language": 1033, "value": "A required resource was unavailable."}
+{"id": 61475, "language": 1033, "value": "Out of memory."}
+{"id": 61476, "language": 1033, "value": "An unknown error has occurred."}
+{"id": 61504, "language": 1033, "value": "on %1"}
+{"id": 61505, "language": 1033, "value": "&One Page"}
+{"id": 61506, "language": 1033, "value": "&Two Page"}
+{"id": 61507, "language": 1033, "value": "Page %u"}
+{"id": 61508, "language": 1033, "value": "Page %u\nPages %u-%u\n"}
+{"id": 61509, "language": 1033, "value": "prn"}
+{"id": 61510, "language": 1033, "value": "Output.prn"}
+{"id": 61511, "language": 1033, "value": "Printer Files (*.prn)|*.prn|All Files (*.*)|*.*||"}
+{"id": 61512, "language": 1033, "value": "Print to File"}
+{"id": 61513, "language": 1033, "value": "to %1"}
+{"id": 61696, "language": 1033, "value": "Invalid filename."}
+{"id": 61697, "language": 1033, "value": "Failed to open document."}
+{"id": 61698, "language": 1033, "value": "Failed to save document."}
+{"id": 61699, "language": 1033, "value": "Save changes to %1?"}
+{"id": 61700, "language": 1033, "value": "Failed to create empty document."}
+{"id": 61701, "language": 1033, "value": "The file is too large to open."}
+{"id": 61702, "language": 1033, "value": "Could not start print job."}
+{"id": 61703, "language": 1033, "value": "Failed to launch help."}
+{"id": 61704, "language": 1033, "value": "Internal application error."}
+{"id": 61705, "language": 1033, "value": "Command failed."}
+{"id": 61706, "language": 1033, "value": "Insufficient memory to perform operation."}
+{"id": 61707, "language": 1033, "value": "System registry entries have been removed and the INI file (if any) was deleted."}
+{"id": 61708, "language": 1033, "value": "Not all of the system registry entries (or INI file) were removed."}
+{"id": 61709, "language": 1033, "value": "This program requires the file %s, which was not found on this system."}
+{"id": 61710, "language": 1033, "value": "This program is linked to the missing export %s in the file %s. This machine may have an incompatible version of %s."}
+{"id": 61712, "language": 1033, "value": "Please enter an integer."}
+{"id": 61713, "language": 1033, "value": "Please enter a number."}
+{"id": 61714, "language": 1033, "value": "Please enter an integer between %1 and %2."}
+{"id": 61715, "language": 1033, "value": "Please enter a number between %1 and %2."}
+{"id": 61716, "language": 1033, "value": "Please enter no more than %1 characters."}
+{"id": 61717, "language": 1033, "value": "Please select a button."}
+{"id": 61718, "language": 1033, "value": "Please enter an integer between 0 and 255."}
+{"id": 61719, "language": 1033, "value": "Please enter a positive integer."}
+{"id": 61720, "language": 1033, "value": "Please enter a date and/or time."}
+{"id": 61721, "language": 1033, "value": "Please enter a currency."}
+{"id": 61728, "language": 1033, "value": "Unexpected file format."}
+{"id": 61729, "language": 1033, "value": "%1\nCannot find this file.\nPlease verify that the correct path and file name are given."}
+{"id": 61730, "language": 1033, "value": "Destination disk drive is full."}
+{"id": 61731, "language": 1033, "value": "Unable to read from %1, it is opened by someone else."}
+{"id": 61732, "language": 1033, "value": "Unable to write to %1, it is read-only or opened by someone else."}
+{"id": 61733, "language": 1033, "value": "An unexpected error occurred while reading %1."}
+{"id": 61734, "language": 1033, "value": "An unexpected error occurred while writing %1."}
+{"id": 61836, "language": 1033, "value": "Unable to read write-only property."}
+{"id": 61837, "language": 1033, "value": "Unable to write read-only property."}
+{"id": 61840, "language": 1033, "value": "Unable to load mail system support."}
+{"id": 61841, "language": 1033, "value": "Mail system DLL is invalid."}
+{"id": 61842, "language": 1033, "value": "Send Mail failed to send message."}
+{"id": 61856, "language": 1033, "value": "No error occurred."}
+{"id": 61857, "language": 1033, "value": "An unknown error occurred while accessing %1."}
+{"id": 61858, "language": 1033, "value": "%1 was not found."}
+{"id": 61859, "language": 1033, "value": "%1 contains an invalid path."}
+{"id": 61860, "language": 1033, "value": "%1 could not be opened because there are too many open files."}
+{"id": 61861, "language": 1033, "value": "Access to %1 was denied."}
+{"id": 61862, "language": 1033, "value": "An invalid file handle was associated with %1."}
+{"id": 61863, "language": 1033, "value": "%1 could not be removed because it is the current directory."}
+{"id": 61864, "language": 1033, "value": "%1 could not be created because the directory is full."}
+{"id": 61865, "language": 1033, "value": "Seek failed on %1"}
+{"id": 61866, "language": 1033, "value": "A hardware I/O error was reported while accessing %1."}
+{"id": 61867, "language": 1033, "value": "A sharing violation occurred while accessing %1."}
+{"id": 61868, "language": 1033, "value": "A locking violation occurred while accessing %1."}
+{"id": 61869, "language": 1033, "value": "Disk full while accessing %1."}
+{"id": 61870, "language": 1033, "value": "An attempt was made to access %1 past its end."}
+{"id": 61872, "language": 1033, "value": "No error occurred."}
+{"id": 61873, "language": 1033, "value": "An unknown error occurred while accessing %1."}
+{"id": 61874, "language": 1033, "value": "An attempt was made to write to the reading %1."}
+{"id": 61875, "language": 1033, "value": "An attempt was made to access %1 past its end."}
+{"id": 61876, "language": 1033, "value": "An attempt was made to read from the writing %1."}
+{"id": 61877, "language": 1033, "value": "%1 has a bad format."}
+{"id": 61878, "language": 1033, "value": "%1 contained an unexpected object."}
+{"id": 61879, "language": 1033, "value": "%1 contains an incorrect schema."}
+{"id": 61888, "language": 1033, "value": "pixels"}

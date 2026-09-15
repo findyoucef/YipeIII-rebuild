@@ -1,0 +1,88 @@
+# To change the names of the items in the game you can edit this file.
+# As you may notice, only the weapons and body armors are in this file.
+# Everything else is stuck as it is in the game.
+#
+# Each line in this file with a # in front is ignored.
+# The first 30 lines found without a # will be picked up as armors.
+# The following 38 lines without a # will be picked up as weapons.
+# The order will be the from the top is the cheapest (worst) item to the bottom (best) item.
+#
+# If this file gets corrupted or ruined in some way, you can download a new copy from
+# the website at:  http://www.yipesoftware.com/files/Yipe3Items.txt
+#
+# Maximum length for any item is 22 characters.
+# All characters beyond 22 will be ignored.
+#
+# If there is a problem reading the info from this file, the original names will be used.
+#
+# Armors Start after this line
+T-Shirt
+Robe
+Cloth Armor
+Leather Jacket
+Leather Armor
+Padded Armor
+Magician's Robe
+Chainmail
+Scale Armor
+Platemail
+Heavy Platemail
+Mithril Mail
+Enhanced Chainmail
+Fighter's Armor
+Magic Scale Armor
+Magic Chainmail
+Magic Platemail
+Glow Plate
+Spiked Scale Armor
+Spiked Chainmail
+Spiked Platemail
+Royal Knight's Armor
+Majestic Chainmail
+Majestic Platemail
+King's Armor
+Yipe! Magic Armor
+Armor of Maynard
+Holy Yipe! Armor
+Quizilog Platemail
+Dragonscale Armor
+#
+# Weapons start after this line
+Hands
+Small Dagger
+Sling
+Dull Sword
+Axe
+Short Sword
+Black Mace
+Shiny Sword
+Flail
+Broadsword
+Spear
+Nunchucks
+Mystic Sword
+Two-Handed Axe
+Bow and Arrows
+Longsword
+Two-Handed Sword
+Jeweled Dagger
+Magic Mace
+Giant Sword
+Magic Spear
+Enhanced Spear
+Crossbow and Bolts
+Sai Swords
+Dragonsword
+Mystic Mace
+Magic Yipe! Flail
+Magic Yipe! Sword
+Deathsword
+Maynard Light Sword
+Quizilog Mystic Sword
+Fire Battle Axe
+Razor Boomerangs
+King's Sword
+Frost Sword
+Yipe! Deathblade
+Maynard Power Sword
+Almighty Longsword

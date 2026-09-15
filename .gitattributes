@@ -1,0 +1,8 @@
+assets/original/Yipe3Items.txt -text whitespace=cr-at-eol
+evidence/original-docs/** -text -diff
+evidence/analysis-snapshot/** -text -diff
+evidence/corrected-analysis/** whitespace=-blank-at-eol,-blank-at-eof
+assets/embedded/raw/** -text -diff
+assets/embedded/bitmaps/** -text -diff
+assets/embedded/audio/** -text -diff
+assets/embedded/resource-manifest.tsv whitespace=-blank-at-eol

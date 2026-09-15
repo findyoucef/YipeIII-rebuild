@@ -1,0 +1,199 @@
+#include "yipe/player.hpp"
+
+#include <algorithm>
+#include <stdexcept>
+
+namespace yipe {
+
+Player::Player() {
+    initialize(CharacterType::warrior);
+}
+
+Player::Player(CharacterType type) {
+    initialize(type);
+}
+
+void Player::initialize(CharacterType type) {
+    name = "Yipie";
+    level = 1;
+    inventory.fill(0);
+    inventory[0] = 1;
+
+    switch (type) {
+    case CharacterType::warrior:
+        strength = 16;
+        dexterity = 13;
+        intelligence = 10;
+        health = 13;
+        spell_points = 0;
+        break;
+    case CharacterType::rogue:
+        strength = 11;
+        dexterity = 15;
+        intelligence = 12;
+        health = 13;
+        spell_points = 0;
+        break;
+    case CharacterType::wizard:
+        strength = 11;
+        dexterity = 12;
+        intelligence = 16;
+        health = 10;
+        spell_points = 0;
+        break;
+    }
+
+    maximum_health = health;
+    maximum_spell_points = spell_points;
+}
+
+bool Player::adjust_health(int delta) {
+    health += delta;
+    health = std::min(health, maximum_health);
+    return health > 0;
+}
+
+int Player::stat_cap() const {
+    if (unknown_0654_stat_cap_mode == 1) {
+        return 40;
+    }
+    if (unknown_0654_stat_cap_mode == 2) {
+        return 50;
+    }
+    return 30;
+}
+
+ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
+                                         bool play_sound, bool in_combat) {
+    if (slot >= inventory.size()) {
+        throw std::out_of_range("inventory slot is out of range");
+    }
+
+    ItemUseResult result;
+    const std::uint16_t item_id = inventory[slot];
+    switch (item_id) {
+    case 1: {
+        if (health == maximum_health) {
+            result.message = "You are already at full health";
+            return result;
+        }
+        int healing = random.next() % intelligence + 10;
+        if (unknown_0065_healing_bonus) {
+            healing += random.next() % intelligence + 12;
+        }
+        inventory[slot] = 0;
+        health = std::min(health + healing, maximum_health);
+        result = {true, healing, play_sound ? 0x8a : 0, "Health restored"};
+        return result;
+    }
+    case 2: {
+        if (health == maximum_health) {
+            result.message = "You are already at full health";
+            return result;
+        }
+        int healing = random.next() % intelligence + 50 + intelligence;
+        if (unknown_0065_healing_bonus) {
+            healing += 12 + intelligence;
+        }
+        inventory[slot] = 0;
+        health = std::min(health + healing, maximum_health);
+        result = {true, healing, play_sound ? 0x8a : 0, "Health restored"};
+        return result;
+    }
+    case 3: {
+        if (spell_points == maximum_spell_points) {
+            result.message = "Your spell points cannot be regenerated";
+            return result;
+        }
+        int restored = random.next() % intelligence + 11 + intelligence;
+        if (unknown_0065_healing_bonus) {
+            restored += 2 + intelligence;
+        }
+        inventory[slot] = 0;
+        spell_points = std::min(spell_points + restored, maximum_spell_points);
+        result = {true, restored, 0, "Spell points restored"};
+        return result;
+    }
+    case 4: {
+        if (unknown_066a < 100) {
+            unknown_067e = unknown_066a;
+        }
+        const int first_roll = random.next();
+        int duration = random.next() % intelligence + 25 + first_roll % (level / 2 + 1);
+        duration = std::min(duration, 80);
+        unknown_0680 = static_cast<std::uint16_t>(unknown_0680 + duration);
+        unknown_066a = 125;
+        inventory[slot] = 0;
+        result = {true, duration, play_sound ? 0x0e : 0,
+                  "Roaming monsters will now stay away"};
+        return result;
+    }
+    case 5:
+        if (unknown_0664 == 1) {
+            result.message = "You have already used a potion to return to the surface";
+            return result;
+        }
+        if (unknown_004c < 40) {
+            result.message = "You are already on the surface";
+            return result;
+        }
+        if (unknown_0062) {
+            result.message = "The surface potion has no effect here";
+            return result;
+        }
+        if (in_combat) {
+            result.message = "You cannot use this potion while fighting";
+            return result;
+        }
+        unknown_0692 = 1;
+        inventory[slot] = 0;
+        return {true, 0, play_sound ? 0x0e : 0,
+                "The surface potion will take effect"};
+    case 6:
+        if (strength >= stat_cap()) {
+            result.message = "Strength is already at its maximum";
+            return result;
+        }
+        ++strength;
+        inventory[slot] = 0;
+        return {true, 1, play_sound ? 0x0e : 0, "Strength increased"};
+    case 7:
+        if (dexterity >= stat_cap()) {
+            result.message = "Dexterity is already at its maximum";
+            return result;
+        }
+        ++dexterity;
+        inventory[slot] = 0;
+        return {true, 1, play_sound ? 0x0e : 0, "Dexterity increased"};
+    case 8:
+        if (intelligence >= stat_cap()) {
+            result.message = "Intelligence is already at its maximum";
+            return result;
+        }
+        ++intelligence;
+        inventory[slot] = 0;
+        return {true, 1, play_sound ? 0x0e : 0, "Intelligence increased"};
+    case 9: {
+        const int increase = random.next() % 3 + 2;
+        health += increase;
+        maximum_health += increase;
+        inventory[slot] = 0;
+        return {true, increase, play_sound ? 0x0e : 0, "Maximum health increased"};
+    }
+    case 10: {
+        const int increase = random.next() % 4 + 2;
+        spell_points += increase;
+        maximum_spell_points += increase;
+        inventory[slot] = 0;
+        return {true, increase, play_sound ? 0x0e : 0, "Maximum spell points increased"};
+    }
+    default:
+        if (slot < 13) {
+            inventory[slot] = 0;
+        }
+        result.message = "Invalid item; item removed";
+        return result;
+    }
+}
+
+} // namespace yipe
