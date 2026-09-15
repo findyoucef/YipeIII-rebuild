@@ -1,13 +1,19 @@
+#include "yipe/encounter.hpp"
 #include "yipe/map.hpp"
+#include "yipe/random.hpp"
+#include "yipe/save.hpp"
 #include "yipe/shop.hpp"
 
 #include <SDL.h>
 
+#include <algorithm>
 #include <array>
+#include <ctime>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -155,6 +161,7 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
 struct GameTextures {
     std::vector<std::pair<int, Texture>> terrain;
     Texture warrior;
+    Texture giant_beetle;
 
     [[nodiscard]] SDL_Texture* find(int resource_id) const {
         for (const auto& [id, texture] : terrain) {
@@ -176,7 +183,8 @@ GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::p
         terrain.emplace_back(
             id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp")));
     }
-    return {std::move(terrain), load_bitmap(renderer, assets / "406-1033.bmp", true)};
+    return {std::move(terrain), load_bitmap(renderer, assets / "406-1033.bmp", true),
+            load_bitmap(renderer, assets / "175-1033.bmp", true)};
 }
 
 struct TileGraphic {
@@ -361,8 +369,17 @@ void prepare_game_view(SDL_Window* window, SDL_Renderer* renderer) {
     }
 }
 
+void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
+    SDL_SetWindowSize(window, startup_width * 2, startup_height * 2);
+    if (SDL_RenderSetLogicalSize(renderer, startup_width, startup_height) != 0) {
+        throw std::runtime_error(std::string("could not set startup render size: ")
+                                 + SDL_GetError());
+    }
+}
+
 void render_game(SDL_Renderer* renderer, const yipe::Map& map,
-                 const GameTextures& textures, yipe::MapPosition player) {
+                 const GameTextures& textures, yipe::MapPosition player,
+                 bool giant_beetle_defeated) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     for (int x = 0; x < yipe::Map::width; ++x) {
@@ -372,29 +389,316 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
             copy_texture(renderer, graphic.texture, &graphic.source, &destination);
         }
     }
+    if (!giant_beetle_defeated) {
+        for (const yipe::MonsterPlacement& monster :
+             yipe::original_monsters_for_map(map.id())) {
+            const SDL_Rect destination{monster.position.x * tile_size,
+                                       monster.position.y * tile_size,
+                                       tile_size, tile_size};
+            copy_texture(renderer, textures.giant_beetle.get(), nullptr, &destination);
+        }
+    }
     const SDL_Rect player_destination{player.x * tile_size, player.y * tile_size,
                                       tile_size, tile_size};
     copy_texture(renderer, textures.warrior.get(), nullptr, &player_destination);
     SDL_RenderPresent(renderer);
 }
 
-void show_freds_shop(SDL_Window* window) {
-    std::ostringstream message;
-    for (const yipe::ShopStockItem& item : yipe::freds_miscellaneous_stock()) {
-        message << item.name << "  " << item.price << " gold\n";
-    }
-    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Fred's Miscellaneous Shop",
-                                 message.str().c_str(), window)
+void show_message(SDL_Window* window, const char* title, const std::string& message) {
+    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title, message.c_str(), window)
         != 0) {
-        throw std::runtime_error(std::string("could not show shop: ") + SDL_GetError());
+        throw std::runtime_error(std::string("could not show message: ") + SDL_GetError());
     }
 }
 
-void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures) {
+int show_choice(SDL_Window* window, const char* title, const std::string& message,
+                const SDL_MessageBoxButtonData* buttons, int button_count) {
+    const SDL_MessageBoxData data{SDL_MESSAGEBOX_INFORMATION, window, title, message.c_str(),
+                                  button_count, buttons, nullptr};
+    int selected = -1;
+    if (SDL_ShowMessageBox(&data, &selected) != 0) {
+        throw std::runtime_error(std::string("could not show choices: ") + SDL_GetError());
+    }
+    return selected;
+}
+
+std::optional<yipe::CharacterType> choose_character(SDL_Window* window) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Warrior"},
+        SDL_MessageBoxButtonData{0, 2, "Rogue"},
+        SDL_MessageBoxButtonData{0, 3, "Wizard"},
+    };
+    const int choice = show_choice(
+        window, "Create Character",
+        "Choose a character class.\n\nWarrior: strong melee fighter\n"
+        "Rogue: agile adventurer\nWizard: intelligent spellcaster",
+        buttons.data(), static_cast<int>(buttons.size()));
+    if (choice < 1 || choice > 3) {
+        return std::nullopt;
+    }
+    return static_cast<yipe::CharacterType>(choice);
+}
+
+std::filesystem::path default_save_path() {
+    std::unique_ptr<char, decltype(&SDL_free)> preference_path(
+        SDL_GetPrefPath("Yipe Software", "Yipe III Rebuild"), SDL_free);
+    if (!preference_path) {
+        throw std::runtime_error(std::string("could not locate the save directory: ")
+                                 + SDL_GetError());
+    }
+    return std::filesystem::path(preference_path.get()) / "save.y3r";
+}
+
+std::string purchase_message(const yipe::ShopStockItem& item,
+                             yipe::PurchaseStatus status) {
+    switch (status) {
+    case yipe::PurchaseStatus::purchased:
+        return "You purchased " + std::string(item.name) + ".";
+    case yipe::PurchaseStatus::insufficient_gold:
+        return "You don't have enough gold to purchase that item.";
+    case yipe::PurchaseStatus::inventory_full:
+        return "You don't have room to carry that item.";
+    case yipe::PurchaseStatus::already_equipped:
+        return "You already have this item or something better equipped.";
+    }
+    throw std::logic_error("unknown purchase result");
+}
+
+void show_freds_shop(SDL_Window* window, yipe::Player& player) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Buy"},
+        SDL_MessageBoxButtonData{0, 2, "Next"},
+        SDL_MessageBoxButtonData{0, 3, "Previous"},
+    };
+    const auto& stock = yipe::freds_miscellaneous_stock();
+    std::size_t selected = 0;
+    while (true) {
+        const yipe::ShopStockItem& item = stock[selected];
+        std::ostringstream message;
+        message << item.name << "\nPrice: " << item.price << " gold\nYour gold: "
+                << player.gold << "\n\nItem " << selected + 1 << " of " << stock.size();
+        switch (show_choice(window, "Fred's Miscellaneous Shop", message.str(),
+                            buttons.data(), static_cast<int>(buttons.size()))) {
+        case 1: {
+            const yipe::PurchaseResult result = yipe::purchase_shop_item(player, item);
+            show_message(window, "Fred's Miscellaneous Shop",
+                         purchase_message(item, result.status));
+            break;
+        }
+        case 2:
+            selected = (selected + 1) % stock.size();
+            break;
+        case 3:
+            selected = (selected + stock.size() - 1) % stock.size();
+            break;
+        default:
+            return;
+        }
+    }
+}
+
+std::string inventory_item_name(std::uint16_t item_id) {
+    constexpr std::array<std::string_view, 10> names{
+        "French Fries", "Juicy Cheeseburger", "Spell Point Potion",
+        "Monster Repellent", "Return to Surface Potion", "Strength Potion",
+        "Dexterity Potion", "Intelligence Potion", "Potion of HP Increase",
+        "Potion of SP Increase",
+    };
+    if (item_id >= 1 && item_id <= names.size()) {
+        return std::string(names[item_id - 1]);
+    }
+    return "Item " + std::to_string(item_id);
+}
+
+std::optional<std::size_t> choose_inventory_item(SDL_Window* window,
+                                                 const yipe::Player& player) {
+    std::vector<std::size_t> occupied;
+    for (std::size_t slot = 0; slot < yipe::Player::carried_inventory_size; ++slot) {
+        if (player.inventory[slot] != 0) {
+            occupied.push_back(slot);
+        }
+    }
+    if (occupied.empty()) {
+        show_message(window, "Inventory", "You are not carrying any usable items.");
+        return std::nullopt;
+    }
+
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Use"},
+        SDL_MessageBoxButtonData{0, 2, "Next"},
+    };
+    std::size_t selected = 0;
+    while (true) {
+        const std::size_t slot = occupied[selected];
+        std::ostringstream message;
+        message << inventory_item_name(player.inventory[slot]) << "\nSlot " << slot + 1
+                << "\n\nItem " << selected + 1 << " of " << occupied.size();
+        const int choice = show_choice(window, "Inventory", message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            return slot;
+        }
+        if (choice == 2) {
+            selected = (selected + 1) % occupied.size();
+        } else {
+            return std::nullopt;
+        }
+    }
+}
+
+void show_player_status(SDL_Window* window, const yipe::Player& player) {
+    const auto carried = std::count_if(
+        player.inventory.begin(),
+        player.inventory.begin()
+            + static_cast<std::ptrdiff_t>(yipe::Player::carried_inventory_size),
+        [](std::uint16_t item) { return item != 0; });
+    std::ostringstream message;
+    message << player.name << "\nLevel " << player.level << "  XP " << player.experience
+            << "  Gold " << player.gold << "\nHP " << player.health << "/"
+            << player.maximum_health << "  SP " << player.spell_points << "/"
+            << player.maximum_spell_points << "\nStrength " << player.strength
+            << "  Dexterity " << player.dexterity << "  Intelligence "
+            << player.intelligence << "\nWeapon " << player.weapon_rank << "  Armor "
+            << player.armor_rank << "\nCarried items " << carried << "/"
+            << yipe::Player::carried_inventory_size;
+    show_message(window, "Player Status", message.str());
+}
+
+enum class EncounterResult { victory, fled, defeat };
+
+EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& player,
+                                            yipe::MsvcRandom& random) {
+    yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Attack"},
+        SDL_MessageBoxButtonData{0, 2, "Use Item"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 3, "Flee"},
+    };
+
+    while (true) {
+        std::ostringstream status;
+        status << "A Giant Beetle blocks your path.\n\nYour HP: " << player.health << "/"
+               << player.maximum_health << "\nGiant Beetle HP: " << monster.health << "/"
+               << monster.maximum_health;
+        const int action = show_choice(window, "Combat", status.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (action == 1) {
+            const yipe::CombatTurn turn = yipe::resolve_attack_turn(player, monster, random);
+            std::ostringstream result;
+            result << "You deal " << turn.player_damage << " damage.";
+            if (turn.outcome == yipe::CombatOutcome::victory) {
+                result << "\n\nThe Giant Beetle is defeated.\nYou gain "
+                       << turn.reward.experience << " experience and " << turn.reward.gold
+                       << " gold.";
+                if (turn.reward.equipment_upgrade != yipe::EquipmentUpgrade::none) {
+                    result << "\nYou found a "
+                           << yipe::equipment_upgrade_name(turn.reward.equipment_upgrade)
+                           << " upgrade.";
+                }
+                show_message(window, "Victory", result.str());
+                return EncounterResult::victory;
+            }
+            result << "\nThe Giant Beetle deals " << turn.monster_damage << " damage.";
+            show_message(window, turn.outcome == yipe::CombatOutcome::defeat ? "Defeat"
+                                                                             : "Combat",
+                         result.str());
+            if (turn.outcome == yipe::CombatOutcome::defeat) {
+                return EncounterResult::defeat;
+            }
+        } else if (action == 2) {
+            const std::optional<std::size_t> slot = choose_inventory_item(window, player);
+            if (!slot) {
+                continue;
+            }
+            const yipe::ItemUseResult used =
+                player.use_inventory_item(*slot, random, true, true);
+            if (!used.consumed) {
+                show_message(window, "Inventory", used.message);
+                continue;
+            }
+            const yipe::CombatTurn response =
+                yipe::resolve_monster_turn(player, monster, random);
+            std::ostringstream result;
+            result << used.message;
+            if (used.amount != 0) {
+                result << " (" << used.amount << ")";
+            }
+            result << ".\nThe Giant Beetle deals " << response.monster_damage << " damage.";
+            show_message(window, response.outcome == yipe::CombatOutcome::defeat ? "Defeat"
+                                                                                 : "Combat",
+                         result.str());
+            if (response.outcome == yipe::CombatOutcome::defeat) {
+                return EncounterResult::defeat;
+            }
+        } else {
+            const yipe::FleeResult result = yipe::try_flee(player, monster, random);
+            if (result.escaped) {
+                show_message(window, "Combat", "You escaped from the Giant Beetle.");
+                return EncounterResult::fled;
+            }
+            show_message(window, result.player_defeated ? "Defeat" : "Combat",
+                         "You fail to escape. The Giant Beetle deals "
+                             + std::to_string(result.monster_damage) + " damage.");
+            if (result.player_defeated) {
+                return EncounterResult::defeat;
+            }
+        }
+    }
+}
+
+bool has_encounter_at(const yipe::GameState& game) {
+    if (game.giant_beetle_defeated) {
+        return false;
+    }
+    for (const yipe::MonsterPlacement& monster :
+         yipe::original_monsters_for_map(game.location.map_id)) {
+        if (monster.position == game.location.position) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void save_current_game(SDL_Window* window, const std::filesystem::path& path,
+                       yipe::GameState& game, const yipe::MsvcRandom& random,
+                       bool show_confirmation) {
+    game.random_state = random.state();
+    yipe::save_game_atomic(path, game);
+    if (show_confirmation) {
+        show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
+    }
+}
+
+bool confirm_quit(SDL_Window* window, const std::filesystem::path& save_path,
+                  yipe::GameState& game, const yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+        SDL_MessageBoxButtonData{0, 1, "Quit Without Saving"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2,
+                                 "Save and Quit"},
+    };
+    const int choice = show_choice(window, "Quit Game", "Do you want to save before quitting?",
+                                   buttons.data(), static_cast<int>(buttons.size()));
+    if (choice == 2) {
+        save_current_game(window, save_path, game, random, false);
+    }
+    return choice == 1 || choice == 2;
+}
+
+bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures,
+              yipe::GameState game, const std::filesystem::path& save_path) {
     prepare_game_view(window, renderer);
-    yipe::WorldLocation location;
-    yipe::Map map = yipe::starting_map();
-    render_game(renderer, map, textures, location.position);
+    const std::optional<yipe::Map> restored_map = yipe::original_map(game.location.map_id);
+    if (!restored_map || !restored_map->contains(game.location.position)) {
+        throw std::runtime_error("save contains an unsupported world location");
+    }
+    yipe::Map map = *restored_map;
+    yipe::MsvcRandom random(game.random_state);
+    render_game(renderer, map, textures, game.location.position,
+                game.giant_beetle_defeated);
 
     while (true) {
         SDL_Event event{};
@@ -402,16 +706,37 @@ void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
         }
         if (event.type == SDL_QUIT) {
-            return;
+            save_current_game(window, save_path, game, random, false);
+            return true;
         }
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
-            render_game(renderer, map, textures, location.position);
+        if (event.type == SDL_WINDOWEVENT
+            && (event.window.event == SDL_WINDOWEVENT_EXPOSED
+                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
         }
         if (event.type != SDL_KEYDOWN) {
             continue;
         }
         if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
-            return;
+            if (confirm_quit(window, save_path, game, random)) {
+                return true;
+            }
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_F5) {
+            save_current_game(window, save_path, game, random, true);
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_i) {
+            show_player_status(window, game.player);
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
+            continue;
         }
 
         int delta_x = 0;
@@ -436,22 +761,40 @@ void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         default:
             continue;
         }
-        const yipe::WorldLocation previous_location = location;
+        const yipe::WorldLocation previous_location = game.location;
         const yipe::MovementResult result =
-            yipe::try_move(map, location.position, delta_x, delta_y);
+            yipe::try_move(map, game.location.position, delta_x, delta_y);
         if (result.position_changed) {
-            if (result.original_code == 2 && yipe::cross_map_edge(location)) {
-                const std::optional<yipe::Map> next_map = yipe::original_map(location.map_id);
+            if (result.original_code == 2 && yipe::cross_map_edge(game.location)) {
+                const std::optional<yipe::Map> next_map =
+                    yipe::original_map(game.location.map_id);
                 if (next_map) {
                     map = *next_map;
                 } else {
-                    location = previous_location;
+                    game.location = previous_location;
                 }
             }
-            render_game(renderer, map, textures, location.position);
-        } else if (result.original_code == 8 && location.map_id == 0x11) {
-            show_freds_shop(window);
-            render_game(renderer, map, textures, location.position);
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
+            if (has_encounter_at(game)) {
+                const EncounterResult encounter =
+                    run_giant_beetle_encounter(window, game.player, random);
+                if (encounter == EncounterResult::victory) {
+                    game.giant_beetle_defeated = true;
+                } else if (encounter == EncounterResult::fled) {
+                    game.location = previous_location;
+                } else {
+                    show_message(window, "Defeat",
+                                 "Your adventure has ended. Load a saved game to try again.");
+                    return false;
+                }
+                render_game(renderer, map, textures, game.location.position,
+                            game.giant_beetle_defeated);
+            }
+        } else if (result.original_code == 8 && game.location.map_id == 0x11) {
+            show_freds_shop(window, game.player);
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
         }
     }
 }
@@ -494,23 +837,43 @@ int main(int argc, char* argv[]) {
             for (int map_id = 0; map_id <= 0x85; ++map_id) {
                 const std::optional<yipe::Map> map = yipe::original_map(map_id);
                 if (map) {
-                    render_game(renderer.get(), *map, game_textures, {5, 5});
+                    render_game(renderer.get(), *map, game_textures, {5, 5}, false);
                 }
             }
             return 0;
         }
 
-        switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
-        case StartupChoice::new_game:
-            run_game(window.get(), renderer.get(), game_textures);
-            break;
-        case StartupChoice::load_game:
-            std::cout << "load_game\n";
-            break;
-        case StartupChoice::quit:
-            break;
+        const std::filesystem::path save_path = default_save_path();
+        while (true) {
+            prepare_startup_view(window.get(), renderer.get());
+            switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
+            case StartupChoice::new_game: {
+                const std::optional<yipe::CharacterType> type = choose_character(window.get());
+                if (!type) {
+                    break;
+                }
+                yipe::GameState game;
+                game.player = yipe::Player(*type);
+                game.random_state = static_cast<std::uint32_t>(std::time(nullptr));
+                if (run_game(window.get(), renderer.get(), game_textures, game, save_path)) {
+                    return 0;
+                }
+                break;
+            }
+            case StartupChoice::load_game:
+                try {
+                    if (run_game(window.get(), renderer.get(), game_textures,
+                                 yipe::load_game(save_path), save_path)) {
+                        return 0;
+                    }
+                } catch (const std::exception& error) {
+                    show_message(window.get(), "Load Game Failed", error.what());
+                }
+                break;
+            case StartupChoice::quit:
+                return 0;
+            }
         }
-        return 0;
     } catch (const std::exception& error) {
         std::cerr << "Yipe! III: " << error.what() << '\n';
         return 1;

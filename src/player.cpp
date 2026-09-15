@@ -16,11 +16,24 @@ Player::Player(CharacterType type) {
 void Player::initialize(CharacterType type) {
     name = "Yipie";
     level = 1;
+    experience = 0;
+    gold = 0;
+    weapon_rank = 2;
+    armor_rank = 2;
+    boots_rank = 0;
+    gloves_rank = 0;
+    helmet_rank = 1;
+    ring_rank = 0;
+    necklace_rank = 0;
+    difficulty = 2;
+    equipment_upgrade_count = 0;
+    loot_roll_penalty = 2;
     inventory.fill(0);
     inventory[0] = 1;
 
     switch (type) {
     case CharacterType::warrior:
+        combat_style = 2;
         strength = 16;
         dexterity = 13;
         intelligence = 10;
@@ -28,6 +41,7 @@ void Player::initialize(CharacterType type) {
         spell_points = 0;
         break;
     case CharacterType::rogue:
+        combat_style = 3;
         strength = 11;
         dexterity = 15;
         intelligence = 12;
@@ -35,6 +49,7 @@ void Player::initialize(CharacterType type) {
         spell_points = 0;
         break;
     case CharacterType::wizard:
+        combat_style = 1;
         strength = 11;
         dexterity = 12;
         intelligence = 16;
@@ -188,7 +203,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
         return {true, increase, play_sound ? 0x0e : 0, "Maximum spell points increased"};
     }
     default:
-        if (slot < 13) {
+        if (slot < carried_inventory_size) {
             inventory[slot] = 0;
         }
         result.message = "Invalid item; item removed";

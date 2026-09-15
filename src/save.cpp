@@ -19,7 +19,8 @@ namespace yipe {
 namespace {
 
 constexpr std::array<std::uint8_t, 4> magic = {'Y', '3', 'R', 'S'};
-constexpr std::uint16_t format_version = 1;
+constexpr std::uint16_t player_format_version = 1;
+constexpr std::uint16_t game_format_version = 2;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -110,7 +111,7 @@ private:
     std::size_t position_ = 0;
 };
 
-std::vector<std::uint8_t> encode_payload(const Player& player) {
+std::vector<std::uint8_t> encode_player_payload(const Player& player) {
     if (player.name.size() > std::numeric_limits<std::uint16_t>::max()) {
         throw std::runtime_error("player name is too long to save");
     }
@@ -141,6 +142,59 @@ std::vector<std::uint8_t> encode_payload(const Player& player) {
     return payload;
 }
 
+std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
+    std::vector<std::uint8_t> payload = encode_player_payload(game.player);
+    append_i32(payload, game.player.experience);
+    append_i32(payload, game.player.gold);
+    append_i32(payload, game.player.weapon_rank);
+    append_i32(payload, game.player.armor_rank);
+    append_u16(payload, game.player.boots_rank);
+    append_u16(payload, game.player.gloves_rank);
+    append_u16(payload, game.player.helmet_rank);
+    append_u16(payload, game.player.ring_rank);
+    append_u16(payload, game.player.necklace_rank);
+    append_i32(payload, game.player.difficulty);
+    append_i32(payload, game.player.combat_style);
+    append_i32(payload, game.player.equipment_upgrade_count);
+    append_i32(payload, game.player.loot_roll_penalty);
+    append_i32(payload, game.location.position.x);
+    append_i32(payload, game.location.position.y);
+    append_i32(payload, game.location.region_x);
+    append_i32(payload, game.location.region_y);
+    append_i32(payload, game.location.map_layer);
+    append_u8(payload, game.location.alternate_map_set ? 1 : 0);
+    append_i32(payload, game.location.map_id);
+    append_u8(payload, game.giant_beetle_defeated ? 1 : 0);
+    append_u32(payload, game.random_state);
+    return payload;
+}
+
+Player decode_player_payload(Reader& reader) {
+    Player player;
+    player.name = reader.string();
+    player.dexterity = reader.i32();
+    player.intelligence = reader.i32();
+    player.strength = reader.i32();
+    player.health = reader.i32();
+    player.maximum_health = reader.i32();
+    player.spell_points = reader.i32();
+    player.maximum_spell_points = reader.i32();
+    player.level = reader.i32();
+    for (std::uint16_t& item : player.inventory) {
+        item = reader.u16();
+    }
+    player.unknown_0062 = reader.u8() != 0;
+    player.unknown_0065_healing_bonus = reader.u8() != 0;
+    player.unknown_004c = reader.i32();
+    player.unknown_0654_stat_cap_mode = reader.i32();
+    player.unknown_0664 = reader.u16();
+    player.unknown_066a = reader.u16();
+    player.unknown_067e = reader.u16();
+    player.unknown_0680 = reader.u16();
+    player.unknown_0692 = reader.u16();
+    return player;
+}
+
 void write_file(const std::filesystem::path& path, const std::vector<std::uint8_t>& bytes) {
     std::ofstream output(path, std::ios::binary | std::ios::trunc);
     if (!output) {
@@ -167,16 +221,14 @@ void replace_file(const std::filesystem::path& temporary,
 #endif
 }
 
-} // namespace
-
-void save_player_atomic(const std::filesystem::path& path, const Player& player) {
-    const std::vector<std::uint8_t> payload = encode_payload(player);
+void save_payload_atomic(const std::filesystem::path& path, std::uint16_t version,
+                         const std::vector<std::uint8_t>& payload) {
     if (payload.size() > std::numeric_limits<std::uint32_t>::max()) {
         throw std::runtime_error("save payload is too large");
     }
 
     std::vector<std::uint8_t> file(magic.begin(), magic.end());
-    append_u16(file, format_version);
+    append_u16(file, version);
     append_u32(file, static_cast<std::uint32_t>(payload.size()));
     append_u32(file, crc32(payload));
     file.insert(file.end(), payload.begin(), payload.end());
@@ -192,7 +244,12 @@ void save_player_atomic(const std::filesystem::path& path, const Player& player)
     }
 }
 
-Player load_player(const std::filesystem::path& path) {
+struct DecodedSave {
+    std::uint16_t version;
+    std::vector<std::uint8_t> payload;
+};
+
+DecodedSave read_save(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);
     if (!input) {
         throw std::runtime_error("could not open save file");
@@ -208,7 +265,7 @@ Player load_player(const std::filesystem::path& path) {
         static_cast<void>(header.u8());
     }
     const std::uint16_t version = header.u16();
-    if (version != format_version) {
+    if (version != player_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -217,38 +274,65 @@ Player load_player(const std::filesystem::path& path) {
         throw std::runtime_error("save payload size does not match the file");
     }
 
-    const std::vector<std::uint8_t> payload(file.begin() + 14, file.end());
+    std::vector<std::uint8_t> payload(file.begin() + 14, file.end());
     if (crc32(payload) != expected_crc) {
         throw std::runtime_error("save checksum is invalid");
     }
+    return {version, std::move(payload)};
+}
 
-    Reader reader(payload);
-    Player player;
-    player.name = reader.string();
-    player.dexterity = reader.i32();
-    player.intelligence = reader.i32();
-    player.strength = reader.i32();
-    player.health = reader.i32();
-    player.maximum_health = reader.i32();
-    player.spell_points = reader.i32();
-    player.maximum_spell_points = reader.i32();
-    player.level = reader.i32();
-    for (std::uint16_t& item : player.inventory) {
-        item = reader.u16();
+} // namespace
+
+void save_player_atomic(const std::filesystem::path& path, const Player& player) {
+    save_payload_atomic(path, player_format_version, encode_player_payload(player));
+}
+
+Player load_player(const std::filesystem::path& path) {
+    return load_game(path).player;
+}
+
+void save_game_atomic(const std::filesystem::path& path, const GameState& game) {
+    save_payload_atomic(path, game_format_version, encode_game_payload(game));
+}
+
+GameState load_game(const std::filesystem::path& path) {
+    DecodedSave save = read_save(path);
+    Reader reader(save.payload);
+    GameState game;
+    game.player = decode_player_payload(reader);
+    if (save.version == player_format_version) {
+        if (!reader.finished()) {
+            throw std::runtime_error("save payload contains unexpected trailing data");
+        }
+        return game;
     }
-    player.unknown_0062 = reader.u8() != 0;
-    player.unknown_0065_healing_bonus = reader.u8() != 0;
-    player.unknown_004c = reader.i32();
-    player.unknown_0654_stat_cap_mode = reader.i32();
-    player.unknown_0664 = reader.u16();
-    player.unknown_066a = reader.u16();
-    player.unknown_067e = reader.u16();
-    player.unknown_0680 = reader.u16();
-    player.unknown_0692 = reader.u16();
+
+    game.player.experience = reader.i32();
+    game.player.gold = reader.i32();
+    game.player.weapon_rank = reader.i32();
+    game.player.armor_rank = reader.i32();
+    game.player.boots_rank = reader.u16();
+    game.player.gloves_rank = reader.u16();
+    game.player.helmet_rank = reader.u16();
+    game.player.ring_rank = reader.u16();
+    game.player.necklace_rank = reader.u16();
+    game.player.difficulty = reader.i32();
+    game.player.combat_style = reader.i32();
+    game.player.equipment_upgrade_count = reader.i32();
+    game.player.loot_roll_penalty = reader.i32();
+    game.location.position.x = reader.i32();
+    game.location.position.y = reader.i32();
+    game.location.region_x = reader.i32();
+    game.location.region_y = reader.i32();
+    game.location.map_layer = reader.i32();
+    game.location.alternate_map_set = reader.u8() != 0;
+    game.location.map_id = reader.i32();
+    game.giant_beetle_defeated = reader.u8() != 0;
+    game.random_state = reader.u32();
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");
     }
-    return player;
+    return game;
 }
 
 } // namespace yipe

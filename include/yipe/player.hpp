@@ -25,6 +25,7 @@ struct ItemUseResult {
 class Player {
 public:
     static constexpr std::size_t inventory_size = 30;
+    static constexpr std::size_t carried_inventory_size = 13;
 
     Player();
     explicit Player(CharacterType type);
@@ -45,6 +46,19 @@ public:
     int spell_points = 0;
     int maximum_spell_points = 0;
     int level = 1;
+    int experience = 0;
+    int gold = 0;
+    int weapon_rank = 2;
+    int armor_rank = 2;
+    std::uint16_t boots_rank = 0;
+    std::uint16_t gloves_rank = 0;
+    std::uint16_t helmet_rank = 1;
+    std::uint16_t ring_rank = 0;
+    std::uint16_t necklace_rank = 0;
+    int difficulty = 2;
+    int combat_style = 2;
+    int equipment_upgrade_count = 0;
+    int loot_roll_penalty = 2;
     std::array<std::uint16_t, inventory_size> inventory{};
 
     // Meanings are not yet established; names retain their original object offsets.

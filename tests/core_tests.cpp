@@ -1,4 +1,5 @@
 #include "yipe/auxiliary_data.hpp"
+#include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
 #include "yipe/map.hpp"
 #include "yipe/player.hpp"
@@ -6,6 +7,8 @@
 #include "yipe/save.hpp"
 #include "yipe/shop.hpp"
 
+#include <algorithm>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -141,6 +144,11 @@ void test_native_save() {
     check(loaded.inventory == original.inventory, "native save restores inventory");
     check(loaded.unknown_0065_healing_bonus && loaded.unknown_0680 == 77,
           "native save preserves reconstructed unknown fields");
+    const yipe::GameState upgraded_from_v1 = yipe::load_game(path);
+    check(upgraded_from_v1.player.name == original.name
+              && upgraded_from_v1.location.map_id == 0x11
+              && !upgraded_from_v1.giant_beetle_defeated,
+          "version 1 player save loads with default world state");
 
     yipe::Player replacement(yipe::CharacterType::rogue);
     replacement.name = "Replacement";
@@ -172,6 +180,41 @@ void test_native_save() {
         rejected = true;
     }
     check(rejected, "native save rejects checksum corruption");
+    std::filesystem::remove(path);
+}
+
+void test_game_save() {
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "yipe3-rebuild-game-save-test.y3r";
+    yipe::GameState original;
+    original.player.name = "World Save";
+    original.player.experience = 41;
+    original.player.gold = 43;
+    original.player.weapon_rank = 3;
+    original.player.gloves_rank = 1;
+    original.player.difficulty = 3;
+    original.player.combat_style = 1;
+    original.player.equipment_upgrade_count = 2;
+    original.player.loot_roll_penalty = 7;
+    original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
+    original.giant_beetle_defeated = true;
+    original.random_state = 0x12345678u;
+
+    yipe::save_game_atomic(path, original);
+    const yipe::GameState loaded = yipe::load_game(path);
+    check(loaded.player.name == original.player.name && loaded.player.experience == 41
+              && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
+              && loaded.player.gloves_rank == 1,
+          "version 2 save restores progression and equipment");
+    check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
+              && loaded.player.equipment_upgrade_count == 2
+              && loaded.player.loot_roll_penalty == 7,
+          "version 2 save restores combat settings and counters");
+    check(loaded.location.position == yipe::MapPosition{2, 8}
+              && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
+          "version 2 save restores world location");
+    check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
+          "version 2 save restores encounter and random state");
     std::filesystem::remove(path);
 }
 
@@ -282,6 +325,133 @@ void test_starting_shop() {
           "Fred's shop preserves equipment type and tier");
     check(stock[10].name == "Plain Necklace" && stock[10].price == 75,
           "Fred's shop preserves its final row");
+
+    yipe::Player player;
+    player.gold = 200;
+    const yipe::PurchaseResult food = yipe::purchase_shop_item(player, stock[0]);
+    check(food.status == yipe::PurchaseStatus::purchased && food.inventory_slot == 1
+              && player.inventory[1] == 1 && player.gold == 125,
+          "Fred's shop adds a purchased consumable to the first free carrying slot");
+    const yipe::PurchaseResult gloves = yipe::purchase_shop_item(player, stock[7]);
+    check(gloves.status == yipe::PurchaseStatus::purchased && player.gloves_rank == 1
+              && player.gold == 75,
+          "Fred's shop equips an affordable improvement");
+    check(yipe::purchase_shop_item(player, stock[7]).status
+              == yipe::PurchaseStatus::already_equipped
+              && player.gold == 75,
+          "Fred's shop does not charge for an already equipped tier");
+    check(yipe::purchase_shop_item(player, stock[1]).status
+              == yipe::PurchaseStatus::insufficient_gold,
+          "Fred's shop rejects purchases with insufficient gold");
+
+    player.gold = 10000;
+    std::fill_n(player.inventory.begin(), yipe::Player::carried_inventory_size, 1);
+    check(yipe::purchase_shop_item(player, stock[0]).status
+              == yipe::PurchaseStatus::inventory_full
+              && player.gold == 10000,
+          "Fred's shop preserves gold when all 13 carrying slots are full");
+}
+
+void test_giant_beetle_encounter() {
+    const auto placements = yipe::original_monsters_for_map(0x0b);
+    check(placements.size() == 1 && placements[0].type_id == 2
+              && placements[0].position == yipe::MapPosition{2, 8},
+          "map 0x0b exposes the recovered Giant Beetle placement");
+    check(yipe::original_monsters_for_map(0x11).empty(),
+          "maps without recovered placements remain empty");
+
+    yipe::Player player;
+    yipe::MsvcRandom random(1);
+    yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
+    check(monster.name == "Giant Beetle" && monster.bitmap_resource_id == 175
+              && monster.health == 15 && monster.attack_rating == 9
+              && monster.defense_rating == 3,
+          "seed 1 creates the independently traced Giant Beetle stats");
+
+    constexpr std::array expected_player_damage{0, 1, 3, 2, 3, 0, 3, 2, 1};
+    constexpr std::array expected_monster_damage{2, 0, 3, 0, 1, 3, 2, 1, 0};
+    yipe::CombatTurn turn;
+    for (std::size_t index = 0; index < expected_player_damage.size(); ++index) {
+        turn = yipe::resolve_attack_turn(player, monster, random);
+        check(turn.player_damage == expected_player_damage[index]
+                  && turn.monster_damage == expected_monster_damage[index],
+              "seed 1 combat turn " + std::to_string(index + 1));
+    }
+    check(turn.outcome == yipe::CombatOutcome::victory && turn.reward.experience == 41
+              && turn.reward.gold == 43
+              && turn.reward.equipment_upgrade == yipe::EquipmentUpgrade::none,
+          "seed 1 victory produces the independently traced reward");
+    check(player.health == 1 && player.experience == 41 && player.gold == 43,
+          "seed 1 combat applies damage and rewards to the player");
+
+    yipe::Player fleeing_player;
+    fleeing_player.gold = 10;
+    yipe::MsvcRandom flee_random(1);
+    const yipe::Monster fleeing_monster =
+        yipe::start_single_monster_encounter(2, flee_random);
+    const yipe::FleeResult fled = yipe::try_flee(fleeing_player, fleeing_monster, flee_random);
+    check(fled.escaped && fleeing_player.gold == 9 && fleeing_player.health == 13,
+          "low-level flee succeeds and applies the original gold loss");
+}
+
+void test_first_playable_flow() {
+    const std::optional<yipe::Map> map = yipe::original_map(0x0b);
+    check(map.has_value(), "first encounter map is available");
+    if (!map) {
+        return;
+    }
+
+    yipe::MapPosition position{5, 10};
+    constexpr std::array<yipe::MapPosition, 8> route{{
+        {0, -1}, {0, -1}, {0, -1}, {0, -1}, {0, -1},
+        {-1, 0}, {-1, 0}, {-1, 0},
+    }};
+    for (const yipe::MapPosition delta : route) {
+        const yipe::MovementResult movement =
+            yipe::try_move(*map, position, delta.x, delta.y);
+        check(movement.position_changed, "first encounter route stays on passable tiles");
+    }
+    constexpr std::array<yipe::MapPosition, 3> final_steps{{
+        {0, 1}, {0, 1}, {0, 1},
+    }};
+    for (const yipe::MapPosition delta : final_steps) {
+        static_cast<void>(yipe::try_move(*map, position, delta.x, delta.y));
+    }
+    check(position == yipe::MapPosition{2, 8},
+          "the recovered map route reaches the Giant Beetle placement");
+
+    yipe::GameState game;
+    game.location = {{2, 8}, 0, 1, 0, false, 0x0b};
+    yipe::MsvcRandom random(1);
+    yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
+    const yipe::CombatTurn opening =
+        yipe::resolve_attack_turn(game.player, monster, random);
+    check(opening.monster_damage == 2 && game.player.health == 11,
+          "playable flow takes combat damage before item use");
+    const yipe::ItemUseResult item = game.player.use_inventory_item(0, random, false, true);
+    check(item.consumed && game.player.inventory[0] == 0,
+          "playable flow consumes the starting healing item in combat");
+    static_cast<void>(yipe::resolve_monster_turn(game.player, monster, random));
+
+    yipe::CombatTurn turn;
+    for (int attempt = 0; attempt < 30 && turn.outcome == yipe::CombatOutcome::ongoing;
+         ++attempt) {
+        turn = yipe::resolve_attack_turn(game.player, monster, random);
+    }
+    check(turn.outcome == yipe::CombatOutcome::victory,
+          "playable flow can finish the encounter after using an item");
+    game.giant_beetle_defeated = true;
+    game.random_state = random.state();
+
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "yipe3-rebuild-flow-test.y3r";
+    yipe::save_game_atomic(path, game);
+    const yipe::GameState resumed = yipe::load_game(path);
+    check(resumed.location.position == yipe::MapPosition{2, 8}
+              && resumed.giant_beetle_defeated && resumed.player.inventory[0] == 0
+              && resumed.player.experience > 0 && resumed.random_state == random.state(),
+          "playable flow resumes its location, encounter, inventory, reward, and random state");
+    std::filesystem::remove(path);
 }
 
 } // namespace
@@ -294,10 +464,13 @@ int main() {
     test_stat_and_maximum_items();
     test_item_names();
     test_native_save();
+    test_game_save();
     test_original_auxiliary_data();
     test_starting_map();
     test_static_map_catalog_and_edges();
     test_starting_shop();
+    test_giant_beetle_encounter();
+    test_first_playable_flow();
 
     if (failures != 0) {
         std::cerr << failures << " test(s) failed\n";

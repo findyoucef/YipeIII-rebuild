@@ -40,6 +40,18 @@ value_at_0x58 / 2
 
 The write branch stores zero instead when the prior validation flag is false. This is a consistency check, not evidence of a cryptographic checksum.
 
+## Rebuild-native saves
+
+The native rebuild format is independent of MFC and legacy `.yp3` files. Its
+14-byte header contains magic `Y3RS`, a little-endian 16-bit version, a
+little-endian 32-bit payload size, and a CRC-32 of the payload. Version 1 stores
+the initially reconstructed player fields. Version 2 appends experience, gold,
+equipment, combat settings, world coordinates, the first encounter's completion
+state, and the Visual C++ random-generator state. The loader accepts both
+versions and gives version-1 files the starting world state. Writes use a
+temporary file and atomic replacement so a failed write does not destroy the
+previous save.
+
 ## Remaining work
 
 - Capture paired original `.yp3` files from R08.

@@ -2,7 +2,7 @@
 
 This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1.1.6.0 from the supplied 2003 Windows executable. The original binary is an input and reference; generated decompiler output is evidence, not compilable source.
 
-The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, the external item-name parser, map grids, and movement classification. Its SDL2 application renders the recovered startup menu and the first 13×12 area from original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
+The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, the external item-name parser, map grids, movement, Fred's shop purchases, and the first Giant Beetle encounter. Its SDL2 application renders the recovered startup menu, all 112 static map tables, the starting shop, and the first enemy from original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
 
 ## Build and test
 
@@ -15,7 +15,9 @@ ctest --test-dir build --output-on-failure
 ./build/yipe3
 ```
 
-The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the recovered New Game, Load Game, or Quit rows, or use N, L, Q, and Escape. New Game enters the recovered starting area at the original `(5,5)` position; move with the arrow keys or WASD, cross passable map edges, and exit with Q or Escape. The starting building displays Fred's recovered shop stock. Load Game remains pending while the legacy import path is reconstructed. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
+The `yipe3` executable renders the 288×397 startup view at 2× scale. Click New Game, Load Game, or Quit, or use N, L, Q, and Escape. New Game prompts for Warrior, Rogue, or Wizard and enters map `0x11` at `(5,5)`. Move with the arrow keys or WASD, inspect player state with I, and save with F5. The central building opens Fred's shop with working purchases. Cross the north edge and reach `(2,8)` to fight the Giant Beetle with Attack, Use Item, and Flee actions. Q or Escape offers Save and Quit.
+
+Load Game resumes the native `save.y3r` stored in SDL's per-user application-data directory. Version 2 saves preserve progression, equipment, world position, the defeated encounter, and random-generator state; the loader still accepts the earlier player-only version 1 format. Legacy `.yp3` import remains under investigation. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
 
 ## Evidence and status
 

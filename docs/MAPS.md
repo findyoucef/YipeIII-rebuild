@@ -64,9 +64,17 @@ The central tile with ID `1` returns action code `8`. The action dispatcher at
 `0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current
 map ID is `0x11`, `0x004402b0` selects the title resource “Fred's Miscellaneous
 Shop,” stock builder `0x00440e50`, and the map-specific price slice in
-`0x00441010`. The SDL build now displays all 11 recovered stock rows and prices
-when the player enters that tile. Purchase and equipment mutation remain part of
-the economy work in P6.
+`0x00441010`. The SDL build displays all 11 recovered stock rows and prices when
+the player enters that tile. Its purchase path follows `0x00441250`: seven
+consumables use the first free slot among the 13 carried-item slots, while the
+four equipment rows update their matching slot only when the purchased tier is
+an improvement. Failed purchases do not deduct gold.
+
+The first reachable static encounter is the Giant Beetle placed by `0x0041ec40`
+on map `0x0b` at `(2,8)`. The route from the north-edge entry at `(5,10)` is
+covered by the playable-flow test. Bitmap resource 175 is drawn at the placement
+until the encounter is won; the version-2 native save preserves its defeated
+state.
 
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.
