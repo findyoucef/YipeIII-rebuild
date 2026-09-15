@@ -1,5 +1,6 @@
 #include "yipe/auxiliary_data.hpp"
 #include "yipe/item_names.hpp"
+#include "yipe/map.hpp"
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
@@ -214,6 +215,30 @@ void test_original_auxiliary_data() {
     std::filesystem::remove(temporary);
 }
 
+void test_starting_map() {
+    const yipe::Map map = yipe::starting_map();
+    check(map.id() == 0x11 && map.environment() == 0,
+          "starting map preserves original map ID and environment");
+    check(map.tile({0, 0}) == 3 && map.tile({5, 5}) == 2 && map.tile({6, 6}) == 1,
+          "starting map uses the recovered column-major tile table");
+    check(map.tile({12, 11}) == 3 && map.tile({11, 10}) == 10,
+          "starting map preserves far-edge tiles");
+
+    yipe::MapPosition position{5, 5};
+    const yipe::MovementResult right = yipe::try_move(map, position, 1, 0);
+    check(right.original_code == 1 && right.position_changed
+              && position == yipe::MapPosition{6, 5},
+          "ordinary starting-map movement updates the player position");
+    const yipe::MovementResult entrance = yipe::try_move(map, position, 0, 1);
+    check(entrance.original_code == 8 && !entrance.position_changed
+              && position == yipe::MapPosition{6, 5},
+          "tile 1 produces the original entrance action without moving");
+    position = {1, 0};
+    const yipe::MovementResult blocked = yipe::try_move(map, position, -1, 0);
+    check(blocked.original_code == 0 && !blocked.position_changed,
+          "impassable terrain blocks movement");
+}
+
 } // namespace
 
 int main() {
@@ -225,6 +250,7 @@ int main() {
     test_item_names();
     test_native_save();
     test_original_auxiliary_data();
+    test_starting_map();
 
     if (failures != 0) {
         std::cerr << failures << " test(s) failed\n";

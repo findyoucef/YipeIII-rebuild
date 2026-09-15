@@ -45,6 +45,18 @@ python3 tools/catalog_windows_ui.py assets/embedded/raw
 
 The resulting `assets/embedded/ui-catalog.json` records all dialog/control geometry, labels, IDs, styles, the application menu tree, and accelerator bindings.
 
+## Recover static map tables
+
+```bash
+./tools/extract_map_tables.py \
+  --decompiled-dir /Users/baouchiy/Downloads/YipeIII-analysis/decompiled \
+  --output assets/maps/original-map-tables.json
+```
+
+The command reads the map dispatcher and its static loader functions from the
+Ghidra C export. It validates every 13×12 table before writing deterministic
+JSON. Runtime-generated map IDs `0x76`–`0x78` are intentionally excluded.
+
 ## Re-export the preserved Ghidra project
 
 Close the project in the Ghidra GUI first. The canonical generated output remains in `/Users/baouchiy/Downloads/YipeIII-analysis`; the copy under `evidence/analysis-snapshot` is a point-in-time snapshot.

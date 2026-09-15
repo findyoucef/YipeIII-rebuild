@@ -1,6 +1,8 @@
+#include "yipe/map.hpp"
+
 #include <SDL.h>
 
-#include <array>
+#include <cstdint>
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -9,9 +11,12 @@
 
 namespace {
 
-constexpr int logical_width = 288;
-constexpr int menu_height = 360;
-constexpr int logical_height = 397;
+constexpr int startup_width = 288;
+constexpr int startup_menu_height = 360;
+constexpr int startup_height = 397;
+constexpr int tile_size = 32;
+constexpr int map_width = yipe::Map::width * tile_size;
+constexpr int map_height = yipe::Map::height * tile_size;
 
 using Window = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
 using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
@@ -33,11 +38,16 @@ public:
     SdlSession& operator=(const SdlSession&) = delete;
 };
 
-Texture load_bitmap(SDL_Renderer* renderer, const std::filesystem::path& path) {
+Texture load_bitmap(SDL_Renderer* renderer, const std::filesystem::path& path,
+                    bool transparent = false) {
     std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface)> surface(
         SDL_LoadBMP(path.string().c_str()), SDL_FreeSurface);
     if (!surface) {
         throw std::runtime_error("could not load " + path.string() + ": " + SDL_GetError());
+    }
+    if (transparent) {
+        const Uint32 magenta = SDL_MapRGB(surface->format, 255, 0, 255);
+        SDL_SetColorKey(surface.get(), SDL_TRUE, magenta);
     }
     Texture texture(SDL_CreateTextureFromSurface(renderer, surface.get()), SDL_DestroyTexture);
     if (!texture) {
@@ -64,13 +74,20 @@ std::filesystem::path runtime_asset_directory(const char* executable) {
     throw std::runtime_error(std::string("could not locate runtime assets for ") + executable);
 }
 
+void copy_texture(SDL_Renderer* renderer, SDL_Texture* texture, const SDL_Rect* source,
+                  const SDL_Rect* destination) {
+    if (SDL_RenderCopy(renderer, texture, source, destination) != 0) {
+        throw std::runtime_error(std::string("could not render texture: ") + SDL_GetError());
+    }
+}
+
 void render_startup(SDL_Renderer* renderer, SDL_Texture* menu, SDL_Texture* copyright) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    const SDL_Rect menu_destination{0, 0, logical_width, menu_height};
+    const SDL_Rect menu_destination{0, 0, startup_width, startup_menu_height};
     const SDL_Rect copyright_destination{61, 368, 166, 21};
-    SDL_RenderCopy(renderer, menu, nullptr, &menu_destination);
-    SDL_RenderCopy(renderer, copyright, nullptr, &copyright_destination);
+    copy_texture(renderer, menu, nullptr, &menu_destination);
+    copy_texture(renderer, copyright, nullptr, &copyright_destination);
     SDL_RenderPresent(renderer);
 }
 
@@ -130,6 +147,158 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
     }
 }
 
+struct GameTextures {
+    Texture terrain_133;
+    Texture terrain_134;
+    Texture terrain_137;
+    Texture terrain_139;
+    Texture terrain_141;
+    Texture terrain_142;
+    Texture special_377;
+    Texture special_418;
+    Texture warrior;
+};
+
+GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::path& assets) {
+    return {
+        load_bitmap(renderer, assets / "133-1033.bmp"),
+        load_bitmap(renderer, assets / "134-1033.bmp"),
+        load_bitmap(renderer, assets / "137-1033.bmp"),
+        load_bitmap(renderer, assets / "139-1033.bmp"),
+        load_bitmap(renderer, assets / "141-1033.bmp"),
+        load_bitmap(renderer, assets / "142-1033.bmp"),
+        load_bitmap(renderer, assets / "377-1033.bmp"),
+        load_bitmap(renderer, assets / "418-1033.bmp"),
+        load_bitmap(renderer, assets / "406-1033.bmp", true),
+    };
+}
+
+struct TileGraphic {
+    SDL_Texture* texture;
+    SDL_Rect source;
+};
+
+TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
+    switch (tile) {
+    case 1:
+        return {textures.terrain_137.get(), {0, 0, tile_size, tile_size}};
+    case 2:
+        return {textures.terrain_133.get(), {0, 0, tile_size, tile_size}};
+    case 3:
+        return {textures.terrain_139.get(), {0, 32, tile_size, tile_size}};
+    case 5:
+        return {textures.terrain_137.get(), {32, 0, tile_size, tile_size}};
+    case 6:
+        return {textures.terrain_137.get(), {0, 32, tile_size, tile_size}};
+    case 7:
+        return {textures.terrain_137.get(), {32, 32, tile_size, tile_size}};
+    case 8:
+        return {textures.terrain_142.get(), {32, 0, tile_size, tile_size}};
+    case 10:
+        return {textures.special_418.get(), {0, 0, tile_size, tile_size}};
+    case 0x0b:
+        return {textures.terrain_133.get(), {0, 32, tile_size, tile_size}};
+    case 0x0e:
+    case 0x59:
+        return {textures.terrain_134.get(), {0, 32, tile_size, tile_size}};
+    case 0x0f:
+        return {textures.terrain_141.get(), {0, 32, tile_size, tile_size}};
+    case 0x10:
+        return {textures.terrain_141.get(), {32, 32, tile_size, tile_size}};
+    case 0x16:
+        return {textures.terrain_142.get(), {0, 0, tile_size, tile_size}};
+    case 0x19:
+        return {textures.terrain_134.get(), {32, 0, tile_size, tile_size}};
+    case 0x1a:
+        return {textures.terrain_134.get(), {32, 32, tile_size, tile_size}};
+    case 0x30:
+        return {textures.special_377.get(), {0, 0, tile_size, tile_size}};
+    case 0x32:
+        return {textures.terrain_133.get(), {32, 0, tile_size, tile_size}};
+    case 0x39:
+        return {textures.terrain_139.get(), {0, 0, tile_size, tile_size}};
+    default:
+        throw std::runtime_error("starting map contains an unmapped tile graphic");
+    }
+}
+
+void prepare_game_view(SDL_Window* window, SDL_Renderer* renderer) {
+    SDL_SetWindowSize(window, map_width * 2, map_height * 2);
+    if (SDL_RenderSetLogicalSize(renderer, map_width, map_height) != 0) {
+        throw std::runtime_error(std::string("could not set map render size: ") + SDL_GetError());
+    }
+}
+
+void render_game(SDL_Renderer* renderer, const yipe::Map& map,
+                 const GameTextures& textures, yipe::MapPosition player) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    for (int x = 0; x < yipe::Map::width; ++x) {
+        for (int y = 0; y < yipe::Map::height; ++y) {
+            const TileGraphic graphic = tile_graphic(map.tile({x, y}), textures);
+            const SDL_Rect destination{x * tile_size, y * tile_size, tile_size, tile_size};
+            copy_texture(renderer, graphic.texture, &graphic.source, &destination);
+        }
+    }
+    const SDL_Rect player_destination{player.x * tile_size, player.y * tile_size,
+                                      tile_size, tile_size};
+    copy_texture(renderer, textures.warrior.get(), nullptr, &player_destination);
+    SDL_RenderPresent(renderer);
+}
+
+void run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures) {
+    prepare_game_view(window, renderer);
+    const yipe::Map map = yipe::starting_map();
+    yipe::MapPosition player{5, 5};
+    render_game(renderer, map, textures, player);
+
+    while (true) {
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT) {
+            return;
+        }
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
+            render_game(renderer, map, textures, player);
+        }
+        if (event.type != SDL_KEYDOWN) {
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
+            return;
+        }
+
+        int delta_x = 0;
+        int delta_y = 0;
+        switch (event.key.keysym.sym) {
+        case SDLK_LEFT:
+        case SDLK_a:
+            delta_x = -1;
+            break;
+        case SDLK_RIGHT:
+        case SDLK_d:
+            delta_x = 1;
+            break;
+        case SDLK_UP:
+        case SDLK_w:
+            delta_y = -1;
+            break;
+        case SDLK_DOWN:
+        case SDLK_s:
+            delta_y = 1;
+            break;
+        default:
+            continue;
+        }
+        const yipe::MovementResult result = yipe::try_move(map, player, delta_x, delta_y);
+        if (result.position_changed) {
+            render_game(renderer, map, textures, player);
+        }
+    }
+}
+
 } // namespace
 
 int main(int argc, char* argv[]) {
@@ -140,8 +309,8 @@ int main(int argc, char* argv[]) {
 
         const Uint32 window_flags = smoke_test ? SDL_WINDOW_HIDDEN : SDL_WINDOW_RESIZABLE;
         Window window(SDL_CreateWindow("Yipe! III", SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED, logical_width * 2,
-                                       logical_height * 2, window_flags),
+                                       SDL_WINDOWPOS_CENTERED, startup_width * 2,
+                                       startup_height * 2, window_flags),
                       SDL_DestroyWindow);
         if (!window) {
             throw std::runtime_error(std::string("could not create window: ") + SDL_GetError());
@@ -153,21 +322,25 @@ int main(int argc, char* argv[]) {
         if (!renderer) {
             renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_SOFTWARE));
         }
-        if (!renderer || SDL_RenderSetLogicalSize(renderer.get(), logical_width, logical_height) != 0) {
+        if (!renderer
+            || SDL_RenderSetLogicalSize(renderer.get(), startup_width, startup_height) != 0) {
             throw std::runtime_error(std::string("could not create renderer: ") + SDL_GetError());
         }
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
         const Texture menu = load_bitmap(renderer.get(), assets / "379-1033.bmp");
         const Texture copyright = load_bitmap(renderer.get(), assets / "326-1033.bmp");
+        const GameTextures game_textures = load_game_textures(renderer.get(), assets);
         if (smoke_test) {
             render_startup(renderer.get(), menu.get(), copyright.get());
+            prepare_game_view(window.get(), renderer.get());
+            render_game(renderer.get(), yipe::starting_map(), game_textures, {5, 5});
             return 0;
         }
 
         switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
         case StartupChoice::new_game:
-            std::cout << "new_game\n";
+            run_game(window.get(), renderer.get(), game_textures);
             break;
         case StartupChoice::load_game:
             std::cout << "load_game\n";

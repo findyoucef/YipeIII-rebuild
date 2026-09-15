@@ -11,6 +11,7 @@ find_package(SDL2 CONFIG REQUIRED)
 add_library(yipe_core
     src/auxiliary_data.cpp
     src/item_names.cpp
+    src/map.cpp
     src/player.cpp
     src/random.cpp
     src/save.cpp
@@ -28,10 +29,10 @@ target_compile_options(yipe3 PRIVATE
 
 set(YIPE_RUNTIME_ASSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/assets")
 file(MAKE_DIRECTORY "${YIPE_RUNTIME_ASSET_DIR}")
-configure_file(assets/embedded/bitmaps/379-1033.bmp
-               "${YIPE_RUNTIME_ASSET_DIR}/379-1033.bmp" COPYONLY)
-configure_file(assets/embedded/bitmaps/326-1033.bmp
-               "${YIPE_RUNTIME_ASSET_DIR}/326-1033.bmp" COPYONLY)
+foreach(YIPE_BITMAP_ID 133 134 137 139 141 142 326 377 379 406 418)
+    configure_file(assets/embedded/bitmaps/${YIPE_BITMAP_ID}-1033.bmp
+                   "${YIPE_RUNTIME_ASSET_DIR}/${YIPE_BITMAP_ID}-1033.bmp" COPYONLY)
+endforeach()
 
 enable_testing()
 add_executable(yipe_core_tests tests/core_tests.cpp)

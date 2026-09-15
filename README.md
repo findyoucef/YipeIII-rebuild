@@ -2,7 +2,7 @@
 
 This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1.1.6.0 from the supplied 2003 Windows executable. The original binary is an input and reference; generated decompiler output is evidence, not compilable source.
 
-The current build contains the first platform-neutral gameplay module: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, and the external item-name parser. Its SDL2 application renders the recovered startup menu from the original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
+The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, the original Visual C++ random-number generator, the external item-name parser, map grids, and movement classification. Its SDL2 application renders the recovered startup menu and the first 13×12 area from original bitmap resources. The remaining game systems are tracked in the [rebuild plan](../YipeIII-analysis/REBUILD_PLAN.md).
 
 ## Build and test
 
@@ -15,7 +15,7 @@ ctest --test-dir build --output-on-failure
 ./build/yipe3
 ```
 
-The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the recovered New Game, Load Game, or Quit rows, or use N, L, Q, and Escape. New and Load currently report the selected transition to the caller while their screens are reconstructed. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
+The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the recovered New Game, Load Game, or Quit rows, or use N, L, Q, and Escape. New Game enters the recovered starting area at the original `(5,5)` position; move with the arrow keys or WASD and exit with Q or Escape. Load Game remains pending while the legacy import path is reconstructed. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
 
 ## Evidence and status
 
@@ -28,6 +28,7 @@ The `yipe3` executable renders the 288×397 startup view at 2× scale. Click the
 - [Original-runtime setup](docs/ORIGINAL_RUNTIME.md)
 - [Legacy save analysis](docs/LEGACY_SAVE.md)
 - [Original auxiliary-data format](docs/AUXILIARY_DATA.md)
+- [Map recovery and generated catalog](docs/MAPS.md)
 
 The preserved Ghidra project and export indexes are under `evidence/analysis-snapshot`. The original executable is deliberately not duplicated here; its expected hash and all supplied-file hashes are in the input manifest.
 
