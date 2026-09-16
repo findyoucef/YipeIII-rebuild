@@ -70,8 +70,13 @@ and every serialized field not yet understood. The known mapping includes the
 player name, primary stats, HP/SP/AP, level, weapon and armor ranks, five minor
 equipment ranks, XP, transformed gold, world coordinates, computed map ID,
 difficulty, combat style, restoration count, tree/key movement state, inventory,
-and the recovered extended item-status fields. Offset-based arrays remain in
-the import object so future reconstruction does not require reparsing the file.
+and the recovered extended item-status fields. The King-dialog trace also maps
+`+0x05c` to its quest score/value, `+0x063` to the Lucky Rabbit Foot, the 30
+`+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
+the sum of the 50 `+0x584` values to the early equipment hint, and extended
+entries 2, 8, and 9 to Gatekeeper, stamp, and princess state. Offset-based
+arrays remain in the import object so future reconstruction does not require
+reparsing the file.
 
 The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
@@ -89,13 +94,14 @@ state, and the Visual C++ random-generator state. Version 3 appends ability
 points, the learned special ability, its active duration, and the three Enrage
 stat backups. Version 4 appends the limited-restoration counter and the four
 movement flags for waterproof shoe spray, tree-climbing shoes, and both keys. The
-loader accepts all four versions, gives version-1 files the starting world
+loader gives version-1 files the starting world
 state, gives version-2 files a full starting AP pool, and defaults fields added
 by newer formats. Version 5 appends changed map IDs, coordinates, and tile values
 so opened doors and linked mechanisms survive map changes and restart. Version 6
-appends the 15 learned-spell values recovered from legacy offset `+0x10c`. The
-loader accepts all six versions. Writes use a temporary file and atomic replacement
-so a failed write does not destroy the previous save.
+appends the 15 learned-spell values recovered from legacy offset `+0x10c`.
+Version 7 appends the recovered King quest state and Lucky Rabbit Foot. The
+loader accepts all seven versions. Writes use a temporary file and atomic
+replacement so a failed write does not destroy the previous save.
 
 ## Verification status
 

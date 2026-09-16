@@ -20,6 +20,7 @@ add_library(yipe_core
     src/legacy_save.cpp
     src/map.cpp
     src/player.cpp
+    src/quest.cpp
     src/random.cpp
     src/save.cpp
     src/shop.cpp

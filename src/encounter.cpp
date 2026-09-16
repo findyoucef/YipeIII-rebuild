@@ -93,6 +93,9 @@ int calculate_player_damage(const Player& player, const Monster& monster,
         && player.special_ability_duration > 0) {
         situational_hit_bonus += 1 + roll(random, player.special_ability_duration);
     }
+    if (player.has_lucky_rabbit_foot) {
+        situational_hit_bonus += 1 + roll(random, 6);
+    }
     const int situational_roll = roll(random, situational_hit_bonus + 1);
     const int equipment_roll = roll(random, player_attack_equipment_rating(player) + 1);
 

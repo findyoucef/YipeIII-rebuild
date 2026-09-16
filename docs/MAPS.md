@@ -80,12 +80,15 @@ The action dispatcher at `0x0040e880` establishes these special movement paths:
 | `0x0e`, `0x0f`, `0x10` | Descend, ascend, or alternate descend between map layers |
 | `0x11` | Special-ability training entrance |
 | `0x13`, `0x14` | Rainbow-key and underworld-key locked-door messages |
-| `0x15` | Dynamic quest/information dialog (resource 295) |
+| `0x15` | King's dynamic quest dialog, hints, and one-time rewards (resource 295) |
 | `0x16` | Return to the starting surface location |
 | `0x17` | Two-roll, nonlethal fire-wall damage |
 
 The SDL dispatcher exposes the recovered entrance identities and implements the
-restoration, depth, surface-return, key-message, and fire-wall effects. The core
+restoration, depth, surface-return, key-message, fire-wall, and King-dialog effects.
+The King selector preserves all 34 message/footer pairs, greeting time-of-day
+handling, quest flags, hint rolls, and gold/equipment/Lucky Rabbit Foot rewards.
+The core
 also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
 The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles
 `0x56`/`0x57`. Generated event records
@@ -93,8 +96,8 @@ now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacemen
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
 visibility refresh performed by `0x19`. Native format version 5 introduced
-persistence for changed door and linked-mechanism tiles; current version 6
-retains it.
+persistence for changed door and linked-mechanism tiles; current version 7
+retains it and the recovered King quest state.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -154,9 +157,10 @@ the three size-zero placements on map `0x14`. The four player special abilities
 and their Invisibility/Enrage combat statuses are implemented from the static
 branches. High-rank placements now override their generated companions and
 scale primary health by player level. The Gatekeeper's empowered setup, attack,
-defense, and damage branches are also implemented; its surrounding quest state
-and the remaining monster-specific branches still need reconstruction before
-the application enables all encounters.
+defense, and damage branches are also implemented. The King dialog now consumes
+the Gatekeeper state for its hints and rewards; the event paths that advance
+that state and the remaining monster-specific branches still need reconstruction
+before the application enables all encounters.
 
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the

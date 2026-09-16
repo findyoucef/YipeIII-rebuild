@@ -24,7 +24,8 @@ constexpr std::uint16_t progression_game_format_version = 2;
 constexpr std::uint16_t ability_game_format_version = 3;
 constexpr std::uint16_t movement_game_format_version = 4;
 constexpr std::uint16_t map_changes_game_format_version = 5;
-constexpr std::uint16_t game_format_version = 6;
+constexpr std::uint16_t spells_game_format_version = 6;
+constexpr std::uint16_t game_format_version = 7;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -196,6 +197,18 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     for (const std::uint16_t spell : game.player.spells) {
         append_u16(payload, spell);
     }
+    append_i32(payload, game.player.quest_score);
+    append_u8(payload, game.player.has_lucky_rabbit_foot ? 1 : 0);
+    for (const bool flag : game.player.quest_flags) {
+        append_u8(payload, flag ? 1 : 0);
+    }
+    for (const std::uint16_t value : game.player.inventory_values) {
+        append_u16(payload, value);
+    }
+    append_i32(payload, game.player.quest_progress_total);
+    append_u16(payload, game.player.gatekeeper_state);
+    append_u16(payload, game.player.stamps_found);
+    append_u16(payload, game.player.princesses_found);
     return payload;
 }
 
@@ -298,7 +311,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
     if (version != player_format_version && version != progression_game_format_version
         && version != ability_game_format_version
         && version != movement_game_format_version
-        && version != map_changes_game_format_version && version != game_format_version) {
+        && version != map_changes_game_format_version
+        && version != spells_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -409,10 +423,24 @@ GameState load_game(const std::filesystem::path& path) {
             game.map_tile_changes.push_back(change);
         }
     }
-    if (save.version == game_format_version) {
+    if (save.version >= spells_game_format_version) {
         for (std::uint16_t& spell : game.player.spells) {
             spell = reader.u16();
         }
+    }
+    if (save.version == game_format_version) {
+        game.player.quest_score = reader.i32();
+        game.player.has_lucky_rabbit_foot = reader.u8() != 0;
+        for (bool& flag : game.player.quest_flags) {
+            flag = reader.u8() != 0;
+        }
+        for (std::uint16_t& value : game.player.inventory_values) {
+            value = reader.u16();
+        }
+        game.player.quest_progress_total = reader.i32();
+        game.player.gatekeeper_state = reader.u16();
+        game.player.stamps_found = reader.u16();
+        game.player.princesses_found = reader.u16();
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

@@ -3,6 +3,7 @@
 #include "yipe/item_names.hpp"
 #include "yipe/map.hpp"
 #include "yipe/random.hpp"
+#include "yipe/quest.hpp"
 #include "yipe/save.hpp"
 #include "yipe/shop.hpp"
 #include "yipe/spell.hpp"
@@ -1621,9 +1622,18 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                              "You need an underworld key to open this door.");
                 break;
             case 0x15:
-                show_message(window, "Information",
-                             "Someone here has information for your quest.");
+            {
+                const std::time_t now = std::time(nullptr);
+                const std::tm* local_time = std::localtime(&now);
+                const int hour = local_time == nullptr ? 12 : local_time->tm_hour;
+                const yipe::KingConversation conversation =
+                    yipe::talk_to_king(game.player, random, hour);
+                show_message(window, "The King",
+                             conversation.greeting + "\n\n"
+                                 + std::string(conversation.message) + "\n\n"
+                                 + std::string(conversation.footer));
                 break;
+            }
             case 0x16:
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();

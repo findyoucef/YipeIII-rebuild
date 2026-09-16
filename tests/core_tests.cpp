@@ -5,6 +5,7 @@
 #include "yipe/legacy_save.hpp"
 #include "yipe/map.hpp"
 #include "yipe/player.hpp"
+#include "yipe/quest.hpp"
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
 #include "yipe/shop.hpp"
@@ -360,6 +361,14 @@ void test_game_save() {
     original.player.has_tree_climbing_shoes = true;
     original.player.spells[0] = 1;
     original.player.spells[11] = 1;
+    original.player.quest_score = 1500;
+    original.player.quest_progress_total = 73;
+    original.player.gatekeeper_state = 2;
+    original.player.stamps_found = 6;
+    original.player.princesses_found = 14;
+    original.player.has_lucky_rabbit_foot = true;
+    original.player.quest_flags[8] = true;
+    original.player.inventory_values[13] = 9;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.giant_beetle_defeated = true;
     original.random_state = 0x12345678u;
@@ -370,16 +379,16 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 6 save restores progression and equipment");
+          "version 7 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 6 save restores combat settings and counters");
+          "version 7 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 6 save restores world location");
+          "version 7 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 6 save restores encounter and random state");
+          "version 7 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -387,17 +396,37 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 6 save restores ability and active status state");
+          "version 7 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 6 save restores special movement state");
+          "version 7 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 6 save restores persistent map tile changes");
+          "version 7 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 6 save restores learned spells");
+          "version 7 save restores learned spells");
+    check(loaded.player.quest_score == 1500
+              && loaded.player.quest_progress_total == 73
+              && loaded.player.gatekeeper_state == 2
+              && loaded.player.stamps_found == 6
+              && loaded.player.princesses_found == 14
+              && loaded.player.has_lucky_rabbit_foot
+              && loaded.player.quest_flags[8]
+              && loaded.player.inventory_values[13] == 9,
+          "version 7 save restores King quest state");
+
+    constexpr std::size_t quest_extension_size = 2 * sizeof(std::int32_t)
+        + sizeof(std::uint8_t) + yipe::Player::quest_flag_count * sizeof(std::uint8_t)
+        + yipe::Player::inventory_size * sizeof(std::uint16_t)
+        + 3 * sizeof(std::uint16_t);
+    remove_save_extension(path, quest_extension_size, 6);
+    const yipe::GameState loaded_version_6 = yipe::load_game(path);
+    check(loaded_version_6.player.spells == original.player.spells
+              && loaded_version_6.player.quest_score == 0
+              && !loaded_version_6.player.has_lucky_rabbit_foot,
+          "version 6 saves retain learned spells and default quest state");
 
     remove_save_extension(path,
                           yipe::Player::spell_count * sizeof(std::uint16_t), 5);
@@ -465,7 +494,7 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
     append_i32(bytes, 44);
     append_i32(bytes, 55);
 
-    for (const bool value : std::array{false, true, true, false, false, true, true}) {
+    for (const bool value : std::array{false, true, true, false, true, true, true}) {
         append_i32(bytes, value ? 1 : 0);
     }
     for (std::size_t index = 0; index < 512; ++index) {
@@ -487,8 +516,11 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
     for (std::size_t index = 0; index < 50; ++index) {
         std::uint16_t value = 0;
         switch (index) {
+        case 2: value = 2; break;
         case 3: value = 1; break;
         case 6: value = 125; break;
+        case 8: value = 4; break;
+        case 9: value = 11; break;
         case 11: value = 1; break;
         case 15: value = 3; break;
         case 16: value = 85; break;
@@ -549,6 +581,12 @@ void test_legacy_save_import() {
               && player.spells == imported.values_010c
               && player.has_bonus_healing_ring && player.unknown_0680 == 22,
           "legacy import maps inventory, spells, and recovered extended fields");
+    check(player.quest_score == 123 && player.has_lucky_rabbit_foot
+              && player.quest_flags[29] && player.inventory_values[29] == 39
+              && player.quest_progress_total == 51225
+              && player.gatekeeper_state == 2 && player.stamps_found == 4
+              && player.princesses_found == 11,
+          "legacy import maps recovered King quest state");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
               && imported.flag_values[4].flag_0148
@@ -1433,6 +1471,18 @@ void test_special_abilities() {
               && invisible_attack_random.state() == 2453175039u,
           "an invisible attack applies its situational bonus before the equipment roll");
 
+    yipe::CombatEncounter lucky_attack_group = group;
+    yipe::Player lucky_attacker;
+    lucky_attacker.health = 1000;
+    lucky_attacker.maximum_health = 1000;
+    lucky_attacker.has_lucky_rabbit_foot = true;
+    yipe::MsvcRandom lucky_attack_random(1);
+    const yipe::CombatTurn lucky_attack = yipe::resolve_attack_turn(
+        lucky_attacker, lucky_attack_group, lucky_attack_random);
+    check(lucky_attack.player_damage == 1 && lucky_attack.monster_damage == 3
+              && lucky_attack_random.state() == 4200262242u,
+          "the Lucky Rabbit Foot applies its situational attack roll in original order");
+
     yipe::CombatEncounter enraged_group = group;
     yipe::Player enraged_player;
     enraged_player.special_ability = yipe::SpecialAbility::enrage;
@@ -1663,6 +1713,96 @@ void test_equipment_combat_ratings() {
     player.special_ability_duration = 20;
     check(yipe::player_attack_equipment_rating(player) == 17,
           "Invisibility remains separate from the deterministic equipment rating");
+}
+
+void test_king_quest_dialog() {
+    yipe::Player player;
+    player.name = "Ari";
+    yipe::MsvcRandom random(1);
+    const yipe::KingConversation introduction =
+        yipe::talk_to_king(player, random, 13);
+    check(introduction.greeting_resource_id == 721
+              && introduction.message_resource_id == 731
+              && introduction.footer_resource_id == 766
+              && introduction.greeting == "Welcome, Ari"
+              && introduction.message.starts_with("Thank you for coming")
+              && player.quest_flags[0],
+          "the first King conversation forces the original introduction");
+
+    const yipe::KingConversation princess_request =
+        yipe::talk_to_king(player, random, 13);
+    check(princess_request.greeting_resource_id == 727
+              && princess_request.message_resource_id == 732
+              && princess_request.footer_resource_id == 767
+              && player.quest_flags[1],
+          "the second King conversation introduces the missing princesses");
+
+    yipe::Player stamp_reward;
+    stamp_reward.quest_flags[0] = true;
+    stamp_reward.quest_flags[1] = true;
+    stamp_reward.stamps_found = 1;
+    yipe::MsvcRandom stamp_random(1);
+    const yipe::KingConversation first_stamp =
+        yipe::talk_to_king(stamp_reward, stamp_random, 8);
+    check(first_stamp.message_resource_id == 733
+              && first_stamp.footer_resource_id == 768
+              && stamp_reward.gold == 500 && stamp_reward.quest_flags[2],
+          "the King pays the one-time first-stamp reward");
+
+    yipe::Player spray_hint;
+    spray_hint.quest_flags.fill(true);
+    spray_hint.quest_flags[7] = false;
+    spray_hint.stamps_found = 4;
+    yipe::MsvcRandom spray_random(1);
+    const yipe::KingConversation missing_spray =
+        yipe::talk_to_king(spray_hint, spray_random, 12);
+    check(missing_spray.message_resource_id == 747 && !spray_hint.quest_flags[7],
+          "four-stamp dialog waits for the waterproof shoe spray");
+    spray_hint.has_waterproof_shoe_spray = true;
+    const yipe::KingConversation found_spray =
+        yipe::talk_to_king(spray_hint, spray_random, 12);
+    check(found_spray.message_resource_id == 746 && spray_hint.quest_flags[7],
+          "the King recognizes the waterproof shoe spray once");
+
+    yipe::Player princess_reward;
+    princess_reward.quest_flags.fill(true);
+    princess_reward.quest_flags[8] = false;
+    princess_reward.princesses_found = 10;
+    yipe::MsvcRandom princess_random(1);
+    const yipe::KingConversation lucky_foot =
+        yipe::talk_to_king(princess_reward, princess_random, 12);
+    check(lucky_foot.message_resource_id == 739
+              && lucky_foot.footer_resource_id == 774
+              && princess_reward.has_lucky_rabbit_foot
+              && princess_reward.quest_flags[8],
+          "ten rescued princesses award the Lucky Rabbit Foot once");
+
+    yipe::Player gatekeeper_reward;
+    gatekeeper_reward.quest_flags.fill(true);
+    gatekeeper_reward.quest_flags[10] = false;
+    gatekeeper_reward.stamps_found = 6;
+    gatekeeper_reward.princesses_found = 19;
+    gatekeeper_reward.gatekeeper_state = 2;
+    gatekeeper_reward.weapon_rank = 37;
+    yipe::MsvcRandom gatekeeper_random(1);
+    const yipe::KingConversation defeated_gatekeeper =
+        yipe::talk_to_king(gatekeeper_reward, gatekeeper_random, 12);
+    check(defeated_gatekeeper.message_resource_id == 750
+              && gatekeeper_reward.quest_score == 1500
+              && gatekeeper_reward.weapon_rank == 38
+              && gatekeeper_reward.quest_flags[10],
+          "the first Gatekeeper victory grants the recovered score and weapon reward");
+
+    gatekeeper_reward.quest_flags[11] = false;
+    gatekeeper_reward.gatekeeper_state = 3;
+    const yipe::KingConversation completion =
+        yipe::talk_to_king(gatekeeper_reward, gatekeeper_random, 20);
+    check(completion.message_resource_id == 751
+              && completion.footer_resource_id == 786
+              && gatekeeper_reward.weapon_rank == 38
+              && gatekeeper_reward.armor_rank == 30
+              && gatekeeper_reward.quest_flags[11],
+          "the final King conversation grants the fixed end-game equipment");
 }
 
 void test_recovered_spells() {
@@ -2007,6 +2147,7 @@ int main() {
     test_monster_definition_catalog();
     test_weapon_damage_catalog();
     test_equipment_combat_ratings();
+    test_king_quest_dialog();
     test_recovered_spells();
     test_first_playable_flow();
 

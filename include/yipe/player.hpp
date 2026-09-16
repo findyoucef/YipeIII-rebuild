@@ -50,6 +50,7 @@ public:
     static constexpr std::size_t inventory_size = 30;
     static constexpr std::size_t carried_inventory_size = 13;
     static constexpr std::size_t spell_count = 15;
+    static constexpr std::size_t quest_flag_count = 30;
 
     Player();
     explicit Player(CharacterType type);
@@ -88,6 +89,12 @@ public:
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
     int restoration_uses = 0;
+    int quest_score = 0;
+    int quest_progress_total = 0;
+    std::uint16_t gatekeeper_state = 0;
+    std::uint16_t stamps_found = 0;
+    std::uint16_t princesses_found = 0;
+    bool has_lucky_rabbit_foot = false;
     bool has_waterproof_shoe_spray = false;
     bool has_rainbow_key = false;
     bool has_underworld_key = false;
@@ -98,6 +105,8 @@ public:
     int enrage_base_intelligence = 0;
     int enrage_base_strength = 0;
     std::array<std::uint16_t, inventory_size> inventory{};
+    std::array<std::uint16_t, inventory_size> inventory_values{};
+    std::array<bool, quest_flag_count> quest_flags{};
     std::array<std::uint16_t, spell_count> spells{};
 
     // Meanings are not yet established; names retain their original object offsets.

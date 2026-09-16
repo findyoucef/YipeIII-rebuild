@@ -177,15 +177,23 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
         entry.value_00d0 = reader.u16();
         entry.flag_012a = reader.archive_bool();
         player.inventory[index] = entry.item_id_0094;
+        player.inventory_values[index] = entry.value_00d0;
+        player.quest_flags[index] = entry.flag_012a;
     }
+    player.quest_score = save.unknown_005c;
+    player.has_lucky_rabbit_foot = save.unknown_0063;
     for (LegacyExtendedEntry& entry : save.extended_entries) {
         entry.value_065e = reader.u16();
         entry.value_0584 = reader.i32();
         entry.flag_0552 = reader.archive_bool();
+        player.quest_progress_total += entry.value_0584;
     }
 
+    player.gatekeeper_state = save.extended_entries[2].value_065e;
     player.unknown_0664 = save.extended_entries[3].value_065e;
     player.unknown_066a = save.extended_entries[6].value_065e;
+    player.stamps_found = save.extended_entries[8].value_065e;
+    player.princesses_found = save.extended_entries[9].value_065e;
     player.has_tree_climbing_shoes = save.extended_entries[11].value_065e == 1;
     player.combat_style = signed_u16(save.extended_entries[15].value_065e);
     player.unknown_067e = save.extended_entries[16].value_065e;
