@@ -511,6 +511,7 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
         result.reward = encounter.pending_reward;
         result.reward.equipment_upgrade =
             finish_encounter_rewards(player, encounter, random);
+        result.level_up = try_level_up(player, random);
         clear_combat_status(player);
     } else {
         encounter.selected_target = first_living_monster(encounter);
@@ -703,6 +704,7 @@ CombatTurn resolve_special_ability_turn(Player& player, CombatEncounter& encount
                 result.reward = encounter.pending_reward;
                 result.reward.equipment_upgrade =
                     finish_encounter_rewards(player, encounter, random);
+                result.level_up = try_level_up(player, random);
                 clear_combat_status(player);
             }
         }

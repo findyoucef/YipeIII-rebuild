@@ -109,6 +109,84 @@ void test_health_change() {
     check(player.health == 0, "damage reaches zero");
 }
 
+void test_level_progression() {
+    check(yipe::experience_required_for_next_level(1) == 201
+              && yipe::experience_required_for_next_level(27) == 42001
+              && yipe::experience_required_for_next_level(28) == 47001
+              && yipe::experience_required_for_next_level(33) == 90001,
+          "early and transition level thresholds preserve original comparisons");
+    check(yipe::experience_required_for_next_level(34) == 119001
+              && yipe::experience_required_for_next_level(55) == 220001
+              && yipe::experience_required_for_next_level(80) == 400001
+              && yipe::experience_required_for_next_level(99) == 495001
+              && !yipe::experience_required_for_next_level(100),
+          "formula thresholds extend progression through level 100");
+
+    yipe::Player below_threshold;
+    below_threshold.experience = 200;
+    yipe::MsvcRandom unchanged_random(1);
+    check(!yipe::try_level_up(below_threshold, unchanged_random).leveled_up
+              && below_threshold.level == 1 && unchanged_random.state() == 1,
+          "level progression requires experience strictly above the first threshold");
+
+    yipe::Player warrior;
+    warrior.experience = 201;
+    yipe::MsvcRandom warrior_random(1);
+    const yipe::LevelUpResult warrior_level = yipe::try_level_up(warrior, warrior_random);
+    check(warrior_level.leveled_up && warrior.level == 2
+              && warrior_level.health_increase == 6
+              && warrior.health == 19 && warrior.maximum_health == 19
+              && warrior_level.spell_point_increase == 6
+              && warrior.spell_points == 6 && warrior.maximum_spell_points == 6
+              && warrior_level.stat_increase == yipe::StatIncrease::none,
+          "ordinary level growth applies seeded health and spell-point gains");
+
+    yipe::Player milestone(yipe::CharacterType::wizard);
+    milestone.level = 4;
+    milestone.experience = 1501;
+    yipe::MsvcRandom milestone_random(1);
+    const yipe::LevelUpResult milestone_level =
+        yipe::try_level_up(milestone, milestone_random);
+    check(milestone.level == 5
+              && milestone_level.stat_increase == yipe::StatIncrease::intelligence
+              && milestone.intelligence == 17,
+          "milestone levels force the archetype's preferred stat increase");
+
+    yipe::Player high_level;
+    high_level.level = 41;
+    high_level.experience = 41 * 3500 + 1;
+    yipe::MsvcRandom high_level_random(1);
+    const yipe::LevelUpResult high_level_growth =
+        yipe::try_level_up(high_level, high_level_random);
+    check(high_level_growth.leveled_up && high_level.level == 42
+              && high_level_growth.health_increase == 4
+              && high_level_growth.spell_point_increase == 5,
+          "late-level health and spell-point gains preserve their caps");
+
+    yipe::Player one_level_only;
+    one_level_only.experience = 100000;
+    yipe::MsvcRandom one_level_random(1);
+    check(yipe::try_level_up(one_level_only, one_level_random).leveled_up
+              && one_level_only.level == 2,
+          "one progression check grants at most one level");
+
+    yipe::Player victorious_player;
+    victorious_player.experience = 200;
+    victorious_player.health = 1000;
+    victorious_player.maximum_health = 1000;
+    victorious_player.strength = 100;
+    victorious_player.weapon_rank = 42;
+    yipe::MsvcRandom victory_random(1);
+    yipe::Monster defeated_monster =
+        yipe::start_single_monster_encounter(2, victory_random);
+    defeated_monster.health = 1;
+    const yipe::CombatTurn victory = yipe::resolve_attack_turn(
+        victorious_player, defeated_monster, victory_random);
+    check(victory.outcome == yipe::CombatOutcome::victory
+              && victory.level_up.leveled_up && victorious_player.level == 2,
+          "completed encounter rewards trigger one progression check");
+}
+
 void test_healing_item() {
     yipe::Player player;
     yipe::MsvcRandom random(1);
@@ -1007,6 +1085,7 @@ int main() {
     test_random();
     test_player_defaults();
     test_health_change();
+    test_level_progression();
     test_healing_item();
     test_stat_and_maximum_items();
     test_item_names();

@@ -1,6 +1,7 @@
 #include "yipe/player.hpp"
 
 #include <algorithm>
+#include <array>
 #include <stdexcept>
 
 namespace yipe {
@@ -72,7 +73,7 @@ bool Player::adjust_health(int delta) {
     return health > 0;
 }
 
-int Player::stat_cap() const {
+int Player::maximum_stat() const {
     if (unknown_0654_stat_cap_mode == 1) {
         return 40;
     }
@@ -80,6 +81,110 @@ int Player::stat_cap() const {
         return 50;
     }
     return 30;
+}
+
+std::optional<int> experience_required_for_next_level(int level) {
+    constexpr std::array thresholds{
+        0, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000,
+        6000, 7100, 8200, 9300, 10400, 11600, 13250, 15100, 17200,
+        19200, 21750, 23250, 25000, 27000, 30000, 33500, 37500, 42000,
+    };
+    if (level < 1 || level >= 100) {
+        return std::nullopt;
+    }
+    if (level < static_cast<int>(thresholds.size())) {
+        return thresholds[static_cast<std::size_t>(level)] + 1;
+    }
+    switch (level) {
+    case 28:
+        return 47001;
+    case 29:
+        return 52001;
+    case 30:
+        return 57001;
+    case 31:
+        return 63001;
+    case 32:
+        return 75001;
+    case 33:
+        return 90001;
+    default:
+        break;
+    }
+    if (level < 55) {
+        return level * 3500 + 1;
+    }
+    if (level < 80) {
+        return level * 4000 + 1;
+    }
+    return level * 5000 + 1;
+}
+
+LevelUpResult try_level_up(Player& player, MsvcRandom& random) {
+    const std::optional<int> required = experience_required_for_next_level(player.level);
+    if (!required || player.experience < *required) {
+        return {};
+    }
+
+    LevelUpResult result;
+    result.leveled_up = true;
+    const int old_level = player.level;
+    const int health_roll = random.next() % 4;
+    result.health_increase = health_roll + 5;
+    if (old_level > 10 && player.intelligence > 20) {
+        result.health_increase = health_roll + 6;
+    }
+    if (old_level > 8) {
+        ++result.health_increase;
+    }
+    if (old_level < 3 && player.difficulty == 1) {
+        ++result.health_increase;
+    }
+    if (old_level > 20) {
+        --result.health_increase;
+    }
+    if (old_level > 40) {
+        --result.health_increase;
+    }
+    result.health_increase = std::max(result.health_increase, 3);
+    if (old_level > 35) {
+        result.health_increase = std::min(result.health_increase, 4);
+    }
+    player.health += result.health_increase;
+    player.maximum_health += result.health_increase;
+    ++player.level;
+
+    result.spell_point_increase = random.next() % 4 + 3;
+    if (player.level > 40) {
+        result.spell_point_increase = std::min(result.spell_point_increase, 5);
+    }
+    player.spell_points += result.spell_point_increase;
+    player.maximum_spell_points += result.spell_point_increase;
+
+    int stat_chance = random.next() % 100 - player.difficulty;
+    if (player.level == 5 || player.level == 10 || player.level == 15
+        || player.level == 20 || player.level == 30) {
+        stat_chance = 100;
+    } else if (stat_chance < 73) {
+        return result;
+    }
+
+    int stat_roll = random.next() % 8;
+    if (stat_roll == 4 || stat_roll == 5 || stat_chance == 100) {
+        stat_roll = player.combat_style == 1 ? 2
+            : player.combat_style == 3 ? 3 : 1;
+    }
+    if (stat_roll == 1 && player.strength < player.maximum_stat()) {
+        ++player.strength;
+        result.stat_increase = StatIncrease::strength;
+    } else if (stat_roll == 2 && player.intelligence < player.maximum_stat()) {
+        ++player.intelligence;
+        result.stat_increase = StatIncrease::intelligence;
+    } else if (stat_roll == 3 && player.dexterity < player.maximum_stat()) {
+        ++player.dexterity;
+        result.stat_increase = StatIncrease::dexterity;
+    }
+    return result;
 }
 
 ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
@@ -169,7 +274,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
         return {true, 0, play_sound ? 0x0e : 0,
                 "The surface potion will take effect"};
     case 6:
-        if (strength >= stat_cap()) {
+        if (strength >= maximum_stat()) {
             result.message = "Strength is already at its maximum";
             return result;
         }
@@ -177,7 +282,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
         inventory[slot] = 0;
         return {true, 1, play_sound ? 0x0e : 0, "Strength increased"};
     case 7:
-        if (dexterity >= stat_cap()) {
+        if (dexterity >= maximum_stat()) {
             result.message = "Dexterity is already at its maximum";
             return result;
         }
@@ -185,7 +290,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
         inventory[slot] = 0;
         return {true, 1, play_sound ? 0x0e : 0, "Dexterity increased"};
     case 8:
-        if (intelligence >= stat_cap()) {
+        if (intelligence >= maximum_stat()) {
             result.message = "Intelligence is already at its maximum";
             return result;
         }

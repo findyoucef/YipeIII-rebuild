@@ -5,6 +5,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 
 namespace yipe {
@@ -21,6 +22,20 @@ enum class SpecialAbility : std::uint8_t {
     frighten = 2,
     invisibility = 3,
     enrage = 4,
+};
+
+enum class StatIncrease : std::uint8_t {
+    none,
+    strength,
+    intelligence,
+    dexterity,
+};
+
+struct LevelUpResult {
+    bool leveled_up = false;
+    int health_increase = 0;
+    int spell_point_increase = 0;
+    StatIncrease stat_increase = StatIncrease::none;
 };
 
 struct ItemUseResult {
@@ -44,6 +59,8 @@ public:
     // Reconstructs the consumable-item switch at 0x00445750.
     ItemUseResult use_inventory_item(std::size_t slot, MsvcRandom& random,
                                      bool play_sound = true, bool in_combat = false);
+
+    [[nodiscard]] int maximum_stat() const;
 
     std::string name;
     int dexterity = 0;
@@ -89,7 +106,11 @@ public:
 
 private:
     void initialize(CharacterType type);
-    [[nodiscard]] int stat_cap() const;
 };
+
+// Reconstructs the threshold check at 0x00445230 and the single-level growth
+// routine at 0x00445450. A completed encounter grants at most one level.
+[[nodiscard]] std::optional<int> experience_required_for_next_level(int level);
+[[nodiscard]] LevelUpResult try_level_up(Player& player, MsvcRandom& random);
 
 } // namespace yipe

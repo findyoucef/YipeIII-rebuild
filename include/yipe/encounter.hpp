@@ -104,6 +104,7 @@ struct CombatTurn {
     std::array<int, CombatEncounter::maximum_opponents> monster_damage_by_slot{};
     CombatOutcome outcome = CombatOutcome::ongoing;
     CombatReward reward;
+    LevelUpResult level_up;
 };
 
 struct FleeResult {

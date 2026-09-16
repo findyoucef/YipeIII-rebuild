@@ -570,6 +570,20 @@ void show_player_status(SDL_Window* window, const yipe::Player& player) {
 
 enum class EncounterResult { victory, fled, defeat };
 
+std::string_view stat_increase_name(yipe::StatIncrease stat) {
+    switch (stat) {
+    case yipe::StatIncrease::strength:
+        return "Strength";
+    case yipe::StatIncrease::intelligence:
+        return "Intelligence";
+    case yipe::StatIncrease::dexterity:
+        return "Dexterity";
+    case yipe::StatIncrease::none:
+        return {};
+    }
+    return {};
+}
+
 EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& player,
                                             yipe::MsvcRandom& random) {
     yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
@@ -598,6 +612,16 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
                     result << "\nYou found a "
                            << yipe::equipment_upgrade_name(turn.reward.equipment_upgrade)
                            << " upgrade.";
+                }
+                if (turn.level_up.leveled_up) {
+                    result << "\nYou reached level " << player.level << " and gained "
+                           << turn.level_up.health_increase << " HP and "
+                           << turn.level_up.spell_point_increase << " SP.";
+                    const std::string_view stat =
+                        stat_increase_name(turn.level_up.stat_increase);
+                    if (!stat.empty()) {
+                        result << "\n" << stat << " increased.";
+                    }
                 }
                 show_message(window, "Victory", result.str());
                 return EncounterResult::victory;
