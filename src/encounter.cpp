@@ -5,13 +5,7 @@
 #include <stdexcept>
 
 namespace yipe {
-namespace {
-
-int roll(MsvcRandom& random, int bound) {
-    return random.next() % std::max(bound, 1);
-}
-
-int player_attack_equipment(const Player& player, MsvcRandom& random) {
+int player_attack_equipment_rating(const Player& player) {
     int value = player.weapon_rank;
     if (player.helmet_rank == 5) {
         ++value;
@@ -28,14 +22,10 @@ int player_attack_equipment(const Player& player, MsvcRandom& random) {
     } else if (player.necklace_rank == 6) {
         value += 2;
     }
-    if (player.special_ability == SpecialAbility::invisibility
-        && player.special_ability_duration > 0) {
-        value += 1 + roll(random, player.special_ability_duration);
-    }
     return value;
 }
 
-int player_defense_equipment(const Player& player) {
+int player_defense_equipment_rating(const Player& player) {
     int value = player.armor_rank + player.boots_rank + player.gloves_rank
         + player.helmet_rank + player.ring_rank + player.necklace_rank;
     if (player.ring_rank == 5) {
@@ -45,6 +35,12 @@ int player_defense_equipment(const Player& player) {
         ++value;
     }
     return value;
+}
+
+namespace {
+
+int roll(MsvcRandom& random, int bound) {
+    return random.next() % std::max(bound, 1);
 }
 
 int monster_attack_bonus(const Player& player, const Monster& monster,
@@ -93,8 +89,12 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     if (monster.type_id == 4 && player.level < 5) {
         situational_hit_bonus += 10 - player.level;
     }
+    if (player.special_ability == SpecialAbility::invisibility
+        && player.special_ability_duration > 0) {
+        situational_hit_bonus += 1 + roll(random, player.special_ability_duration);
+    }
     const int situational_roll = roll(random, situational_hit_bonus + 1);
-    const int equipment_roll = roll(random, player_attack_equipment(player, random) + 1);
+    const int equipment_roll = roll(random, player_attack_equipment_rating(player) + 1);
 
     int monster_special_defense = 0;
     if (player.difficulty == 3 && (monster.type_id == 0x0f || monster.type_id == 0x13)) {
@@ -207,7 +207,7 @@ int calculate_monster_damage(Player& player, const Monster& monster,
     const int first_attack_roll = roll(random, monster.attack_rating) + player.difficulty;
     const int second_attack_roll = roll(random, monster.attack_rating);
     const int special_roll = roll(random, monster_attack_bonus(player, monster, random) + 2);
-    const int equipment_roll = roll(random, player_defense_equipment(player) + 1);
+    const int equipment_roll = roll(random, player_defense_equipment_rating(player) + 1);
 
     const int attack_score = first_attack_roll + second_attack_roll + type_roll + special_roll
         - armor_roll - dexterity_roll - level_defense_roll - equipment_roll;
@@ -253,13 +253,13 @@ int calculate_monster_damage(Player& player, const Monster& monster,
         if (damage > 2 && player.level == 1 && player.health < 6) {
             damage = 1;
         }
-        if (damage > 10 && player_defense_equipment(player) > 10) {
+        if (damage > 10 && player_defense_equipment_rating(player) > 10) {
             damage -= 1 + roll(random, 6);
         }
-        if (damage > 20 && player_defense_equipment(player) > 20) {
+        if (damage > 20 && player_defense_equipment_rating(player) > 20) {
             damage -= 2 + roll(random, 6);
         }
-        if (damage > 28 && player_defense_equipment(player) > 28) {
+        if (damage > 28 && player_defense_equipment_rating(player) > 28) {
             damage -= 3 + roll(random, 6);
         }
         if (damage > 10 && player.health < 35) {

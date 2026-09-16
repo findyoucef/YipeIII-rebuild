@@ -63,6 +63,11 @@ struct MonsterDefinition {
 // The 42 fixed weapon damage ranges reconstructed from 0x00417ab0.
 [[nodiscard]] std::pair<int, int> original_weapon_damage_range(int weapon_rank);
 
+// Aggregate equipment ratings used by the combat calculations at 0x004451e0
+// (player attacks) and 0x004451a0 (monster attacks).
+[[nodiscard]] int player_attack_equipment_rating(const Player& player);
+[[nodiscard]] int player_defense_equipment_rating(const Player& player);
+
 enum class EquipmentUpgrade {
     none,
     weapon,

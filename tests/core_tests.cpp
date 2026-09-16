@@ -1406,6 +1406,21 @@ void test_special_abilities() {
               && invisible_player.special_ability_duration == 29,
           "Invisibility blocks each monster attack and spends one duration per attacker");
 
+    yipe::CombatEncounter invisible_attack_group = group;
+    yipe::Player invisible_attacker;
+    invisible_attacker.health = 1000;
+    invisible_attacker.maximum_health = 1000;
+    invisible_attacker.special_ability = yipe::SpecialAbility::invisibility;
+    invisible_attacker.special_ability_duration = 7;
+    yipe::MsvcRandom invisible_attack_random(1);
+    const yipe::CombatTurn invisible_attack = yipe::resolve_attack_turn(
+        invisible_attacker, invisible_attack_group, invisible_attack_random);
+    check(invisible_attack.player_damage == 1
+              && invisible_attack.monster_damage == 0
+              && invisible_attacker.special_ability_duration == 4
+              && invisible_attack_random.state() == 2453175039u,
+          "an invisible attack applies its situational bonus before the equipment roll");
+
     yipe::CombatEncounter enraged_group = group;
     yipe::Player enraged_player;
     enraged_player.special_ability = yipe::SpecialAbility::enrage;
@@ -1612,6 +1627,30 @@ void test_weapon_damage_catalog() {
     check(yipe::original_weapon_damage_range(0) == std::pair{0, 1}
               && yipe::original_weapon_damage_range(43) == std::pair{0, 1},
           "weapon catalog preserves the original invalid-rank fallback");
+}
+
+void test_equipment_combat_ratings() {
+    yipe::Player player;
+    check(yipe::player_attack_equipment_rating(player) == 2
+              && yipe::player_defense_equipment_rating(player) == 3,
+          "default equipment produces the recovered attack and defense ratings");
+
+    player.weapon_rank = 10;
+    player.armor_rank = 11;
+    player.boots_rank = 6;
+    player.gloves_rank = 4;
+    player.helmet_rank = 7;
+    player.ring_rank = 5;
+    player.necklace_rank = 6;
+    check(yipe::player_attack_equipment_rating(player) == 17,
+          "helmet, gloves, and necklace apply every recovered attack bonus");
+    check(yipe::player_defense_equipment_rating(player) == 41,
+          "all equipment ranks and the special boots/ring tiers contribute to defense");
+
+    player.special_ability = yipe::SpecialAbility::invisibility;
+    player.special_ability_duration = 20;
+    check(yipe::player_attack_equipment_rating(player) == 17,
+          "Invisibility remains separate from the deterministic equipment rating");
 }
 
 void test_recovered_spells() {
@@ -1955,6 +1994,7 @@ int main() {
     test_monster_placement_catalog();
     test_monster_definition_catalog();
     test_weapon_damage_catalog();
+    test_equipment_combat_ratings();
     test_recovered_spells();
     test_first_playable_flow();
 
