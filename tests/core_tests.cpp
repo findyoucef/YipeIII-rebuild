@@ -396,6 +396,165 @@ void test_giant_beetle_encounter() {
           "low-level flee succeeds and applies the original gold loss");
 }
 
+void test_multi_monster_encounter() {
+    yipe::MsvcRandom setup_random(1);
+    const yipe::CombatEncounter encounter =
+        yipe::start_monster_encounter(2, 3, setup_random);
+    check(encounter.monsters[0].health == 15
+              && encounter.monsters[0].attack_rating == 9
+              && encounter.monsters[0].defense_rating == 3
+              && encounter.monsters[1].health == 15
+              && encounter.monsters[1].attack_rating == 8
+              && encounter.monsters[1].defense_rating == 3
+              && encounter.monsters[2].health == 14
+              && encounter.monsters[2].attack_rating == 8
+              && encounter.monsters[2].defense_rating == 3,
+          "three-opponent setup preserves the original initialization order");
+
+    yipe::Player reference_player;
+    reference_player.health = 1000;
+    reference_player.maximum_health = 1000;
+    yipe::MsvcRandom reference_random = setup_random;
+    std::array<int, 3> full_damage{};
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        full_damage[slot] =
+            yipe::resolve_monster_turn(reference_player, encounter.monsters[slot],
+                                       reference_random)
+                .monster_damage;
+    }
+
+    yipe::Player group_player;
+    group_player.health = 1000;
+    group_player.maximum_health = 1000;
+    yipe::MsvcRandom group_random = setup_random;
+    const yipe::CombatTurn group_turn =
+        yipe::resolve_monster_turn(group_player, encounter, group_random);
+    check(group_turn.monster_damage_by_slot[0] == full_damage[0]
+              && group_turn.monster_damage_by_slot[1] == full_damage[1]
+              && group_turn.monster_damage_by_slot[2] == full_damage[2] / 2,
+          "all living opponents counterattack and slot three deals half damage");
+    check(group_turn.monster_damage == full_damage[0] + full_damage[1] + full_damage[2] / 2
+              && group_player.health == 1000 - group_turn.monster_damage
+              && group_random.state() == reference_random.state(),
+          "group counterattacks preserve aggregate damage and random-call order");
+
+    yipe::CombatEncounter attack_encounter = encounter;
+    attack_encounter.selected_target = 1;
+    attack_encounter.monsters[1].health = 1;
+    yipe::Player attacking_player;
+    attacking_player.health = 1000;
+    attacking_player.maximum_health = 1000;
+    attacking_player.level = 40;
+    attacking_player.strength = 100;
+    attacking_player.weapon_rank = 42;
+    yipe::MsvcRandom attack_random(1);
+    const yipe::CombatTurn attack =
+        yipe::resolve_attack_turn(attacking_player, attack_encounter, attack_random);
+    check(attack.player_damage > 0 && attack_encounter.monsters[1].health < 1
+              && attack.monster_damage_by_slot[1] == 0
+              && attack_encounter.selected_target == 0
+              && attack.outcome == yipe::CombatOutcome::ongoing,
+          "a defeated selected target is skipped and replaced by a living target");
+    check(attack.reward.experience == 0 && attacking_player.experience == 0
+              && attack_encounter.pending_reward.experience > 0,
+          "multi-opponent combat defers accumulated rewards until victory");
+    const yipe::CombatReward first_pending_reward = attack_encounter.pending_reward;
+
+    attack_encounter.monsters[0].health = 1;
+    const yipe::CombatTurn second_attack =
+        yipe::resolve_attack_turn(attacking_player, attack_encounter, attack_random);
+    check(second_attack.reward.experience == 0 && attacking_player.experience == 0
+              && attack_encounter.pending_reward.experience
+                  > first_pending_reward.experience,
+          "later defeated opponents continue accumulating deferred rewards");
+    attack_encounter.monsters[2].health = 1;
+    const yipe::CombatTurn final_attack =
+        yipe::resolve_attack_turn(attacking_player, attack_encounter, attack_random);
+    check(second_attack.outcome == yipe::CombatOutcome::ongoing
+              && final_attack.outcome == yipe::CombatOutcome::victory
+              && final_attack.reward.experience == attacking_player.experience
+              && final_attack.reward.gold == attacking_player.gold
+              && final_attack.reward.experience
+                  == attack_encounter.pending_reward.experience,
+          "group victory applies the accumulated encounter reward once");
+
+    yipe::MsvcRandom flee_random(6);
+    const yipe::CombatEncounter flee_encounter =
+        yipe::start_monster_encounter(41, 3, flee_random);
+    yipe::MsvcRandom flee_reference_random = flee_random;
+    (void)flee_reference_random.next();
+    yipe::Player flee_reference_player;
+    flee_reference_player.health = 1000;
+    flee_reference_player.maximum_health = 1000;
+    flee_reference_player.level = 40;
+    std::array<int, 3> expected_flee_damage{};
+    for (std::size_t slot = 0; slot < flee_encounter.monsters.size(); ++slot) {
+        int damage =
+            yipe::resolve_monster_turn(flee_reference_player,
+                                       flee_encounter.monsters[slot],
+                                       flee_reference_random)
+                .monster_damage;
+        if (slot == 2) {
+            damage /= 2;
+        }
+        if (damage > 10) {
+            damage -= 3;
+        }
+        expected_flee_damage[slot] = std::max(damage, 1);
+    }
+
+    yipe::Player fleeing_player;
+    fleeing_player.health = 1000;
+    fleeing_player.maximum_health = 1000;
+    fleeing_player.level = 40;
+    const yipe::FleeResult flee =
+        yipe::try_flee(fleeing_player, flee_encounter, flee_random);
+    check(!flee.escaped
+              && flee.monster_damage_by_slot == expected_flee_damage
+              && flee.monster_damage == expected_flee_damage[0]
+                      + expected_flee_damage[1] + expected_flee_damage[2]
+              && flee_random.state() == flee_reference_random.state(),
+          "a failed group flee resolves every opponent in slot order");
+
+    yipe::CombatEncounter dead_primary_encounter = flee_encounter;
+    dead_primary_encounter.monsters[0].health = 0;
+    yipe::Player dead_primary_player;
+    dead_primary_player.level = 40;
+    yipe::MsvcRandom dead_primary_random(1);
+    const yipe::FleeResult dead_primary_flee =
+        yipe::try_flee(dead_primary_player, dead_primary_encounter,
+                       dead_primary_random);
+    check(dead_primary_flee.escaped,
+          "fleeing remains available while a later opponent is alive");
+
+    yipe::Player defeated_player;
+    defeated_player.health = 1;
+    defeated_player.maximum_health = 1;
+    yipe::MsvcRandom defeat_random = setup_random;
+    const yipe::CombatTurn defeat =
+        yipe::resolve_monster_turn(defeated_player, encounter, defeat_random);
+    check(defeat.outcome == yipe::CombatOutcome::defeat
+              && defeated_player.health < 1,
+          "group counterattacks report player defeat");
+
+    bool rejected_zero_opponents = false;
+    try {
+        yipe::MsvcRandom random(1);
+        (void)yipe::start_monster_encounter(2, 0, random);
+    } catch (const std::invalid_argument&) {
+        rejected_zero_opponents = true;
+    }
+    bool rejected_four_opponents = false;
+    try {
+        yipe::MsvcRandom random(1);
+        (void)yipe::start_monster_encounter(2, 4, random);
+    } catch (const std::invalid_argument&) {
+        rejected_four_opponents = true;
+    }
+    check(rejected_zero_opponents && rejected_four_opponents,
+          "fixed encounters accept only one to three opponents");
+}
+
 void test_monster_placement_catalog() {
     std::size_t placement_count = 0;
     int flag_36c_count = 0;
@@ -554,6 +713,7 @@ int main() {
     test_static_map_catalog_and_edges();
     test_starting_shop();
     test_giant_beetle_encounter();
+    test_multi_monster_encounter();
     test_monster_placement_catalog();
     test_monster_definition_catalog();
     test_weapon_damage_catalog();

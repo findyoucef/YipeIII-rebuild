@@ -97,9 +97,11 @@ The setup table at `0x00405640` and attack table at `0x004042e0` provide all 41
 monster definitions. The generated definition catalog joins their names from
 string resources 230–270, bitmaps 174–214, base health, health random range,
 attack, defense, special rating, and ordinary minimum/maximum damage. Combat
-setup can materialize every definition, although special attacks and multiple
-opponents still need reconstruction before the application enables all of these
-encounters.
+setup can materialize every definition. The core supports fixed groups of up to
+three same-type opponents, including target selection, slot-order
+counterattacks, fleeing, and deferred group rewards. Generated encounter
+variants and monster-specific status effects still need reconstruction before
+the application enables all of these encounters.
 
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the

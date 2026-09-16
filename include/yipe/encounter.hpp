@@ -4,6 +4,7 @@
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
 
+#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -76,11 +77,20 @@ struct CombatReward {
     EquipmentUpgrade equipment_upgrade = EquipmentUpgrade::none;
 };
 
+struct CombatEncounter {
+    static constexpr std::size_t maximum_opponents = 3;
+
+    std::array<Monster, maximum_opponents> monsters{};
+    int selected_target = 0;
+    CombatReward pending_reward;
+};
+
 enum class CombatOutcome { ongoing, victory, defeat };
 
 struct CombatTurn {
     int player_damage = 0;
     int monster_damage = 0;
+    std::array<int, CombatEncounter::maximum_opponents> monster_damage_by_slot{};
     CombatOutcome outcome = CombatOutcome::ongoing;
     CombatReward reward;
 };
@@ -89,21 +99,29 @@ struct FleeResult {
     bool escaped = false;
     int monster_damage = 0;
     bool player_defeated = false;
+    std::array<int, CombatEncounter::maximum_opponents> monster_damage_by_slot{};
 };
 
 // Reconstructs the fixed-size combat setup used by a static map placement. The
 // extra random draw after monster initialization is intentional and comes from
 // the combat-dialog constructor at 0x004025e0.
+[[nodiscard]] CombatEncounter start_monster_encounter(
+    int type_id, int opponent_count, MsvcRandom& random);
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
-// Ordinary combat formulas currently cover the first reachable Giant Beetle.
-// Setup supports every recovered monster definition and preserves its original
-// random-call order.
+// Common combat formulas support one to three opponents from the recovered
+// definition catalog. Monster-specific status effects remain under recovery.
 [[nodiscard]] CombatTurn resolve_attack_turn(Player& player, Monster& monster,
+                                              MsvcRandom& random);
+[[nodiscard]] CombatTurn resolve_attack_turn(Player& player, CombatEncounter& encounter,
                                               MsvcRandom& random);
 [[nodiscard]] CombatTurn resolve_monster_turn(Player& player, const Monster& monster,
                                                MsvcRandom& random);
+[[nodiscard]] CombatTurn resolve_monster_turn(
+    Player& player, const CombatEncounter& encounter, MsvcRandom& random);
 [[nodiscard]] FleeResult try_flee(Player& player, const Monster& monster,
+                                  MsvcRandom& random);
+[[nodiscard]] FleeResult try_flee(Player& player, const CombatEncounter& encounter,
                                   MsvcRandom& random);
 
 [[nodiscard]] std::string_view equipment_upgrade_name(EquipmentUpgrade upgrade);

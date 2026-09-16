@@ -81,7 +81,10 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     const int strength_roll = roll(random, player.strength);
     const int weapon_rank_roll = roll(random, player.weapon_rank + 1);
     const int level_roll = roll(random, std::min(player.level, 40));
-    const int situational_hit_bonus = player.difficulty == 0 ? 0 : 2;
+    int situational_hit_bonus = player.difficulty == 0 ? 0 : 2;
+    if (monster.type_id == 4 && player.level < 5) {
+        situational_hit_bonus += 10 - player.level;
+    }
     const int situational_roll = roll(random, situational_hit_bonus + 1);
     const int equipment_roll = roll(random, player_attack_equipment(player) + 1);
 
@@ -197,6 +200,13 @@ int calculate_monster_damage(const Player& player, const Monster& monster,
     } else if (player.difficulty == 1 && damage > 2) {
         --damage;
     }
+    if ((monster.type_id == 7 || monster.type_id == 13 || monster.type_id == 15)
+        && player.level > 9) {
+        damage += player.difficulty;
+    }
+    if (monster.type_id > 34) {
+        damage += player.difficulty;
+    }
     if (damage > 3 && player.level < 3) {
         --damage;
     }
@@ -297,31 +307,55 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     return EquipmentUpgrade::none;
 }
 
-CombatReward award_victory(Player& player, const Monster& monster, MsvcRandom& random) {
-    const int base_experience = std::max(
+CombatReward roll_monster_reward(const Player& player, const Monster& monster,
+                                 int primary_type_id, int selected_slot,
+                                 MsvcRandom& random) {
+    int experience = std::max(
         (monster.rank - player.level + 1 + monster.type_id) * 10, 5);
-    int gold = base_experience + (monster.type_id < 6 ? 1 : monster.type_id * 3 / 2)
+    int gold = experience + (monster.type_id < 6 ? 1 : monster.type_id * 3 / 2)
         - roll(random, player.level) + roll(random, monster.rank);
     gold = std::max(gold, monster.rank * 9);
+    if (monster.type_id > 15) {
+        gold += monster.rank;
+    }
     if (monster.type_id < 10) {
         gold += roll(random, monster.type_id);
     } else {
         gold += 1 + roll(random, monster.type_id) + monster.type_id;
     }
+    if (monster.type_id > 7 && experience < 20) {
+        experience = roll(random, monster.type_id) + monster.type_id * 3;
+    }
 
-    const int experience = base_experience + 1;
-    gold += roll(random, 1);
-    player.experience += experience;
-    player.gold += gold;
-
-    const int drop_threshold = player.level - monster.type_id / 4 - monster.type_id;
-    return {experience, gold,
-            maybe_upgrade_equipment(player, drop_threshold + 90, random)};
+    const int slot_bonus = primary_type_id * selected_slot + 1;
+    experience += slot_bonus;
+    gold += roll(random, slot_bonus);
+    return {experience, gold, EquipmentUpgrade::none};
 }
 
-} // namespace
+int encounter_size(const CombatEncounter& encounter) {
+    return static_cast<int>(std::count_if(
+        encounter.monsters.begin(), encounter.monsters.end(),
+        [](const Monster& monster) { return monster.type_id > 0; }));
+}
 
-Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {
+EquipmentUpgrade finish_encounter_rewards(Player& player,
+                                          const CombatEncounter& encounter,
+                                          MsvcRandom& random) {
+    player.experience += encounter.pending_reward.experience;
+    player.gold += encounter.pending_reward.gold;
+
+    const int primary_type_id = encounter.monsters[0].type_id;
+    const int opponents = encounter_size(encounter);
+    const int opponent_penalty = opponents == 1 ? 1 : opponents == 2 ? 3 : 6;
+    const int drop_base = primary_type_id < 35 || primary_type_id == 41 ? 91 : 90;
+    const int drop_threshold =
+        player.level - primary_type_id / 4 - primary_type_id
+        + drop_base - opponent_penalty;
+    return maybe_upgrade_equipment(player, drop_threshold, random);
+}
+
+Monster initialize_monster(int type_id, MsvcRandom& random) {
     const std::optional<MonsterDefinition> definition = original_monster_definition(type_id);
     if (!definition) {
         throw std::runtime_error("monster type is outside the recovered table");
@@ -334,53 +368,153 @@ Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {
     monster.rank = definition->rank_and_health_range;
     monster.attack_rating = definition->attack_base + roll(random, 2);
     monster.defense_rating = definition->defense_base + roll(random, 2);
-    static_cast<void>(roll(random, 100));
     return monster;
 }
 
+bool has_living_monster(const CombatEncounter& encounter) {
+    return std::any_of(encounter.monsters.begin(), encounter.monsters.end(),
+                       [](const Monster& monster) { return monster.health > 0; });
+}
+
+int first_living_monster(const CombatEncounter& encounter) {
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        if (encounter.monsters[slot].health > 0) {
+            return static_cast<int>(slot);
+        }
+    }
+    return 0;
+}
+
+CombatTurn resolve_counterattacks(Player& player, const CombatEncounter& encounter,
+                                  MsvcRandom& random) {
+    CombatTurn result;
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        const Monster& monster = encounter.monsters[slot];
+        if (monster.health < 1) {
+            continue;
+        }
+        int damage = calculate_monster_damage(player, monster, random);
+        if (slot == 2) {
+            damage /= 2;
+        }
+        result.monster_damage_by_slot[slot] = damage;
+        result.monster_damage += damage;
+        player.adjust_health(-damage);
+    }
+    if (player.health < 1) {
+        result.outcome = CombatOutcome::defeat;
+    }
+    return result;
+}
+
+} // namespace
+
+CombatEncounter start_monster_encounter(int type_id, int opponent_count,
+                                        MsvcRandom& random) {
+    if (opponent_count < 1
+        || opponent_count > static_cast<int>(CombatEncounter::maximum_opponents)) {
+        throw std::invalid_argument("opponent count must be between one and three");
+    }
+
+    CombatEncounter encounter;
+    encounter.monsters[0] = initialize_monster(type_id, random);
+    static_cast<void>(roll(random, 100));
+    for (int slot = 1; slot < opponent_count; ++slot) {
+        encounter.monsters[static_cast<std::size_t>(slot)] =
+            initialize_monster(type_id, random);
+    }
+    return encounter;
+}
+
+Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {
+    return start_monster_encounter(type_id, 1, random).monsters[0];
+}
+
 CombatTurn resolve_attack_turn(Player& player, Monster& monster, MsvcRandom& random) {
-    if (player.health < 1 || monster.health < 1) {
+    CombatEncounter encounter;
+    encounter.monsters[0] = monster;
+    CombatTurn result = resolve_attack_turn(player, encounter, random);
+    monster = encounter.monsters[0];
+    return result;
+}
+
+CombatTurn resolve_attack_turn(Player& player, CombatEncounter& encounter,
+                               MsvcRandom& random) {
+    if (player.health < 1 || encounter.selected_target < 0
+        || encounter.selected_target
+            >= static_cast<int>(CombatEncounter::maximum_opponents)
+        || encounter.monsters[static_cast<std::size_t>(encounter.selected_target)].health < 1) {
         throw std::logic_error("cannot attack after combat has ended");
     }
 
     CombatTurn result;
-    result.player_damage = calculate_player_damage(player, monster, random);
-    monster.health -= result.player_damage;
-    if (monster.health < 1) {
-        result.outcome = CombatOutcome::victory;
-        result.reward = award_victory(player, monster, random);
-        return result;
+    Monster& target =
+        encounter.monsters[static_cast<std::size_t>(encounter.selected_target)];
+    result.player_damage = calculate_player_damage(player, target, random);
+    target.health -= result.player_damage;
+    const bool target_defeated = target.health < 1;
+    const int selected_slot = encounter.selected_target;
+
+    if (has_living_monster(encounter)) {
+        CombatTurn counterattacks = resolve_counterattacks(player, encounter, random);
+        result.monster_damage = counterattacks.monster_damage;
+        result.monster_damage_by_slot = counterattacks.monster_damage_by_slot;
+        if (counterattacks.outcome == CombatOutcome::defeat) {
+            result.outcome = CombatOutcome::defeat;
+            return result;
+        }
     }
 
-    result.monster_damage = calculate_monster_damage(player, monster, random);
-    player.adjust_health(-result.monster_damage);
-    if (player.health < 1) {
-        result.outcome = CombatOutcome::defeat;
+    if (target_defeated) {
+        const CombatReward reward = roll_monster_reward(
+            player, target, encounter.monsters[0].type_id, selected_slot, random);
+        encounter.pending_reward.experience += reward.experience;
+        encounter.pending_reward.gold += reward.gold;
+        if (!has_living_monster(encounter)) {
+            result.outcome = CombatOutcome::victory;
+            result.reward = encounter.pending_reward;
+            result.reward.equipment_upgrade =
+                finish_encounter_rewards(player, encounter, random);
+        } else {
+            encounter.selected_target = first_living_monster(encounter);
+        }
     }
     return result;
 }
 
 CombatTurn resolve_monster_turn(Player& player, const Monster& monster, MsvcRandom& random) {
-    if (player.health < 1 || monster.health < 1) {
+    CombatEncounter encounter;
+    encounter.monsters[0] = monster;
+    return resolve_monster_turn(player, encounter, random);
+}
+
+CombatTurn resolve_monster_turn(Player& player, const CombatEncounter& encounter,
+                                MsvcRandom& random) {
+    if (player.health < 1 || !has_living_monster(encounter)) {
         throw std::logic_error("cannot continue a combat turn after combat has ended");
     }
-
-    CombatTurn result;
-    result.monster_damage = calculate_monster_damage(player, monster, random);
-    player.adjust_health(-result.monster_damage);
-    if (player.health < 1) {
-        result.outcome = CombatOutcome::defeat;
-    }
-    return result;
+    return resolve_counterattacks(player, encounter, random);
 }
 
 FleeResult try_flee(Player& player, const Monster& monster, MsvcRandom& random) {
+    CombatEncounter encounter;
+    encounter.monsters[0] = monster;
+    return try_flee(player, encounter, random);
+}
+
+FleeResult try_flee(Player& player, const CombatEncounter& encounter,
+                    MsvcRandom& random) {
+    if (player.health < 1 || !has_living_monster(encounter)) {
+        throw std::logic_error("cannot flee after combat has ended");
+    }
+
+    const Monster& primary_monster = encounter.monsters[0];
     const int capped_level = std::min(player.level, 35);
-    int chance = capped_level - monster.type_id + 68;
+    int chance = capped_level - primary_monster.type_id + 68;
     if (player.difficulty == 1) {
-        chance = capped_level - monster.type_id + 86;
+        chance = capped_level - primary_monster.type_id + 86;
     } else if (player.difficulty == 3) {
-        chance = capped_level - monster.type_id + 63;
+        chance = capped_level - primary_monster.type_id + 63;
     }
     if (capped_level < 4) {
         chance += 50;
@@ -389,23 +523,36 @@ FleeResult try_flee(Player& player, const Monster& monster, MsvcRandom& random) 
         chance += 5;
     }
     if (roll(random, 100) <= chance) {
-        player.gold = std::max(player.gold + 1 - monster.type_id, 0);
-        return {true, 0, false};
+        player.gold = std::max(player.gold + 1 - primary_monster.type_id, 0);
+        return {true, 0, false, {}};
     }
 
-    int damage = calculate_monster_damage(player, monster, random);
-    if (player.level < 6 && player.health < 7) {
-        damage = std::max(damage - 2, 1);
+    FleeResult result;
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        const Monster& monster = encounter.monsters[slot];
+        if (monster.health < 1) {
+            continue;
+        }
+        int damage = calculate_monster_damage(player, monster, random);
+        if (slot == 2) {
+            damage /= 2;
+        }
+        if (player.level < 6 && player.health < 7) {
+            damage = std::max(damage - 2, 1);
+        }
+        if (player.health - damage < 0) {
+            damage /= 2;
+        }
+        if (damage > 10) {
+            damage -= 3;
+        }
+        damage = std::max(damage, 1);
+        result.monster_damage_by_slot[slot] = damage;
+        result.monster_damage += damage;
+        player.adjust_health(-damage);
     }
-    if (player.health - damage < 0) {
-        damage /= 2;
-    }
-    if (damage > 10) {
-        damage -= 3;
-    }
-    damage = std::max(damage, 1);
-    player.adjust_health(-damage);
-    return {false, damage, player.health < 1};
+    result.player_defeated = player.health < 1;
+    return result;
 }
 
 std::string_view equipment_upgrade_name(EquipmentUpgrade upgrade) {
