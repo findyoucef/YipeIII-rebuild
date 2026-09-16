@@ -79,6 +79,20 @@ catalog. The definition extractor joins the 41 setup-stat records, damage
 ranges, resource names, and bitmap IDs, and fails when any required field is
 missing.
 
+## Recover weapon damage ranges
+
+```bash
+python3 tools/extract_weapon_damage.py \
+  --executable '/Users/baouchiy/Downloads/Yipe! III/Yipe!III.exe' \
+  --objdump /opt/homebrew/opt/llvm/bin/llvm-objdump \
+  --output assets/game-data/original-weapon-damage.json \
+  --cpp-output src/generated/original_weapon_damage.cpp
+```
+
+The extractor statically disassembles `0x00417ab0`, follows the register values
+written into the function's local table, and requires a valid minimum/maximum
+pair for every weapon rank from 1 through 42.
+
 ## Re-export the preserved Ghidra project
 
 Close the project in the Ghidra GUI first. The canonical generated output remains in `/Users/baouchiy/Downloads/YipeIII-analysis`; the copy under `evidence/analysis-snapshot` is a point-in-time snapshot.

@@ -42,20 +42,6 @@ int player_defense_equipment(const Player& player) {
     return value;
 }
 
-std::pair<int, int> weapon_damage_range(int weapon_rank) {
-    // Entries 1-3 of the table at 0x00417ab0. These cover the initial weapon
-    // and the upgrades reachable from the first encounter.
-    switch (weapon_rank) {
-    case 1:
-        return {1, 2};
-    case 2:
-    case 3:
-        return {1, 3};
-    default:
-        throw std::runtime_error("weapon damage table is not recovered for this rank");
-    }
-}
-
 int monster_attack_bonus(const Player& player, const Monster& monster,
                          MsvcRandom& random) {
     int value = 0;
@@ -90,7 +76,7 @@ int monster_attack_bonus(const Player& player, const Monster& monster,
 int calculate_player_damage(const Player& player, const Monster& monster,
                             MsvcRandom& random) {
     const auto [minimum_weapon_damage, maximum_weapon_damage] =
-        weapon_damage_range(player.weapon_rank);
+        original_weapon_damage_range(player.weapon_rank);
 
     const int strength_roll = roll(random, player.strength);
     const int weapon_rank_roll = roll(random, player.weapon_rank + 1);

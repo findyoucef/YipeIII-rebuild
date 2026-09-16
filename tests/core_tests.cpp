@@ -459,6 +459,25 @@ void test_monster_definition_catalog() {
           "generic setup applies the recovered table and random sequence");
 }
 
+void test_weapon_damage_catalog() {
+    for (int weapon_rank = 1; weapon_rank <= 42; ++weapon_rank) {
+        const auto damage = yipe::original_weapon_damage_range(weapon_rank);
+        check(damage.first > 0 && damage.first <= damage.second,
+              "weapon rank " + std::to_string(weapon_rank)
+                  + " has a valid recovered damage range");
+    }
+
+    check(yipe::original_weapon_damage_range(1) == std::pair{1, 2}
+              && yipe::original_weapon_damage_range(2) == std::pair{1, 3},
+          "weapon catalog preserves its first two ranges");
+    check(yipe::original_weapon_damage_range(21) == std::pair{7, 12}
+              && yipe::original_weapon_damage_range(42) == std::pair{18, 29},
+          "weapon catalog preserves middle and final ranges");
+    check(yipe::original_weapon_damage_range(0) == std::pair{0, 1}
+              && yipe::original_weapon_damage_range(43) == std::pair{0, 1},
+          "weapon catalog preserves the original invalid-rank fallback");
+}
+
 void test_first_playable_flow() {
     const std::optional<yipe::Map> map = yipe::original_map(0x0b);
     check(map.has_value(), "first encounter map is available");
@@ -537,6 +556,7 @@ int main() {
     test_giant_beetle_encounter();
     test_monster_placement_catalog();
     test_monster_definition_catalog();
+    test_weapon_damage_catalog();
     test_first_playable_flow();
 
     if (failures != 0) {

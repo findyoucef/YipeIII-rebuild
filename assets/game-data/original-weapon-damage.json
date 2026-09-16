@@ -1,0 +1,220 @@
+{
+  "format": "yipe3-original-weapon-damage-v1",
+  "source_function": "00417ab0",
+  "invalid_rank_fallback": {
+    "damage_minimum": 0,
+    "damage_maximum": 1
+  },
+  "weapons": [
+    {
+      "weapon_rank": 1,
+      "damage_minimum": 1,
+      "damage_maximum": 2
+    },
+    {
+      "weapon_rank": 2,
+      "damage_minimum": 1,
+      "damage_maximum": 3
+    },
+    {
+      "weapon_rank": 3,
+      "damage_minimum": 1,
+      "damage_maximum": 3
+    },
+    {
+      "weapon_rank": 4,
+      "damage_minimum": 1,
+      "damage_maximum": 4
+    },
+    {
+      "weapon_rank": 5,
+      "damage_minimum": 1,
+      "damage_maximum": 4
+    },
+    {
+      "weapon_rank": 6,
+      "damage_minimum": 2,
+      "damage_maximum": 4
+    },
+    {
+      "weapon_rank": 7,
+      "damage_minimum": 2,
+      "damage_maximum": 5
+    },
+    {
+      "weapon_rank": 8,
+      "damage_minimum": 3,
+      "damage_maximum": 5
+    },
+    {
+      "weapon_rank": 9,
+      "damage_minimum": 2,
+      "damage_maximum": 8
+    },
+    {
+      "weapon_rank": 10,
+      "damage_minimum": 3,
+      "damage_maximum": 7
+    },
+    {
+      "weapon_rank": 11,
+      "damage_minimum": 2,
+      "damage_maximum": 9
+    },
+    {
+      "weapon_rank": 12,
+      "damage_minimum": 3,
+      "damage_maximum": 8
+    },
+    {
+      "weapon_rank": 13,
+      "damage_minimum": 4,
+      "damage_maximum": 7
+    },
+    {
+      "weapon_rank": 14,
+      "damage_minimum": 4,
+      "damage_maximum": 8
+    },
+    {
+      "weapon_rank": 15,
+      "damage_minimum": 5,
+      "damage_maximum": 8
+    },
+    {
+      "weapon_rank": 16,
+      "damage_minimum": 5,
+      "damage_maximum": 9
+    },
+    {
+      "weapon_rank": 17,
+      "damage_minimum": 5,
+      "damage_maximum": 10
+    },
+    {
+      "weapon_rank": 18,
+      "damage_minimum": 5,
+      "damage_maximum": 11
+    },
+    {
+      "weapon_rank": 19,
+      "damage_minimum": 6,
+      "damage_maximum": 11
+    },
+    {
+      "weapon_rank": 20,
+      "damage_minimum": 7,
+      "damage_maximum": 11
+    },
+    {
+      "weapon_rank": 21,
+      "damage_minimum": 7,
+      "damage_maximum": 12
+    },
+    {
+      "weapon_rank": 22,
+      "damage_minimum": 7,
+      "damage_maximum": 13
+    },
+    {
+      "weapon_rank": 23,
+      "damage_minimum": 7,
+      "damage_maximum": 14
+    },
+    {
+      "weapon_rank": 24,
+      "damage_minimum": 8,
+      "damage_maximum": 14
+    },
+    {
+      "weapon_rank": 25,
+      "damage_minimum": 8,
+      "damage_maximum": 15
+    },
+    {
+      "weapon_rank": 26,
+      "damage_minimum": 8,
+      "damage_maximum": 16
+    },
+    {
+      "weapon_rank": 27,
+      "damage_minimum": 9,
+      "damage_maximum": 16
+    },
+    {
+      "weapon_rank": 28,
+      "damage_minimum": 9,
+      "damage_maximum": 17
+    },
+    {
+      "weapon_rank": 29,
+      "damage_minimum": 9,
+      "damage_maximum": 18
+    },
+    {
+      "weapon_rank": 30,
+      "damage_minimum": 9,
+      "damage_maximum": 19
+    },
+    {
+      "weapon_rank": 31,
+      "damage_minimum": 10,
+      "damage_maximum": 19
+    },
+    {
+      "weapon_rank": 32,
+      "damage_minimum": 10,
+      "damage_maximum": 21
+    },
+    {
+      "weapon_rank": 33,
+      "damage_minimum": 10,
+      "damage_maximum": 23
+    },
+    {
+      "weapon_rank": 34,
+      "damage_minimum": 11,
+      "damage_maximum": 25
+    },
+    {
+      "weapon_rank": 35,
+      "damage_minimum": 13,
+      "damage_maximum": 25
+    },
+    {
+      "weapon_rank": 36,
+      "damage_minimum": 15,
+      "damage_maximum": 25
+    },
+    {
+      "weapon_rank": 37,
+      "damage_minimum": 16,
+      "damage_maximum": 26
+    },
+    {
+      "weapon_rank": 38,
+      "damage_minimum": 17,
+      "damage_maximum": 27
+    },
+    {
+      "weapon_rank": 39,
+      "damage_minimum": 17,
+      "damage_maximum": 28
+    },
+    {
+      "weapon_rank": 40,
+      "damage_minimum": 18,
+      "damage_maximum": 28
+    },
+    {
+      "weapon_rank": 41,
+      "damage_minimum": 19,
+      "damage_maximum": 28
+    },
+    {
+      "weapon_rank": 42,
+      "damage_minimum": 18,
+      "damage_maximum": 29
+    }
+  ]
+}

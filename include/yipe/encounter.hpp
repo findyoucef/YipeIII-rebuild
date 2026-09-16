@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace yipe {
@@ -54,6 +55,9 @@ struct MonsterDefinition {
 // Stats come from 0x00405640, damage ranges from 0x004042e0, names from
 // resources 230-270, and matching bitmaps from resources 174-214.
 [[nodiscard]] std::optional<MonsterDefinition> original_monster_definition(int type_id);
+
+// The 42 fixed weapon damage ranges reconstructed from 0x00417ab0.
+[[nodiscard]] std::pair<int, int> original_weapon_damage_range(int weapon_rank);
 
 enum class EquipmentUpgrade {
     none,
