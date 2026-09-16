@@ -1,5 +1,5 @@
 {
-  "format": "yipe3-original-monster-placements-v1",
+  "format": "yipe3-original-monster-placements-v2",
   "source": "0041ec40",
   "placements": [
     {
@@ -12,8 +12,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 8,
@@ -25,8 +25,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 8,
@@ -38,8 +38,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 8,
@@ -51,8 +51,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 8,
@@ -64,8 +64,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 11,
@@ -77,8 +77,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 12,
@@ -90,8 +90,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 12,
@@ -103,8 +103,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 13,
@@ -116,8 +116,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 19,
@@ -129,8 +129,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 19,
@@ -142,8 +142,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 19,
@@ -155,8 +155,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 19,
@@ -168,8 +168,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 20,
@@ -181,8 +181,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 20,
@@ -194,8 +194,8 @@
       "encounter_size_expression": "0",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 20,
@@ -207,8 +207,8 @@
       "encounter_size_expression": "0",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 20,
@@ -220,8 +220,8 @@
       "encounter_size_expression": "0",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 20,
@@ -233,8 +233,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 22,
@@ -246,8 +246,8 @@
       "encounter_size_expression": "3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 22,
@@ -259,8 +259,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 22,
@@ -272,8 +272,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 23,
@@ -285,8 +285,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 23,
@@ -298,8 +298,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 29,
@@ -311,8 +311,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 29,
@@ -324,8 +324,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 30,
@@ -337,8 +337,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 31,
@@ -350,8 +350,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 31,
@@ -363,8 +363,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 32,
@@ -376,8 +376,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 32,
@@ -389,8 +389,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 34,
@@ -402,8 +402,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 41,
@@ -415,8 +415,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 41,
@@ -428,8 +428,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 42,
@@ -441,8 +441,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 42,
@@ -454,8 +454,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 43,
@@ -467,8 +467,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 43,
@@ -480,8 +480,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 47,
@@ -493,8 +493,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 48,
@@ -506,8 +506,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 48,
@@ -519,8 +519,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 49,
@@ -532,8 +532,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 50,
@@ -545,8 +545,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 50,
@@ -558,8 +558,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 52,
@@ -571,8 +571,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 52,
@@ -584,8 +584,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 52,
@@ -597,8 +597,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 52,
@@ -610,8 +610,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 53,
@@ -623,8 +623,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 53,
@@ -636,8 +636,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 54,
@@ -649,8 +649,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 54,
@@ -662,8 +662,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 55,
@@ -675,8 +675,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 55,
@@ -688,8 +688,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 56,
@@ -701,8 +701,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 56,
@@ -714,8 +714,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 57,
@@ -727,8 +727,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 57,
@@ -740,8 +740,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 57,
@@ -753,8 +753,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 57,
@@ -766,8 +766,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 58,
@@ -779,8 +779,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 58,
@@ -792,8 +792,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 58,
@@ -805,8 +805,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 59,
@@ -818,8 +818,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 59,
@@ -831,8 +831,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 59,
@@ -844,8 +844,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 62,
@@ -857,8 +857,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 62,
@@ -870,8 +870,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 63,
@@ -883,8 +883,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 63,
@@ -896,8 +896,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 64,
@@ -909,8 +909,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 64,
@@ -922,8 +922,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 65,
@@ -935,8 +935,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 65,
@@ -948,8 +948,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 66,
@@ -961,8 +961,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 66,
@@ -974,8 +974,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 67,
@@ -987,8 +987,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 67,
@@ -1000,8 +1000,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 67,
@@ -1013,8 +1013,8 @@
       "encounter_size_expression": "2",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 69,
@@ -1026,8 +1026,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 69,
@@ -1039,8 +1039,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 70,
@@ -1052,8 +1052,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 70,
@@ -1065,8 +1065,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 71,
@@ -1078,8 +1078,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 72,
@@ -1091,8 +1091,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 72,
@@ -1104,8 +1104,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 72,
@@ -1117,8 +1117,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 73,
@@ -1130,8 +1130,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 73,
@@ -1143,8 +1143,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 74,
@@ -1156,8 +1156,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 74,
@@ -1169,8 +1169,8 @@
       "encounter_size_expression": "2",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 75,
@@ -1182,8 +1182,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 75,
@@ -1195,8 +1195,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 75,
@@ -1208,8 +1208,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 75,
@@ -1221,8 +1221,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 76,
@@ -1234,8 +1234,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "8",
-      "extended_y_expression": "8"
+      "companion_type_1_expression": "8",
+      "companion_type_2_expression": "8"
     },
     {
       "map_id": 76,
@@ -1247,8 +1247,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 81,
@@ -1260,8 +1260,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 81,
@@ -1273,8 +1273,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 82,
@@ -1286,8 +1286,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 82,
@@ -1299,8 +1299,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 83,
@@ -1312,8 +1312,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x1f",
-      "extended_y_expression": "0x1e"
+      "companion_type_1_expression": "0x1f",
+      "companion_type_2_expression": "0x1e"
     },
     {
       "map_id": 83,
@@ -1325,8 +1325,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 84,
@@ -1338,8 +1338,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 84,
@@ -1351,8 +1351,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 85,
@@ -1364,8 +1364,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 86,
@@ -1377,8 +1377,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 86,
@@ -1390,8 +1390,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 86,
@@ -1403,8 +1403,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 86,
@@ -1416,8 +1416,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 87,
@@ -1429,8 +1429,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 87,
@@ -1442,8 +1442,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 87,
@@ -1455,8 +1455,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 88,
@@ -1468,8 +1468,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 88,
@@ -1481,8 +1481,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 89,
@@ -1494,8 +1494,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 90,
@@ -1507,8 +1507,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x19",
-      "extended_y_expression": "0x1c"
+      "companion_type_1_expression": "0x19",
+      "companion_type_2_expression": "0x1c"
     },
     {
       "map_id": 90,
@@ -1520,8 +1520,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 91,
@@ -1533,8 +1533,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x1c",
-      "extended_y_expression": "0x21"
+      "companion_type_1_expression": "0x1c",
+      "companion_type_2_expression": "0x21"
     },
     {
       "map_id": 92,
@@ -1546,8 +1546,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x1e",
-      "extended_y_expression": "0x22"
+      "companion_type_1_expression": "0x1e",
+      "companion_type_2_expression": "0x22"
     },
     {
       "map_id": 92,
@@ -1559,8 +1559,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 92,
@@ -1572,8 +1572,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 93,
@@ -1585,8 +1585,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 93,
@@ -1598,8 +1598,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 94,
@@ -1611,8 +1611,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 94,
@@ -1624,8 +1624,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 95,
@@ -1637,8 +1637,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x12",
-      "extended_y_expression": "(-(uint)(param_3 != 3) & 0xfffffffc) + 0x14"
+      "companion_type_1_expression": "0x12",
+      "companion_type_2_expression": "(-(uint)(param_3 != 3) & 0xfffffffc) + 0x14"
     },
     {
       "map_id": 95,
@@ -1650,8 +1650,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 96,
@@ -1663,8 +1663,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 96,
@@ -1676,8 +1676,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 97,
@@ -1689,8 +1689,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x22",
-      "extended_y_expression": "0x21"
+      "companion_type_1_expression": "0x22",
+      "companion_type_2_expression": "0x21"
     },
     {
       "map_id": 97,
@@ -1702,8 +1702,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 97,
@@ -1715,8 +1715,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 97,
@@ -1728,8 +1728,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 98,
@@ -1741,8 +1741,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x1f",
-      "extended_y_expression": "0x20"
+      "companion_type_1_expression": "0x1f",
+      "companion_type_2_expression": "0x20"
     },
     {
       "map_id": 98,
@@ -1754,8 +1754,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 98,
@@ -1767,8 +1767,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 99,
@@ -1780,8 +1780,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x15",
-      "extended_y_expression": "0x18"
+      "companion_type_1_expression": "0x15",
+      "companion_type_2_expression": "0x18"
     },
     {
       "map_id": 99,
@@ -1793,8 +1793,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 99,
@@ -1806,8 +1806,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 100,
@@ -1819,8 +1819,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0xd",
-      "extended_y_expression": "0xd"
+      "companion_type_1_expression": "0xd",
+      "companion_type_2_expression": "0xd"
     },
     {
       "map_id": 100,
@@ -1832,8 +1832,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 101,
@@ -1845,8 +1845,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 101,
@@ -1858,8 +1858,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 101,
@@ -1871,8 +1871,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 102,
@@ -1884,8 +1884,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 102,
@@ -1897,8 +1897,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 103,
@@ -1910,8 +1910,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 105,
@@ -1923,8 +1923,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0xd",
-      "extended_y_expression": "0x14"
+      "companion_type_1_expression": "0xd",
+      "companion_type_2_expression": "0x14"
     },
     {
       "map_id": 105,
@@ -1936,8 +1936,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 106,
@@ -1949,8 +1949,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0xc",
-      "extended_y_expression": "8"
+      "companion_type_1_expression": "0xc",
+      "companion_type_2_expression": "8"
     },
     {
       "map_id": 106,
@@ -1962,8 +1962,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 106,
@@ -1975,8 +1975,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 106,
@@ -1988,8 +1988,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 107,
@@ -2001,8 +2001,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 107,
@@ -2014,8 +2014,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 108,
@@ -2027,8 +2027,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 109,
@@ -2040,8 +2040,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "param_3",
-      "extended_y_expression": "param_3"
+      "companion_type_1_expression": "param_3",
+      "companion_type_2_expression": "param_3"
     },
     {
       "map_id": 109,
@@ -2053,8 +2053,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 110,
@@ -2066,8 +2066,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0xc",
-      "extended_y_expression": "(param_3 != 3) - 1 & 0xc"
+      "companion_type_1_expression": "0xc",
+      "companion_type_2_expression": "(param_3 != 3) - 1 & 0xc"
     },
     {
       "map_id": 110,
@@ -2079,8 +2079,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 110,
@@ -2092,8 +2092,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 110,
@@ -2105,8 +2105,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 111,
@@ -2118,8 +2118,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 111,
@@ -2131,8 +2131,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 112,
@@ -2144,8 +2144,8 @@
       "encounter_size_expression": "1",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 112,
@@ -2157,8 +2157,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 113,
@@ -2170,8 +2170,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 113,
@@ -2183,8 +2183,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 114,
@@ -2196,8 +2196,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 114,
@@ -2209,8 +2209,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 115,
@@ -2222,8 +2222,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 115,
@@ -2235,8 +2235,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 115,
@@ -2248,8 +2248,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 116,
@@ -2261,8 +2261,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 116,
@@ -2274,8 +2274,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 117,
@@ -2287,8 +2287,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 117,
@@ -2300,8 +2300,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 117,
@@ -2313,8 +2313,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": true,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 118,
@@ -2326,8 +2326,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 119,
@@ -2339,8 +2339,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 120,
@@ -2352,8 +2352,8 @@
       "encounter_size_expression": "param_3",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 121,
@@ -2365,8 +2365,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x1d",
-      "extended_y_expression": "0xc"
+      "companion_type_1_expression": "0x1d",
+      "companion_type_2_expression": "0xc"
     },
     {
       "map_id": 121,
@@ -2378,8 +2378,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 121,
@@ -2391,8 +2391,8 @@
       "encounter_size_expression": "2",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     },
     {
       "map_id": 127,
@@ -2404,8 +2404,8 @@
       "encounter_size_expression": "3",
       "flag_36c": false,
       "flag_371": true,
-      "extended_x_expression": "0x17",
-      "extended_y_expression": "0x10"
+      "companion_type_1_expression": "0x17",
+      "companion_type_2_expression": "0x10"
     },
     {
       "map_id": 127,
@@ -2417,8 +2417,8 @@
       "encounter_size_expression": "1",
       "flag_36c": false,
       "flag_371": false,
-      "extended_x_expression": null,
-      "extended_y_expression": null
+      "companion_type_1_expression": null,
+      "companion_type_2_expression": null
     }
   ]
 }

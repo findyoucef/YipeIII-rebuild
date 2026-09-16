@@ -71,6 +71,9 @@ int monster_attack_bonus(const Player& player, const Monster& monster,
     if (player.level > 40) {
         value += 5;
     }
+    if (monster.gatekeeper_empowered) {
+        value += 10 + roll(random, 10) + player.difficulty;
+    }
     if (player.difficulty == 3) {
         ++value;
     }
@@ -95,6 +98,9 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     int monster_special_defense = 0;
     if (player.difficulty == 3 && (monster.type_id == 0x0f || monster.type_id == 0x13)) {
         monster_special_defense = 4;
+    }
+    if (monster.gatekeeper_empowered) {
+        monster_special_defense += player.difficulty + 5 + roll(random, 20);
     }
     const int special_defense_roll = roll(random, monster_special_defense + 1);
 
@@ -222,6 +228,9 @@ int calculate_monster_damage(Player& player, const Monster& monster,
         const auto [minimum_damage, maximum_damage] = monster_damage_range(monster.type_id);
         damage = roll(random, maximum_damage - minimum_damage + 1) + minimum_damage;
         damage += roll(random, monster.rank + 1);
+        if (monster.gatekeeper_empowered) {
+            damage += 5 + roll(random, 5);
+        }
         if (attack_score > 15) {
             damage += roll(random, monster.rank);
         }
@@ -512,6 +521,14 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
 
 CombatEncounter start_monster_encounter(int type_id, int opponent_count,
                                         MsvcRandom& random, int player_level) {
+    EncounterSetup setup;
+    setup.player_level = player_level;
+    return start_monster_encounter(type_id, opponent_count, random, setup);
+}
+
+CombatEncounter start_monster_encounter(int type_id, int opponent_count,
+                                        MsvcRandom& random,
+                                        const EncounterSetup& setup) {
     if (opponent_count < 0
         || opponent_count > static_cast<int>(CombatEncounter::maximum_opponents)) {
         throw std::invalid_argument("opponent count must be between zero and three");
@@ -519,10 +536,10 @@ CombatEncounter start_monster_encounter(int type_id, int opponent_count,
 
     const bool generated_count = opponent_count == 0;
     if (generated_count) {
-        if (type_id + 3 < player_level || roll(random, 100) > 80) {
+        if (type_id + 3 < setup.player_level || roll(random, 100) > 80) {
             opponent_count = roll(random, 3) + 1;
         }
-        if (opponent_count == 0 && player_level < 3) {
+        if (opponent_count == 0 && setup.player_level < 3) {
             opponent_count = 1;
         }
     }
@@ -552,7 +569,42 @@ CombatEncounter start_monster_encounter(int type_id, int opponent_count,
         }
         encounter.monsters[2] = initialize_monster(third_type_id, random);
     }
+
+    if (type_id > 34) {
+        int companion_type_1 = setup.companion_type_1;
+        int companion_type_2 = setup.companion_type_2;
+        bool replace_companions = companion_type_1 != 0 || companion_type_2 != 0;
+        if (type_id == 41 && setup.gatekeeper_state != 0) {
+            encounter.monsters[0].gatekeeper_empowered = true;
+            encounter.monsters[0].health = encounter.monsters[0].health * 4
+                + setup.player_level * 6;
+            companion_type_1 = setup.difficulty + 37;
+            companion_type_2 = 37;
+            replace_companions = true;
+        }
+
+        if (replace_companions) {
+            encounter.monsters[1] = companion_type_1 > 0
+                ? initialize_monster(companion_type_1, random) : Monster{};
+            encounter.monsters[2] = companion_type_2 > 0
+                ? initialize_monster(companion_type_2, random) : Monster{};
+        }
+        encounter.monsters[0].health += setup.player_level;
+        if (setup.difficulty == 3) {
+            encounter.monsters[0].health += setup.player_level;
+        }
+        encounter.monsters[0].maximum_health = encounter.monsters[0].health;
+    }
     return encounter;
+}
+
+CombatEncounter start_monster_encounter(const MonsterPlacement& placement,
+                                        const Player& player, MsvcRandom& random,
+                                        int gatekeeper_state) {
+    return start_monster_encounter(
+        placement.type_id, placement.encounter_size, random,
+        {player.level, player.difficulty, placement.companion_type_1,
+         placement.companion_type_2, gatekeeper_state});
 }
 
 Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {

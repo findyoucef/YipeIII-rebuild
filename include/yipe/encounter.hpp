@@ -17,6 +17,8 @@ struct MonsterPlacement {
     MapPosition position;
     int slot = 0;
     int encounter_size = 0;
+    int companion_type_1 = 0;
+    int companion_type_2 = 0;
     bool flag_36c = false;
     bool flag_371 = false;
 };
@@ -37,6 +39,7 @@ struct Monster {
     int rank = 0;           // Original combat-record field +0x304.
     int attack_rating = 0;  // Original combat-record field +0x308.
     int defense_rating = 0; // Original combat-record field +0x30c.
+    bool gatekeeper_empowered = false;
 };
 
 struct MonsterDefinition {
@@ -85,6 +88,14 @@ struct CombatEncounter {
     CombatReward pending_reward;
 };
 
+struct EncounterSetup {
+    int player_level = 1;
+    int difficulty = 2;
+    int companion_type_1 = 0;
+    int companion_type_2 = 0;
+    int gatekeeper_state = 0;
+};
+
 enum class CombatOutcome { ongoing, victory, defeat };
 
 struct CombatTurn {
@@ -108,6 +119,11 @@ struct FleeResult {
 // comes from the combat-dialog constructor at 0x004025e0.
 [[nodiscard]] CombatEncounter start_monster_encounter(
     int type_id, int opponent_count, MsvcRandom& random, int player_level = 1);
+[[nodiscard]] CombatEncounter start_monster_encounter(
+    int type_id, int opponent_count, MsvcRandom& random, const EncounterSetup& setup);
+[[nodiscard]] CombatEncounter start_monster_encounter(
+    const MonsterPlacement& placement, const Player& player, MsvcRandom& random,
+    int gatekeeper_state = 0);
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
 // Common combat formulas support one to three opponents from the recovered

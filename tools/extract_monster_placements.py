@@ -58,8 +58,8 @@ class Placement:
     size_expression: str
     flag_36c: bool
     flag_371: bool
-    extended_x_expression: str | None = None
-    extended_y_expression: str | None = None
+    companion_type_1_expression: str | None = None
+    companion_type_2_expression: str | None = None
 
 
 def parse_constant(expression: str, field: str) -> int:
@@ -93,8 +93,12 @@ def parse_placements(path: Path) -> list[Placement]:
                         size_expression=arguments[5],
                         flag_36c=parse_constant(arguments[6], "flag_36c") != 0,
                         flag_371=helper == "0041d780",
-                        extended_x_expression=arguments[7] if helper == "0041d780" else None,
-                        extended_y_expression=arguments[8] if helper == "0041d780" else None,
+                        companion_type_1_expression=(
+                            arguments[7] if helper == "0041d780" else None
+                        ),
+                        companion_type_2_expression=(
+                            arguments[8] if helper == "0041d780" else None
+                        ),
                     )
                 )
 
@@ -126,12 +130,16 @@ def value_source(expression: str) -> tuple[str, int]:
         return "map_39_level", 0
     if expression == "param_4":
         return "map_75_level", 0
+    if expression == "(-(uint)(param_3 != 3) & 0xfffffffc) + 0x14":
+        return "difficulty_three_20_else_16", 0
+    if expression == "(param_3 != 3) - 1 & 0xc":
+        return "difficulty_three_12_else_zero", 0
     raise ValueError(f"unsupported dynamic placement expression: {expression}")
 
 
 def render_json(placements: list[Placement]) -> dict[str, object]:
     return {
-        "format": "yipe3-original-monster-placements-v1",
+        "format": "yipe3-original-monster-placements-v2",
         "source": "0041ec40",
         "placements": [
             {
@@ -144,8 +152,8 @@ def render_json(placements: list[Placement]) -> dict[str, object]:
                 "encounter_size_expression": placement.size_expression,
                 "flag_36c": placement.flag_36c,
                 "flag_371": placement.flag_371,
-                "extended_x_expression": placement.extended_x_expression,
-                "extended_y_expression": placement.extended_y_expression,
+                "companion_type_1_expression": placement.companion_type_1_expression,
+                "companion_type_2_expression": placement.companion_type_2_expression,
             }
             for placement in placements
         ],
@@ -159,6 +167,8 @@ def render_value(expression: str) -> str:
         "difficulty": "ValueSource::difficulty",
         "map_39_level": "ValueSource::map_39_level",
         "map_75_level": "ValueSource::map_75_level",
+        "difficulty_three_20_else_16": "ValueSource::difficulty_three_20_else_16",
+        "difficulty_three_12_else_zero": "ValueSource::difficulty_three_12_else_zero",
     }
     return f"{{{names[source]}, {value}}}"
 
@@ -175,7 +185,14 @@ def render_cpp(placements: list[Placement]) -> str:
         "namespace yipe {",
         "namespace {",
         "",
-        "enum class ValueSource { fixed, difficulty, map_39_level, map_75_level };",
+        "enum class ValueSource {",
+        "    fixed,",
+        "    difficulty,",
+        "    map_39_level,",
+        "    map_75_level,",
+        "    difficulty_three_20_else_16,",
+        "    difficulty_three_12_else_zero,",
+        "};",
         "",
         "struct PlacementValue {",
         "    ValueSource source;",
@@ -188,6 +205,8 @@ def render_cpp(placements: list[Placement]) -> str:
         "    MapPosition position;",
         "    int slot;",
         "    PlacementValue encounter_size;",
+        "    PlacementValue companion_type_1;",
+        "    PlacementValue companion_type_2;",
         "    bool flag_36c;",
         "    bool flag_371;",
         "};",
@@ -200,6 +219,8 @@ def render_cpp(placements: list[Placement]) -> str:
             f"{placement.map_id}, {render_value(placement.type_expression)}, "
             f"{{{placement.x}, {placement.y}}}, {placement.slot}, "
             f"{render_value(placement.size_expression)}, "
+            f"{render_value(placement.companion_type_1_expression or '0')}, "
+            f"{render_value(placement.companion_type_2_expression or '0')}, "
             f"{'true' if placement.flag_36c else 'false'}, "
             f"{'true' if placement.flag_371 else 'false'}"
             "},"
@@ -224,6 +245,10 @@ def render_cpp(placements: list[Placement]) -> str:
             "            return 18;",
             "        }",
             "        return player_level < 3 ? 3 : player_level;",
+            "    case ValueSource::difficulty_three_20_else_16:",
+            "        return difficulty == 3 ? 20 : 16;",
+            "    case ValueSource::difficulty_three_12_else_zero:",
+            "        return difficulty == 3 ? 12 : 0;",
             "    }",
             '    throw std::logic_error("unknown placement value source");',
             "}",
@@ -238,6 +263,10 @@ def render_cpp(placements: list[Placement]) -> str:
             "            result.push_back({resolve_value(placement.type_id, difficulty, player_level),",
             "                              placement.position, placement.slot,",
             "                              resolve_value(placement.encounter_size, difficulty,",
+            "                                            player_level),",
+            "                              resolve_value(placement.companion_type_1, difficulty,",
+            "                                            player_level),",
+            "                              resolve_value(placement.companion_type_2, difficulty,",
             "                                            player_level),",
             "                              placement.flag_36c, placement.flag_371});",
             "        }",

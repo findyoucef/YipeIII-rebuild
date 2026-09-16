@@ -809,6 +809,14 @@ void test_monster_placement_catalog() {
     check(yipe::original_monsters_for_map(0x79, 3, 1)[0].type_id == 38
               && yipe::original_monsters_for_map(0x7f, 3, 1)[0].type_id == 39,
           "late special encounters derive monster types from difficulty");
+    check(yipe::original_monsters_for_map(0x4c, 2, 1)[0].companion_type_1 == 8
+              && yipe::original_monsters_for_map(0x4c, 2, 1)[0].companion_type_2 == 8
+              && yipe::original_monsters_for_map(0x5f, 2, 1)[0].companion_type_2 == 16
+              && yipe::original_monsters_for_map(0x5f, 3, 1)[0].companion_type_2 == 20,
+          "extended placements preserve fixed and difficulty-derived companions");
+    check(yipe::original_monsters_for_map(0x6e, 2, 1)[0].companion_type_2 == 0
+              && yipe::original_monsters_for_map(0x6e, 3, 1)[0].companion_type_2 == 12,
+          "map 0x6e enables its third companion only on difficulty three");
 }
 
 void test_monster_definition_catalog() {
@@ -835,10 +843,83 @@ void test_monster_definition_catalog() {
 
     yipe::MsvcRandom random(1);
     const yipe::Monster monster = yipe::start_single_monster_encounter(41, random);
-    check(monster.name == "Gatekeeper" && monster.health == 331 && monster.rank == 25
+    check(monster.name == "Gatekeeper" && monster.health == 332 && monster.rank == 25
               && monster.attack_rating == 26 && monster.defense_rating == 25
               && monster.special_rating == 50,
           "generic setup applies the recovered table and random sequence");
+
+    yipe::Player high_rank_player;
+    high_rank_player.level = 10;
+    high_rank_player.difficulty = 3;
+    const yipe::MonsterPlacement high_rank_placement =
+        yipe::original_monsters_for_map(0x4c, high_rank_player.difficulty,
+                                        high_rank_player.level)[0];
+    yipe::MsvcRandom high_rank_random(1);
+    const yipe::CombatEncounter high_rank_encounter = yipe::start_monster_encounter(
+        high_rank_placement, high_rank_player, high_rank_random);
+    check(high_rank_encounter.monsters[0].type_id == 35
+              && high_rank_encounter.monsters[0].health == 111
+              && high_rank_encounter.monsters[1].type_id == 8
+              && high_rank_encounter.monsters[2].type_id == 8
+              && high_rank_random.state() == 2179684817u,
+          "high-rank placement setup applies companion overrides and level scaling");
+
+    yipe::MsvcRandom empowered_random(1);
+    const yipe::CombatEncounter empowered = yipe::start_monster_encounter(
+        41, 1, empowered_random, yipe::EncounterSetup{10, 3, 0, 0, 1});
+    check(empowered.monsters[0].type_id == 41
+              && empowered.monsters[0].health == 1404
+              && empowered.monsters[0].gatekeeper_empowered
+              && empowered.monsters[1].type_id == 40
+              && empowered.monsters[1].health == 1183
+              && empowered.monsters[2].type_id == 37
+              && empowered.monsters[2].health == 255
+              && empowered_random.state() == 3750785579u,
+          "empowered Gatekeeper setup scales health and creates difficulty companions");
+
+    yipe::Player reference_defender = high_rank_player;
+    reference_defender.health = 10000;
+    reference_defender.maximum_health = 10000;
+    yipe::Player empowered_defender = reference_defender;
+    yipe::Monster ordinary_gatekeeper = empowered.monsters[0];
+    ordinary_gatekeeper.gatekeeper_empowered = false;
+    yipe::MsvcRandom ordinary_attack_random(7);
+    yipe::MsvcRandom empowered_attack_random(7);
+    const yipe::CombatTurn ordinary_attack = yipe::resolve_monster_turn(
+        reference_defender, ordinary_gatekeeper, ordinary_attack_random);
+    const yipe::CombatTurn empowered_attack = yipe::resolve_monster_turn(
+        empowered_defender, empowered.monsters[0], empowered_attack_random);
+    check(ordinary_attack.monster_damage == 55
+              && empowered_attack.monster_damage == 47
+              && ordinary_attack_random.state() == 3788699098u
+              && empowered_attack_random.state() == 2936718116u,
+          "empowered Gatekeeper monster damage preserves its bonus rolls");
+
+    yipe::Player ordinary_attacker;
+    ordinary_attacker.health = 10000;
+    ordinary_attacker.maximum_health = 10000;
+    ordinary_attacker.level = 40;
+    ordinary_attacker.strength = 100;
+    ordinary_attacker.weapon_rank = 42;
+    ordinary_attacker.difficulty = 3;
+    yipe::Player special_attacker = ordinary_attacker;
+    ordinary_gatekeeper.health = 10000;
+    ordinary_gatekeeper.maximum_health = 10000;
+    yipe::Monster special_gatekeeper = ordinary_gatekeeper;
+    special_gatekeeper.gatekeeper_empowered = true;
+    yipe::MsvcRandom ordinary_player_attack_random(7);
+    yipe::MsvcRandom special_player_attack_random(7);
+    const yipe::CombatTurn ordinary_player_attack = yipe::resolve_attack_turn(
+        ordinary_attacker, ordinary_gatekeeper, ordinary_player_attack_random);
+    const yipe::CombatTurn special_player_attack = yipe::resolve_attack_turn(
+        special_attacker, special_gatekeeper, special_player_attack_random);
+    check(ordinary_player_attack.player_damage == 30
+              && special_player_attack.player_damage == 26
+              && ordinary_player_attack.monster_damage == 42
+              && special_player_attack.monster_damage == 33
+              && ordinary_player_attack_random.state() == 3078176496u
+              && special_player_attack_random.state() == 729675781u,
+          "empowered Gatekeeper defense preserves its attack and counterattack rolls");
 }
 
 void test_weapon_damage_catalog() {

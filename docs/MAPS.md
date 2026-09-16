@@ -89,9 +89,12 @@ Regenerate the placement catalog with:
   --cpp-output src/generated/original_monsters.cpp
 ```
 
-Sixteen records use the extended writer at `0x0041d780`. Its additional
-coordinate expressions remain in the JSON evidence, while their gameplay
-meaning remains unresolved and they are not exposed by `MonsterPlacement`.
+Sixteen records use the extended writer at `0x0041d780`. Its final two
+arguments become the companion monster types held at generated-map offsets
+`+0x38c` and `+0x390`; the combat constructor replaces slots 1 and 2 with
+those types for primary monsters above type 34. The generated catalog exposes
+the fixed and difficulty-derived values as `companion_type_1` and
+`companion_type_2`. The separate `+0x371` placement flag remains unresolved.
 
 The setup table at `0x00405640` and attack table at `0x004042e0` provide all 41
 monster definitions. The generated definition catalog joins their names from
@@ -103,9 +106,11 @@ counterattacks, fleeing, and deferred group rewards. It also preserves the
 constructor's automatic group-size selection and adjacent-rank variants used by
 the three size-zero placements on map `0x14`. The four player special abilities
 and their Invisibility/Enrage combat statuses are implemented from the static
-branches. High-rank generated-map companion overrides and remaining
-monster-specific branches still need reconstruction before the application
-enables all of these encounters.
+branches. High-rank placements now override their generated companions and
+scale primary health by player level. The Gatekeeper's empowered setup, attack,
+defense, and damage branches are also implemented; its surrounding quest state
+and the remaining monster-specific branches still need reconstruction before
+the application enables all encounters.
 
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
