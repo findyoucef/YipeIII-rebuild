@@ -47,10 +47,12 @@ The native rebuild format is independent of MFC and legacy `.yp3` files. Its
 little-endian 32-bit payload size, and a CRC-32 of the payload. Version 1 stores
 the initially reconstructed player fields. Version 2 appends experience, gold,
 equipment, combat settings, world coordinates, the first encounter's completion
-state, and the Visual C++ random-generator state. The loader accepts both
-versions and gives version-1 files the starting world state. Writes use a
-temporary file and atomic replacement so a failed write does not destroy the
-previous save.
+state, and the Visual C++ random-generator state. Version 3 appends ability
+points, the learned special ability, its active duration, and the three Enrage
+stat backups. The loader accepts all three versions, gives version-1 files the
+starting world state, and gives version-2 files a full starting AP pool. Writes
+use a temporary file and atomic replacement so a failed write does not destroy
+the previous save.
 
 ## Remaining work
 

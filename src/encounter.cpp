@@ -10,7 +10,7 @@ int roll(MsvcRandom& random, int bound) {
     return random.next() % std::max(bound, 1);
 }
 
-int player_attack_equipment(const Player& player) {
+int player_attack_equipment(const Player& player, MsvcRandom& random) {
     int value = player.weapon_rank;
     if (player.helmet_rank == 5) {
         ++value;
@@ -26,6 +26,10 @@ int player_attack_equipment(const Player& player) {
         ++value;
     } else if (player.necklace_rank == 6) {
         value += 2;
+    }
+    if (player.special_ability == SpecialAbility::invisibility
+        && player.special_ability_duration > 0) {
+        value += 1 + roll(random, player.special_ability_duration);
     }
     return value;
 }
@@ -86,7 +90,7 @@ int calculate_player_damage(const Player& player, const Monster& monster,
         situational_hit_bonus += 10 - player.level;
     }
     const int situational_roll = roll(random, situational_hit_bonus + 1);
-    const int equipment_roll = roll(random, player_attack_equipment(player) + 1);
+    const int equipment_roll = roll(random, player_attack_equipment(player, random) + 1);
 
     int monster_special_defense = 0;
     if (player.difficulty == 3 && (monster.type_id == 0x0f || monster.type_id == 0x13)) {
@@ -110,6 +114,10 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     hit_score -= roll(random, monster.defense_rating);
     hit_score -= roll(random, std::max(monster.type_id - player.level, 1));
     hit_score -= roll(random, monster.attack_rating);
+    if (player.special_ability == SpecialAbility::enrage
+        && player.special_ability_duration > 0) {
+        hit_score += 1 + roll(random, 3);
+    }
 
     const int forced_hit_roll = roll(random, 100);
     const int capped_level = std::min(player.level, 40);
@@ -130,6 +138,10 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     if (player.combat_style == 2 && player.level < 10 && monster.type_id > 2
         && roll(random, 100) > 65) {
         ++damage;
+    }
+    if (player.special_ability == SpecialAbility::enrage
+        && player.special_ability_duration > 0) {
+        damage += 2 + roll(random, 3);
     }
     return damage;
 }
@@ -161,7 +173,25 @@ int low_level_defense_range(int level) {
     return level <= 37 ? 29 : 35;
 }
 
-int calculate_monster_damage(const Player& player, const Monster& monster,
+void clear_combat_status(Player& player) {
+    if (player.special_ability == SpecialAbility::enrage) {
+        if (player.enrage_base_dexterity > 0) {
+            player.dexterity = player.enrage_base_dexterity;
+        }
+        if (player.enrage_base_intelligence > 0) {
+            player.intelligence = player.enrage_base_intelligence;
+        }
+        if (player.enrage_base_strength > 0) {
+            player.strength = player.enrage_base_strength;
+        }
+        player.enrage_base_dexterity = 0;
+        player.enrage_base_intelligence = 0;
+        player.enrage_base_strength = 0;
+    }
+    player.special_ability_duration = 0;
+}
+
+int calculate_monster_damage(Player& player, const Monster& monster,
                              MsvcRandom& random) {
     const int armor_roll = roll(random, player.armor_rank * 2);
     const int dexterity_roll = roll(random, player.dexterity);
@@ -185,53 +215,104 @@ int calculate_monster_damage(const Player& player, const Monster& monster,
         forced_hit_threshold = 60;
     }
     const int forced_hit_roll = roll(random, 100);
-    if (attack_score < 1 && forced_hit_threshold - monster.type_id / 2 >= forced_hit_roll) {
-        return 0;
+    const bool missed = attack_score < 1
+        && forced_hit_threshold - monster.type_id / 2 >= forced_hit_roll;
+    int damage = 0;
+    if (!missed) {
+        const auto [minimum_damage, maximum_damage] = monster_damage_range(monster.type_id);
+        damage = roll(random, maximum_damage - minimum_damage + 1) + minimum_damage;
+        damage += roll(random, monster.rank + 1);
+        if (attack_score > 15) {
+            damage += roll(random, monster.rank);
+        }
+        if (player.difficulty == 3) {
+            ++damage;
+        } else if (player.difficulty == 1 && damage > 2) {
+            --damage;
+        }
+        if ((monster.type_id == 7 || monster.type_id == 13 || monster.type_id == 15)
+            && player.level > 9) {
+            damage += player.difficulty;
+        }
+        if (monster.type_id > 34) {
+            damage += player.difficulty;
+        }
+        if (damage > 3 && player.level < 3) {
+            --damage;
+        }
+        if (damage > 2 && player.level == 1 && player.health < 6) {
+            damage = 1;
+        }
+        if (damage > 10 && player_defense_equipment(player) > 10) {
+            damage -= 1 + roll(random, 6);
+        }
+        if (damage > 20 && player_defense_equipment(player) > 20) {
+            damage -= 2 + roll(random, 6);
+        }
+        if (damage > 28 && player_defense_equipment(player) > 28) {
+            damage -= 3 + roll(random, 6);
+        }
+        if (damage > 10 && player.health < 35) {
+            damage -= 3;
+        }
+        if (damage > 20 && player.health < 50) {
+            damage -= 5;
+        }
+        if (player.level == 1) {
+            damage = std::min(damage, 5);
+        }
+        damage = std::max(damage, 0);
     }
 
-    const auto [minimum_damage, maximum_damage] = monster_damage_range(monster.type_id);
-    int damage = roll(random, maximum_damage - minimum_damage + 1) + minimum_damage;
-    damage += roll(random, monster.rank + 1);
-    if (attack_score > 15) {
-        damage += roll(random, monster.rank);
+    if (player.special_ability == SpecialAbility::invisibility
+        && player.special_ability_duration > 0) {
+        damage = 0;
+        --player.special_ability_duration;
+    } else if (player.special_ability == SpecialAbility::enrage
+               && player.special_ability_duration > 0) {
+        if (damage > 2) {
+            --damage;
+        }
+        --player.special_ability_duration;
+        if (player.special_ability_duration < 1) {
+            clear_combat_status(player);
+        }
     }
-    if (player.difficulty == 3) {
-        ++damage;
-    } else if (player.difficulty == 1 && damage > 2) {
-        --damage;
+    return damage;
+}
+
+int backstab_damage(const Player& player, const Monster& monster,
+                    MsvcRandom& random) {
+    int dexterity_range = 2;
+    if (player.dexterity > 20) {
+        dexterity_range = 6;
     }
-    if ((monster.type_id == 7 || monster.type_id == 13 || monster.type_id == 15)
-        && player.level > 9) {
-        damage += player.difficulty;
+    if (player.dexterity > 30) {
+        dexterity_range += 2;
     }
-    if (monster.type_id > 34) {
-        damage += player.difficulty;
+    if (player.dexterity > 40) {
+        dexterity_range += 5;
     }
-    if (damage > 3 && player.level < 3) {
-        --damage;
+
+    const int health_range = std::max(monster.health / 5, 1);
+    int damage = roll(random, health_range) + 3 + roll(random, dexterity_range);
+    damage = std::max(damage, 6);
+    if (monster.health > 45) {
+        damage = std::max(damage, 10);
     }
-    if (damage > 2 && player.level == 1 && player.health < 6) {
-        damage = 1;
+    if (monster.health > 95) {
+        damage = std::max(damage, 15);
     }
-    if (damage > 10 && player_defense_equipment(player) > 10) {
-        damage -= 1 + roll(random, 6);
-    }
-    if (damage > 20 && player_defense_equipment(player) > 20) {
-        damage -= 2 + roll(random, 6);
-    }
-    if (damage > 28 && player_defense_equipment(player) > 28) {
-        damage -= 3 + roll(random, 6);
-    }
-    if (damage > 10 && player.health < 35) {
-        damage -= 3;
-    }
-    if (damage > 20 && player.health < 50) {
-        damage -= 5;
-    }
-    if (player.level == 1) {
-        damage = std::min(damage, 5);
-    }
-    return std::max(damage, 0);
+    return damage;
+}
+
+void start_enrage(Player& player, MsvcRandom& random) {
+    player.enrage_base_dexterity = player.dexterity;
+    player.enrage_base_intelligence = player.intelligence;
+    player.enrage_base_strength = player.strength;
+    player.dexterity += 1 + roll(random, player.dexterity / 2);
+    player.strength += 2 + roll(random, player.strength / 2);
+    player.intelligence += 1 + roll(random, player.intelligence / 2);
 }
 
 EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
@@ -403,8 +484,28 @@ CombatTurn resolve_counterattacks(Player& player, const CombatEncounter& encount
     }
     if (player.health < 1) {
         result.outcome = CombatOutcome::defeat;
+        clear_combat_status(player);
     }
     return result;
+}
+
+void finish_defeated_target(Player& player, CombatEncounter& encounter,
+                            int selected_slot, MsvcRandom& random,
+                            CombatTurn& result) {
+    Monster& target = encounter.monsters[static_cast<std::size_t>(selected_slot)];
+    const CombatReward reward = roll_monster_reward(
+        player, target, encounter.monsters[0].type_id, selected_slot, random);
+    encounter.pending_reward.experience += reward.experience;
+    encounter.pending_reward.gold += reward.gold;
+    if (!has_living_monster(encounter)) {
+        result.outcome = CombatOutcome::victory;
+        result.reward = encounter.pending_reward;
+        result.reward.equipment_upgrade =
+            finish_encounter_rewards(player, encounter, random);
+        clear_combat_status(player);
+    } else {
+        encounter.selected_target = first_living_monster(encounter);
+    }
 }
 
 } // namespace
@@ -494,18 +595,90 @@ CombatTurn resolve_attack_turn(Player& player, CombatEncounter& encounter,
     }
 
     if (target_defeated) {
-        const CombatReward reward = roll_monster_reward(
-            player, target, encounter.monsters[0].type_id, selected_slot, random);
-        encounter.pending_reward.experience += reward.experience;
-        encounter.pending_reward.gold += reward.gold;
-        if (!has_living_monster(encounter)) {
-            result.outcome = CombatOutcome::victory;
-            result.reward = encounter.pending_reward;
-            result.reward.equipment_upgrade =
-                finish_encounter_rewards(player, encounter, random);
-        } else {
-            encounter.selected_target = first_living_monster(encounter);
+        finish_defeated_target(player, encounter, selected_slot, random, result);
+    }
+    return result;
+}
+
+CombatTurn resolve_special_ability_turn(Player& player, Monster& monster,
+                                         MsvcRandom& random) {
+    CombatEncounter encounter;
+    encounter.monsters[0] = monster;
+    CombatTurn result = resolve_special_ability_turn(player, encounter, random);
+    monster = encounter.monsters[0];
+    return result;
+}
+
+CombatTurn resolve_special_ability_turn(Player& player, CombatEncounter& encounter,
+                                         MsvcRandom& random) {
+    if (player.health < 1 || encounter.selected_target < 0
+        || encounter.selected_target
+            >= static_cast<int>(CombatEncounter::maximum_opponents)
+        || encounter.monsters[static_cast<std::size_t>(encounter.selected_target)].health < 1) {
+        throw std::logic_error("cannot use an ability after combat has ended");
+    }
+
+    CombatTurn result;
+    if (player.special_ability == SpecialAbility::none || player.ability_points < 3) {
+        return result;
+    }
+
+    const int selected_slot = encounter.selected_target;
+    Monster& target = encounter.monsters[static_cast<std::size_t>(selected_slot)];
+    switch (player.special_ability) {
+    case SpecialAbility::backstab:
+        result.player_damage = backstab_damage(player, target, random);
+        player.ability_points -= 3;
+        target.health -= result.player_damage;
+        if (target.health < 1) {
+            finish_defeated_target(player, encounter, selected_slot, random, result);
         }
+        break;
+    case SpecialAbility::frighten: {
+        Monster& third = encounter.monsters[2];
+        if (third.health < 1) {
+            return result;
+        }
+        encounter.pending_reward.experience += third.attack_rating + 2;
+        player.ability_points -= 3;
+        third.type_id = 0;
+        third.health = 0;
+        if (selected_slot == 2) {
+            if (has_living_monster(encounter)) {
+                encounter.selected_target = first_living_monster(encounter);
+            } else {
+                result.outcome = CombatOutcome::victory;
+                result.reward = encounter.pending_reward;
+                result.reward.equipment_upgrade =
+                    finish_encounter_rewards(player, encounter, random);
+                clear_combat_status(player);
+            }
+        }
+        break;
+    }
+    case SpecialAbility::invisibility:
+        player.special_ability_duration = 3 + roll(random, player.dexterity / 5);
+        if (encounter.monsters[1].health > 0) {
+            player.special_ability_duration *= 2;
+        }
+        if (encounter.monsters[2].health > 0) {
+            player.special_ability_duration *= 4;
+        }
+        player.ability_points -= 3;
+        break;
+    case SpecialAbility::enrage:
+        player.special_ability_duration = 3 + roll(random, player.strength / 4);
+        if (encounter.monsters[1].health > 0) {
+            player.special_ability_duration *= 2;
+        }
+        if (encounter.monsters[2].health > 0) {
+            player.special_ability_duration += 6;
+        }
+        start_enrage(player, random);
+        player.ability_points -= 3;
+        break;
+    case SpecialAbility::none:
+        break;
     }
     return result;
 }
@@ -552,6 +725,7 @@ FleeResult try_flee(Player& player, const CombatEncounter& encounter,
     }
     if (roll(random, 100) <= chance) {
         player.gold = std::max(player.gold + 1 - primary_monster.type_id, 0);
+        clear_combat_status(player);
         return {true, 0, false, {}};
     }
 
@@ -580,6 +754,9 @@ FleeResult try_flee(Player& player, const CombatEncounter& encounter,
         player.adjust_health(-damage);
     }
     result.player_defeated = player.health < 1;
+    if (result.player_defeated) {
+        clear_combat_status(player);
+    }
     return result;
 }
 

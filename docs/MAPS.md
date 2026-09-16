@@ -101,14 +101,16 @@ setup can materialize every definition. The core supports fixed groups of up to
 three same-type opponents, including target selection, slot-order
 counterattacks, fleeing, and deferred group rewards. It also preserves the
 constructor's automatic group-size selection and adjacent-rank variants used by
-the three size-zero placements on map `0x14`. High-rank generated-map companion
-overrides and monster-specific status effects still need reconstruction before
-the application enables all of these encounters.
+the three size-zero placements on map `0x14`. The four player special abilities
+and their Invisibility/Enrage combat statuses are implemented from the static
+branches. High-rank generated-map companion overrides and remaining
+monster-specific branches still need reconstruction before the application
+enables all of these encounters.
 
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
 playable-flow test. Bitmap resource 175 is drawn at the placement until the
-encounter is won; the version-2 native save preserves its defeated state.
+encounter is won; the version-3 native save preserves its defeated state.
 
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.

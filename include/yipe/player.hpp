@@ -15,6 +15,14 @@ enum class CharacterType : std::uint8_t {
     wizard = 3,
 };
 
+enum class SpecialAbility : std::uint8_t {
+    none = 0,
+    backstab = 1,
+    frighten = 2,
+    invisibility = 3,
+    enrage = 4,
+};
+
 struct ItemUseResult {
     bool consumed = false;
     int amount = 0;
@@ -45,6 +53,8 @@ public:
     int maximum_health = 0;
     int spell_points = 0;
     int maximum_spell_points = 0;
+    int ability_points = 0;
+    int maximum_ability_points = 0;
     int level = 1;
     int experience = 0;
     int gold = 0;
@@ -59,6 +69,11 @@ public:
     int combat_style = 2;
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
+    SpecialAbility special_ability = SpecialAbility::none;
+    int special_ability_duration = 0;
+    int enrage_base_dexterity = 0;
+    int enrage_base_intelligence = 0;
+    int enrage_base_strength = 0;
     std::array<std::uint16_t, inventory_size> inventory{};
 
     // Meanings are not yet established; names retain their original object offsets.

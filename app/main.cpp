@@ -559,7 +559,8 @@ void show_player_status(SDL_Window* window, const yipe::Player& player) {
     message << player.name << "\nLevel " << player.level << "  XP " << player.experience
             << "  Gold " << player.gold << "\nHP " << player.health << "/"
             << player.maximum_health << "  SP " << player.spell_points << "/"
-            << player.maximum_spell_points << "\nStrength " << player.strength
+            << player.maximum_spell_points << "  AP " << player.ability_points << "/"
+            << player.maximum_ability_points << "\nStrength " << player.strength
             << "  Dexterity " << player.dexterity << "  Intelligence "
             << player.intelligence << "\nWeapon " << player.weapon_rank << "  Armor "
             << player.armor_rank << "\nCarried items " << carried << "/"

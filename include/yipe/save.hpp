@@ -19,8 +19,10 @@ struct GameState {
     std::uint32_t random_state = 1;
 };
 
-// Version 2 extends the player-only version 1 payload with progression,
-// equipment, world location, encounter completion, and random state.
+// Version 2 extended the player-only version 1 payload with progression,
+// equipment, world location, encounter completion, and random state. Version 3
+// adds special-ability points and active combat status while retaining both
+// earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

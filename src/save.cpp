@@ -20,7 +20,8 @@ namespace {
 
 constexpr std::array<std::uint8_t, 4> magic = {'Y', '3', 'R', 'S'};
 constexpr std::uint16_t player_format_version = 1;
-constexpr std::uint16_t game_format_version = 2;
+constexpr std::uint16_t previous_game_format_version = 2;
+constexpr std::uint16_t game_format_version = 3;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -166,6 +167,13 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_i32(payload, game.location.map_id);
     append_u8(payload, game.giant_beetle_defeated ? 1 : 0);
     append_u32(payload, game.random_state);
+    append_i32(payload, game.player.ability_points);
+    append_i32(payload, game.player.maximum_ability_points);
+    append_i32(payload, static_cast<int>(game.player.special_ability));
+    append_i32(payload, game.player.special_ability_duration);
+    append_i32(payload, game.player.enrage_base_dexterity);
+    append_i32(payload, game.player.enrage_base_intelligence);
+    append_i32(payload, game.player.enrage_base_strength);
     return payload;
 }
 
@@ -265,7 +273,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
         static_cast<void>(header.u8());
     }
     const std::uint16_t version = header.u16();
-    if (version != player_format_version && version != game_format_version) {
+    if (version != player_format_version && version != previous_game_format_version
+        && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -329,6 +338,24 @@ GameState load_game(const std::filesystem::path& path) {
     game.location.map_id = reader.i32();
     game.giant_beetle_defeated = reader.u8() != 0;
     game.random_state = reader.u32();
+    if (save.version == previous_game_format_version) {
+        game.player.maximum_ability_points =
+            game.player.combat_style == 3 ? 6 : 5;
+        game.player.ability_points = game.player.maximum_ability_points;
+    } else {
+        game.player.ability_points = reader.i32();
+        game.player.maximum_ability_points = reader.i32();
+        const int ability = reader.i32();
+        if (ability < static_cast<int>(SpecialAbility::none)
+            || ability > static_cast<int>(SpecialAbility::enrage)) {
+            throw std::runtime_error("save contains an invalid special ability");
+        }
+        game.player.special_ability = static_cast<SpecialAbility>(ability);
+        game.player.special_ability_duration = reader.i32();
+        game.player.enrage_base_dexterity = reader.i32();
+        game.player.enrage_base_intelligence = reader.i32();
+        game.player.enrage_base_strength = reader.i32();
+    }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");
     }

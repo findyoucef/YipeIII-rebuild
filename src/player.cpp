@@ -39,6 +39,7 @@ void Player::initialize(CharacterType type) {
         intelligence = 10;
         health = 13;
         spell_points = 0;
+        ability_points = 5;
         break;
     case CharacterType::rogue:
         combat_style = 3;
@@ -47,6 +48,7 @@ void Player::initialize(CharacterType type) {
         intelligence = 12;
         health = 13;
         spell_points = 0;
+        ability_points = 6;
         break;
     case CharacterType::wizard:
         combat_style = 1;
@@ -55,11 +57,13 @@ void Player::initialize(CharacterType type) {
         intelligence = 16;
         health = 10;
         spell_points = 0;
+        ability_points = 5;
         break;
     }
 
     maximum_health = health;
     maximum_spell_points = spell_points;
+    maximum_ability_points = ability_points;
 }
 
 bool Player::adjust_health(int delta) {

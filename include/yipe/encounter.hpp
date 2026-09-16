@@ -111,11 +111,15 @@ struct FleeResult {
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
 // Common combat formulas support one to three opponents from the recovered
-// definition catalog. Monster-specific status effects remain under recovery.
+// definition catalog, including the four original special abilities.
 [[nodiscard]] CombatTurn resolve_attack_turn(Player& player, Monster& monster,
                                               MsvcRandom& random);
 [[nodiscard]] CombatTurn resolve_attack_turn(Player& player, CombatEncounter& encounter,
                                               MsvcRandom& random);
+[[nodiscard]] CombatTurn resolve_special_ability_turn(
+    Player& player, Monster& monster, MsvcRandom& random);
+[[nodiscard]] CombatTurn resolve_special_ability_turn(
+    Player& player, CombatEncounter& encounter, MsvcRandom& random);
 [[nodiscard]] CombatTurn resolve_monster_turn(Player& player, const Monster& monster,
                                                MsvcRandom& random);
 [[nodiscard]] CombatTurn resolve_monster_turn(

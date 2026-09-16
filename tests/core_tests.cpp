@@ -9,11 +9,14 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -24,6 +27,42 @@ void check(bool condition, const std::string& description) {
         ++failures;
         std::cerr << "FAIL: " << description << '\n';
     }
+}
+
+std::uint32_t test_crc32(const std::vector<std::uint8_t>& bytes,
+                         std::size_t begin) {
+    std::uint32_t crc = 0xffffffffu;
+    for (std::size_t index = begin; index < bytes.size(); ++index) {
+        crc ^= bytes[index];
+        for (int bit = 0; bit < 8; ++bit) {
+            const std::uint32_t mask = 0u - (crc & 1u);
+            crc = (crc >> 1u) ^ (0xedb88320u & mask);
+        }
+    }
+    return ~crc;
+}
+
+void write_u32(std::vector<std::uint8_t>& bytes, std::size_t position,
+               std::uint32_t value) {
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+        bytes[position++] = static_cast<std::uint8_t>(value >> shift);
+    }
+}
+
+void convert_game_save_to_version_2(const std::filesystem::path& path) {
+    std::ifstream input(path, std::ios::binary);
+    std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
+                                    std::istreambuf_iterator<char>()};
+    constexpr std::size_t header_size = 14;
+    constexpr std::size_t version_3_extension_size = 7 * sizeof(std::int32_t);
+    bytes.resize(bytes.size() - version_3_extension_size);
+    bytes[4] = 2;
+    bytes[5] = 0;
+    write_u32(bytes, 6, static_cast<std::uint32_t>(bytes.size() - header_size));
+    write_u32(bytes, 10, test_crc32(bytes, header_size));
+    std::ofstream output(path, std::ios::binary | std::ios::trunc);
+    output.write(reinterpret_cast<const char*>(bytes.data()),
+                 static_cast<std::streamsize>(bytes.size()));
 }
 
 void test_random() {
@@ -41,6 +80,8 @@ void test_player_defaults() {
     check(player.health == 13 && player.maximum_health == 13, "warrior default health");
     check(player.spell_points == 0 && player.maximum_spell_points == 0,
           "initial spell points are reset");
+    check(player.ability_points == 5 && player.maximum_ability_points == 5,
+          "warrior starts with five ability points");
     check(player.inventory[0] == 1, "new player owns item 1");
 
     const yipe::Player rogue(yipe::CharacterType::rogue);
@@ -48,12 +89,16 @@ void test_player_defaults() {
           "rogue default stats");
     check(rogue.health == 13 && rogue.maximum_health == 13,
           "rogue default health");
+    check(rogue.ability_points == 6 && rogue.maximum_ability_points == 6,
+          "rogue starts with six ability points");
 
     const yipe::Player wizard(yipe::CharacterType::wizard);
     check(wizard.strength == 11 && wizard.dexterity == 12 && wizard.intelligence == 16,
           "wizard default stats");
     check(wizard.health == 10 && wizard.maximum_health == 10,
           "wizard default health");
+    check(wizard.ability_points == 5 && wizard.maximum_ability_points == 5,
+          "wizard starts with five ability points");
 }
 
 void test_health_change() {
@@ -196,6 +241,13 @@ void test_game_save() {
     original.player.combat_style = 1;
     original.player.equipment_upgrade_count = 2;
     original.player.loot_roll_penalty = 7;
+    original.player.ability_points = 2;
+    original.player.maximum_ability_points = 5;
+    original.player.special_ability = yipe::SpecialAbility::enrage;
+    original.player.special_ability_duration = 8;
+    original.player.enrage_base_dexterity = 13;
+    original.player.enrage_base_intelligence = 10;
+    original.player.enrage_base_strength = 16;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.giant_beetle_defeated = true;
     original.random_state = 0x12345678u;
@@ -205,16 +257,36 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 2 save restores progression and equipment");
+          "version 3 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 2 save restores combat settings and counters");
+          "version 3 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 2 save restores world location");
+          "version 3 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 2 save restores encounter and random state");
+          "version 3 save restores encounter and random state");
+    check(loaded.player.ability_points == 2
+              && loaded.player.maximum_ability_points == 5
+              && loaded.player.special_ability == yipe::SpecialAbility::enrage
+              && loaded.player.special_ability_duration == 8
+              && loaded.player.enrage_base_dexterity == 13
+              && loaded.player.enrage_base_intelligence == 10
+              && loaded.player.enrage_base_strength == 16,
+          "version 3 save restores ability and active status state");
+
+    convert_game_save_to_version_2(path);
+    const yipe::GameState loaded_version_2 = yipe::load_game(path);
+    check(loaded_version_2.player.name == original.player.name
+              && loaded_version_2.player.experience == 41
+              && loaded_version_2.location.map_id == 0x0b
+              && loaded_version_2.random_state == 0x12345678u,
+          "version 2 game saves remain readable");
+    check(loaded_version_2.player.ability_points == 5
+              && loaded_version_2.player.maximum_ability_points == 5
+              && loaded_version_2.player.special_ability == yipe::SpecialAbility::none,
+          "version 2 saves receive default ability state");
     std::filesystem::remove(path);
 }
 
@@ -579,6 +651,133 @@ void test_multi_monster_encounter() {
           "encounters reject counts outside zero through three");
 }
 
+void test_special_abilities() {
+    yipe::Monster backstab_target;
+    backstab_target.type_id = 2;
+    backstab_target.health = 15;
+    backstab_target.maximum_health = 15;
+    yipe::Player backstabber;
+    backstabber.special_ability = yipe::SpecialAbility::backstab;
+    yipe::MsvcRandom backstab_random(1);
+    const yipe::CombatTurn backstab = yipe::resolve_special_ability_turn(
+        backstabber, backstab_target, backstab_random);
+    check(backstab.player_damage == 6 && backstab_target.health == 9
+              && backstabber.ability_points == 2,
+          "Backstab uses its recovered damage floor and costs three AP");
+    check(backstab.monster_damage == 0 && backstabber.health == 13
+              && backstab_random.state() == 0xc823f683u,
+          "Backstab consumes two rolls and prevents a counterattack");
+
+    backstabber.ability_points = 2;
+    const int health_before_failed_backstab = backstab_target.health;
+    const std::uint32_t random_before_failed_backstab = backstab_random.state();
+    static_cast<void>(yipe::resolve_special_ability_turn(
+        backstabber, backstab_target, backstab_random));
+    check(backstab_target.health == health_before_failed_backstab
+              && backstab_random.state() == random_before_failed_backstab,
+          "an ability with fewer than three AP does nothing");
+
+    yipe::Monster powerful_target = backstab_target;
+    powerful_target.health = 100;
+    yipe::Player powerful_backstabber;
+    powerful_backstabber.special_ability = yipe::SpecialAbility::backstab;
+    yipe::MsvcRandom powerful_backstab_random(1);
+    const yipe::CombatTurn powerful_backstab = yipe::resolve_special_ability_turn(
+        powerful_backstabber, powerful_target, powerful_backstab_random);
+    check(powerful_backstab.player_damage == 15 && powerful_target.health == 85,
+          "Backstab preserves the high-health minimum damage");
+
+    yipe::MsvcRandom group_setup_random(1);
+    const yipe::CombatEncounter group =
+        yipe::start_monster_encounter(2, 3, group_setup_random);
+    yipe::CombatEncounter frightened_group = group;
+    frightened_group.pending_reward.experience = 4;
+    yipe::Player frightener;
+    frightener.special_ability = yipe::SpecialAbility::frighten;
+    yipe::MsvcRandom frighten_random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(
+        frightener, frightened_group, frighten_random));
+    check(frightened_group.monsters[2].type_id == 0
+              && frightened_group.monsters[2].health == 0
+              && frightened_group.pending_reward.experience
+                  == 4 + group.monsters[2].attack_rating + 2,
+          "Frighten removes slot three and adds its recovered XP amount");
+    check(frightener.ability_points == 2 && frighten_random.state() == 1,
+          "Frighten costs three AP without consuming a random value");
+
+    yipe::CombatEncounter two_opponents = group;
+    two_opponents.monsters[2] = {};
+    yipe::Player failed_frightener;
+    failed_frightener.special_ability = yipe::SpecialAbility::frighten;
+    yipe::MsvcRandom failed_frighten_random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(
+        failed_frightener, two_opponents, failed_frighten_random));
+    check(failed_frightener.ability_points == 5,
+          "Frighten is not charged when no third opponent exists");
+
+    yipe::CombatEncounter invisible_group = group;
+    yipe::Player invisible_player;
+    invisible_player.health = 1000;
+    invisible_player.maximum_health = 1000;
+    invisible_player.special_ability = yipe::SpecialAbility::invisibility;
+    yipe::MsvcRandom invisibility_random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(
+        invisible_player, invisible_group, invisibility_random));
+    check(invisible_player.special_ability_duration == 32
+              && invisible_player.ability_points == 2,
+          "Invisibility duration scales for the second and third opponents");
+    const yipe::CombatTurn invisible_counterattacks = yipe::resolve_monster_turn(
+        invisible_player, invisible_group, invisibility_random);
+    check(invisible_counterattacks.monster_damage == 0
+              && invisible_player.health == 1000
+              && invisible_player.special_ability_duration == 29,
+          "Invisibility blocks each monster attack and spends one duration per attacker");
+
+    yipe::CombatEncounter enraged_group = group;
+    yipe::Player enraged_player;
+    enraged_player.special_ability = yipe::SpecialAbility::enrage;
+    yipe::MsvcRandom enrage_random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(
+        enraged_player, enraged_group, enrage_random));
+    check(enraged_player.special_ability_duration == 14
+              && enraged_player.dexterity == 19
+              && enraged_player.strength == 24
+              && enraged_player.intelligence == 11
+              && enraged_player.ability_points == 2,
+          "Enrage preserves its seeded duration and temporary stat boosts");
+
+    yipe::MsvcRandom gatekeeper_setup_random(1);
+    const yipe::Monster gatekeeper =
+        yipe::start_single_monster_encounter(41, gatekeeper_setup_random);
+    yipe::Player reference_player;
+    reference_player.health = 1000;
+    reference_player.maximum_health = 1000;
+    reference_player.level = 40;
+    yipe::Player expiring_enrage = reference_player;
+    expiring_enrage.special_ability = yipe::SpecialAbility::enrage;
+    expiring_enrage.special_ability_duration = 1;
+    expiring_enrage.enrage_base_dexterity = expiring_enrage.dexterity;
+    expiring_enrage.enrage_base_intelligence = expiring_enrage.intelligence;
+    expiring_enrage.enrage_base_strength = expiring_enrage.strength;
+    yipe::MsvcRandom reference_attack_random(7);
+    yipe::MsvcRandom enrage_attack_random(7);
+    const yipe::CombatTurn reference_attack = yipe::resolve_monster_turn(
+        reference_player, gatekeeper, reference_attack_random);
+    const yipe::CombatTurn reduced_attack = yipe::resolve_monster_turn(
+        expiring_enrage, gatekeeper, enrage_attack_random);
+    check(reference_attack.monster_damage > 2
+              && reduced_attack.monster_damage == reference_attack.monster_damage - 1,
+          "Enrage reduces qualifying monster damage by one");
+    check(expiring_enrage.special_ability_duration == 0
+              && expiring_enrage.enrage_base_dexterity == 0
+              && expiring_enrage.enrage_base_intelligence == 0
+              && expiring_enrage.enrage_base_strength == 0
+              && expiring_enrage.dexterity == reference_player.dexterity
+              && expiring_enrage.intelligence == reference_player.intelligence
+              && expiring_enrage.strength == reference_player.strength,
+          "expired Enrage restores the original player stats");
+}
+
 void test_monster_placement_catalog() {
     std::size_t placement_count = 0;
     int flag_36c_count = 0;
@@ -738,6 +937,7 @@ int main() {
     test_starting_shop();
     test_giant_beetle_encounter();
     test_multi_monster_encounter();
+    test_special_abilities();
     test_monster_placement_catalog();
     test_monster_definition_catalog();
     test_weapon_damage_catalog();
