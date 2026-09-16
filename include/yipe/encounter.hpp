@@ -102,11 +102,12 @@ struct FleeResult {
     std::array<int, CombatEncounter::maximum_opponents> monster_damage_by_slot{};
 };
 
-// Reconstructs the fixed-size combat setup used by a static map placement. The
-// extra random draw after monster initialization is intentional and comes from
-// the combat-dialog constructor at 0x004025e0.
+// Reconstructs the combat setup used by a static map placement. An opponent
+// count of zero selects the original level/random-generated group size. The
+// extra random draw after primary-monster initialization is intentional and
+// comes from the combat-dialog constructor at 0x004025e0.
 [[nodiscard]] CombatEncounter start_monster_encounter(
-    int type_id, int opponent_count, MsvcRandom& random);
+    int type_id, int opponent_count, MsvcRandom& random, int player_level = 1);
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
 // Common combat formulas support one to three opponents from the recovered

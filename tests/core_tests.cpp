@@ -537,12 +537,36 @@ void test_multi_monster_encounter() {
               && defeated_player.health < 1,
           "group counterattacks report player defeat");
 
-    bool rejected_zero_opponents = false;
+    yipe::MsvcRandom single_generated_random(1);
+    const yipe::CombatEncounter single_generated =
+        yipe::start_monster_encounter(17, 0, single_generated_random);
+    check(single_generated.monsters[0].type_id == 17
+              && single_generated.monsters[0].health == 122
+              && single_generated.monsters[0].attack_rating == 18
+              && single_generated.monsters[0].defense_rating == 13
+              && single_generated.monsters[1].type_id == 0
+              && single_generated.monsters[2].type_id == 0
+              && single_generated_random.state() == 3403800452u,
+          "a low-level generated encounter preserves the seeded single-opponent setup");
+
+    yipe::MsvcRandom three_generated_random(13);
+    const yipe::CombatEncounter three_generated =
+        yipe::start_monster_encounter(17, 0, three_generated_random);
+    check(three_generated.monsters[0].type_id == 17
+              && three_generated.monsters[0].health == 126
+              && three_generated.monsters[1].type_id == 17
+              && three_generated.monsters[1].health == 129
+              && three_generated.monsters[2].type_id == 18
+              && three_generated.monsters[2].health == 129
+              && three_generated_random.state() == 1879152969u,
+          "a generated encounter preserves its seeded count, variant, and random order");
+
+    bool rejected_negative_opponents = false;
     try {
         yipe::MsvcRandom random(1);
-        (void)yipe::start_monster_encounter(2, 0, random);
+        (void)yipe::start_monster_encounter(2, -1, random);
     } catch (const std::invalid_argument&) {
-        rejected_zero_opponents = true;
+        rejected_negative_opponents = true;
     }
     bool rejected_four_opponents = false;
     try {
@@ -551,8 +575,8 @@ void test_multi_monster_encounter() {
     } catch (const std::invalid_argument&) {
         rejected_four_opponents = true;
     }
-    check(rejected_zero_opponents && rejected_four_opponents,
-          "fixed encounters accept only one to three opponents");
+    check(rejected_negative_opponents && rejected_four_opponents,
+          "encounters reject counts outside zero through three");
 }
 
 void test_monster_placement_catalog() {

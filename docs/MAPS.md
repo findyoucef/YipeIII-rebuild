@@ -99,8 +99,10 @@ string resources 230–270, bitmaps 174–214, base health, health random range,
 attack, defense, special rating, and ordinary minimum/maximum damage. Combat
 setup can materialize every definition. The core supports fixed groups of up to
 three same-type opponents, including target selection, slot-order
-counterattacks, fleeing, and deferred group rewards. Generated encounter
-variants and monster-specific status effects still need reconstruction before
+counterattacks, fleeing, and deferred group rewards. It also preserves the
+constructor's automatic group-size selection and adjacent-rank variants used by
+the three size-zero placements on map `0x14`. High-rank generated-map companion
+overrides and monster-specific status effects still need reconstruction before
 the application enables all of these encounters.
 
 The first reachable static encounter is the Giant Beetle on map `0x0b` at

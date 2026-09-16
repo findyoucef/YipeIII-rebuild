@@ -410,18 +410,46 @@ CombatTurn resolve_counterattacks(Player& player, const CombatEncounter& encount
 } // namespace
 
 CombatEncounter start_monster_encounter(int type_id, int opponent_count,
-                                        MsvcRandom& random) {
-    if (opponent_count < 1
+                                        MsvcRandom& random, int player_level) {
+    if (opponent_count < 0
         || opponent_count > static_cast<int>(CombatEncounter::maximum_opponents)) {
-        throw std::invalid_argument("opponent count must be between one and three");
+        throw std::invalid_argument("opponent count must be between zero and three");
+    }
+
+    const bool generated_count = opponent_count == 0;
+    if (generated_count) {
+        if (type_id + 3 < player_level || roll(random, 100) > 80) {
+            opponent_count = roll(random, 3) + 1;
+        }
+        if (opponent_count == 0 && player_level < 3) {
+            opponent_count = 1;
+        }
     }
 
     CombatEncounter encounter;
     encounter.monsters[0] = initialize_monster(type_id, random);
-    static_cast<void>(roll(random, 100));
-    for (int slot = 1; slot < opponent_count; ++slot) {
-        encounter.monsters[static_cast<std::size_t>(slot)] =
-            initialize_monster(type_id, random);
+    int variant_roll = roll(random, 100);
+    if (!generated_count) {
+        variant_roll = 0;
+    }
+
+    if (opponent_count == 2) {
+        int second_type_id = type_id;
+        if (variant_roll >= 86 && type_id <= 40) {
+            second_type_id = type_id + 1;
+        } else if (variant_roll > 80 && type_id > 2) {
+            second_type_id = type_id - 1;
+        }
+        encounter.monsters[1] = initialize_monster(second_type_id, random);
+    } else if (opponent_count == 3) {
+        encounter.monsters[1] = initialize_monster(type_id, random);
+        int third_type_id = type_id;
+        if (variant_roll >= 66 && type_id <= 40) {
+            third_type_id = type_id + 1;
+        } else if (variant_roll >= 56 && type_id >= 3) {
+            third_type_id = type_id - 1;
+        }
+        encounter.monsters[2] = initialize_monster(third_type_id, random);
     }
     return encounter;
 }
