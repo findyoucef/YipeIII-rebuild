@@ -17,6 +17,22 @@ struct MapPosition {
     friend bool operator==(const MapPosition&, const MapPosition&) = default;
 };
 
+struct MapEvent {
+    MapPosition position{-1, -1};
+    int value = -1;
+
+    [[nodiscard]] bool has_position() const {
+        return position.x >= 0 && position.y >= 0;
+    }
+};
+
+struct MapEvents {
+    MapEvent message;
+    MapEvent overlay;
+    std::array<MapEvent, 2> depth;
+    std::array<MapEvent, 2> linked;
+};
+
 class Map {
 public:
     static constexpr int width = 13;
@@ -24,17 +40,26 @@ public:
     static constexpr std::size_t tile_count = width * height;
     using Tiles = std::array<std::uint16_t, tile_count>;
 
-    Map(int id, int environment, Tiles tiles);
+    Map(int id, int environment, Tiles tiles, MapEvents events = {});
 
     [[nodiscard]] int id() const { return id_; }
     [[nodiscard]] int environment() const { return environment_; }
+    [[nodiscard]] const MapEvents& events() const { return events_; }
     [[nodiscard]] bool contains(MapPosition position) const;
     [[nodiscard]] std::uint16_t tile(MapPosition position) const;
+    [[nodiscard]] int depth_action_at(MapPosition position) const;
+    void restore_tile(MapPosition position, std::uint16_t tile);
+    void open_door(MapPosition previous, MapPosition current);
+    [[nodiscard]] bool toggle_linked_tiles();
+    [[nodiscard]] std::optional<MapPosition> linked_destination() const;
 
 private:
+    void set_tile(MapPosition position, std::uint16_t tile);
+
     int id_;
     int environment_;
     Tiles tiles_;
+    MapEvents events_;
 };
 
 [[nodiscard]] Map starting_map();

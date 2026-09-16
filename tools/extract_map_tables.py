@@ -12,10 +12,95 @@ from pathlib import Path
 WIDTH = 13
 HEIGHT = 12
 TILE_COUNT = WIDTH * HEIGHT
+EVENT_HELPERS = {
+    "0041cf40": "message",
+    "0041cf70": "overlay",
+    "0041d080": "depth",
+    "0041d0b0": "depth",
+    "0041d180": "linked_first",
+    "0041d1e0": "linked_second",
+}
+EXPECTED_EVENT_CALLS = {
+    "message": 20,
+    "overlay": 10,
+    "depth": 26,
+    "linked_first": 8,
+    "linked_second": 6,
+}
 
 
 def parse_number(value: str) -> int:
     return int(value, 0)
+
+
+def parse_signed_number(value: str) -> int:
+    parsed = parse_number(value)
+    return parsed - (1 << 32) if parsed >= (1 << 31) else parsed
+
+
+def split_arguments(arguments: str) -> list[str]:
+    return [argument.strip() for argument in arguments.split(",")]
+
+
+def parse_events(path: Path) -> dict[int, dict[str, object]]:
+    text = path.read_text(encoding="utf-8")
+    matches = list(
+        re.finditer(r"^\s*case\s+(0x[0-9a-fA-F]+|\d+):", text, re.MULTILINE)
+    )
+    events: dict[int, dict[str, object]] = {}
+    counts = {name: 0 for name in EXPECTED_EVENT_CALLS}
+    pending_map_ids: list[int] = []
+    helper_pattern = "|".join(EVENT_HELPERS)
+    for index, match in enumerate(matches):
+        pending_map_ids.append(parse_number(match.group(1)))
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        body = text[match.end() : end]
+        calls = re.findall(rf"FUN_({helper_pattern})\((.*?)\);", body, re.DOTALL)
+        if not body.strip():
+            continue
+        for map_id in pending_map_ids:
+            map_events = events.setdefault(
+                map_id,
+                {
+                    "message": None,
+                    "overlay": None,
+                    "depth": [],
+                    "linked": [None, None],
+                },
+            )
+            for helper, raw_arguments in calls:
+                arguments = split_arguments(raw_arguments)
+                if len(arguments) != 4 or arguments[0] != "param_5":
+                    raise ValueError(f"unexpected {helper} event call: {raw_arguments}")
+                event = {
+                    "x": parse_signed_number(arguments[1]),
+                    "y": parse_signed_number(arguments[2]),
+                    "value": parse_signed_number(arguments[3]),
+                }
+                kind = EVENT_HELPERS[helper]
+                counts[kind] += 1
+                if kind == "depth":
+                    map_events["depth"].append(event)
+                elif kind == "linked_first":
+                    map_events["linked"][0] = event
+                elif kind == "linked_second":
+                    map_events["linked"][1] = event
+                else:
+                    map_events[kind] = event
+        pending_map_ids = []
+
+    if counts != EXPECTED_EVENT_CALLS:
+        raise ValueError(f"unexpected event call counts: {counts}")
+    for map_id, map_events in events.items():
+        if len(map_events["depth"]) > 2:
+            raise ValueError(f"map {map_id:#x} has more than two depth events")
+        for event in [map_events["message"], map_events["overlay"],
+                      *map_events["depth"], *map_events["linked"]]:
+            if event is None:
+                continue
+            if not (-1 <= event["x"] < WIDTH and -1 <= event["y"] < HEIGHT):
+                raise ValueError(f"map {map_id:#x} has invalid event position {event}")
+    return events
 
 
 def parse_dispatch(path: Path) -> list[tuple[int, str, int]]:
@@ -88,6 +173,7 @@ def parse_loader(path: Path) -> list[int]:
 def extract(decompiled_directory: Path) -> dict[str, object]:
     functions = decompiled_directory / "functions"
     dispatch = parse_dispatch(functions / "0041e110.c")
+    events = parse_events(functions / "0041ec40.c")
     maps = []
     for map_id, loader, environment in dispatch:
         flat_tiles = parse_loader(functions / f"{loader}.c")
@@ -101,12 +187,22 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
                 "loader": loader,
                 "environment": environment,
                 "tiles_by_x": columns,
+                "events": events.get(
+                    map_id,
+                    {
+                        "message": None,
+                        "overlay": None,
+                        "depth": [],
+                        "linked": [None, None],
+                    },
+                ),
             }
         )
 
     return {
-        "format": "yipe3-original-map-tables-v1",
+        "format": "yipe3-original-map-tables-v2",
         "source_dispatch": "0041e110",
+        "source_events": "0041ec40",
         "dimensions": {
             "width": WIDTH,
             "height": HEIGHT,
@@ -132,6 +228,7 @@ def render_cpp(result: dict[str, object]) -> str:
         "    int id;",
         "    int environment;",
         "    Map::Tiles tiles;",
+        "    MapEvents events;",
         "};",
         "",
         f"constexpr std::array<OriginalMapRecord, {len(maps)}> original_maps{{{{",
@@ -143,7 +240,23 @@ def render_cpp(result: dict[str, object]) -> str:
         for column in map_record["tiles_by_x"]:
             values = ", ".join(str(value) for value in column)
             lines.append(f"        {values},")
-        lines.append("    }},")
+        def event_literal(event: dict[str, int] | None) -> str:
+            if event is None:
+                return "{{-1, -1}, -1}"
+            return f"{{{{{event['x']}, {event['y']}}}, {event['value']}}}"
+
+        events = map_record["events"]
+        depth = list(events["depth"])
+        depth.extend([None] * (2 - len(depth)))
+        linked = events["linked"]
+        lines.append(
+            "    }, MapEvents{"
+            f"{event_literal(events['message'])}, "
+            f"{event_literal(events['overlay'])}, "
+            f"{{{{{event_literal(depth[0])}, {event_literal(depth[1])}}}}}, "
+            f"{{{{{event_literal(linked[0])}, {event_literal(linked[1])}}}}}"
+            "}},"
+        )
     lines.extend(
         [
             "}};",
@@ -153,7 +266,7 @@ def render_cpp(result: dict[str, object]) -> str:
             "std::optional<Map> original_map(int id) {",
             "    for (const OriginalMapRecord& record : original_maps) {",
             "        if (record.id == id) {",
-            "            return Map(record.id, record.environment, record.tiles);",
+            "            return Map(record.id, record.environment, record.tiles, record.events);",
             "        }",
             "    }",
             "    return std::nullopt;",

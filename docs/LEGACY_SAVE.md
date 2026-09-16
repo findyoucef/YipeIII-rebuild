@@ -53,8 +53,10 @@ stat backups. Version 4 appends the limited-restoration counter and the four
 movement flags used by tree, key-door, and unresolved `+0x674` checks. The
 loader accepts all four versions, gives version-1 files the starting world
 state, gives version-2 files a full starting AP pool, and defaults fields added
-by newer formats. Writes use a temporary file and atomic replacement so a
-failed write does not destroy the previous save.
+by newer formats. Version 5 appends changed map IDs, coordinates, and tile values
+so opened doors and linked mechanisms survive map changes and restart. The
+loader accepts all five versions. Writes use a temporary file and atomic
+replacement so a failed write does not destroy the previous save.
 
 ## Remaining work
 

@@ -687,6 +687,28 @@ bool has_encounter_at(const yipe::GameState& game) {
     return false;
 }
 
+void apply_map_tile_changes(yipe::Map& map, const yipe::GameState& game) {
+    for (const yipe::MapTileChange& change : game.map_tile_changes) {
+        if (change.map_id == map.id()) {
+            map.restore_tile(change.position, change.tile);
+        }
+    }
+}
+
+void remember_map_tile(yipe::GameState& game, const yipe::Map& map,
+                       yipe::MapPosition position) {
+    const auto existing = std::find_if(
+        game.map_tile_changes.begin(), game.map_tile_changes.end(),
+        [&map, position](const yipe::MapTileChange& change) {
+            return change.map_id == map.id() && change.position == position;
+        });
+    if (existing != game.map_tile_changes.end()) {
+        existing->tile = map.tile(position);
+    } else {
+        game.map_tile_changes.push_back({map.id(), position, map.tile(position)});
+    }
+}
+
 void save_current_game(SDL_Window* window, const std::filesystem::path& path,
                        yipe::GameState& game, const yipe::MsvcRandom& random,
                        bool show_confirmation) {
@@ -721,6 +743,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         throw std::runtime_error("save contains an unsupported world location");
     }
     yipe::Map map = *restored_map;
+    apply_map_tile_changes(map, game);
     yipe::MsvcRandom random(game.random_state);
     render_game(renderer, map, textures, game.location.position,
                 game.giant_beetle_defeated);
@@ -796,10 +819,22 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         const yipe::MovementResult result =
             yipe::try_move(map, game.location.position, delta_x, delta_y, movement_state);
         if (result.position_changed) {
+            if (result.original_code == 0x12) {
+                map.open_door(previous_location.position, game.location.position);
+                remember_map_tile(game, map, game.location.position);
+            } else if (result.original_code == 0x1a) {
+                if (map.toggle_linked_tiles()) {
+                    remember_map_tile(game, map, map.events().linked[0].position);
+                    if (map.events().linked[1].has_position()) {
+                        remember_map_tile(game, map, map.events().linked[1].position);
+                    }
+                }
+            }
             bool changed_map = false;
             if (result.original_code == 2) {
                 changed_map = yipe::cross_map_edge(game.location);
-            } else if (result.original_code == 0x0e) {
+            } else if (result.original_code == 0x0e || result.original_code == 0x0f
+                       || result.original_code == 0x10) {
                 changed_map = yipe::change_map_depth(game.location, result.original_code);
             }
             if (changed_map) {
@@ -807,6 +842,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     yipe::original_map(game.location.map_id);
                 if (next_map) {
                     map = *next_map;
+                    apply_map_tile_changes(map, game);
                 } else {
                     game.location = previous_location;
                 }
@@ -898,6 +934,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             case 0x16:
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();
+                apply_map_tile_changes(map, game);
                 break;
             case 0x17: {
                 const int damage = yipe::apply_fire_wall(game.player, random);
@@ -906,6 +943,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                                  + std::to_string(damage) + " health.");
                 break;
             }
+            case 0x1b:
+                if (const std::optional<yipe::MapPosition> destination =
+                        map.linked_destination()) {
+                    game.location.position = *destination;
+                }
+                break;
             default:
                 break;
             }

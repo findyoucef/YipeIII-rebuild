@@ -336,22 +336,23 @@ void test_game_save() {
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.giant_beetle_defeated = true;
     original.random_state = 0x12345678u;
+    original.map_tile_changes = {{0x2b, {6, 1}, 40}, {0x2b, {5, 8}, 34}};
 
     yipe::save_game_atomic(path, original);
     const yipe::GameState loaded = yipe::load_game(path);
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 4 save restores progression and equipment");
+          "version 5 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 4 save restores combat settings and counters");
+          "version 5 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 4 save restores world location");
+          "version 5 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 4 save restores encounter and random state");
+          "version 5 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -359,12 +360,25 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 4 save restores ability and active status state");
+          "version 5 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_tree_climbing_shoes
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key && loaded.player.unknown_0674,
-          "version 4 save restores special movement state");
+          "version 5 save restores special movement state");
+    check(loaded.map_tile_changes == original.map_tile_changes,
+          "version 5 save restores persistent map tile changes");
+
+    constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)
+                                                + sizeof(std::uint16_t);
+    remove_save_extension(path, sizeof(std::uint32_t)
+                                    + original.map_tile_changes.size() * encoded_change_size,
+                          4);
+    const yipe::GameState loaded_version_4 = yipe::load_game(path);
+    check(loaded_version_4.player.restoration_uses == 3
+              && loaded_version_4.player.has_rainbow_key
+              && loaded_version_4.map_tile_changes.empty(),
+          "version 4 saves retain movement state and default map changes");
 
     remove_save_extension(path, sizeof(std::int32_t) + 4, 3);
     const yipe::GameState loaded_version_3 = yipe::load_game(path);
@@ -459,6 +473,28 @@ void test_static_map_catalog_and_edges() {
     check(!yipe::original_map(0x76).has_value() && !yipe::original_map(0x78).has_value(),
           "runtime-generated map IDs are not mislabeled as static maps");
 
+    int messages = 0;
+    int overlays = 0;
+    int depth_events = 0;
+    int linked_first = 0;
+    int linked_second = 0;
+    for (int map_id = 1; map_id <= 0x85; ++map_id) {
+        const std::optional<yipe::Map> catalog_map = yipe::original_map(map_id);
+        if (!catalog_map) {
+            continue;
+        }
+        messages += catalog_map->events().message.has_position() ? 1 : 0;
+        overlays += catalog_map->events().overlay.has_position() ? 1 : 0;
+        depth_events += static_cast<int>(std::count_if(
+            catalog_map->events().depth.begin(), catalog_map->events().depth.end(),
+            [](const yipe::MapEvent& event) { return event.has_position(); }));
+        linked_first += catalog_map->events().linked[0].has_position() ? 1 : 0;
+        linked_second += catalog_map->events().linked[1].has_position() ? 1 : 0;
+    }
+    check(messages == 20 && overlays == 10 && depth_events == 26
+              && linked_first == 8 && linked_second == 3,
+          "generated maps preserve all statically configured movement-event positions");
+
     yipe::WorldLocation location;
     location.position = {12, 5};
     check(yipe::cross_map_edge(location) && location.map_id == 0x12
@@ -515,11 +551,56 @@ void test_special_movement_actions() {
     check(yipe::apply_fire_wall(player, random) == 10 && player.health == 1,
           "fire-wall damage uses two original random rolls and cannot kill the player");
 
+    std::optional<yipe::Map> event_map = yipe::original_map(0x2b);
+    check(event_map.has_value(), "movement-event fixture map is available");
+    if (event_map) {
+        yipe::MapPosition overlay_position{2, 3};
+        const yipe::MovementResult overlay =
+            yipe::try_move(*event_map, overlay_position, 0, -1);
+        check(overlay.original_code == 0x18 && overlay.position_changed
+                  && overlay_position == yipe::MapPosition{2, 2},
+              "overlay event substitutes action 0x18 for its underlying blocked tile");
+
+        yipe::MapPosition depth_position{6, 6};
+        const yipe::MovementResult depth =
+            yipe::try_move(*event_map, depth_position, 0, -1);
+        check(depth.original_code == 0x10 && depth.position_changed
+                  && depth_position == yipe::MapPosition{6, 5},
+              "configured depth event overrides an ordinary movement result");
+
+        check(event_map->tile({6, 1}) == 34 && event_map->tile({5, 8}) == 40
+                  && event_map->toggle_linked_tiles()
+                  && event_map->tile({6, 1}) == 40 && event_map->tile({5, 8}) == 34
+                  && event_map->toggle_linked_tiles()
+                  && event_map->tile({6, 1}) == 34 && event_map->tile({5, 8}) == 40,
+              "linked-tile action swaps and restores both configured tiles");
+
+        event_map->restore_tile({6, 1}, 40);
+        event_map->restore_tile({5, 8}, 34);
+        check(event_map->toggle_linked_tiles() && event_map->tile({6, 1}) == 34
+                  && event_map->tile({5, 8}) == 40,
+              "linked-tile action recognizes and restores persisted swapped tiles");
+    }
+
+    const std::optional<yipe::Map> teleporter_map = yipe::original_map(0x54);
+    check(teleporter_map && teleporter_map->linked_destination() == yipe::MapPosition{3, 4},
+          "teleporter action exposes its recovered destination");
+
     yipe::Map::Tiles tiles{};
     tiles.fill(2);
+    tiles[static_cast<std::size_t>(6 * yipe::Map::height + 5)] = 0x3e;
+    yipe::Map door_map(0, 0, tiles);
+    yipe::MapPosition position{5, 5};
+    check(yipe::try_move(door_map, position, 1, 0).original_code == 0x12
+              && position == yipe::MapPosition{6, 5},
+          "door tile produces its mutable-map action");
+    door_map.open_door({5, 5}, position);
+    check(door_map.tile(position) == 2,
+          "door action copies the previous floor tile over the entered door");
+
     tiles[static_cast<std::size_t>(6 * yipe::Map::height + 5)] = 0x3f;
     const yipe::Map locked_door(0, 0, tiles);
-    yipe::MapPosition position{5, 5};
+    position = {5, 5};
     check(yipe::try_move(locked_door, position, 1, 0).original_code == 0x13
               && position == yipe::MapPosition{5, 5},
           "rainbow-key door blocks a player without the key");

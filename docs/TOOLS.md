@@ -54,9 +54,10 @@ The resulting `assets/embedded/ui-catalog.json` records all dialog/control geome
   --cpp-output src/generated/original_maps.cpp
 ```
 
-The command reads the map dispatcher and its static loader functions from the
-Ghidra C export. It validates every 13×12 table before writing deterministic
-JSON. Runtime-generated map IDs `0x76`–`0x78` are intentionally excluded.
+The command reads the map dispatcher, static loader functions, and compact event
+records from the Ghidra C export. It validates every 13×12 table and all event
+helper counts before writing deterministic JSON and C++. Runtime-generated map
+IDs `0x76`–`0x78` are intentionally excluded.
 
 ## Recover monster catalogs
 

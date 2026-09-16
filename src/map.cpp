@@ -15,16 +15,19 @@ bool is_interior(MapPosition position) {
            && position.y != Map::height - 1;
 }
 
-MovementResult update_position(MapPosition& position, MapPosition target, int interior_code,
-                               int edge_code) {
+MovementResult update_position(const Map& map, MapPosition& position, MapPosition target,
+                               int interior_code, int edge_code) {
     position = target;
-    return {is_interior(target) ? interior_code : edge_code, true};
+    const int depth_action = map.depth_action_at(target);
+    return {depth_action != 0 ? depth_action
+                              : is_interior(target) ? interior_code : edge_code,
+            true};
 }
 
 } // namespace
 
-Map::Map(int id, int environment, Tiles tiles)
-    : id_(id), environment_(environment), tiles_(std::move(tiles)) {}
+Map::Map(int id, int environment, Tiles tiles, MapEvents events)
+    : id_(id), environment_(environment), tiles_(std::move(tiles)), events_(events) {}
 
 bool Map::contains(MapPosition position) const {
     return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
@@ -35,6 +38,55 @@ std::uint16_t Map::tile(MapPosition position) const {
         throw std::out_of_range("map position is outside the 13x12 grid");
     }
     return tiles_[static_cast<std::size_t>(position.x * height + position.y)];
+}
+
+void Map::set_tile(MapPosition position, std::uint16_t value) {
+    if (!contains(position)) {
+        throw std::out_of_range("map position is outside the 13x12 grid");
+    }
+    tiles_[static_cast<std::size_t>(position.x * height + position.y)] = value;
+}
+
+int Map::depth_action_at(MapPosition position) const {
+    for (const MapEvent& event : events_.depth) {
+        if (event.has_position() && event.position == position) {
+            return event.value == 0x3a ? 0x0f : 0x10;
+        }
+    }
+    return 0;
+}
+
+void Map::restore_tile(MapPosition position, std::uint16_t value) {
+    set_tile(position, value);
+}
+
+void Map::open_door(MapPosition previous, MapPosition current) {
+    set_tile(current, tile(previous));
+}
+
+bool Map::toggle_linked_tiles() {
+    const MapEvent& first = events_.linked[0];
+    const MapEvent& second = events_.linked[1];
+    if (!first.has_position() || !contains(first.position) || first.value < 0
+        || second.value < 0
+        || (second.has_position() && !contains(second.position))) {
+        return false;
+    }
+    const bool currently_toggled = tile(first.position) == second.value;
+    set_tile(first.position, static_cast<std::uint16_t>(
+                                 currently_toggled ? first.value : second.value));
+    if (second.has_position()) {
+        set_tile(second.position, static_cast<std::uint16_t>(
+                                      currently_toggled ? second.value : first.value));
+    }
+    return true;
+}
+
+std::optional<MapPosition> Map::linked_destination() const {
+    if (events_.linked[0].has_position() && contains(events_.linked[0].position)) {
+        return events_.linked[0].position;
+    }
+    return std::nullopt;
 }
 
 Map starting_map() {
@@ -125,7 +177,11 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return {};
     }
 
-    const std::uint16_t tile = map.tile(target);
+    std::uint16_t tile = map.tile(target);
+    if (map.events().overlay.has_position() && map.events().overlay.position == target
+        && map.events().overlay.value > 0) {
+        tile = 0x71;
+    }
     switch (tile) {
     case 1:
         return {8, false};
@@ -164,7 +220,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
     case 0x67:
     case 0x68:
     case 0x69:
-        return update_position(position, target, 1, 2);
+        return update_position(map, position, target, 1, 2);
     case 4:
         return {0x0d, false};
     case 5:
@@ -183,8 +239,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return {0x15, false};
     case 0x36:
     case 0x39:
-        position = target;
-        return {0x0e, true};
+        return update_position(map, position, target, 0x0e, 0x0e);
     case 0x3e:
     case 0x3f:
     case 0x40:
@@ -194,8 +249,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         if (tile == 0x40 && !state.has_underworld_key) {
             return {0x14, false};
         }
-        position = target;
-        return {0x12, true};
+        return update_position(map, position, target, 0x12, 0x12);
     case 0x41:
         return {0x11, false};
     case 0x52:
@@ -214,23 +268,21 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
     case 0x47:
     case 0x48:
     case 0x49:
-        return update_position(position, target, 3, 2);
+        return update_position(map, position, target, 3, 2);
     case 0x58:
     case 0x59:
         if (state.has_tree_climbing_shoes) {
-            position = target;
-            return {1, true};
+            return update_position(map, position, target, 1, 1);
         }
         return {};
     case 0x5a:
-        return update_position(position, target, 0x19, 2);
+        return update_position(map, position, target, 0x19, 2);
     case 0x5d:
     case 0x5e:
     case 0x5f:
-        return update_position(position, target, 0x1a, 2);
+        return update_position(map, position, target, 0x1a, 2);
     case 0x71:
-        position = target;
-        return {0x18, true};
+        return update_position(map, position, target, 0x18, 0x18);
     default:
         return {};
     }

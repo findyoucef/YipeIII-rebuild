@@ -29,11 +29,14 @@ Regenerate it from a current Ghidra C export:
   --cpp-output src/generated/original_maps.cpp
 ```
 
-The extractor requires every loader to produce all 156 values and stops on an
-incomplete table. Map IDs `0x76` through `0x78` are generated at runtime by
-`0x0041e0f0` instead of appearing in the static dispatcher, so they are outside
-this catalog. The generated C++ copy lets the core load those same tables without
-a JSON dependency at runtime.
+The version-2 catalog also extracts the compact event records initialized at
+`0x0041ec40`: 20 location messages, 10 overlay triggers, 26 depth portals, eight
+first linked records, and six second linked records. The extractor validates
+those totals and every coordinate. It requires every loader to produce all 156
+tile values and stops on an incomplete table. Map IDs `0x76` through `0x78` are
+generated at runtime by `0x0041e0f0` instead of appearing in the static
+dispatcher, so they are outside this catalog. The generated C++ copy lets the
+core load those same tables without a JSON dependency at runtime.
 
 Surface-map transitions use player offsets `+0x46` and `+0x48` as wrapped region
 coordinates. `0x00444b50` moves a player arriving at an outer border back to the
@@ -77,9 +80,12 @@ The action dispatcher at `0x0040e880` establishes these special movement paths:
 
 The SDL dispatcher exposes the recovered entrance identities and implements the
 restoration, depth, surface-return, key-message, and fire-wall effects. The core
-also preserves the tree-climbing-shoes and key flags and saves them in native
-format version 4. Result codes `0x12`, `0x18`, `0x19`, `0x1a`, and `0x1b` depend
-on mutable per-map event records and remain part of the dynamic-map follow-up.
+also preserves the tree-climbing-shoes and key flags. Generated event records
+now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
+(`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
+adapted renderer always redraws the complete map, covering the original
+visibility refresh performed by `0x19`. Native format version 5 persists changed
+door and linked-mechanism tiles.
 
 The central tile with ID `1` returns action code `8`. The action dispatcher at
 `0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current
@@ -136,7 +142,7 @@ the application enables all encounters.
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
 playable-flow test. Bitmap resource 175 is drawn at the placement until the
-encounter is won; the version-4 native save preserves its defeated state.
+encounter is won; the version-5 native save preserves its defeated state.
 
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.

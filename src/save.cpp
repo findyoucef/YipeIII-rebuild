@@ -22,7 +22,8 @@ constexpr std::array<std::uint8_t, 4> magic = {'Y', '3', 'R', 'S'};
 constexpr std::uint16_t player_format_version = 1;
 constexpr std::uint16_t progression_game_format_version = 2;
 constexpr std::uint16_t ability_game_format_version = 3;
-constexpr std::uint16_t game_format_version = 4;
+constexpr std::uint16_t movement_game_format_version = 4;
+constexpr std::uint16_t game_format_version = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -101,6 +102,7 @@ public:
     }
 
     [[nodiscard]] bool finished() const { return position_ == bytes_.size(); }
+    [[nodiscard]] std::size_t remaining() const { return bytes_.size() - position_; }
 
 private:
     void require(std::size_t count) const {
@@ -180,6 +182,16 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_u8(payload, game.player.has_rainbow_key ? 1 : 0);
     append_u8(payload, game.player.has_underworld_key ? 1 : 0);
     append_u8(payload, game.player.unknown_0674 ? 1 : 0);
+    if (game.map_tile_changes.size() > std::numeric_limits<std::uint32_t>::max()) {
+        throw std::runtime_error("too many map tile changes to save");
+    }
+    append_u32(payload, static_cast<std::uint32_t>(game.map_tile_changes.size()));
+    for (const MapTileChange& change : game.map_tile_changes) {
+        append_i32(payload, change.map_id);
+        append_i32(payload, change.position.x);
+        append_i32(payload, change.position.y);
+        append_u16(payload, change.tile);
+    }
     return payload;
 }
 
@@ -280,7 +292,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
     }
     const std::uint16_t version = header.u16();
     if (version != player_format_version && version != progression_game_format_version
-        && version != ability_game_format_version && version != game_format_version) {
+        && version != ability_game_format_version
+        && version != movement_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -362,12 +375,34 @@ GameState load_game(const std::filesystem::path& path) {
         game.player.enrage_base_intelligence = reader.i32();
         game.player.enrage_base_strength = reader.i32();
     }
-    if (save.version == game_format_version) {
+    if (save.version >= movement_game_format_version) {
         game.player.restoration_uses = reader.i32();
         game.player.has_tree_climbing_shoes = reader.u8() != 0;
         game.player.has_rainbow_key = reader.u8() != 0;
         game.player.has_underworld_key = reader.u8() != 0;
         game.player.unknown_0674 = reader.u8() != 0;
+    }
+    if (save.version == game_format_version) {
+        constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)
+                                                    + sizeof(std::uint16_t);
+        const std::uint32_t change_count = reader.u32();
+        if (change_count > reader.remaining() / encoded_change_size) {
+            throw std::runtime_error("save contains an invalid map tile change count");
+        }
+        game.map_tile_changes.reserve(change_count);
+        for (std::uint32_t index = 0; index < change_count; ++index) {
+            MapTileChange change;
+            change.map_id = reader.i32();
+            change.position.x = reader.i32();
+            change.position.y = reader.i32();
+            change.tile = reader.u16();
+            if (change.map_id < 0 || change.position.x < 0
+                || change.position.x >= Map::width || change.position.y < 0
+                || change.position.y >= Map::height) {
+                throw std::runtime_error("save contains an invalid map tile change");
+            }
+            game.map_tile_changes.push_back(change);
+        }
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");
