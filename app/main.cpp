@@ -1257,6 +1257,14 @@ void apply_map_tile_changes(yipe::Map& map, const yipe::GameState& game) {
     }
 }
 
+std::optional<yipe::Map> load_world_map(const yipe::WorldLocation& location,
+                                        yipe::MsvcRandom& random) {
+    if (location.map_id >= 0x76 && location.map_id <= 0x78) {
+        return yipe::generate_original_map(location.map_id, location.position, random);
+    }
+    return yipe::original_map(location.map_id);
+}
+
 void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
                             yipe::Map& map, yipe::MsvcRandom& random) {
     const std::optional<SpellSelection> selection =
@@ -1272,7 +1280,7 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
     }
     if (result.location_changed) {
         const std::optional<yipe::Map> destination =
-            yipe::original_map(game.location.map_id);
+            load_world_map(game.location, random);
         if (!destination) {
             throw std::runtime_error("spell destination map is unavailable");
         }
@@ -1340,13 +1348,13 @@ bool confirm_quit(SDL_Window* window, const std::filesystem::path& save_path,
 bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures,
               yipe::GameState game, const std::filesystem::path& save_path) {
     prepare_game_view(window, renderer);
-    const std::optional<yipe::Map> restored_map = yipe::original_map(game.location.map_id);
+    yipe::MsvcRandom random(game.random_state);
+    const std::optional<yipe::Map> restored_map = load_world_map(game.location, random);
     if (!restored_map || !restored_map->contains(game.location.position)) {
         throw std::runtime_error("save contains an unsupported world location");
     }
     yipe::Map map = *restored_map;
     apply_map_tile_changes(map, game);
-    yipe::MsvcRandom random(game.random_state);
     render_game(renderer, map, textures, game.location.position,
                 game.giant_beetle_defeated);
 
@@ -1447,7 +1455,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             }
             if (changed_map) {
                 const std::optional<yipe::Map> next_map =
-                    yipe::original_map(game.location.map_id);
+                    load_world_map(game.location, random);
                 if (next_map) {
                     map = *next_map;
                     apply_map_tile_changes(map, game);
@@ -1602,6 +1610,12 @@ int main(int argc, char* argv[]) {
                 if (map) {
                     render_game(renderer.get(), *map, game_textures, {5, 5}, false);
                 }
+            }
+            for (int map_id = 0x76; map_id <= 0x78; ++map_id) {
+                yipe::MsvcRandom random(1);
+                const yipe::Map map =
+                    yipe::generate_original_map(map_id, {1, 1}, random);
+                render_game(renderer.get(), map, game_textures, {1, 1}, false);
             }
             return 0;
         }

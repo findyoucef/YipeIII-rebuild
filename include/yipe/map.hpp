@@ -64,6 +64,10 @@ private:
 
 [[nodiscard]] Map starting_map();
 [[nodiscard]] std::optional<Map> original_map(int id);
+// Maps 0x76-0x78 are generated from the current entry position rather than a
+// static table. Reconstructs 0x0043fd80 and preserves its random-call order.
+[[nodiscard]] Map generate_original_map(int id, MapPosition entry,
+                                        MsvcRandom& random);
 
 struct WorldLocation {
     MapPosition position{5, 5};

@@ -718,6 +718,76 @@ void test_static_map_catalog_and_edges() {
           "leaving the third layer uses the original surface-return location");
 }
 
+void test_runtime_generated_maps() {
+    const auto summarize = [](const yipe::Map& map) {
+        std::uint32_t hash = 2166136261u;
+        int paths = 0;
+        for (int x = 0; x < yipe::Map::width; ++x) {
+            for (int y = 0; y < yipe::Map::height; ++y) {
+                const std::uint16_t tile = map.tile({x, y});
+                paths += tile == 0x27 ? 1 : 0;
+                hash ^= tile;
+                hash *= 16777619u;
+            }
+        }
+        return std::pair{paths, hash};
+    };
+    const auto reachable_paths = [](const yipe::Map& map) {
+        std::array<bool, yipe::Map::tile_count> visited{};
+        std::array<yipe::MapPosition, yipe::Map::tile_count> pending{};
+        std::size_t read = 0;
+        std::size_t write = 1;
+        pending[0] = {0, 1};
+        visited[1] = true;
+        while (read < write) {
+            const yipe::MapPosition position = pending[read++];
+            constexpr std::array<yipe::MapPosition, 4> neighbors{{
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+            }};
+            for (const yipe::MapPosition offset : neighbors) {
+                const yipe::MapPosition next{
+                    position.x + offset.x, position.y + offset.y};
+                if (!map.contains(next) || map.tile(next) != 0x27) {
+                    continue;
+                }
+                const std::size_t index = static_cast<std::size_t>(
+                    next.x * yipe::Map::height + next.y);
+                if (!visited[index]) {
+                    visited[index] = true;
+                    pending[write++] = next;
+                }
+            }
+        }
+        return static_cast<int>(write);
+    };
+
+    yipe::MsvcRandom default_entry_random(1);
+    const yipe::Map default_entry = yipe::generate_original_map(
+        0x76, {1, 1}, default_entry_random);
+    const auto [default_paths, default_hash] = summarize(default_entry);
+    yipe::MsvcRandom alternate_entry_random(1);
+    const yipe::Map alternate_entry = yipe::generate_original_map(
+        0x78, {11, 10}, alternate_entry_random);
+    const auto [alternate_paths, alternate_hash] = summarize(alternate_entry);
+    check(default_entry.id() == 0x76 && default_entry.environment() == 7
+              && default_entry.tile({0, 1}) == 0x27
+              && default_entry.tile({12, 1}) == 0x27
+              && default_entry.tile({11, 1}) == 0x27,
+          "runtime map generator preserves its environment, exits, and encounter tile");
+    check(default_paths == 47 && default_hash == 863378094u
+              && default_entry_random.state() == 1158257644u,
+          "seed 1 generated map preserves the recovered tile and random-call order");
+    const int default_reachable = reachable_paths(default_entry);
+    check(default_reachable == 44 && default_entry.tile({11, 2}) == 0x24,
+          "generated-map boundary cleanup preserves the original seeded corridor cutoff");
+    check(alternate_entry.id() == 0x78 && alternate_entry.tile({11, 10}) == 0x27
+              && alternate_paths == 57 && alternate_hash == 1251544680u
+              && alternate_entry_random.state() == 3999086192u,
+          "a nondefault entry receives its recovered extra corridor and random calls");
+    check(reachable_paths(alternate_entry) == alternate_paths,
+          "the alternate entry connects to every generated corridor");
+}
+
 void test_special_movement_actions() {
     yipe::Player player;
     player.health = 1;
@@ -1842,6 +1912,7 @@ int main() {
     test_original_auxiliary_data();
     test_starting_map();
     test_static_map_catalog_and_edges();
+    test_runtime_generated_maps();
     test_special_movement_actions();
     test_starting_shop();
     test_recovered_shop_transactions();

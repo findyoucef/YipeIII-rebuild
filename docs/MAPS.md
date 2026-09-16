@@ -35,8 +35,13 @@ first linked records, and six second linked records. The extractor validates
 those totals and every coordinate. It requires every loader to produce all 156
 tile values and stops on an incomplete table. Map IDs `0x76` through `0x78` are
 generated at runtime by `0x0041e0f0` instead of appearing in the static
-dispatcher, so they are outside this catalog. The generated C++ copy lets the
-core load those same tables without a JSON dependency at runtime.
+dispatcher, so they are outside this catalog. The core reconstructs their
+underlying generator at `0x0043fd80`: it creates four to six random rooms,
+connects them in order to the west and east anchors and current entry tile,
+then applies the original diagonal cleanup and fixed boundary writes. Seeded
+tests fix both the resulting tile hashes and random-call counts, including the
+original boundary overwrite that can cut a short seeded corridor. The generated
+C++ copy lets the core load static tables without a JSON dependency at runtime.
 
 Surface-map transitions use player offsets `+0x46` and `+0x48` as wrapped region
 coordinates. `0x00444b50` moves a player arriving at an outer border back to the
@@ -45,8 +50,9 @@ opposite inner border, and `0x00444ad0` calculates the next map as
 region-coordinate wrapping and the additional layer and alternate-map offsets.
 The SDL application follows these exits and can render every static table. Its
 headless smoke test renders all 112 maps, exercising the recovered tile-to-bitmap
-switch and every required terrain sheet. Runtime-generated maps and the dynamic
-monster-overlay tiles remain separate follow-up work.
+switch and every required terrain sheet. The same loader and smoke test now
+render the three runtime-generated maps. Dynamic monster-overlay tiles remain
+separate follow-up work.
 
 ## Starting area
 

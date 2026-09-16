@@ -15,6 +15,21 @@ bool is_interior(MapPosition position) {
            && position.y != Map::height - 1;
 }
 
+void set_generated_tile(Map::Tiles& tiles, int x, int y, std::uint16_t tile) {
+    tiles[static_cast<std::size_t>(x * Map::height + y)] = tile;
+}
+
+struct GeneratedRoom {
+    int minimum_x = 0;
+    int minimum_y = 0;
+    int maximum_x = 0;
+    int maximum_y = 0;
+};
+
+int random_between(MsvcRandom& random, int minimum, int maximum) {
+    return minimum + random.next() % (maximum - minimum + 1);
+}
+
 MovementResult update_position(const Map& map, MapPosition& position, MapPosition target,
                                int interior_code, int edge_code) {
     position = target;
@@ -95,6 +110,112 @@ Map starting_map() {
         throw std::logic_error("generated map catalog does not contain the starting map");
     }
     return *map;
+}
+
+Map generate_original_map(int id, MapPosition entry, MsvcRandom& random) {
+    if (id < 0x76 || id > 0x78) {
+        throw std::invalid_argument("generated map ID must be between 0x76 and 0x78");
+    }
+    if (entry.x < 1 || entry.x >= Map::width - 1
+        || entry.y < 1 || entry.y >= Map::height - 1) {
+        throw std::invalid_argument("generated map entry must be an interior tile");
+    }
+
+    Map::Tiles tiles;
+    tiles.fill(0x24);
+    std::array<GeneratedRoom, 8> rooms{};
+    rooms[0] = {10, 1, 12, 2};
+
+    const int generated_room_count = random.next() % 3 + 4;
+    const int size_penalty = generated_room_count / 2;
+    for (int index = 1; index < generated_room_count; ++index) {
+        const int y_span = random.next() % (6 - size_penalty) + 1;
+        const int x_span = random.next() % (5 - size_penalty) + 1;
+        const int minimum_y = random.next() % (10 - y_span) + 3;
+        const int minimum_x = random.next() % (11 - x_span) + 1;
+        const GeneratedRoom room{
+            minimum_x,
+            minimum_y,
+            minimum_x + x_span,
+            std::min(minimum_y + y_span, 10),
+        };
+        rooms[static_cast<std::size_t>(index)] = room;
+        for (int x = room.minimum_x; x < room.maximum_x; ++x) {
+            for (int y = room.minimum_y; y < room.maximum_y; ++y) {
+                set_generated_tile(tiles, x, y, 0x27);
+            }
+        }
+    }
+
+    int room_count = generated_room_count;
+    rooms[static_cast<std::size_t>(room_count++)] = {1, 1, 2, 2};
+    set_generated_tile(tiles, 11, 1, 0x27);
+    set_generated_tile(tiles, 1, 1, 0x27);
+    set_generated_tile(tiles, 1, 2, 0x27);
+    set_generated_tile(tiles, 2, 1, 0x27);
+    set_generated_tile(tiles, 2, 2, 0x27);
+    if (entry != MapPosition{1, 1}) {
+        rooms[static_cast<std::size_t>(room_count++)] =
+            {entry.x, entry.y, entry.x, entry.y};
+        set_generated_tile(tiles, entry.x, entry.y, 0x27);
+    }
+
+    for (int index = 0; index < room_count - 1; ++index) {
+        const GeneratedRoom& first = rooms[static_cast<std::size_t>(index)];
+        const GeneratedRoom& second = rooms[static_cast<std::size_t>(index + 1)];
+        const MapPosition from{
+            random_between(random, first.minimum_x, first.maximum_x),
+            random_between(random, first.minimum_y, first.maximum_y),
+        };
+        const MapPosition to{
+            random_between(random, second.minimum_x, second.maximum_x),
+            random_between(random, second.minimum_y, second.maximum_y),
+        };
+        const int x_step = from.x <= to.x ? 1 : -1;
+        for (int x = from.x;; x += x_step) {
+            set_generated_tile(tiles, x, from.y, 0x27);
+            if (x == to.x) {
+                break;
+            }
+        }
+        const int y_step = from.y <= to.y ? 1 : -1;
+        for (int y = from.y;; y += y_step) {
+            set_generated_tile(tiles, to.x, y, 0x27);
+            if (y == to.y) {
+                break;
+            }
+        }
+    }
+
+    set_generated_tile(tiles, 0, 1, 0x27);
+    set_generated_tile(tiles, 0, 2, 0x24);
+    set_generated_tile(tiles, 11, 2, 0x24);
+    set_generated_tile(tiles, 12, 0, 0x24);
+    set_generated_tile(tiles, 12, 1, 0x27);
+    set_generated_tile(tiles, 12, 2, 0x24);
+
+    for (int x = 1; x <= 10; ++x) {
+        const std::size_t column_start =
+            static_cast<std::size_t>(x * Map::height + 1);
+        for (std::size_t offset = 0; offset < 11; ++offset) {
+            std::uint16_t& tile = tiles[column_start + offset];
+            std::uint16_t& next_y = tiles[column_start + offset + 1];
+            const std::uint16_t next_x =
+                tiles[column_start + offset + Map::height];
+            const std::uint16_t diagonal =
+                tiles[column_start + offset + Map::height + 1];
+            if (tile == 0x24 && next_x == 0x27 && next_y == 0x27
+                && diagonal == 0x24) {
+                tile = 0x27;
+            }
+            if ((tile == 0x27 || tile == 0x28) && next_x == 0x24
+                && next_y == 0x24 && diagonal == 0x27) {
+                next_y = 0x27;
+            }
+        }
+    }
+
+    return Map(id, 7, std::move(tiles));
 }
 
 bool cross_map_edge(WorldLocation& location) {
