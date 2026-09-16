@@ -1,5 +1,9 @@
 #include "yipe/map.hpp"
 
+#include "yipe/player.hpp"
+#include "yipe/random.hpp"
+
+#include <algorithm>
 #include <stdexcept>
 #include <utility>
 
@@ -83,6 +87,37 @@ bool cross_map_edge(WorldLocation& location) {
     return true;
 }
 
+void return_to_surface(WorldLocation& location) {
+    location.position = {4, 5};
+    location.region_x = 0;
+    location.region_y = 0;
+    location.map_layer = 0;
+    location.alternate_map_set = false;
+    location.map_id = 0x11;
+}
+
+bool change_map_depth(WorldLocation& location, int original_code) {
+    int layer_change = 0;
+    if (original_code == 0x0f) {
+        layer_change = -1;
+    } else if (original_code == 0x0e || original_code == 0x10) {
+        layer_change = 1;
+    } else {
+        return false;
+    }
+
+    static_cast<void>(cross_map_edge(location));
+    location.map_layer += layer_change;
+    if (location.map_layer < 0 || location.map_layer > 2) {
+        return_to_surface(location);
+        return true;
+    }
+    location.map_id = location.region_x - location.region_y * 6 + 0x11
+                      + location.map_layer * 0x28
+                      + (location.alternate_map_set ? 0x62 : 0);
+    return true;
+}
+
 MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int delta_y,
                         const MovementState& state) {
     const MapPosition target{position.x + delta_x, position.y + delta_y};
@@ -153,10 +188,10 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
     case 0x3e:
     case 0x3f:
     case 0x40:
-        if (tile == 0x3f && !state.flag_0080) {
+        if (tile == 0x3f && !state.has_rainbow_key) {
             return {0x13, false};
         }
-        if (tile == 0x40 && !state.flag_0082) {
+        if (tile == 0x40 && !state.has_underworld_key) {
             return {0x14, false};
         }
         position = target;
@@ -169,7 +204,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return {0x16, false};
     case 0x56:
     case 0x57:
-        if (!state.flag_0674) {
+        if (!state.unknown_0674) {
             return {};
         }
         [[fallthrough]];
@@ -182,7 +217,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return update_position(position, target, 3, 2);
     case 0x58:
     case 0x59:
-        if (state.flag_0064) {
+        if (state.has_tree_climbing_shoes) {
             position = target;
             return {1, true};
         }
@@ -199,6 +234,26 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
     default:
         return {};
     }
+}
+
+bool use_restoration_tile(Player& player) {
+    if (player.restoration_uses >= 7 - player.difficulty) {
+        return false;
+    }
+    ++player.restoration_uses;
+    player.health = player.maximum_health;
+    player.ability_points = player.maximum_ability_points;
+    player.spell_points = player.maximum_spell_points;
+    return true;
+}
+
+int apply_fire_wall(Player& player, MsvcRandom& random) {
+    const int damage = random.next() % std::max(player.difficulty, 1) + 2
+                       + random.next() % std::max(player.level, 1);
+    if (!player.adjust_health(-damage)) {
+        player.health = 1;
+    }
+    return damage;
 }
 
 } // namespace yipe

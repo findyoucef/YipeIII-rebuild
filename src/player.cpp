@@ -29,6 +29,11 @@ void Player::initialize(CharacterType type) {
     difficulty = 2;
     equipment_upgrade_count = 0;
     loot_roll_penalty = 2;
+    restoration_uses = 0;
+    has_tree_climbing_shoes = false;
+    has_rainbow_key = false;
+    has_underworld_key = false;
+    unknown_0674 = false;
     inventory.fill(0);
     inventory[0] = 1;
 
@@ -160,6 +165,9 @@ LevelUpResult try_level_up(Player& player, MsvcRandom& random) {
     }
     player.spell_points += result.spell_point_increase;
     player.maximum_spell_points += result.spell_point_increase;
+    if (player.restoration_uses > 0) {
+        --player.restoration_uses;
+    }
 
     int stat_chance = random.next() % 100 - player.difficulty;
     if (player.level == 5 || player.level == 10 || player.level == 15

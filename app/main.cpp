@@ -787,10 +787,22 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             continue;
         }
         const yipe::WorldLocation previous_location = game.location;
+        const yipe::MovementState movement_state{
+            game.player.has_tree_climbing_shoes,
+            game.player.has_rainbow_key,
+            game.player.has_underworld_key,
+            game.player.unknown_0674,
+        };
         const yipe::MovementResult result =
-            yipe::try_move(map, game.location.position, delta_x, delta_y);
+            yipe::try_move(map, game.location.position, delta_x, delta_y, movement_state);
         if (result.position_changed) {
-            if (result.original_code == 2 && yipe::cross_map_edge(game.location)) {
+            bool changed_map = false;
+            if (result.original_code == 2) {
+                changed_map = yipe::cross_map_edge(game.location);
+            } else if (result.original_code == 0x0e) {
+                changed_map = yipe::change_map_depth(game.location, result.original_code);
+            }
+            if (changed_map) {
                 const std::optional<yipe::Map> next_map =
                     yipe::original_map(game.location.map_id);
                 if (next_map) {
@@ -801,6 +813,20 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             }
             render_game(renderer, map, textures, game.location.position,
                         game.giant_beetle_defeated);
+            if (result.original_code == 3) {
+                const std::uint16_t tile = map.tile(game.location.position);
+                if (tile == 0x26) {
+                    show_message(window, "Water Hole", "You are standing on a water hole.");
+                } else if (tile == 0x42) {
+                    show_message(
+                        window, "Underworld Tunnel",
+                        "You find a special tunnel leading down into the depths of the "
+                        "underworld.");
+                } else if (tile == 0x56 || tile == 0x57) {
+                    show_message(window, "Tree",
+                                 "You climb over the tree using your special shoes.");
+                }
+            }
             if (has_encounter_at(game)) {
                 const EncounterResult encounter =
                     run_giant_beetle_encounter(window, game.player, random);
@@ -816,8 +842,73 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 render_game(renderer, map, textures, game.location.position,
                             game.giant_beetle_defeated);
             }
-        } else if (result.original_code == 8 && game.location.map_id == 0x11) {
-            show_freds_shop(window, game.player);
+        } else {
+            switch (result.original_code) {
+            case 5:
+                show_message(window, "Weapon Shop",
+                             "This entrance leads to a weapon shop.");
+                break;
+            case 6:
+                show_message(window, "Armor Shop",
+                             "This entrance leads to an armor shop.");
+                break;
+            case 7:
+                show_message(window, "Heal Shop",
+                             "This entrance leads to a healing shop.");
+                break;
+            case 8:
+                if (game.location.map_id == 0x11) {
+                    show_freds_shop(window, game.player);
+                } else {
+                    show_message(window, "Miscellaneous Shop",
+                                 "This entrance leads to a miscellaneous shop.");
+                }
+                break;
+            case 9:
+                show_message(window, "Magic Shop",
+                             "This entrance leads to a magic shop.");
+                break;
+            case 0x0c:
+                if (yipe::use_restoration_tile(game.player)) {
+                    show_message(window, "Restored",
+                                 "Your health, spell points, and ability points are fully "
+                                 "restored.");
+                }
+                break;
+            case 0x0d:
+                show_message(window, "Yipe! Casino",
+                             "This entrance leads to the casino.");
+                break;
+            case 0x11:
+                show_message(window, "Special Ability Training Center",
+                             "This entrance leads to special ability training.");
+                break;
+            case 0x13:
+                show_message(window, "Locked Door",
+                             "You need a rainbow key to open this door.");
+                break;
+            case 0x14:
+                show_message(window, "Locked Door",
+                             "You need an underworld key to open this door.");
+                break;
+            case 0x15:
+                show_message(window, "Secret Tree",
+                             "A small note on the tree asks for a secret code.");
+                break;
+            case 0x16:
+                yipe::return_to_surface(game.location);
+                map = yipe::starting_map();
+                break;
+            case 0x17: {
+                const int damage = yipe::apply_fire_wall(game.player, random);
+                show_message(window, "Fire Wall",
+                             "OUCH! You burn your hand slightly on the fire wall and lose "
+                                 + std::to_string(damage) + " health.");
+                break;
+            }
+            default:
+                break;
+            }
             render_game(renderer, map, textures, game.location.position,
                         game.giant_beetle_defeated);
         }

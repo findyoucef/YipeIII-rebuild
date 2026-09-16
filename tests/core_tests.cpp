@@ -49,15 +49,15 @@ void write_u32(std::vector<std::uint8_t>& bytes, std::size_t position,
     }
 }
 
-void convert_game_save_to_version_2(const std::filesystem::path& path) {
+void remove_save_extension(const std::filesystem::path& path, std::size_t extension_size,
+                           std::uint16_t version) {
     std::ifstream input(path, std::ios::binary);
     std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
                                     std::istreambuf_iterator<char>()};
     constexpr std::size_t header_size = 14;
-    constexpr std::size_t version_3_extension_size = 7 * sizeof(std::int32_t);
-    bytes.resize(bytes.size() - version_3_extension_size);
-    bytes[4] = 2;
-    bytes[5] = 0;
+    bytes.resize(bytes.size() - extension_size);
+    bytes[4] = static_cast<std::uint8_t>(version);
+    bytes[5] = static_cast<std::uint8_t>(version >> 8u);
     write_u32(bytes, 6, static_cast<std::uint32_t>(bytes.size() - header_size));
     write_u32(bytes, 10, test_crc32(bytes, header_size));
     std::ofstream output(path, std::ios::binary | std::ios::trunc);
@@ -131,6 +131,7 @@ void test_level_progression() {
 
     yipe::Player warrior;
     warrior.experience = 201;
+    warrior.restoration_uses = 2;
     yipe::MsvcRandom warrior_random(1);
     const yipe::LevelUpResult warrior_level = yipe::try_level_up(warrior, warrior_random);
     check(warrior_level.leveled_up && warrior.level == 2
@@ -138,8 +139,9 @@ void test_level_progression() {
               && warrior.health == 19 && warrior.maximum_health == 19
               && warrior_level.spell_point_increase == 6
               && warrior.spell_points == 6 && warrior.maximum_spell_points == 6
+              && warrior.restoration_uses == 1
               && warrior_level.stat_increase == yipe::StatIncrease::none,
-          "ordinary level growth applies seeded health and spell-point gains");
+          "ordinary level growth applies gains and restores one restoration use");
 
     yipe::Player milestone(yipe::CharacterType::wizard);
     milestone.level = 4;
@@ -326,6 +328,11 @@ void test_game_save() {
     original.player.enrage_base_dexterity = 13;
     original.player.enrage_base_intelligence = 10;
     original.player.enrage_base_strength = 16;
+    original.player.restoration_uses = 3;
+    original.player.has_tree_climbing_shoes = true;
+    original.player.has_rainbow_key = true;
+    original.player.has_underworld_key = true;
+    original.player.unknown_0674 = true;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.giant_beetle_defeated = true;
     original.random_state = 0x12345678u;
@@ -335,16 +342,16 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 3 save restores progression and equipment");
+          "version 4 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 3 save restores combat settings and counters");
+          "version 4 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 3 save restores world location");
+          "version 4 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 3 save restores encounter and random state");
+          "version 4 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -352,9 +359,22 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 3 save restores ability and active status state");
+          "version 4 save restores ability and active status state");
+    check(loaded.player.restoration_uses == 3
+              && loaded.player.has_tree_climbing_shoes
+              && loaded.player.has_rainbow_key
+              && loaded.player.has_underworld_key && loaded.player.unknown_0674,
+          "version 4 save restores special movement state");
 
-    convert_game_save_to_version_2(path);
+    remove_save_extension(path, sizeof(std::int32_t) + 4, 3);
+    const yipe::GameState loaded_version_3 = yipe::load_game(path);
+    check(loaded_version_3.player.special_ability == yipe::SpecialAbility::enrage
+              && loaded_version_3.player.special_ability_duration == 8
+              && loaded_version_3.player.restoration_uses == 0
+              && !loaded_version_3.player.has_rainbow_key,
+          "version 3 saves retain ability state and default new movement state");
+
+    remove_save_extension(path, 7 * sizeof(std::int32_t), 2);
     const yipe::GameState loaded_version_2 = yipe::load_game(path);
     check(loaded_version_2.player.name == original.player.name
               && loaded_version_2.player.experience == 41
@@ -459,6 +479,55 @@ void test_static_map_catalog_and_edges() {
     check(yipe::cross_map_edge(location) && location.map_id == 0x17
               && location.position == yipe::MapPosition{5, 1},
           "south edge uses the original positive-six map stride");
+
+    location = {};
+    check(yipe::change_map_depth(location, 0x0e) && location.map_layer == 1
+              && location.map_id == 0x39 && location.position == yipe::MapPosition{5, 5},
+          "down entrance advances to the corresponding map on layer one");
+    check(yipe::change_map_depth(location, 0x0f) && location.map_layer == 0
+              && location.map_id == 0x11,
+          "up entrance returns to the corresponding surface map");
+    location.map_layer = 2;
+    check(yipe::change_map_depth(location, 0x10) && location.map_layer == 0
+              && location.map_id == 0x11
+              && location.position == yipe::MapPosition{4, 5},
+          "leaving the third layer uses the original surface-return location");
+}
+
+void test_special_movement_actions() {
+    yipe::Player player;
+    player.health = 1;
+    player.spell_points = 0;
+    player.ability_points = 0;
+    check(yipe::use_restoration_tile(player) && player.health == player.maximum_health
+              && player.spell_points == player.maximum_spell_points
+              && player.ability_points == player.maximum_ability_points
+              && player.restoration_uses == 1,
+          "restoration tile fully restores all three resource pools");
+    player.restoration_uses = 7 - player.difficulty;
+    player.health = 1;
+    check(!yipe::use_restoration_tile(player) && player.health == 1,
+          "restoration tile enforces its difficulty-derived use limit");
+
+    player.level = 10;
+    player.health = 5;
+    yipe::MsvcRandom random(1);
+    check(yipe::apply_fire_wall(player, random) == 10 && player.health == 1,
+          "fire-wall damage uses two original random rolls and cannot kill the player");
+
+    yipe::Map::Tiles tiles{};
+    tiles.fill(2);
+    tiles[static_cast<std::size_t>(6 * yipe::Map::height + 5)] = 0x3f;
+    const yipe::Map locked_door(0, 0, tiles);
+    yipe::MapPosition position{5, 5};
+    check(yipe::try_move(locked_door, position, 1, 0).original_code == 0x13
+              && position == yipe::MapPosition{5, 5},
+          "rainbow-key door blocks a player without the key");
+    yipe::MovementState movement_state;
+    movement_state.has_rainbow_key = true;
+    check(yipe::try_move(locked_door, position, 1, 0, movement_state).original_code == 0x12
+              && position == yipe::MapPosition{6, 5},
+          "rainbow key unlocks its original conditional door tile");
 }
 
 void test_starting_shop() {
@@ -1094,6 +1163,7 @@ int main() {
     test_original_auxiliary_data();
     test_starting_map();
     test_static_map_catalog_and_edges();
+    test_special_movement_actions();
     test_starting_shop();
     test_giant_beetle_encounter();
     test_multi_monster_encounter();

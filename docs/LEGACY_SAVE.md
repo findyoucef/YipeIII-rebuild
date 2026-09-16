@@ -49,10 +49,12 @@ the initially reconstructed player fields. Version 2 appends experience, gold,
 equipment, combat settings, world coordinates, the first encounter's completion
 state, and the Visual C++ random-generator state. Version 3 appends ability
 points, the learned special ability, its active duration, and the three Enrage
-stat backups. The loader accepts all three versions, gives version-1 files the
-starting world state, and gives version-2 files a full starting AP pool. Writes
-use a temporary file and atomic replacement so a failed write does not destroy
-the previous save.
+stat backups. Version 4 appends the limited-restoration counter and the four
+movement flags used by tree, key-door, and unresolved `+0x674` checks. The
+loader accepts all four versions, gives version-1 files the starting world
+state, gives version-2 files a full starting AP pool, and defaults fields added
+by newer formats. Writes use a temporary file and atomic replacement so a
+failed write does not destroy the previous save.
 
 ## Remaining work
 

@@ -15,9 +15,9 @@ ctest --test-dir build --output-on-failure
 ./build/yipe3
 ```
 
-The `yipe3` executable renders the 288×397 startup view at 2× scale. Click New Game, Load Game, or Quit, or use N, L, Q, and Escape. New Game prompts for Warrior, Rogue, or Wizard and enters map `0x11` at `(5,5)`. Move with the arrow keys or WASD, inspect player state with I, and save with F5. The central building opens Fred's shop with working purchases. Cross the north edge and reach `(2,8)` to fight the Giant Beetle with Attack, Use Item, and Flee actions. Q or Escape offers Save and Quit.
+The `yipe3` executable renders the 288×397 startup view at 2× scale. Click New Game, Load Game, or Quit, or use N, L, Q, and Escape. New Game prompts for Warrior, Rogue, or Wizard and enters map `0x11` at `(5,5)`. Move with the arrow keys or WASD, inspect player state with I, and save with F5. The central building opens Fred's shop with working purchases. Surface edges and recovered depth entrances load their corresponding static maps; restoration, locked-door, surface-return, and fire-wall tiles dispatch their original effects. Cross the north edge and reach `(2,8)` to fight the Giant Beetle with Attack, Use Item, and Flee actions. Q or Escape offers Save and Quit.
 
-Load Game resumes the native `save.y3r` stored in SDL's per-user application-data directory. Version 3 saves preserve progression, equipment, ability state, world position, the defeated encounter, and random-generator state; the loader still accepts game version 2 and the earlier player-only version 1 format. Legacy `.yp3` import remains under investigation. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
+Load Game resumes the native `save.y3r` stored in SDL's per-user application-data directory. Version 4 saves preserve progression, equipment, ability and special-movement state, world position, the defeated encounter, and random-generator state; the loader still accepts game versions 2–3 and the earlier player-only version 1 format. Legacy `.yp3` import remains under investigation. SDL2 remains absent from the core target so gameplay tests stay independent of rendering.
 
 ## Evidence and status
 

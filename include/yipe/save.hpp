@@ -21,8 +21,8 @@ struct GameState {
 
 // Version 2 extended the player-only version 1 payload with progression,
 // equipment, world location, encounter completion, and random state. Version 3
-// adds special-ability points and active combat status while retaining both
-// earlier readers.
+// added special-ability state; version 4 adds reconstructed movement-item and
+// restoration state while retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

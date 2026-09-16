@@ -57,8 +57,29 @@ preserves its numeric result codes, whether each tile updates the player positio
 edge behavior, and the four unresolved player flags used by conditional tiles.
 The SDL application renders the starting area with the original 32-pixel tile
 art and the type-1 character bitmap. Arrow keys or WASD move the character across
-ordinary walkable tiles. Special result codes are available to the core but their
-area transitions and dialogs are still being connected.
+ordinary walkable tiles. Static depth entrances now select the matching map on
+the next layer, and leaving the original layer range returns to map `0x11` at
+`(4,5)`, as in `0x00444ad0` and `0x00444f40`.
+
+The action dispatcher at `0x0040e880` establishes these special movement paths:
+
+| Result | Reconstructed behavior |
+| --- | --- |
+| `0x05`–`0x09` | Weapon, armor, healing, miscellaneous, and magic-shop entrances |
+| `0x0c` | Difficulty-limited full restoration of HP, SP, and AP |
+| `0x0d` | Casino entrance |
+| `0x0e`, `0x0f`, `0x10` | Descend, ascend, or alternate descend between map layers |
+| `0x11` | Special-ability training entrance |
+| `0x13`, `0x14` | Rainbow-key and underworld-key locked-door messages |
+| `0x15` | Secret-tree-code dialog |
+| `0x16` | Return to the starting surface location |
+| `0x17` | Two-roll, nonlethal fire-wall damage |
+
+The SDL dispatcher exposes the recovered entrance identities and implements the
+restoration, depth, surface-return, key-message, and fire-wall effects. The core
+also preserves the tree-climbing-shoes and key flags and saves them in native
+format version 4. Result codes `0x12`, `0x18`, `0x19`, `0x1a`, and `0x1b` depend
+on mutable per-map event records and remain part of the dynamic-map follow-up.
 
 The central tile with ID `1` returns action code `8`. The action dispatcher at
 `0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current
@@ -115,7 +136,7 @@ the application enables all encounters.
 The first reachable static encounter is the Giant Beetle on map `0x0b` at
 `(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
 playable-flow test. Bitmap resource 175 is drawn at the placement until the
-encounter is won; the version-3 native save preserves its defeated state.
+encounter is won; the version-4 native save preserves its defeated state.
 
 The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
 141, 142, 377, and 418. Resource 406 is the initial type-1 character image.

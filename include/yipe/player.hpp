@@ -86,6 +86,11 @@ public:
     int combat_style = 2;
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
+    int restoration_uses = 0;
+    bool has_tree_climbing_shoes = false;
+    bool has_rainbow_key = false;
+    bool has_underworld_key = false;
+    bool unknown_0674 = false;
     SpecialAbility special_ability = SpecialAbility::none;
     int special_ability_duration = 0;
     int enrage_base_dexterity = 0;

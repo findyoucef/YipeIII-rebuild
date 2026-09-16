@@ -7,6 +7,9 @@
 
 namespace yipe {
 
+class MsvcRandom;
+class Player;
+
 struct MapPosition {
     int x = 0;
     int y = 0;
@@ -48,14 +51,19 @@ struct WorldLocation {
 
 // Reconstructs edge wrapping and map-ID selection at 0x00444ad0/0x00444b50.
 [[nodiscard]] bool cross_map_edge(WorldLocation& location);
+void return_to_surface(WorldLocation& location);
 
-// These flags preserve unresolved player offsets used by the original movement
-// switch at 0x00444c10.
+// Reconstructs the layer changes at 0x00444ad0. Codes 0x0e and 0x10 descend;
+// code 0x0f ascends. Leaving the original three layers returns to the surface.
+[[nodiscard]] bool change_map_depth(WorldLocation& location, int original_code);
+
+// Player state used by the original movement switch at 0x00444c10. Offset
+// +0x674 remains unnamed.
 struct MovementState {
-    bool flag_0064 = false;
-    bool flag_0080 = false;
-    bool flag_0082 = false;
-    bool flag_0674 = false;
+    bool has_tree_climbing_shoes = false;
+    bool has_rainbow_key = false;
+    bool has_underworld_key = false;
+    bool unknown_0674 = false;
 };
 
 struct MovementResult {
@@ -66,5 +74,9 @@ struct MovementResult {
 [[nodiscard]] MovementResult try_move(const Map& map, MapPosition& position,
                                       int delta_x, int delta_y,
                                       const MovementState& state = {});
+
+// Special movement actions dispatched at 0x0040e880.
+[[nodiscard]] bool use_restoration_tile(Player& player);
+[[nodiscard]] int apply_fire_wall(Player& player, MsvcRandom& random);
 
 } // namespace yipe
