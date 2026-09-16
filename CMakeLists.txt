@@ -16,6 +16,7 @@ add_library(yipe_core
     src/auxiliary_data.cpp
     src/encounter.cpp
     src/item_names.cpp
+    src/legacy_save.cpp
     src/map.cpp
     src/player.cpp
     src/random.cpp

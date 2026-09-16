@@ -1,6 +1,7 @@
 #include "yipe/auxiliary_data.hpp"
 #include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
+#include "yipe/legacy_save.hpp"
 #include "yipe/map.hpp"
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
@@ -47,6 +48,25 @@ void write_u32(std::vector<std::uint8_t>& bytes, std::size_t position,
     for (unsigned shift = 0; shift < 32; shift += 8) {
         bytes[position++] = static_cast<std::uint8_t>(value >> shift);
     }
+}
+
+void append_u16(std::vector<std::uint8_t>& bytes, std::uint16_t value) {
+    bytes.push_back(static_cast<std::uint8_t>(value));
+    bytes.push_back(static_cast<std::uint8_t>(value >> 8u));
+}
+
+void append_i32(std::vector<std::uint8_t>& bytes, std::int32_t value) {
+    const auto encoded = static_cast<std::uint32_t>(value);
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+        bytes.push_back(static_cast<std::uint8_t>(encoded >> shift));
+    }
+}
+
+void write_bytes(const std::filesystem::path& path,
+                 const std::vector<std::uint8_t>& bytes) {
+    std::ofstream output(path, std::ios::binary | std::ios::trunc);
+    output.write(reinterpret_cast<const char*>(bytes.data()),
+                 static_cast<std::streamsize>(bytes.size()));
 }
 
 void remove_save_extension(const std::filesystem::path& path, std::size_t extension_size,
@@ -399,6 +419,157 @@ void test_game_save() {
               && loaded_version_2.player.maximum_ability_points == 5
               && loaded_version_2.player.special_ability == yipe::SpecialAbility::none,
           "version 2 saves receive default ability state");
+    std::filesystem::remove(path);
+}
+
+std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
+    std::vector<std::uint8_t> bytes;
+    if (name.size() < 0xff) {
+        bytes.push_back(static_cast<std::uint8_t>(name.size()));
+    } else {
+        bytes.push_back(0xff);
+        append_u16(bytes, static_cast<std::uint16_t>(name.size()));
+    }
+    bytes.insert(bytes.end(), name.begin(), name.end());
+
+    for (const std::int32_t value : std::array<std::int32_t, 13>{
+             13, 12, 11, 7, 13, 4, 9, 2, 6, 8, 123, 6, 7}) {
+        append_i32(bytes, value);
+    }
+    append_i32(bytes, 533);
+    for (const std::uint16_t value : std::array<std::uint16_t, 5>{1, 2, 3, 4, 5}) {
+        append_u16(bytes, value);
+    }
+    append_i32(bytes, 2);
+    append_u16(bytes, 9);
+    append_i32(bytes, 3);
+    append_u16(bytes, 1);
+    append_u16(bytes, 2);
+    append_i32(bytes, 44);
+    append_i32(bytes, 55);
+
+    for (const bool value : std::array{false, true, true, false, false, true, true}) {
+        append_i32(bytes, value ? 1 : 0);
+    }
+    for (std::size_t index = 0; index < 512; ++index) {
+        append_i32(bytes, index == 7 ? 1 : 0);
+        append_i32(bytes, index == 8 ? 1 : 0);
+    }
+    for (std::uint16_t index = 0; index < 15; ++index) {
+        append_u16(bytes, static_cast<std::uint16_t>(index + 1));
+    }
+    for (std::size_t index = 0; index < 10; ++index) {
+        append_i32(bytes, index == 4 ? 1 : 0);
+        append_u16(bytes, index < 2 ? 1 : 0);
+    }
+    for (std::size_t index = 0; index < 30; ++index) {
+        append_u16(bytes, index == 0 ? 5 : index == 29 ? 9 : 0);
+        append_u16(bytes, static_cast<std::uint16_t>(index + 10));
+        append_i32(bytes, index == 29 ? 1 : 0);
+    }
+    for (std::size_t index = 0; index < 50; ++index) {
+        std::uint16_t value = 0;
+        switch (index) {
+        case 3: value = 1; break;
+        case 6: value = 125; break;
+        case 11: value = 1; break;
+        case 15: value = 3; break;
+        case 16: value = 85; break;
+        case 17: value = 22; break;
+        case 26: value = 2; break;
+        case 31: value = 1; break;
+        default: break;
+        }
+        append_u16(bytes, value);
+        append_i32(bytes, static_cast<std::int32_t>(1000 + index));
+        append_i32(bytes, index == 4 ? 1 : 0);
+    }
+    for (const std::uint16_t value : std::array<std::uint16_t, 5>{2, 8, 0, 1, 0}) {
+        append_u16(bytes, value);
+    }
+    append_i32(bytes, 797);
+    append_i32(bytes, 4321);
+    append_i32(bytes, 1);
+    return bytes;
+}
+
+void test_legacy_save_import() {
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "yipe3-legacy-save-test.yp3";
+    std::vector<std::uint8_t> bytes = legacy_save_bytes("Legacy");
+    check(bytes.size() == 1 + 6 + 5064,
+          "synthetic legacy fixture has the statically recovered payload size");
+    write_bytes(path, bytes);
+
+    const yipe::LegacySave imported = yipe::load_legacy_save(path);
+    const yipe::Player& player = imported.game.player;
+    check(player.name == "Legacy" && player.dexterity == 13
+              && player.intelligence == 12 && player.strength == 11
+              && player.health == 7 && player.maximum_health == 13,
+          "legacy import restores identity and primary stats");
+    check(player.spell_points == 4 && player.maximum_spell_points == 9
+              && player.ability_points == 2 && player.maximum_ability_points == 6
+              && player.level == 8,
+          "legacy import restores resource pools and level");
+    check(player.weapon_rank == 6 && player.armor_rank == 7
+              && player.boots_rank == 1 && player.gloves_rank == 2
+              && player.helmet_rank == 3 && player.ring_rank == 4
+              && player.necklace_rank == 5,
+          "legacy import restores equipment ranks");
+    check(player.gold == 1000 && player.experience == 4321
+              && imported.stored_validation == 533 && imported.validation_passed,
+          "legacy import reverses the gold transform and verifies validation data");
+    check(imported.game.location.position == yipe::MapPosition{2, 8}
+              && imported.game.location.region_y == 1
+              && imported.game.location.map_id == 0x0b,
+          "legacy import derives the original world location");
+    check(player.difficulty == 2 && player.restoration_uses == 3
+              && player.combat_style == 3 && player.has_tree_climbing_shoes
+              && player.has_rainbow_key && player.has_underworld_key
+              && player.unknown_0674,
+          "legacy import maps recovered difficulty, movement, and combat state");
+    check(player.inventory[0] == 5 && player.inventory[29] == 9
+              && player.unknown_0065_healing_bonus && player.unknown_0680 == 22,
+          "legacy import maps inventory and recovered extended fields");
+    check(imported.flags_0152[7] && imported.flags_0352[8]
+              && imported.values_010c[14] == 15
+              && imported.flag_values[4].flag_0148
+              && imported.inventory_entries[29].value_00d0 == 39
+              && imported.inventory_entries[29].flag_012a
+              && imported.extended_entries[4].value_0584 == 1004
+              && imported.extended_entries[4].flag_0552
+              && imported.trailing_healing_flag,
+          "legacy import retains unresolved serialized fields");
+
+    std::vector<std::uint8_t> invalid_validation = bytes;
+    write_u32(invalid_validation, 1 + 6 + 13 * sizeof(std::int32_t), 0);
+    write_bytes(path, invalid_validation);
+    check(!yipe::load_legacy_save(path).validation_passed,
+          "legacy import reports validation failure without rejecting the save");
+
+    const std::string long_name(300, 'L');
+    write_bytes(path, legacy_save_bytes(long_name));
+    check(yipe::load_legacy_save(path).game.player.name == long_name,
+          "legacy import supports the MFC 16-bit CString length form");
+
+    bytes.pop_back();
+    write_bytes(path, bytes);
+    bool rejected = false;
+    try {
+        static_cast<void>(yipe::load_legacy_save(path));
+    } catch (const std::runtime_error&) {
+        rejected = true;
+    }
+    check(rejected, "legacy import rejects truncated payloads");
+
+    write_bytes(path, {0xff, 0xfe, 0xff});
+    rejected = false;
+    try {
+        static_cast<void>(yipe::load_legacy_save(path));
+    } catch (const std::runtime_error&) {
+        rejected = true;
+    }
+    check(rejected, "legacy import rejects unsupported Unicode archive strings");
     std::filesystem::remove(path);
 }
 
@@ -1241,6 +1412,7 @@ int main() {
     test_item_names();
     test_native_save();
     test_game_save();
+    test_legacy_save_import();
     test_original_auxiliary_data();
     test_starting_map();
     test_static_map_catalog_and_edges();

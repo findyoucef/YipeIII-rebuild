@@ -1,6 +1,29 @@
 # Legacy `.yp3` save analysis
 
-This is the static field map for the player serializer at `0x00443c90`, called through the document serializer at `0x0044f760`. It is not yet a complete file-format specification: MFC `CArchive` framing and CString encoding still require real save samples.
+This is the static field map for the player serializer at `0x00443c90`, called through the document serializer at `0x0044f760`. The import implementation follows the original executable's archive path exactly, but compatibility is not yet demonstrated against a real `.yp3` sample.
+
+## Archive framing and string encoding
+
+The open-document path at `0x00471d80` constructs a load-mode `CArchive`
+directly over the selected file and invokes the document serialization slot.
+`Yipe_SerializeDocument` immediately delegates to the embedded player. No
+class name, schema number, magic value, or other document prefix is written by
+this path: the file begins with the player's CString.
+
+The ANSI CString writer at `0x00472233` uses the standard variable-length MFC
+form recovered directly from its branches:
+
+- lengths below `0xff` use one byte;
+- longer lengths begin with `ff` and a 16-bit length;
+- a 16-bit value of `ffff` is followed by a 32-bit length;
+- a 16-bit value of `fffe` denotes a Unicode string and is followed by another
+  encoded character count.
+
+This executable writes ANSI strings. The import reader retains their bytes in
+`std::string` and rejects the Unicode archive variant explicitly. After the
+name bytes, the 1.1.6.0 player payload has exactly 5,064 bytes. That fixed size
+lets the reader reject a framed object, an older/newer field layout, truncation,
+and trailing data rather than silently shifting the field map.
 
 ## Serialization order
 
@@ -20,7 +43,7 @@ All offsets below are in-memory offsets in the original player object. They are 
 12. Fifty triples: a 16-bit value at `+0x65e`, a 32-bit value at `+0x584`, and a boolean-as-32-bit at `+0x552`.
 13. Five 16-bit values at `+0x042`, `+0x044`, `+0x046`, `+0x048`, and `+0x050`.
 14. A 32-bit value from `+0x058`, stored after subtracting 203, followed by a 32-bit value at `+0x054`.
-15. The `+0x065` healing-related boolean, mirrored through saved field `+0x69c`, serialized as a 32-bit integer.
+15. The `+0x065` healing-related boolean, mirrored through saved field `+0x69c`, is appended as a 32-bit integer by the write branch. The original read branch derives `+0x065` from the already loaded `+0x69c` array entry and does not consume the appended copy.
 
 The load branch reverses the `-203` transform. It calls `0x00445060` to compare the stored validation value with the recomputed value, accepts a difference from -1 through +1, and stores the result at `+0x64e`.
 
@@ -40,6 +63,21 @@ value_at_0x58 / 2
 
 The write branch stores zero instead when the prior validation flag is false. This is a consistency check, not evidence of a cryptographic checksum.
 
+## Import mapping
+
+`load_legacy_save` exposes a `LegacySave` containing both a rebuild `GameState`
+and every serialized field not yet understood. The known mapping includes the
+player name, primary stats, HP/SP/AP, level, weapon and armor ranks, five minor
+equipment ranks, XP, transformed gold, world coordinates, computed map ID,
+difficulty, combat style, restoration count, tree/key movement state, inventory,
+and the recovered extended item-status fields. Offset-based arrays remain in
+the import object so future reconstruction does not require reparsing the file.
+
+The original validation expression is evaluated and reported through
+`validation_passed`. A mismatch is non-fatal, matching the original loader,
+which stores the result as player state rather than rejecting the document.
+The importer never writes `.yp3` files.
+
 ## Rebuild-native saves
 
 The native rebuild format is independent of MFC and legacy `.yp3` files. Its
@@ -58,10 +96,13 @@ so opened doors and linked mechanisms survive map changes and restart. The
 loader accepts all five versions. Writes use a temporary file and atomic
 replacement so a failed write does not destroy the previous save.
 
-## Remaining work
+## Verification status
 
-- Capture paired original `.yp3` files from R08.
-- Identify the MFC archive prefix, CString length form, and any document/object framing before the player payload.
-- Confirm the field sizes and order against byte differences in real saves.
-- Preserve all unsupported fields in the import model, even when the rebuild cannot name them yet.
-- Reject truncation, impossible framing, and unsupported archive variants with a specific error.
+- Static evidence fixes the headerless framing, CString forms, field order,
+  widths, gold transform, and validation expression.
+- Byte-level synthetic tests exercise every field family, both supported ANSI
+  length forms practical for player names, validation, unknown-field retention,
+  truncation, and the unsupported Unicode marker.
+- No original `.yp3` exists in the preserved runtime evidence or analysis
+  workspace. Capture paired R08 saves and load them in the rebuild before
+  claiming original-save compatibility.
