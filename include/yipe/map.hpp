@@ -76,6 +76,7 @@ struct WorldLocation {
 
 // Reconstructs edge wrapping and map-ID selection at 0x00444ad0/0x00444b50.
 [[nodiscard]] bool cross_map_edge(WorldLocation& location);
+void ascend_to_surface(WorldLocation& location);
 void return_to_surface(WorldLocation& location);
 
 // Reconstructs the layer changes at 0x00444ad0. Codes 0x0e and 0x10 descend;

@@ -1,4 +1,5 @@
 #include "yipe/shop.hpp"
+#include "yipe/spell.hpp"
 
 #include <algorithm>
 #include <array>
@@ -109,41 +110,6 @@ int& equipped_rank(Player& player, EquipmentKind kind) {
 
 int equipped_rank(const Player& player, EquipmentKind kind) {
     return kind == EquipmentKind::weapon ? player.weapon_rank : player.armor_rank;
-}
-
-constexpr std::array<std::string_view, 12> spell_names{
-    "Return to Surface", "Small Heal", "Gobbler Attack", "Insect Attack",
-    "Stinky Smell", "Full Heal", "Brain Crush", "Health Suction",
-    "Return to Yipe", "Super Heal", "HP Shuffle", "Rabbit Replacement",
-};
-
-constexpr std::array<std::string_view, 12> spell_descriptions{
-    "This spell returns you from an underground cave or dungeon back to the surface of Yipe!",
-    "You can use this spell to heal some of your health points. Using the spell on high power increases the healing amount.",
-    "This spell gobbles up some of your enemies' health. Use on high power to gobble all enemies present.",
-    "This spell creates an alien insect cloud that attacks your enemy. Use on high power to attack all enemies present at once.",
-    "Upon casting this spell a very stinky smell will surround you and keep monsters from appearing for a short time.",
-    "This spell will completely heal your health points.",
-    "This spell further shrinks a monster's already small brain, causing massive damage.",
-    "This bizarre spell will suck health out of your enemy and heal you by that same amount. Use on high power for higher damage and healing.",
-    "After casting this spell you will end up back in the town of Yipe! It can only be cast on the surface of the world.",
-    "This powerful healing spell restores health and ability points, but costs many spell points to cast.",
-    "This spell will cause the health points of all monsters you are currently fighting to randomly switch around.",
-    "If there are two or three monsters one of them will be turned into a rabbit. The spell won't work with only one monster.",
-};
-
-constexpr std::array<int, 12> spell_prices{
-    50, 100, 200, 300, 250, 500, 800, 1000, 500, 1000, 750, 1000,
-};
-
-std::array<int, 12> spell_levels(int difficulty) {
-    return {1, 2, 3, 7, 10, 13,
-            difficulty == 3 ? 18 : 16,
-            difficulty == 3 ? 22 : 20,
-            difficulty == 3 ? 24 : 23,
-            difficulty == 3 ? 32 : 30,
-            difficulty == 3 ? 35 : 34,
-            difficulty == 3 ? 42 : 40};
 }
 
 } // namespace
@@ -283,14 +249,16 @@ ServiceResult purchase_spell_point_healing(Player& player, bool full,
 }
 
 std::optional<SpellOffer> next_spell_offer(const Player& player) {
-    const auto levels = spell_levels(player.difficulty);
-    for (std::size_t index = 0; index < spell_names.size(); ++index) {
+    const auto& definitions = spell_definitions();
+    for (std::size_t index = 0; index < definitions.size(); ++index) {
         if (player.spells[index] == 0) {
-            if (player.level < levels[index]) {
+            const SpellDefinition& spell = definitions[index];
+            const int required_level = spell_required_level(spell, player.difficulty);
+            if (player.level < required_level) {
                 return std::nullopt;
             }
-            return SpellOffer{index, spell_names[index], spell_descriptions[index],
-                              spell_prices[index], levels[index]};
+            return SpellOffer{index, spell.name, spell.description,
+                              spell.price, required_level};
         }
     }
     return std::nullopt;

@@ -8,6 +8,7 @@
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
 #include "yipe/shop.hpp"
+#include "yipe/spell.hpp"
 
 #include <algorithm>
 #include <array>
@@ -104,6 +105,9 @@ void test_player_defaults() {
     check(player.ability_points == 5 && player.maximum_ability_points == 5,
           "warrior starts with five ability points");
     check(player.inventory[0] == 1, "new player owns item 1");
+    check(player.spells[0] == 1
+              && std::count(player.spells.begin() + 1, player.spells.end(), 0) == 14,
+          "new player knows only Return to Surface");
 
     const yipe::Player rogue(yipe::CharacterType::rogue);
     check(rogue.strength == 11 && rogue.dexterity == 15 && rogue.intelligence == 12,
@@ -398,7 +402,7 @@ void test_game_save() {
                           yipe::Player::spell_count * sizeof(std::uint16_t), 5);
     const yipe::GameState loaded_version_5 = yipe::load_game(path);
     check(loaded_version_5.map_tile_changes == original.map_tile_changes
-              && loaded_version_5.player.spells[0] == 0,
+              && loaded_version_5.player.spells[0] == 1,
           "version 5 saves retain map changes and default learned spells");
 
     constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)
@@ -902,14 +906,15 @@ void test_recovered_shop_transactions() {
     check(sp_heal.status == yipe::ServiceStatus::completed && sp_heal.amount == 17
               && magic_customer.spell_points == 17 && magic_customer.gold == 0,
           "magic shop small heal uses the recovered random and level bonuses");
-    magic_customer.gold = 50;
-    check(yipe::next_spell_offer(magic_customer)->name == "Return to Surface"
+    magic_customer.level = 2;
+    magic_customer.gold = 100;
+    check(yipe::next_spell_offer(magic_customer)->name == "Small Heal"
               && yipe::learn_next_spell(magic_customer)
                   == yipe::SpellLearningStatus::insufficient_gold,
           "spell learning preserves the original strict gold comparison");
-    magic_customer.gold = 51;
+    magic_customer.gold = 101;
     check(yipe::learn_next_spell(magic_customer) == yipe::SpellLearningStatus::learned
-              && magic_customer.spells[0] == 1 && magic_customer.gold == 1
+              && magic_customer.spells[1] == 1 && magic_customer.gold == 1
               && !yipe::next_spell_offer(magic_customer),
           "magic shop learns the first eligible unlearned spell");
 
@@ -1507,6 +1512,260 @@ void test_weapon_damage_catalog() {
           "weapon catalog preserves the original invalid-rank fallback");
 }
 
+void test_recovered_spells() {
+    const auto& spells = yipe::spell_definitions();
+    check(spells.size() == 12 && spells[0].name == "Return to Surface"
+              && spells[11].name == "Rabbit Replacement"
+              && spells[0].usage == yipe::SpellUsage::non_combat
+              && spells[1].usage == yipe::SpellUsage::either
+              && spells[2].usage == yipe::SpellUsage::combat,
+          "spell catalog preserves all names and usage restrictions");
+
+    const yipe::Player wizard(yipe::CharacterType::wizard);
+    const yipe::Player warrior(yipe::CharacterType::warrior);
+    const yipe::Player rogue(yipe::CharacterType::rogue);
+    check(yipe::spell_point_cost(wizard, 1, yipe::SpellPower::low) == 6
+              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::low) == 10
+              && yipe::spell_point_cost(rogue, 1, yipe::SpellPower::low) == 8
+              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::high) == 20
+              && yipe::spell_point_cost(warrior, 5, yipe::SpellPower::high) == 38,
+          "spell costs preserve class differences and selective high-power doubling");
+
+    yipe::Player surface_caster;
+    surface_caster.spell_points = 10;
+    surface_caster.maximum_spell_points = 10;
+    yipe::WorldLocation cave{{7, 4}, 0, 0, 1, false, 0x39};
+    yipe::MsvcRandom surface_random(1);
+    const yipe::ExplorationSpellResult surface = yipe::cast_exploration_spell(
+        surface_caster, cave, 0, yipe::SpellPower::low, surface_random);
+    check(surface.status == yipe::SpellCastStatus::cast && surface.location_changed
+              && cave.position == yipe::MapPosition{7, 4} && cave.map_layer == 0
+              && cave.map_id == 0x11 && surface_caster.spell_points == 5
+              && surface_caster.unknown_0692 == 1,
+          "Return to Surface preserves position and restores the matching surface map");
+    const yipe::ExplorationSpellResult already_on_surface =
+        yipe::cast_exploration_spell(surface_caster, cave, 0,
+                                     yipe::SpellPower::low, surface_random);
+    check(already_on_surface.status == yipe::SpellCastStatus::unavailable
+              && surface_caster.spell_points == 5,
+          "Return to Surface is unavailable without charge on the surface");
+
+    yipe::Player healer;
+    healer.spells[1] = 1;
+    healer.health = 1;
+    healer.maximum_health = 100;
+    healer.spell_points = 100;
+    healer.maximum_spell_points = 100;
+    yipe::WorldLocation outdoors;
+    yipe::MsvcRandom heal_random(1);
+    const yipe::ExplorationSpellResult small_heal = yipe::cast_exploration_spell(
+        healer, outdoors, 1, yipe::SpellPower::low, heal_random);
+    check(small_heal.status == yipe::SpellCastStatus::cast
+              && small_heal.healing == 14 && healer.health == 15
+              && healer.spell_points == 90,
+          "Small Heal uses the recovered seeded formula and spell-point cost");
+
+    yipe::Player repellent_caster;
+    repellent_caster.spells[4] = 1;
+    repellent_caster.level = 10;
+    repellent_caster.intelligence = 10;
+    repellent_caster.spell_points = 100;
+    repellent_caster.maximum_spell_points = 100;
+    yipe::MsvcRandom repellent_random(1);
+    const yipe::ExplorationSpellResult repellent = yipe::cast_exploration_spell(
+        repellent_caster, outdoors, 4, yipe::SpellPower::high,
+        repellent_random);
+    check(repellent.status == yipe::SpellCastStatus::cast
+              && repellent.repellent_duration == 46
+              && repellent_caster.unknown_066a == 125
+              && repellent_caster.unknown_067e == 85
+              && repellent_caster.unknown_0680 == 46
+              && repellent_caster.spell_points == 72,
+          "Stinky Smell applies the recovered capped duration and status fields");
+
+    yipe::Player full_healer;
+    full_healer.spells[5] = 1;
+    full_healer.health = 1;
+    full_healer.maximum_health = 100;
+    full_healer.spell_points = 100;
+    full_healer.maximum_spell_points = 100;
+    yipe::MsvcRandom full_heal_random(1);
+    const yipe::ExplorationSpellResult full_heal = yipe::cast_exploration_spell(
+        full_healer, outdoors, 5, yipe::SpellPower::high, full_heal_random);
+    check(full_heal.healing == 99 && full_healer.health == 100
+              && full_healer.spell_points == 62,
+          "Full Heal restores all health without a high-power surcharge");
+
+    yipe::Player town_caster;
+    town_caster.spells[8] = 1;
+    town_caster.spell_points = 100;
+    town_caster.maximum_spell_points = 100;
+    yipe::WorldLocation distant_surface{{12, 8}, 4, -3, 0, true, 0x75};
+    yipe::MsvcRandom town_random(1);
+    const yipe::ExplorationSpellResult town = yipe::cast_exploration_spell(
+        town_caster, distant_surface, 8, yipe::SpellPower::low, town_random);
+    check(town.location_changed && distant_surface.position == yipe::MapPosition{4, 5}
+              && distant_surface.region_x == 0 && distant_surface.region_y == 0
+              && distant_surface.map_id == 0x11 && town_caster.spell_points == 85
+              && town_caster.unknown_0692 == 2,
+          "Return to Yipe relocates a surface caster to the recovered town position");
+
+    yipe::Player super_healer;
+    super_healer.spells[9] = 1;
+    super_healer.health = 1;
+    super_healer.maximum_health = 100;
+    super_healer.spell_points = 100;
+    super_healer.maximum_spell_points = 100;
+    super_healer.ability_points = 2;
+    super_healer.maximum_ability_points = 5;
+    yipe::MsvcRandom super_heal_random(1);
+    const yipe::ExplorationSpellResult super_heal = yipe::cast_exploration_spell(
+        super_healer, outdoors, 9, yipe::SpellPower::low, super_heal_random);
+    check(super_heal.healing == 26 && super_healer.health == 27
+              && super_healer.ability_points == 3
+              && super_healer.spell_points == 40,
+          "Super Heal restores seeded health and one AP at low power");
+
+    const auto single_target = [] {
+        yipe::CombatEncounter encounter;
+        encounter.monsters[0] =
+            {2, "Giant Beetle", 175, 100, 100, 0, 1, 100, 0, false};
+        return encounter;
+    };
+    const auto cast_attack = [&single_target](std::size_t spell, int expected_damage) {
+        yipe::Player caster;
+        caster.health = 1000;
+        caster.maximum_health = 1000;
+        caster.spell_points = 200;
+        caster.maximum_spell_points = 200;
+        caster.spells[spell] = 1;
+        yipe::CombatEncounter encounter = single_target();
+        yipe::MsvcRandom random(1);
+        const yipe::CombatSpellResult result = yipe::resolve_spell_turn(
+            caster, encounter, spell, yipe::SpellPower::low, random);
+        check(result.status == yipe::SpellCastStatus::cast
+                  && result.damage_by_slot[0] == expected_damage
+                  && encounter.monsters[0].health == 100 - expected_damage
+                  && result.turn.monster_damage_by_slot[0] > 0,
+              "combat spell " + std::to_string(spell)
+                  + " applies its seeded damage before the counterattack");
+        return result;
+    };
+    static_cast<void>(cast_attack(2, 10));
+    static_cast<void>(cast_attack(3, 30));
+    static_cast<void>(cast_attack(6, 53));
+
+    yipe::Player group_attacker;
+    group_attacker.health = 1000;
+    group_attacker.maximum_health = 1000;
+    group_attacker.spell_points = 100;
+    group_attacker.maximum_spell_points = 100;
+    group_attacker.spells[2] = 1;
+    yipe::CombatEncounter attack_group;
+    for (yipe::Monster& monster : attack_group.monsters) {
+        monster = {2, "Giant Beetle", 175, 100, 100, 0, 1, 100, 0, false};
+    }
+    yipe::MsvcRandom group_attack_random(1);
+    const yipe::CombatSpellResult group_attack = yipe::resolve_spell_turn(
+        group_attacker, attack_group, 2, yipe::SpellPower::high,
+        group_attack_random);
+    check(group_attack.damage_by_slot == std::array<int, 3>{12, 11, 12}
+              && attack_group.monsters[0].health == 88
+              && attack_group.monsters[1].health == 89
+              && attack_group.monsters[2].health == 88
+              && group_attacker.spell_points == 72,
+          "high-power attack spells target all opponents in recovered slot order");
+
+    yipe::Player restricted_caster;
+    restricted_caster.spell_points = 100;
+    restricted_caster.maximum_spell_points = 100;
+    restricted_caster.spells[2] = 1;
+    yipe::MsvcRandom restricted_random(1);
+    const yipe::ExplorationSpellResult wrong_exploration_context =
+        yipe::cast_exploration_spell(restricted_caster, outdoors, 2,
+                                     yipe::SpellPower::low, restricted_random);
+    yipe::CombatEncounter restricted_target = single_target();
+    const yipe::CombatSpellResult wrong_combat_context = yipe::resolve_spell_turn(
+        restricted_caster, restricted_target, 0, yipe::SpellPower::low,
+        restricted_random);
+    restricted_caster.spells[1] = 1;
+    restricted_caster.spell_points = 9;
+    const yipe::ExplorationSpellResult too_expensive = yipe::cast_exploration_spell(
+        restricted_caster, outdoors, 1, yipe::SpellPower::low, restricted_random);
+    check(wrong_exploration_context.status == yipe::SpellCastStatus::wrong_context
+              && wrong_combat_context.status == yipe::SpellCastStatus::wrong_context
+              && too_expensive.status
+                  == yipe::SpellCastStatus::insufficient_spell_points
+              && restricted_caster.spell_points == 9,
+          "spell context and SP failures leave player resources unchanged");
+
+    yipe::Player suction_caster;
+    suction_caster.health = 500;
+    suction_caster.maximum_health = 1000;
+    suction_caster.spell_points = 100;
+    suction_caster.maximum_spell_points = 100;
+    suction_caster.spells[7] = 1;
+    yipe::CombatEncounter suction_target = single_target();
+    yipe::MsvcRandom suction_random(1);
+    const yipe::CombatSpellResult suction = yipe::resolve_spell_turn(
+        suction_caster, suction_target, 7, yipe::SpellPower::low,
+        suction_random);
+    check(suction.damage_by_slot[0] == 33 && suction.healing == 33
+              && suction_target.monsters[0].health == 67,
+          "Health Suction heals by the recovered seeded damage amount");
+
+    yipe::Player shuffle_caster;
+    shuffle_caster.health = 1000;
+    shuffle_caster.maximum_health = 1000;
+    shuffle_caster.spell_points = 100;
+    shuffle_caster.maximum_spell_points = 100;
+    shuffle_caster.spells[10] = 1;
+    yipe::CombatEncounter lone_monster = single_target();
+    yipe::MsvcRandom unavailable_random(1);
+    const yipe::CombatSpellResult unavailable_shuffle = yipe::resolve_spell_turn(
+        shuffle_caster, lone_monster, 10, yipe::SpellPower::low,
+        unavailable_random);
+    check(unavailable_shuffle.status == yipe::SpellCastStatus::unavailable
+              && shuffle_caster.spell_points == 100,
+          "HP Shuffle requires multiple living monsters and does not charge on failure");
+    yipe::CombatEncounter group;
+    group.monsters[0] = {2, "One", 175, 30, 30, 0, 1, 0, 0, false};
+    group.monsters[1] = {2, "Two", 175, 40, 40, 0, 1, 0, 0, false};
+    group.monsters[2] = {2, "Three", 175, 50, 50, 0, 1, 0, 0, false};
+    yipe::MsvcRandom shuffle_random(1);
+    const yipe::CombatSpellResult shuffle = yipe::resolve_spell_turn(
+        shuffle_caster, group, 10, yipe::SpellPower::low, shuffle_random);
+    check(shuffle.status == yipe::SpellCastStatus::cast
+              && group.monsters[0].health == 46 && group.monsters[1].health == 47
+              && group.monsters[2].health == 27
+              && shuffle_caster.spell_points == 86,
+          "HP Shuffle circulates seeded health portions across three monsters");
+
+    yipe::Player rabbit_caster;
+    rabbit_caster.health = 1000;
+    rabbit_caster.maximum_health = 1000;
+    rabbit_caster.spell_points = 100;
+    rabbit_caster.maximum_spell_points = 100;
+    rabbit_caster.spells[11] = 1;
+    yipe::CombatEncounter rabbit_group;
+    rabbit_group.monsters[0] = {2, "One", 175, 30, 30, 0, 1, 8, 9, false};
+    rabbit_group.monsters[1] = {3, "Two", 176, 40, 50, 7, 4, 11, 12, true};
+    yipe::MsvcRandom rabbit_random(1);
+    const yipe::CombatSpellResult rabbit = yipe::resolve_spell_turn(
+        rabbit_caster, rabbit_group, 11, yipe::SpellPower::low, rabbit_random);
+    check(rabbit.status == yipe::SpellCastStatus::cast
+              && rabbit_group.monsters[1].type_id == 1
+              && rabbit_group.monsters[1].bitmap_resource_id == 174
+              && rabbit_group.monsters[1].health == 40
+              && rabbit_group.monsters[1].maximum_health == 50
+              && rabbit_group.monsters[1].rank == 4
+              && rabbit_group.monsters[1].special_rating == 5
+              && rabbit_group.monsters[1].attack_rating == 5
+              && rabbit_group.monsters[1].defense_rating == 5
+              && rabbit_caster.spell_points == 64,
+          "Rabbit Replacement transforms the last opponent while preserving health and rank");
+}
+
 void test_first_playable_flow() {
     const std::optional<yipe::Map> map = yipe::original_map(0x0b);
     check(map.has_value(), "first encounter map is available");
@@ -1593,6 +1852,7 @@ int main() {
     test_monster_placement_catalog();
     test_monster_definition_catalog();
     test_weapon_damage_catalog();
+    test_recovered_spells();
     test_first_playable_flow();
 
     if (failures != 0) {

@@ -5,6 +5,7 @@
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
 #include "yipe/shop.hpp"
+#include "yipe/spell.hpp"
 
 #include <SDL.h>
 
@@ -987,6 +988,81 @@ std::optional<std::size_t> choose_inventory_item(SDL_Window* window,
     }
 }
 
+struct SpellSelection {
+    std::size_t index;
+    yipe::SpellPower power;
+};
+
+std::optional<SpellSelection> choose_spell(SDL_Window* window,
+                                           const yipe::Player& player,
+                                           bool in_combat) {
+    const auto& definitions = yipe::spell_definitions();
+    std::vector<std::size_t> available;
+    for (std::size_t index = 0; index < definitions.size(); ++index) {
+        const yipe::SpellUsage usage = definitions[index].usage;
+        const bool right_context = in_combat
+            ? usage != yipe::SpellUsage::non_combat
+            : usage != yipe::SpellUsage::combat;
+        if (player.spells[index] != 0 && right_context) {
+            available.push_back(index);
+        }
+    }
+    if (available.empty()) {
+        show_message(window, "Spells", in_combat
+                         ? "You do not know any combat spells."
+                         : "You do not know any spells that can be cast here.");
+        return std::nullopt;
+    }
+
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1,
+                                 "Low Power"},
+        SDL_MessageBoxButtonData{0, 2, "High Power"},
+        SDL_MessageBoxButtonData{0, 3, "Next"},
+    };
+    std::size_t selected = 0;
+    while (true) {
+        const std::size_t index = available[selected];
+        const yipe::SpellDefinition& spell = definitions[index];
+        std::ostringstream message;
+        message << spell.name << "\n" << spell.description << "\n\nLow power: "
+                << yipe::spell_point_cost(player, index, yipe::SpellPower::low)
+                << " SP\nHigh power: "
+                << yipe::spell_point_cost(player, index, yipe::SpellPower::high)
+                << " SP\nYour SP: " << player.spell_points << "/"
+                << player.maximum_spell_points << "\n\nSpell " << selected + 1
+                << " of " << available.size();
+        const int choice = show_choice(window, "Spells", message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1 || choice == 2) {
+            return SpellSelection{index, choice == 1 ? yipe::SpellPower::low
+                                                     : yipe::SpellPower::high};
+        }
+        if (choice == 3) {
+            selected = (selected + 1) % available.size();
+        } else {
+            return std::nullopt;
+        }
+    }
+}
+
+std::string spell_failure_message(yipe::SpellCastStatus status) {
+    switch (status) {
+    case yipe::SpellCastStatus::unlearned:
+        return "You have not learned that spell.";
+    case yipe::SpellCastStatus::wrong_context:
+        return "That spell cannot be cast here.";
+    case yipe::SpellCastStatus::insufficient_spell_points:
+        return "You do not have enough spell points.";
+    case yipe::SpellCastStatus::unavailable:
+        return "That spell cannot take effect right now.";
+    case yipe::SpellCastStatus::cast:
+        break;
+    }
+    return {};
+}
+
 void show_player_status(SDL_Window* window, const yipe::Player& player) {
     const auto carried = std::count_if(
         player.inventory.begin(),
@@ -1022,13 +1098,36 @@ std::string_view stat_increase_name(yipe::StatIncrease stat) {
     return {};
 }
 
+void append_victory_details(std::ostringstream& message, const yipe::CombatTurn& turn,
+                            const yipe::Player& player) {
+    message << "\n\nThe Giant Beetle is defeated.\nYou gain "
+            << turn.reward.experience << " experience and " << turn.reward.gold
+            << " gold.";
+    if (turn.reward.equipment_upgrade != yipe::EquipmentUpgrade::none) {
+        message << "\nYou found a "
+                << yipe::equipment_upgrade_name(turn.reward.equipment_upgrade)
+                << " upgrade.";
+    }
+    if (turn.level_up.leveled_up) {
+        message << "\nYou reached level " << player.level << " and gained "
+                << turn.level_up.health_increase << " HP and "
+                << turn.level_up.spell_point_increase << " SP.";
+        const std::string_view stat = stat_increase_name(turn.level_up.stat_increase);
+        if (!stat.empty()) {
+            message << "\n" << stat << " increased.";
+        }
+    }
+}
+
 EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& player,
                                             yipe::MsvcRandom& random) {
-    yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
+    yipe::CombatEncounter encounter = yipe::start_monster_encounter(2, 1, random);
+    yipe::Monster& monster = encounter.monsters[0];
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Attack"},
         SDL_MessageBoxButtonData{0, 2, "Use Item"},
-        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 3, "Flee"},
+        SDL_MessageBoxButtonData{0, 3, "Cast Spell"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 4, "Flee"},
     };
 
     while (true) {
@@ -1039,28 +1138,12 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
         const int action = show_choice(window, "Combat", status.str(), buttons.data(),
                                        static_cast<int>(buttons.size()));
         if (action == 1) {
-            const yipe::CombatTurn turn = yipe::resolve_attack_turn(player, monster, random);
+            const yipe::CombatTurn turn =
+                yipe::resolve_attack_turn(player, encounter, random);
             std::ostringstream result;
             result << "You deal " << turn.player_damage << " damage.";
             if (turn.outcome == yipe::CombatOutcome::victory) {
-                result << "\n\nThe Giant Beetle is defeated.\nYou gain "
-                       << turn.reward.experience << " experience and " << turn.reward.gold
-                       << " gold.";
-                if (turn.reward.equipment_upgrade != yipe::EquipmentUpgrade::none) {
-                    result << "\nYou found a "
-                           << yipe::equipment_upgrade_name(turn.reward.equipment_upgrade)
-                           << " upgrade.";
-                }
-                if (turn.level_up.leveled_up) {
-                    result << "\nYou reached level " << player.level << " and gained "
-                           << turn.level_up.health_increase << " HP and "
-                           << turn.level_up.spell_point_increase << " SP.";
-                    const std::string_view stat =
-                        stat_increase_name(turn.level_up.stat_increase);
-                    if (!stat.empty()) {
-                        result << "\n" << stat << " increased.";
-                    }
-                }
+                append_victory_details(result, turn, player);
                 show_message(window, "Victory", result.str());
                 return EncounterResult::victory;
             }
@@ -1083,7 +1166,7 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
                 continue;
             }
             const yipe::CombatTurn response =
-                yipe::resolve_monster_turn(player, monster, random);
+                yipe::resolve_monster_turn(player, encounter, random);
             std::ostringstream result;
             result << used.message;
             if (used.amount != 0) {
@@ -1096,8 +1179,49 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
             if (response.outcome == yipe::CombatOutcome::defeat) {
                 return EncounterResult::defeat;
             }
+        } else if (action == 3) {
+            const std::optional<SpellSelection> selection =
+                choose_spell(window, player, true);
+            if (!selection) {
+                continue;
+            }
+            const yipe::CombatSpellResult spell = yipe::resolve_spell_turn(
+                player, encounter, selection->index, selection->power, random);
+            if (spell.status != yipe::SpellCastStatus::cast) {
+                show_message(window, "Spells", spell_failure_message(spell.status));
+                continue;
+            }
+
+            std::ostringstream result;
+            result << "You cast " << yipe::spell_definitions()[selection->index].name
+                   << ".";
+            if (spell.turn.player_damage > 0) {
+                result << "\nThe spell deals " << spell.turn.player_damage << " damage.";
+            }
+            if (spell.healing > 0) {
+                result << "\nYou recover " << spell.healing << " health.";
+            }
+            if (selection->index == 10) {
+                result << "\nThe monsters' health shifts.";
+            } else if (selection->index == 11) {
+                result << "\nOne monster becomes a rabbit.";
+            }
+            if (spell.turn.outcome == yipe::CombatOutcome::victory) {
+                append_victory_details(result, spell.turn, player);
+                show_message(window, "Victory", result.str());
+                return EncounterResult::victory;
+            }
+            result << "\nThe Giant Beetle deals " << spell.turn.monster_damage
+                   << " damage.";
+            show_message(window,
+                         spell.turn.outcome == yipe::CombatOutcome::defeat
+                             ? "Defeat" : "Combat",
+                         result.str());
+            if (spell.turn.outcome == yipe::CombatOutcome::defeat) {
+                return EncounterResult::defeat;
+            }
         } else {
-            const yipe::FleeResult result = yipe::try_flee(player, monster, random);
+            const yipe::FleeResult result = yipe::try_flee(player, encounter, random);
             if (result.escaped) {
                 show_message(window, "Combat", "You escaped from the Giant Beetle.");
                 return EncounterResult::fled;
@@ -1131,6 +1255,46 @@ void apply_map_tile_changes(yipe::Map& map, const yipe::GameState& game) {
             map.restore_tile(change.position, change.tile);
         }
     }
+}
+
+void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
+                            yipe::Map& map, yipe::MsvcRandom& random) {
+    const std::optional<SpellSelection> selection =
+        choose_spell(window, game.player, false);
+    if (!selection) {
+        return;
+    }
+    const yipe::ExplorationSpellResult result = yipe::cast_exploration_spell(
+        game.player, game.location, selection->index, selection->power, random);
+    if (result.status != yipe::SpellCastStatus::cast) {
+        show_message(window, "Spells", spell_failure_message(result.status));
+        return;
+    }
+    if (result.location_changed) {
+        const std::optional<yipe::Map> destination =
+            yipe::original_map(game.location.map_id);
+        if (!destination) {
+            throw std::runtime_error("spell destination map is unavailable");
+        }
+        map = *destination;
+        apply_map_tile_changes(map, game);
+    }
+
+    std::ostringstream message;
+    message << "You cast " << yipe::spell_definitions()[selection->index].name << ".";
+    if (result.healing > 0) {
+        message << "\nYou recover " << result.healing << " health.";
+    } else if (selection->index == 4) {
+        message << "\nThe smell will repel monsters for "
+                << result.repellent_duration << " steps.";
+    } else if (result.location_changed) {
+        message << "\nYou arrive safely on the surface.";
+    } else {
+        message << "\nThe spell takes effect.";
+    }
+    message << "\nSpell points: " << game.player.spell_points << "/"
+            << game.player.maximum_spell_points;
+    show_message(window, "Spells", message.str());
 }
 
 void remember_map_tile(yipe::GameState& game, const yipe::Map& map,
@@ -1220,6 +1384,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         if (event.key.keysym.sym == SDLK_i) {
             show_player_status(window, game.player);
+            render_game(renderer, map, textures, game.location.position,
+                        game.giant_beetle_defeated);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_c) {
+            cast_exploration_spell(window, game, map, random);
             render_game(renderer, map, textures, game.location.position,
                         game.giant_beetle_defeated);
             continue;

@@ -1,4 +1,5 @@
 #include "yipe/encounter.hpp"
+#include "yipe/spell.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -518,6 +519,73 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
     }
 }
 
+int living_monster_count(const CombatEncounter& encounter) {
+    return static_cast<int>(std::count_if(
+        encounter.monsters.begin(), encounter.monsters.end(),
+        [](const Monster& monster) { return monster.health > 0; }));
+}
+
+int heal_player(Player& player, int amount) {
+    const int actual = std::min(amount, player.maximum_health - player.health);
+    player.adjust_health(actual);
+    return actual;
+}
+
+void shuffle_monster_health(CombatEncounter& encounter, MsvcRandom& random) {
+    std::array<int, CombatEncounter::maximum_opponents> portions{};
+    std::array<int, CombatEncounter::maximum_opponents> living_slots{};
+    int count = 0;
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        const int health = encounter.monsters[slot].health;
+        if (health < 1) {
+            continue;
+        }
+        living_slots[static_cast<std::size_t>(count++)] = static_cast<int>(slot);
+        const int limit = slot == 0 ? 50 : 55;
+        int portion = roll(random, std::min(health, limit)) + 5;
+        if (portion >= health) {
+            portion = health - 1;
+        }
+        portions[slot] = portion;
+    }
+
+    if (count == 2) {
+        const int first = living_slots[0];
+        const int second = living_slots[1];
+        encounter.monsters[static_cast<std::size_t>(first)].health +=
+            portions[static_cast<std::size_t>(second)]
+            - portions[static_cast<std::size_t>(first)];
+        encounter.monsters[static_cast<std::size_t>(second)].health +=
+            portions[static_cast<std::size_t>(first)]
+            - portions[static_cast<std::size_t>(second)];
+    } else if (count == 3) {
+        const std::array old_health{
+            encounter.monsters[0].health,
+            encounter.monsters[1].health,
+            encounter.monsters[2].health,
+        };
+        encounter.monsters[0].health = old_health[0] - portions[0] + portions[1];
+        encounter.monsters[1].health = old_health[1] - portions[1] + portions[2];
+        encounter.monsters[2].health = old_health[2] - portions[2] + portions[0];
+    }
+}
+
+void replace_monster_with_rabbit(CombatEncounter& encounter) {
+    const std::size_t slot = encounter.monsters[2].health > 0 ? 2 : 1;
+    Monster& monster = encounter.monsters[slot];
+    const std::optional<MonsterDefinition> rabbit = original_monster_definition(1);
+    if (!rabbit) {
+        throw std::logic_error("rabbit monster definition is unavailable");
+    }
+    monster.type_id = rabbit->type_id;
+    monster.name = rabbit->name;
+    monster.bitmap_resource_id = rabbit->bitmap_resource_id;
+    monster.special_rating = 5;
+    monster.attack_rating = 5;
+    monster.defense_rating = 5;
+    monster.gatekeeper_empowered = false;
+}
+
 } // namespace
 
 CombatEncounter start_monster_encounter(int type_id, int opponent_count,
@@ -810,6 +878,149 @@ FleeResult try_flee(Player& player, const CombatEncounter& encounter,
     result.player_defeated = player.health < 1;
     if (result.player_defeated) {
         clear_combat_status(player);
+    }
+    return result;
+}
+
+CombatSpellResult resolve_spell_turn(Player& player, CombatEncounter& encounter,
+                                     std::size_t spell, SpellPower power,
+                                     MsvcRandom& random) {
+    CombatSpellResult result;
+    const auto& definitions = spell_definitions();
+    if (spell >= definitions.size()) {
+        return result;
+    }
+    if (player.spells[spell] == 0) {
+        result.status = SpellCastStatus::unlearned;
+        return result;
+    }
+    if (definitions[spell].usage == SpellUsage::non_combat) {
+        result.status = SpellCastStatus::wrong_context;
+        return result;
+    }
+    const int cost = spell_point_cost(player, spell, power);
+    if (player.spell_points < cost) {
+        result.status = SpellCastStatus::insufficient_spell_points;
+        return result;
+    }
+    if ((spell == 10 || spell == 11) && living_monster_count(encounter) < 2) {
+        return result;
+    }
+    if (player.health < 1 || !has_living_monster(encounter)
+        || encounter.selected_target < 0
+        || encounter.selected_target
+            >= static_cast<int>(CombatEncounter::maximum_opponents)
+        || encounter.monsters[static_cast<std::size_t>(encounter.selected_target)].health < 1) {
+        throw std::logic_error("cannot cast a spell after combat has ended");
+    }
+
+    result.status = SpellCastStatus::cast;
+    player.spell_points -= cost;
+    const int power_value = static_cast<int>(power);
+    int damage = 0;
+    switch (spell) {
+    case 1: {
+        int healing = (roll(random, 5) + 8 + player.intelligence / 2) * power_value;
+        if (player.unknown_0065_healing_bonus) {
+            healing += power_value * 6 + player.intelligence;
+        }
+        result.healing = heal_player(player, healing);
+        break;
+    }
+    case 2:
+        damage = power_value + player.intelligence / 2
+            + (random.next() & 3) + (random.next() & 3);
+        break;
+    case 3:
+        damage = power_value + roll(random, 6) + player.intelligence + 14;
+        break;
+    case 5:
+        result.healing = heal_player(player, player.maximum_health - player.health);
+        break;
+    case 6: {
+        const int intelligence_roll = random.next();
+        const int ten_roll = random.next();
+        damage = player.intelligence / 3 + ten_roll % 10 + player.intelligence
+            + intelligence_roll % std::max(player.intelligence, 1) + 30
+            + power_value * 2;
+        break;
+    }
+    case 7:
+        damage = roll(random, power_value + player.intelligence) + 20
+            + player.intelligence / 2;
+        result.healing = heal_player(player, damage * power_value);
+        break;
+    case 9: {
+        int healing = (roll(random, 5) + 10 + player.intelligence / 2) * power_value
+            + player.intelligence;
+        if (player.unknown_0065_healing_bonus) {
+            healing += power_value * 2 + player.intelligence;
+        }
+        result.healing = heal_player(player, healing);
+        if (power == SpellPower::low) {
+            player.ability_points = std::min(player.ability_points + 1,
+                                             player.maximum_ability_points);
+        } else {
+            player.ability_points = player.maximum_ability_points;
+        }
+        break;
+    }
+    case 10:
+        shuffle_monster_health(encounter, random);
+        break;
+    case 11:
+        replace_monster_with_rabbit(encounter);
+        break;
+    default:
+        break;
+    }
+
+    if (damage > 0) {
+        if (power == SpellPower::low) {
+            const int slot = encounter.selected_target;
+            Monster& target = encounter.monsters[static_cast<std::size_t>(slot)];
+            int applied = damage;
+            if (target.special_rating > 0) {
+                applied -= std::max(applied / target.special_rating, 1);
+            }
+            applied = std::max(applied, 1);
+            result.damage_by_slot[static_cast<std::size_t>(slot)] = applied;
+            result.turn.player_damage += applied;
+            target.health -= applied;
+            if (target.health < 1) {
+                finish_defeated_target(player, encounter, slot, random, result.turn);
+            }
+        } else {
+            int remaining_damage = damage;
+            for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+                Monster& target = encounter.monsters[slot];
+                if (target.health < 1) {
+                    continue;
+                }
+                if (target.special_rating > 0) {
+                    const int minimum_reduction = slot == 1 ? 1 : 2;
+                    remaining_damage -= std::max(
+                        remaining_damage / target.special_rating, minimum_reduction);
+                }
+                remaining_damage = std::max(remaining_damage, slot == 1 ? 2 : 1);
+                const int applied = slot == 1
+                    ? remaining_damage : remaining_damage + roll(random, 3);
+                result.damage_by_slot[slot] = applied;
+                result.turn.player_damage += applied;
+                target.health -= applied;
+                if (target.health < 1) {
+                    finish_defeated_target(player, encounter, static_cast<int>(slot),
+                                           random, result.turn);
+                }
+            }
+        }
+    }
+
+    if (result.turn.outcome != CombatOutcome::victory && has_living_monster(encounter)) {
+        const CombatTurn counterattacks = resolve_counterattacks(player, encounter, random);
+        result.turn.monster_damage = counterattacks.monster_damage;
+        result.turn.monster_damage_by_slot = counterattacks.monster_damage_by_slot;
+        result.turn.outcome = counterattacks.outcome;
     }
     return result;
 }

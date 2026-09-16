@@ -23,6 +23,7 @@ add_library(yipe_core
     src/random.cpp
     src/save.cpp
     src/shop.cpp
+    src/spell.cpp
 )
 target_include_directories(yipe_core PUBLIC include)
 target_compile_options(yipe_core PRIVATE

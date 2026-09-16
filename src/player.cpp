@@ -37,6 +37,7 @@ void Player::initialize(CharacterType type) {
     inventory.fill(0);
     inventory[0] = 1;
     spells.fill(0);
+    spells[0] = 1;
 
     switch (type) {
     case CharacterType::warrior:

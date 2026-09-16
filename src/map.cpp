@@ -139,6 +139,12 @@ bool cross_map_edge(WorldLocation& location) {
     return true;
 }
 
+void ascend_to_surface(WorldLocation& location) {
+    location.map_layer = 0;
+    location.map_id = location.region_x - location.region_y * 6 + 0x11
+                      + (location.alternate_map_set ? 0x62 : 0);
+}
+
 void return_to_surface(WorldLocation& location) {
     location.position = {4, 5};
     location.region_x = 0;
