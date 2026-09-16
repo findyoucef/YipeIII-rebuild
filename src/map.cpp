@@ -385,7 +385,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return {0x16, false};
     case 0x56:
     case 0x57:
-        if (!state.unknown_0674) {
+        if (!state.has_tree_climbing_shoes) {
             return {};
         }
         [[fallthrough]];
@@ -398,7 +398,7 @@ MovementResult try_move(const Map& map, MapPosition& position, int delta_x, int 
         return update_position(map, position, target, 3, 2);
     case 0x58:
     case 0x59:
-        if (state.has_tree_climbing_shoes) {
+        if (state.has_waterproof_shoe_spray) {
             return update_position(map, position, target, 1, 1);
         }
         return {};

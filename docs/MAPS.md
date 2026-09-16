@@ -86,7 +86,9 @@ The action dispatcher at `0x0040e880` establishes these special movement paths:
 
 The SDL dispatcher exposes the recovered entrance identities and implements the
 restoration, depth, surface-return, key-message, and fire-wall effects. The core
-also preserves the tree-climbing-shoes and key flags. Generated event records
+also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
+The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles
+`0x56`/`0x57`. Generated event records
 now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original

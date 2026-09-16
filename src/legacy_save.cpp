@@ -154,7 +154,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.unknown_0062 = reader.archive_bool();
     save.game.location.alternate_map_set = player.unknown_0062;
     save.unknown_0063 = reader.archive_bool();
-    player.has_tree_climbing_shoes = reader.archive_bool();
+    player.has_waterproof_shoe_spray = reader.archive_bool();
     save.unknown_64c = reader.archive_bool();
     for (std::size_t index = 0; index < save.flags_0152.size(); ++index) {
         save.flags_0152[index] = reader.archive_bool();
@@ -186,7 +186,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
 
     player.unknown_0664 = save.extended_entries[3].value_065e;
     player.unknown_066a = save.extended_entries[6].value_065e;
-    player.unknown_0674 = save.extended_entries[11].value_065e == 1;
+    player.has_tree_climbing_shoes = save.extended_entries[11].value_065e == 1;
     player.combat_style = signed_u16(save.extended_entries[15].value_065e);
     player.unknown_067e = save.extended_entries[16].value_065e;
     player.unknown_0680 = save.extended_entries[17].value_065e;

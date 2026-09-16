@@ -354,10 +354,10 @@ void test_game_save() {
     original.player.enrage_base_intelligence = 10;
     original.player.enrage_base_strength = 16;
     original.player.restoration_uses = 3;
-    original.player.has_tree_climbing_shoes = true;
+    original.player.has_waterproof_shoe_spray = true;
     original.player.has_rainbow_key = true;
     original.player.has_underworld_key = true;
-    original.player.unknown_0674 = true;
+    original.player.has_tree_climbing_shoes = true;
     original.player.spells[0] = 1;
     original.player.spells[11] = 1;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
@@ -389,9 +389,10 @@ void test_game_save() {
               && loaded.player.enrage_base_strength == 16,
           "version 6 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
-              && loaded.player.has_tree_climbing_shoes
+              && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
-              && loaded.player.has_underworld_key && loaded.player.unknown_0674,
+              && loaded.player.has_underworld_key
+              && loaded.player.has_tree_climbing_shoes,
           "version 6 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
           "version 6 save restores persistent map tile changes");
@@ -540,9 +541,9 @@ void test_legacy_save_import() {
               && imported.game.location.map_id == 0x0b,
           "legacy import derives the original world location");
     check(player.difficulty == 2 && player.restoration_uses == 3
-              && player.combat_style == 3 && player.has_tree_climbing_shoes
+              && player.combat_style == 3 && player.has_waterproof_shoe_spray
               && player.has_rainbow_key && player.has_underworld_key
-              && player.unknown_0674,
+              && player.has_tree_climbing_shoes,
           "legacy import maps recovered difficulty, movement, and combat state");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
               && player.spells == imported.values_010c
@@ -868,8 +869,19 @@ void test_special_movement_actions() {
               && position == yipe::MapPosition{6, 5},
           "rainbow key unlocks its original conditional door tile");
 
+    tiles[static_cast<std::size_t>(6 * yipe::Map::height + 5)] = 0x58;
+    const yipe::Map stream_map(0, 0, tiles);
+    position = {5, 5};
+    check(yipe::try_move(stream_map, position, 1, 0).original_code == 0
+              && position == yipe::MapPosition{5, 5},
+          "stream tile blocks a player without waterproof shoe spray");
+    movement_state.has_waterproof_shoe_spray = true;
+    check(yipe::try_move(stream_map, position, 1, 0, movement_state).original_code == 1
+              && position == yipe::MapPosition{6, 5},
+          "waterproof shoe spray opens its recovered stream tile");
+
     const std::optional<yipe::Map> secret_tree_map = yipe::original_map(1);
-    movement_state.unknown_0674 = true;
+    movement_state.has_tree_climbing_shoes = true;
     position = {2, 7};
     check(secret_tree_map && secret_tree_map->tile({3, 7}) == 0x57
               && yipe::try_move(*secret_tree_map, position, 1, 0, movement_state)

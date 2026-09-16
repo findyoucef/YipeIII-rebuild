@@ -88,7 +88,7 @@ equipment, combat settings, world coordinates, the first encounter's completion
 state, and the Visual C++ random-generator state. Version 3 appends ability
 points, the learned special ability, its active duration, and the three Enrage
 stat backups. Version 4 appends the limited-restoration counter and the four
-movement flags used by tree, key-door, and unresolved `+0x674` checks. The
+movement flags for waterproof shoe spray, tree-climbing shoes, and both keys. The
 loader accepts all four versions, gives version-1 files the starting world
 state, gives version-2 files a full starting AP pool, and defaults fields added
 by newer formats. Version 5 appends changed map IDs, coordinates, and tile values

@@ -88,13 +88,12 @@ void return_to_surface(WorldLocation& location);
 // code 0x0f ascends. Leaving the original three layers returns to the surface.
 [[nodiscard]] bool change_map_depth(WorldLocation& location, int original_code);
 
-// Player state used by the original movement switch at 0x00444c10. Offset
-// +0x674 remains unnamed.
+// Player state used by the original movement switch at 0x00444c10.
 struct MovementState {
-    bool has_tree_climbing_shoes = false;
+    bool has_waterproof_shoe_spray = false;
     bool has_rainbow_key = false;
     bool has_underworld_key = false;
-    bool unknown_0674 = false;
+    bool has_tree_climbing_shoes = false;
 };
 
 struct MovementResult {

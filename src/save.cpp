@@ -179,10 +179,10 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_i32(payload, game.player.enrage_base_intelligence);
     append_i32(payload, game.player.enrage_base_strength);
     append_i32(payload, game.player.restoration_uses);
-    append_u8(payload, game.player.has_tree_climbing_shoes ? 1 : 0);
+    append_u8(payload, game.player.has_waterproof_shoe_spray ? 1 : 0);
     append_u8(payload, game.player.has_rainbow_key ? 1 : 0);
     append_u8(payload, game.player.has_underworld_key ? 1 : 0);
-    append_u8(payload, game.player.unknown_0674 ? 1 : 0);
+    append_u8(payload, game.player.has_tree_climbing_shoes ? 1 : 0);
     if (game.map_tile_changes.size() > std::numeric_limits<std::uint32_t>::max()) {
         throw std::runtime_error("too many map tile changes to save");
     }
@@ -382,10 +382,10 @@ GameState load_game(const std::filesystem::path& path) {
     }
     if (save.version >= movement_game_format_version) {
         game.player.restoration_uses = reader.i32();
-        game.player.has_tree_climbing_shoes = reader.u8() != 0;
+        game.player.has_waterproof_shoe_spray = reader.u8() != 0;
         game.player.has_rainbow_key = reader.u8() != 0;
         game.player.has_underworld_key = reader.u8() != 0;
-        game.player.unknown_0674 = reader.u8() != 0;
+        game.player.has_tree_climbing_shoes = reader.u8() != 0;
     }
     if (save.version >= map_changes_game_format_version) {
         constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)

@@ -30,10 +30,10 @@ void Player::initialize(CharacterType type) {
     equipment_upgrade_count = 0;
     loot_roll_penalty = 2;
     restoration_uses = 0;
-    has_tree_climbing_shoes = false;
+    has_waterproof_shoe_spray = false;
     has_rainbow_key = false;
     has_underworld_key = false;
-    unknown_0674 = false;
+    has_tree_climbing_shoes = false;
     inventory.fill(0);
     inventory[0] = 1;
     spells.fill(0);

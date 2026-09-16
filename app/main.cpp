@@ -1504,10 +1504,10 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         const yipe::WorldLocation previous_location = game.location;
         const yipe::MovementState movement_state{
-            game.player.has_tree_climbing_shoes,
+            game.player.has_waterproof_shoe_spray,
             game.player.has_rainbow_key,
             game.player.has_underworld_key,
-            game.player.unknown_0674,
+            game.player.has_tree_climbing_shoes,
         };
         const yipe::MovementResult result =
             yipe::try_move(map, game.location.position, delta_x, delta_y, movement_state);
