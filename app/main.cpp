@@ -425,6 +425,83 @@ int show_choice(SDL_Window* window, const char* title, const std::string& messag
     return selected;
 }
 
+std::optional<std::string> request_text(SDL_Window* window, const char* title,
+                                        const std::string& prompt) {
+    show_message(window, title, prompt + "\n\nType the code, then press Enter. "
+                                         "Press Escape to cancel. Your typing will appear "
+                                         "in the game window's title bar.");
+    const std::string original_title = SDL_GetWindowTitle(window);
+    std::string input;
+    const auto update_title = [&] {
+        SDL_SetWindowTitle(window,
+                           (std::string(title) + " code: " + input).c_str());
+    };
+    const auto finish = [&] {
+        SDL_StopTextInput();
+        SDL_SetWindowTitle(window, original_title.c_str());
+    };
+
+    update_title();
+    SDL_StartTextInput();
+    while (true) {
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            finish();
+            throw std::runtime_error(std::string("SDL event wait failed: ")
+                                     + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT) {
+            SDL_PushEvent(&event);
+            finish();
+            return std::nullopt;
+        }
+        if (event.type == SDL_TEXTINPUT) {
+            if (input.size() + std::char_traits<char>::length(event.text.text) <= 128) {
+                input += event.text.text;
+                update_title();
+            }
+            continue;
+        }
+        if (event.type != SDL_KEYDOWN) {
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_RETURN
+            || event.key.keysym.sym == SDLK_KP_ENTER) {
+            finish();
+            return input;
+        }
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+            finish();
+            return std::nullopt;
+        }
+        if (event.key.keysym.sym == SDLK_BACKSPACE && !input.empty()) {
+            input.pop_back();
+            update_title();
+        }
+    }
+}
+
+void show_secret_tree(SDL_Window* window, yipe::Player& player) {
+    const std::optional<std::string> code = request_text(
+        window, "Secret Tree",
+        "A small note is nailed to the tree here. It seems to be asking you for some "
+        "type of secret code.\n\nIt says:\nEnter the letter from the cave the correct "
+        "number of times:");
+    if (!code) {
+        return;
+    }
+    if (yipe::enter_secret_tree_code(player, *code)
+        == yipe::SecretTreeResult::reward_granted) {
+        show_message(window, "Secret Tree",
+                     "You have cracked the secret tree code! You find 1500 gold pieces "
+                     "and a ring of bonus healing! The ring will enhance the use of all "
+                     "healing items and spells.");
+    } else {
+        show_message(window, "Secret Tree",
+                     "After entering the code, nothing seems to happen.");
+    }
+}
+
 std::optional<yipe::CharacterType> choose_character(SDL_Window* window) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
@@ -1477,6 +1554,10 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 } else if (tile == 0x56 || tile == 0x57) {
                     show_message(window, "Tree",
                                  "You climb over the tree using your special shoes.");
+                    if (game.location.map_id == 1
+                        && !game.player.has_bonus_healing_ring) {
+                        show_secret_tree(window, game.player);
+                    }
                 }
             }
             if (has_encounter_at(game)) {
@@ -1540,8 +1621,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                              "You need an underworld key to open this door.");
                 break;
             case 0x15:
-                show_message(window, "Secret Tree",
-                             "A small note on the tree asks for a secret code.");
+                show_message(window, "Information",
+                             "Someone here has information for your quest.");
                 break;
             case 0x16:
                 yipe::return_to_surface(game.location);

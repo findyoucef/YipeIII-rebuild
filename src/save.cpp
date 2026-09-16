@@ -136,7 +136,7 @@ std::vector<std::uint8_t> encode_player_payload(const Player& player) {
         append_u16(payload, item);
     }
     append_u8(payload, player.unknown_0062 ? 1 : 0);
-    append_u8(payload, player.unknown_0065_healing_bonus ? 1 : 0);
+    append_u8(payload, player.has_bonus_healing_ring ? 1 : 0);
     append_i32(payload, player.unknown_004c);
     append_i32(payload, player.unknown_0654_stat_cap_mode);
     append_u16(payload, player.unknown_0664);
@@ -214,7 +214,7 @@ Player decode_player_payload(Reader& reader) {
         item = reader.u16();
     }
     player.unknown_0062 = reader.u8() != 0;
-    player.unknown_0065_healing_bonus = reader.u8() != 0;
+    player.has_bonus_healing_ring = reader.u8() != 0;
     player.unknown_004c = reader.i32();
     player.unknown_0654_stat_cap_mode = reader.i32();
     player.unknown_0664 = reader.u16();

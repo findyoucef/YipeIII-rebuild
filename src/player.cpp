@@ -212,7 +212,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
             return result;
         }
         int healing = random.next() % intelligence + 10;
-        if (unknown_0065_healing_bonus) {
+        if (has_bonus_healing_ring) {
             healing += random.next() % intelligence + 12;
         }
         inventory[slot] = 0;
@@ -226,7 +226,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
             return result;
         }
         int healing = random.next() % intelligence + 50 + intelligence;
-        if (unknown_0065_healing_bonus) {
+        if (has_bonus_healing_ring) {
             healing += 12 + intelligence;
         }
         inventory[slot] = 0;
@@ -240,7 +240,7 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
             return result;
         }
         int restored = random.next() % intelligence + 11 + intelligence;
-        if (unknown_0065_healing_bonus) {
+        if (has_bonus_healing_ring) {
             restored += 2 + intelligence;
         }
         inventory[slot] = 0;

@@ -921,7 +921,7 @@ CombatSpellResult resolve_spell_turn(Player& player, CombatEncounter& encounter,
     switch (spell) {
     case 1: {
         int healing = (roll(random, 5) + 8 + player.intelligence / 2) * power_value;
-        if (player.unknown_0065_healing_bonus) {
+        if (player.has_bonus_healing_ring) {
             healing += power_value * 6 + player.intelligence;
         }
         result.healing = heal_player(player, healing);
@@ -953,7 +953,7 @@ CombatSpellResult resolve_spell_turn(Player& player, CombatEncounter& encounter,
     case 9: {
         int healing = (roll(random, 5) + 10 + player.intelligence / 2) * power_value
             + player.intelligence;
-        if (player.unknown_0065_healing_bonus) {
+        if (player.has_bonus_healing_ring) {
             healing += power_value * 2 + player.intelligence;
         }
         result.healing = heal_player(player, healing);

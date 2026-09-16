@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 namespace yipe {
 
@@ -108,5 +109,16 @@ struct MovementResult {
 // Special movement actions dispatched at 0x0040e880.
 [[nodiscard]] bool use_restoration_tile(Player& player);
 [[nodiscard]] int apply_fire_wall(Player& player, MsvcRandom& random);
+
+enum class SecretTreeResult {
+    incorrect_code,
+    reward_granted,
+    already_solved,
+};
+
+// Reconstructs the secret-tree comparison and reward at 0x00448180 and the
+// movement-action caller at 0x0040e880.
+[[nodiscard]] SecretTreeResult enter_secret_tree_code(Player& player,
+                                                      std::string_view code);
 
 } // namespace yipe

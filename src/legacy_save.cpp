@@ -191,7 +191,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.unknown_067e = save.extended_entries[16].value_065e;
     player.unknown_0680 = save.extended_entries[17].value_065e;
     player.unknown_0692 = save.extended_entries[26].value_065e;
-    player.unknown_0065_healing_bonus = save.extended_entries[31].value_065e == 1;
+    player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
 
     save.game.location.position.x = signed_u16(reader.u16());
     save.game.location.position.y = signed_u16(reader.u16());

@@ -102,7 +102,7 @@ public:
 
     // Meanings are not yet established; names retain their original object offsets.
     bool unknown_0062 = false;
-    bool unknown_0065_healing_bonus = false;
+    bool has_bonus_healing_ring = false;
     int unknown_004c = 17;
     int unknown_0654_stat_cap_mode = 0;
     std::uint16_t unknown_0664 = 0;

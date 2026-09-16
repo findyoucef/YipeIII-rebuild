@@ -3,7 +3,7 @@
 | ID | State | Question or difference | Evidence needed / next action |
 | --- | --- | --- | --- |
 | U001 | Resolved for startup | A fresh Whisky 3.7.0 bottle with its `v3.1.1` library archive runs the executable and renders its main menu. | Obtain working Accessibility control and complete the gameplay reference cases. Use Windows virtualization if ordinary interaction is unreliable. See `ORIGINAL_RUNTIME.md`. |
-| U002 | Open | What gameplay condition does player offset `+0x65` / saved field `+0x69c` represent? | Trace all reads/writes and correlate it with a paired original save and on-screen status. |
+| U002 | Resolved statically | Player offset `+0x65` / saved field `+0x69c` is the bonus-healing ring awarded by the secret-tree puzzle. | `0x0040e880` sets it after the successful `0x00448180` code comparison; string 1021 names the reward and its healing effect. Runtime presentation remains unverified. |
 | U003 | Open | What are player offsets `+0x4c`, `+0x62`, `+0x654`, `+0x664`, `+0x66a`, `+0x67e`, `+0x680`, and `+0x692` called in game terms? | Follow map, registration/difficulty, encounter, and surface-potion callers before renaming them. |
 | U004 | Open | Are all 30 serialized 16-bit values at `+0x94` consumable inventory slots, and why does invalid-item cleanup only clear indexes 0–12? | Trace inventory-dialog list construction and every write to the array. |
 | U005 | Partially resolved | Static code establishes a headerless `.yp3` payload, the MFC ANSI/Unicode CString markers, and the complete 1.1.6.0 serializer order. Does the importer accept real original saves and are other serializer layouts in circulation? | Capture paired R08 saves, load them with `load_legacy_save`, and compare byte differences before claiming compatibility. |

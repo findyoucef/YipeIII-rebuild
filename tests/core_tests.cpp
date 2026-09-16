@@ -229,7 +229,7 @@ void test_healing_item() {
 
     yipe::Player enhanced;
     enhanced.health = -20;
-    enhanced.unknown_0065_healing_bonus = true;
+    enhanced.has_bonus_healing_ring = true;
     yipe::MsvcRandom enhanced_random(1);
     const auto enhanced_heal = enhanced.use_inventory_item(0, enhanced_random, false);
     check(enhanced_heal.amount == 30 && enhanced.health == 10,
@@ -282,7 +282,7 @@ void test_native_save() {
     original.health = 7;
     original.maximum_spell_points = 19;
     original.inventory[4] = 9;
-    original.unknown_0065_healing_bonus = true;
+    original.has_bonus_healing_ring = true;
     original.unknown_0680 = 77;
 
     yipe::save_player_atomic(path, original);
@@ -292,7 +292,7 @@ void test_native_save() {
     check(loaded.health == 7 && loaded.maximum_spell_points == 19,
           "native save restores health and spell points");
     check(loaded.inventory == original.inventory, "native save restores inventory");
-    check(loaded.unknown_0065_healing_bonus && loaded.unknown_0680 == 77,
+    check(loaded.has_bonus_healing_ring && loaded.unknown_0680 == 77,
           "native save preserves reconstructed unknown fields");
     const yipe::GameState upgraded_from_v1 = yipe::load_game(path);
     check(upgraded_from_v1.player.name == original.name
@@ -546,7 +546,7 @@ void test_legacy_save_import() {
           "legacy import maps recovered difficulty, movement, and combat state");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
               && player.spells == imported.values_010c
-              && player.unknown_0065_healing_bonus && player.unknown_0680 == 22,
+              && player.has_bonus_healing_ring && player.unknown_0680 == 22,
           "legacy import maps inventory, spells, and recovered extended fields");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
@@ -867,6 +867,38 @@ void test_special_movement_actions() {
     check(yipe::try_move(locked_door, position, 1, 0, movement_state).original_code == 0x12
               && position == yipe::MapPosition{6, 5},
           "rainbow key unlocks its original conditional door tile");
+
+    const std::optional<yipe::Map> secret_tree_map = yipe::original_map(1);
+    movement_state.unknown_0674 = true;
+    position = {2, 7};
+    check(secret_tree_map && secret_tree_map->tile({3, 7}) == 0x57
+              && yipe::try_move(*secret_tree_map, position, 1, 0, movement_state)
+                         .original_code
+                  == 3
+              && position == yipe::MapPosition{3, 7},
+          "map 1 secret-tree tile reaches the ordinary movement-action reward path");
+
+    yipe::Player tree_reward;
+    tree_reward.gold = 12;
+    tree_reward.experience = 34;
+    tree_reward.restoration_uses = 2;
+    check(yipe::enter_secret_tree_code(tree_reward, "HHHHHH")
+                  == yipe::SecretTreeResult::incorrect_code
+              && tree_reward.gold == 12 && tree_reward.experience == 34
+              && tree_reward.restoration_uses == 2
+              && !tree_reward.has_bonus_healing_ring,
+          "secret-tree code comparison is exact and failed attempts do not mutate state");
+    check(yipe::enter_secret_tree_code(tree_reward, "hhhhhh")
+                  == yipe::SecretTreeResult::reward_granted
+              && tree_reward.gold == 1512 && tree_reward.experience == 284
+              && tree_reward.restoration_uses == 1
+              && tree_reward.has_bonus_healing_ring,
+          "secret-tree code grants the recovered one-time reward");
+    check(yipe::enter_secret_tree_code(tree_reward, "hhhhhh")
+                  == yipe::SecretTreeResult::already_solved
+              && tree_reward.gold == 1512 && tree_reward.experience == 284
+              && tree_reward.restoration_uses == 1,
+          "the bonus-healing ring prevents repeating the secret-tree reward");
 }
 
 void test_starting_shop() {

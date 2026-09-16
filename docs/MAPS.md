@@ -80,7 +80,7 @@ The action dispatcher at `0x0040e880` establishes these special movement paths:
 | `0x0e`, `0x0f`, `0x10` | Descend, ascend, or alternate descend between map layers |
 | `0x11` | Special-ability training entrance |
 | `0x13`, `0x14` | Rainbow-key and underworld-key locked-door messages |
-| `0x15` | Secret-tree-code dialog |
+| `0x15` | Dynamic quest/information dialog (resource 295) |
 | `0x16` | Return to the starting surface location |
 | `0x17` | Two-roll, nonlethal fire-wall damage |
 
@@ -93,6 +93,16 @@ adapted renderer always redraws the complete map, covering the original
 visibility refresh performed by `0x19`. Native format version 5 introduced
 persistence for changed door and linked-mechanism tiles; current version 6
 retains it.
+
+The secret-tree puzzle is a separate branch inside ordinary movement result
+`3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
+message. On map 1, if the bonus-healing ring has not already been obtained, the
+game opens dialog 459 and compares its edit text exactly with `hhhhhh` at
+`0x00448180`. Success awards 1500 gold and 250 experience, decrements a positive
+restoration-use counter, and sets the persisted ring flag. Wrong input changes
+nothing, and the ring flag prevents the puzzle from reopening. The SDL build
+accepts the same case-sensitive code through an adapted title-bar text-entry
+prompt; core tests cover failure, success, and repeated attempts.
 
 The central tile with ID `1` returns action code `8`. The action dispatcher at
 `0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current

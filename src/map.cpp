@@ -435,4 +435,21 @@ int apply_fire_wall(Player& player, MsvcRandom& random) {
     return damage;
 }
 
+SecretTreeResult enter_secret_tree_code(Player& player, std::string_view code) {
+    if (player.has_bonus_healing_ring) {
+        return SecretTreeResult::already_solved;
+    }
+    if (code != "hhhhhh") {
+        return SecretTreeResult::incorrect_code;
+    }
+
+    player.gold += 1500;
+    player.experience += 250;
+    if (player.restoration_uses > 0) {
+        --player.restoration_uses;
+    }
+    player.has_bonus_healing_ring = true;
+    return SecretTreeResult::reward_granted;
+}
+
 } // namespace yipe
