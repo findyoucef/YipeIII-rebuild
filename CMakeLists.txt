@@ -14,6 +14,7 @@ add_library(yipe_core
     src/generated/original_monsters.cpp
     src/generated/original_weapon_damage.cpp
     src/auxiliary_data.cpp
+    src/casino.cpp
     src/encounter.cpp
     src/item_names.cpp
     src/legacy_save.cpp

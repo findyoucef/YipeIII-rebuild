@@ -23,7 +23,8 @@ constexpr std::uint16_t player_format_version = 1;
 constexpr std::uint16_t progression_game_format_version = 2;
 constexpr std::uint16_t ability_game_format_version = 3;
 constexpr std::uint16_t movement_game_format_version = 4;
-constexpr std::uint16_t game_format_version = 5;
+constexpr std::uint16_t map_changes_game_format_version = 5;
+constexpr std::uint16_t game_format_version = 6;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -192,6 +193,9 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
         append_i32(payload, change.position.y);
         append_u16(payload, change.tile);
     }
+    for (const std::uint16_t spell : game.player.spells) {
+        append_u16(payload, spell);
+    }
     return payload;
 }
 
@@ -293,7 +297,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
     const std::uint16_t version = header.u16();
     if (version != player_format_version && version != progression_game_format_version
         && version != ability_game_format_version
-        && version != movement_game_format_version && version != game_format_version) {
+        && version != movement_game_format_version
+        && version != map_changes_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -382,7 +387,7 @@ GameState load_game(const std::filesystem::path& path) {
         game.player.has_underworld_key = reader.u8() != 0;
         game.player.unknown_0674 = reader.u8() != 0;
     }
-    if (save.version == game_format_version) {
+    if (save.version >= map_changes_game_format_version) {
         constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)
                                                     + sizeof(std::uint16_t);
         const std::uint32_t change_count = reader.u32();
@@ -402,6 +407,11 @@ GameState load_game(const std::filesystem::path& path) {
                 throw std::runtime_error("save contains an invalid map tile change");
             }
             game.map_tile_changes.push_back(change);
+        }
+    }
+    if (save.version == game_format_version) {
+        for (std::uint16_t& spell : game.player.spells) {
+            spell = reader.u16();
         }
     }
     if (!reader.finished()) {

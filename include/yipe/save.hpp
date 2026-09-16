@@ -32,7 +32,8 @@ struct GameState {
 // Version 2 extended the player-only version 1 payload with progression,
 // equipment, world location, encounter completion, and random state. Version 3
 // added special-ability state; version 4 added movement-item and restoration
-// state; version 5 adds persistent map-tile changes while retaining all readers.
+// state; version 5 added persistent map-tile changes; version 6 adds learned
+// spells while retaining all readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

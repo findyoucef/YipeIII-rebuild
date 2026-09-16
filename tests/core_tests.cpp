@@ -1,4 +1,5 @@
 #include "yipe/auxiliary_data.hpp"
+#include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
 #include "yipe/legacy_save.hpp"
@@ -353,6 +354,8 @@ void test_game_save() {
     original.player.has_rainbow_key = true;
     original.player.has_underworld_key = true;
     original.player.unknown_0674 = true;
+    original.player.spells[0] = 1;
+    original.player.spells[11] = 1;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.giant_beetle_defeated = true;
     original.random_state = 0x12345678u;
@@ -363,16 +366,16 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 5 save restores progression and equipment");
+          "version 6 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 5 save restores combat settings and counters");
+          "version 6 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 5 save restores world location");
+          "version 6 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 5 save restores encounter and random state");
+          "version 6 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -380,14 +383,23 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 5 save restores ability and active status state");
+          "version 6 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_tree_climbing_shoes
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key && loaded.player.unknown_0674,
-          "version 5 save restores special movement state");
+          "version 6 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 5 save restores persistent map tile changes");
+          "version 6 save restores persistent map tile changes");
+    check(loaded.player.spells == original.player.spells,
+          "version 6 save restores learned spells");
+
+    remove_save_extension(path,
+                          yipe::Player::spell_count * sizeof(std::uint16_t), 5);
+    const yipe::GameState loaded_version_5 = yipe::load_game(path);
+    check(loaded_version_5.map_tile_changes == original.map_tile_changes
+              && loaded_version_5.player.spells[0] == 0,
+          "version 5 saves retain map changes and default learned spells");
 
     constexpr std::size_t encoded_change_size = 3 * sizeof(std::int32_t)
                                                 + sizeof(std::uint16_t);
@@ -529,8 +541,9 @@ void test_legacy_save_import() {
               && player.unknown_0674,
           "legacy import maps recovered difficulty, movement, and combat state");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
+              && player.spells == imported.values_010c
               && player.unknown_0065_healing_bonus && player.unknown_0680 == 22,
-          "legacy import maps inventory and recovered extended fields");
+          "legacy import maps inventory, spells, and recovered extended fields");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
               && imported.flag_values[4].flag_0148
@@ -821,6 +834,160 @@ void test_starting_shop() {
               == yipe::PurchaseStatus::inventory_full
               && player.gold == 10000,
           "Fred's shop preserves gold when all 13 carrying slots are full");
+}
+
+void test_recovered_shop_transactions() {
+    const auto town_weapons =
+        yipe::equipment_shop_stock(yipe::EquipmentKind::weapon, 0x11);
+    check(town_weapons.front().rank == 2 && town_weapons[9].rank == 13
+              && town_weapons.back().rank == 16,
+          "town weapon shop preserves its nonsequential original stock");
+    const auto remote_weapons =
+        yipe::equipment_shop_stock(yipe::EquipmentKind::weapon, 0x08);
+    check(remote_weapons.front().rank == 19 && remote_weapons.back().rank == 36,
+          "remote weapon shop preserves its high-rank original stock");
+    const auto cave_armor =
+        yipe::equipment_shop_stock(yipe::EquipmentKind::armor, 0x1b);
+    check(cave_armor.front().rank == 9 && cave_armor.back().rank == 28,
+          "cave armor shop preserves its original stock");
+    check(yipe::equipment_price(yipe::EquipmentKind::weapon, 38) == 55000
+              && yipe::equipment_price(yipe::EquipmentKind::armor, 30) == 24250,
+          "equipment price tables preserve their final recovered values");
+
+    yipe::Player equipment_buyer;
+    equipment_buyer.gold = 0;
+    check(yipe::purchase_equipment(equipment_buyer, yipe::EquipmentKind::weapon, 3)
+              == yipe::EquipmentTransactionStatus::must_sell_current,
+          "equipment purchase requires selling the current item first");
+    check(yipe::equipment_sale_value(equipment_buyer, yipe::EquipmentKind::weapon) == 25
+              && yipe::equipment_sale_requires_confirmation(
+                  equipment_buyer, yipe::EquipmentKind::weapon),
+          "equipment sale returns half price and warns when no upgrade is affordable");
+    check(yipe::sell_equipment(equipment_buyer, yipe::EquipmentKind::weapon)
+              == yipe::EquipmentTransactionStatus::sold
+              && equipment_buyer.weapon_rank == 1 && equipment_buyer.gold == 25,
+          "equipment sale pays gold and restores the empty rank");
+    equipment_buyer.gold = 2000;
+    check(yipe::purchase_equipment(equipment_buyer, yipe::EquipmentKind::weapon, 3)
+              == yipe::EquipmentTransactionStatus::purchased
+              && equipment_buyer.weapon_rank == 3 && equipment_buyer.gold == 1890,
+          "equipment purchase deducts the recovered rank price");
+
+    yipe::Player patient;
+    patient.health = 1;
+    patient.maximum_health = 100;
+    patient.level = 18;
+    patient.gold = 200;
+    yipe::MsvcRandom healing_random(1);
+    const yipe::ServiceResult apple =
+        yipe::purchase_healing(patient, 0, healing_random);
+    check(apple.status == yipe::ServiceStatus::completed && apple.amount == 6
+              && patient.health == 7 && patient.gold == 195,
+          "heal shop applies the recovered apple roll and level bonus");
+    const yipe::ServiceResult dinner =
+        yipe::purchase_healing(patient, 3, healing_random);
+    check(dinner.status == yipe::ServiceStatus::completed && patient.health == 100
+              && patient.gold == 70,
+          "heal shop turkey dinner fully restores health");
+    check(yipe::purchase_healing(patient, 0, healing_random).status
+              == yipe::ServiceStatus::already_full,
+          "heal shop does not charge a full-health player");
+
+    yipe::Player magic_customer;
+    magic_customer.maximum_spell_points = 100;
+    magic_customer.gold = 50;
+    yipe::MsvcRandom magic_random(1);
+    const yipe::ServiceResult sp_heal =
+        yipe::purchase_spell_point_healing(magic_customer, false, magic_random);
+    check(sp_heal.status == yipe::ServiceStatus::completed && sp_heal.amount == 17
+              && magic_customer.spell_points == 17 && magic_customer.gold == 0,
+          "magic shop small heal uses the recovered random and level bonuses");
+    magic_customer.gold = 50;
+    check(yipe::next_spell_offer(magic_customer)->name == "Return to Surface"
+              && yipe::learn_next_spell(magic_customer)
+                  == yipe::SpellLearningStatus::insufficient_gold,
+          "spell learning preserves the original strict gold comparison");
+    magic_customer.gold = 51;
+    check(yipe::learn_next_spell(magic_customer) == yipe::SpellLearningStatus::learned
+              && magic_customer.spells[0] == 1 && magic_customer.gold == 1
+              && !yipe::next_spell_offer(magic_customer),
+          "magic shop learns the first eligible unlearned spell");
+
+    yipe::Player trainee;
+    trainee.gold = 400;
+    check(yipe::ability_offer_for_environment(7)->ability
+              == yipe::SpecialAbility::invisibility
+              && yipe::train_ability(trainee, 7)
+                  == yipe::AbilityTrainingStatus::learned
+              && trainee.special_ability == yipe::SpecialAbility::invisibility
+              && trainee.gold == 0,
+          "training center maps environment 7 to the 400-gold invisibility lesson");
+    check(yipe::train_ability(trainee, 7)
+              == yipe::AbilityTrainingStatus::already_trained
+              && !yipe::ability_offer_for_environment(0),
+          "training rejects the current ability and unsupported environments");
+}
+
+void test_recovered_casino_games() {
+    yipe::CasinoWager wager{300, 0};
+    check(yipe::place_casino_wager(wager, 100) == yipe::WagerStatus::placed
+              && wager.gold == 200 && wager.bet == 100,
+          "casino wager moves gold into the active bet");
+    check(yipe::place_casino_wager(wager, 200)
+              == yipe::WagerStatus::maximum_reached
+              && wager.gold == 200 && wager.bet == 100,
+          "casino wager enforces the original 250-gold maximum");
+    yipe::clear_casino_wager(wager);
+    check(wager.gold == 300 && wager.bet == 0,
+          "clearing a casino wager returns it to available gold");
+
+    yipe::SlotMachineState slots{20, 0};
+    check(yipe::insert_slot_credits(slots) && slots.gold == 10 && slots.credits == 10,
+          "slot machine exchanges ten gold for ten credits");
+    yipe::MsvcRandom slot_random(1);
+    const yipe::SlotSpinResult spin = yipe::spin_slots(slots, slot_random);
+    check(spin.spun && spin.symbols == std::array<int, 3>{5, 80, 60}
+              && spin.payout == 0 && slots.credits == 0,
+          "seed 1 slot spin preserves the recovered reel sequence");
+    check(slot_random.state() == 0x07323f41u,
+          "unforced slot spin consumes the original 64 random values");
+
+    yipe::CasinoWager race_wager{100, 0};
+    static_cast<void>(yipe::place_casino_wager(race_wager, 25));
+    yipe::MsvcRandom race_random(1);
+    const yipe::DotRaceResult race = yipe::race_dots(race_wager, 2, race_random);
+    check(race.raced && race.winner == 2
+              && race.final_positions == std::array<int, 3>{460, 482, 464}
+              && race.payout == 62 && race_wager.gold == 137 && race_wager.bet == 0,
+          "seed 1 dot race awards the winning dot two-and-a-half times the bet");
+    check(race_random.state() == 0x2b0c457fu,
+          "dot race advances all three dots once per animation frame");
+
+    check(yipe::adjust_dart_aim(16, true) == 16
+              && yipe::adjust_dart_aim(73, false) == 78
+              && yipe::adjust_dart_aim(78, false) == 78,
+          "darts aim controls preserve the original upper clamp and lower overshoot");
+    yipe::MsvcRandom dart_random(1);
+    const yipe::DartThrowResult dart_1 =
+        yipe::throw_dart(yipe::initial_dart_aim, 0, dart_random);
+    const yipe::DartThrowResult dart_2 =
+        yipe::throw_dart(yipe::initial_dart_aim, 1, dart_random);
+    const yipe::DartThrowResult dart_3 =
+        yipe::throw_dart(yipe::initial_dart_aim, 2, dart_random);
+    check(dart_1.final_y == 28 && dart_1.score == 3
+              && dart_2.final_y == 33 && dart_2.score == 8
+              && dart_3.final_y == 20 && dart_3.score == 0,
+          "seed 1 darts round preserves drift and scoring bands");
+    check(dart_random.state() == 0x7a610fffu,
+          "darts throws preserve their variable original random-call sequence");
+    check(yipe::dart_round_payout({50, 50, 50}, 25) == 250
+              && yipe::dart_round_payout({40, 40, 40}, 25) == 200
+              && yipe::dart_round_payout({35, 35, 35}, 25) == 150
+              && yipe::dart_round_payout({30, 30, 28}, 25) == 100
+              && yipe::dart_round_payout({25, 24, 24}, 25) == 50
+              && yipe::dart_round_payout({20, 20, 15}, 25) == 25
+              && yipe::dart_round_payout({20, 20, 14}, 25) == 0,
+          "darts payouts preserve every recovered score threshold");
 }
 
 void test_giant_beetle_encounter() {
@@ -1418,6 +1585,8 @@ int main() {
     test_static_map_catalog_and_edges();
     test_special_movement_actions();
     test_starting_shop();
+    test_recovered_shop_transactions();
+    test_recovered_casino_games();
     test_giant_beetle_encounter();
     test_multi_monster_encounter();
     test_special_abilities();

@@ -84,8 +84,9 @@ also preserves the tree-climbing-shoes and key flags. Generated event records
 now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
-visibility refresh performed by `0x19`. Native format version 5 persists changed
-door and linked-mechanism tiles.
+visibility refresh performed by `0x19`. Native format version 5 introduced
+persistence for changed door and linked-mechanism tiles; current version 6
+retains it.
 
 The central tile with ID `1` returns action code `8`. The action dispatcher at
 `0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current

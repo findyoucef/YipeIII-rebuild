@@ -1,4 +1,6 @@
+#include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
+#include "yipe/item_names.hpp"
 #include "yipe/map.hpp"
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
@@ -499,6 +501,442 @@ void show_freds_shop(SDL_Window* window, yipe::Player& player) {
     }
 }
 
+std::string equipment_name(yipe::EquipmentKind kind, int rank) {
+    static const yipe::ItemNames names = yipe::embedded_item_names();
+    if (rank < 1) {
+        return "None";
+    }
+    const auto index = static_cast<std::size_t>(rank - 1);
+    if (kind == yipe::EquipmentKind::weapon && index < names.weapons.size()) {
+        return names.weapons[index];
+    }
+    if (kind == yipe::EquipmentKind::armor && index < names.armor.size()) {
+        return names.armor[index];
+    }
+    return "Rank " + std::to_string(rank);
+}
+
+void show_equipment_shop(SDL_Window* window, yipe::Player& player, int map_id,
+                         yipe::EquipmentKind kind) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Buy"},
+        SDL_MessageBoxButtonData{0, 2, "Next"},
+        SDL_MessageBoxButtonData{0, 3, "Sell"},
+    };
+    constexpr std::array confirm_buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Keep It"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Sell"},
+    };
+    const char* title = kind == yipe::EquipmentKind::weapon ? "Weapon Shop" : "Armor Shop";
+    const auto stock = yipe::equipment_shop_stock(kind, map_id);
+    std::size_t selected = 0;
+    while (true) {
+        const yipe::EquipmentShopItem item = stock[selected];
+        const int current_rank = kind == yipe::EquipmentKind::weapon
+            ? player.weapon_rank : player.armor_rank;
+        std::ostringstream message;
+        message << equipment_name(kind, item.rank) << " (rank " << item.rank << ")\nCost: "
+                << item.price << " gold\n\nCurrent: "
+                << equipment_name(kind, current_rank) << "\nSell value: "
+                << yipe::equipment_sale_value(player, kind) << " gold\nYour gold: "
+                << player.gold << "\n\nItem " << selected + 1 << " of " << stock.size();
+        const int choice = show_choice(window, title, message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            const auto status = yipe::purchase_equipment(player, kind, item.rank);
+            if (status == yipe::EquipmentTransactionStatus::purchased) {
+                show_message(window, title, "Purchase complete.");
+            } else if (status == yipe::EquipmentTransactionStatus::must_sell_current) {
+                show_message(window, title,
+                             "You must first sell your current equipment.");
+            } else {
+                show_message(window, title,
+                             "You don't have enough money to buy that.");
+            }
+        } else if (choice == 2) {
+            selected = (selected + 1) % stock.size();
+        } else if (choice == 3) {
+            if (yipe::equipment_sale_value(player, kind) == 0) {
+                show_message(window, title, "You have nothing to sell.");
+                continue;
+            }
+            if (yipe::equipment_sale_requires_confirmation(player, kind)
+                && show_choice(window, title,
+                               "You will not be able to afford anything better. Sell anyway?",
+                               confirm_buttons.data(),
+                               static_cast<int>(confirm_buttons.size())) != 1) {
+                continue;
+            }
+            const int value = yipe::equipment_sale_value(player, kind);
+            static_cast<void>(yipe::sell_equipment(player, kind));
+            show_message(window, title,
+                         "Equipment sold for " + std::to_string(value) + " gold.");
+        } else {
+            return;
+        }
+    }
+}
+
+void show_healing_shop(SDL_Window* window, yipe::Player& player,
+                       yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Order"},
+        SDL_MessageBoxButtonData{0, 2, "Next"},
+        SDL_MessageBoxButtonData{0, 3, "Previous"},
+    };
+    const auto& services = yipe::healing_services();
+    std::size_t selected = 0;
+    while (true) {
+        const yipe::HealingService service = services[selected];
+        std::ostringstream message;
+        message << service.name << "\nPrice: " << service.price << " gold\nHP: "
+                << player.health << "/" << player.maximum_health << "\nYour gold: "
+                << player.gold << "\n\nItem " << selected + 1 << " of " << services.size();
+        switch (show_choice(window, "Heal Shop", message.str(), buttons.data(),
+                            static_cast<int>(buttons.size()))) {
+        case 1: {
+            const yipe::ServiceResult result =
+                yipe::purchase_healing(player, selected, random);
+            const std::string response = result.status == yipe::ServiceStatus::completed
+                ? "Health restored by " + std::to_string(result.amount) + "."
+                : result.status == yipe::ServiceStatus::already_full
+                    ? "Your health is already full."
+                    : "You don't have enough gold.";
+            show_message(window, "Heal Shop", response);
+            break;
+        }
+        case 2:
+            selected = (selected + 1) % services.size();
+            break;
+        case 3:
+            selected = (selected + services.size() - 1) % services.size();
+            break;
+        default:
+            return;
+        }
+    }
+}
+
+void show_magic_shop(SDL_Window* window, yipe::Player& player,
+                     yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{0, 1, "Small SP Heal"},
+        SDL_MessageBoxButtonData{0, 2, "Full SP Heal"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 3,
+                                 "Learn Spell"},
+    };
+    while (true) {
+        const std::optional<yipe::SpellOffer> offer = yipe::next_spell_offer(player);
+        std::ostringstream message;
+        message << "SP: " << player.spell_points << "/" << player.maximum_spell_points
+                << "  Gold: " << player.gold << "\n\nSmall SP Heal: 50 gold\n"
+                << "Full SP Heal: 250 gold\n\n";
+        if (offer) {
+            message << "Available spell: " << offer->name << " (" << offer->price
+                    << " gold)\n" << offer->description;
+        } else {
+            message << "You cannot learn any new spells at this time.";
+        }
+        const int choice = show_choice(window, "Magic Shop", message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1 || choice == 2) {
+            const yipe::ServiceResult result =
+                yipe::purchase_spell_point_healing(player, choice == 2, random);
+            const std::string response = result.status == yipe::ServiceStatus::completed
+                ? "Spell points restored by " + std::to_string(result.amount) + "."
+                : result.status == yipe::ServiceStatus::already_full
+                    ? "Your spell points are already full."
+                    : "You don't have enough gold.";
+            show_message(window, "Magic Shop", response);
+        } else if (choice == 3) {
+            const yipe::SpellLearningStatus status = yipe::learn_next_spell(player);
+            const std::string response = status == yipe::SpellLearningStatus::learned
+                ? "You learned the new spell."
+                : status == yipe::SpellLearningStatus::insufficient_gold
+                    ? "You don't have enough gold."
+                    : "You cannot learn any new spells at this time.";
+            show_message(window, "Magic Shop", response);
+        } else {
+            return;
+        }
+    }
+}
+
+void show_ability_training(SDL_Window* window, yipe::Player& player, int environment) {
+    const std::optional<yipe::AbilityOffer> offer =
+        yipe::ability_offer_for_environment(environment);
+    if (!offer) {
+        show_message(window, "Special Ability Training Center",
+                     "No ability is taught here.");
+        return;
+    }
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1,
+                                 "Learn Ability"},
+    };
+    std::ostringstream message;
+    message << offer->name << "\nPrice: " << offer->price << " gold\nYour gold: "
+            << player.gold << "\n\n" << offer->description;
+    if (show_choice(window, "Special Ability Training Center", message.str(),
+                    buttons.data(), static_cast<int>(buttons.size())) != 1) {
+        return;
+    }
+    const yipe::AbilityTrainingStatus status = yipe::train_ability(player, environment);
+    const std::string response = status == yipe::AbilityTrainingStatus::learned
+        ? "Ability training complete."
+        : status == yipe::AbilityTrainingStatus::already_trained
+            ? "You are already trained in this ability."
+            : status == yipe::AbilityTrainingStatus::insufficient_gold
+                ? "You don't have enough gold to purchase this special ability."
+                : "No ability is taught here.";
+    show_message(window, "Special Ability Training Center", response);
+}
+
+std::string wager_status_message(yipe::WagerStatus status) {
+    switch (status) {
+    case yipe::WagerStatus::placed:
+        return "Bet placed.";
+    case yipe::WagerStatus::insufficient_gold:
+        return "You don't have enough gold.";
+    case yipe::WagerStatus::maximum_reached:
+        return "The maximum bet is 250 gold.";
+    case yipe::WagerStatus::invalid_amount:
+        return "That bet is invalid.";
+    }
+    throw std::logic_error("unknown wager result");
+}
+
+int choose_bet(SDL_Window* window, const char* title) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+        SDL_MessageBoxButtonData{0, 5, "5"},
+        SDL_MessageBoxButtonData{0, 10, "10"},
+        SDL_MessageBoxButtonData{0, 25, "25"},
+        SDL_MessageBoxButtonData{0, 50, "50"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 100, "100"},
+    };
+    return show_choice(window, title, "How much gold would you like to add?",
+                       buttons.data(), static_cast<int>(buttons.size()));
+}
+
+void show_slots(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{0, 1, "Insert 10"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2, "Spin"},
+        SDL_MessageBoxButtonData{0, 3, "Collect"},
+    };
+    yipe::SlotMachineState state{player.gold, 0};
+    while (true) {
+        std::ostringstream message;
+        message << "Gold: " << state.gold << "\nCredits: " << state.credits
+                << "\n\nEach spin costs 10 credits.";
+        const int choice = show_choice(window, "Slot Machine", message.str(),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            if (!yipe::insert_slot_credits(state)) {
+                show_message(window, "Slot Machine", "You need 10 gold to buy credits.");
+            }
+        } else if (choice == 2) {
+            const yipe::SlotSpinResult result = yipe::spin_slots(state, random);
+            if (!result.spun) {
+                show_message(window, "Slot Machine", "You need 10 credits to spin.");
+                continue;
+            }
+            std::ostringstream outcome;
+            outcome << result.symbols[0] << " | " << result.symbols[1] << " | "
+                    << result.symbols[2] << "\n";
+            if (result.payout > 0) {
+                outcome << "You won " << result.payout << " credits!";
+            } else {
+                outcome << "No match.";
+            }
+            show_message(window, "Slot Machine", outcome.str());
+        } else if (choice == 3) {
+            yipe::collect_slot_credits(state);
+        } else {
+            player.gold = state.gold;
+            return;
+        }
+    }
+}
+
+void show_dot_racing(SDL_Window* window, yipe::Player& player,
+                     yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{0, 1, "Add Bet"},
+        SDL_MessageBoxButtonData{0, 2, "Clear Bet"},
+        SDL_MessageBoxButtonData{0, 3, "Select Dot"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 4,
+                                 "Start Race"},
+    };
+    constexpr std::array dot_buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Dot 1"},
+        SDL_MessageBoxButtonData{0, 2, "Dot 2"},
+        SDL_MessageBoxButtonData{0, 3, "Dot 3"},
+    };
+    yipe::CasinoWager wager{player.gold, 0};
+    int selected_dot = 0;
+    while (true) {
+        std::ostringstream message;
+        message << "Gold: " << wager.gold << "\nCurrent bet: " << wager.bet
+                << "\nSelected dot: ";
+        if (selected_dot == 0) {
+            message << "none";
+        } else {
+            message << selected_dot;
+        }
+        const int choice = show_choice(window, "Dot Racing", message.str(),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            const int amount = choose_bet(window, "Dot Racing");
+            if (amount != 0) {
+                const yipe::WagerStatus status = yipe::place_casino_wager(wager, amount);
+                if (status != yipe::WagerStatus::placed) {
+                    show_message(window, "Dot Racing", wager_status_message(status));
+                }
+            }
+        } else if (choice == 2) {
+            yipe::clear_casino_wager(wager);
+        } else if (choice == 3) {
+            const int dot = show_choice(window, "Dot Racing", "Choose a dot.",
+                                        dot_buttons.data(),
+                                        static_cast<int>(dot_buttons.size()));
+            if (dot != 0) {
+                selected_dot = dot;
+            }
+        } else if (choice == 4) {
+            if (wager.bet == 0 || selected_dot == 0) {
+                show_message(window, "Dot Racing",
+                             "Enter a bet and select a dot before starting the race.");
+                continue;
+            }
+            const yipe::DotRaceResult result =
+                yipe::race_dots(wager, selected_dot, random);
+            std::ostringstream outcome;
+            outcome << "Dot " << result.winner << " won. ";
+            if (result.payout > 0) {
+                outcome << "You won " << result.payout << " gold!";
+            } else {
+                outcome << "Your bet was lost.";
+            }
+            show_message(window, "Dot Racing", outcome.str());
+        } else {
+            yipe::clear_casino_wager(wager);
+            player.gold = wager.gold;
+            return;
+        }
+    }
+}
+
+void show_darts(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random,
+                int& high_score) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{0, 1, "Add Bet"},
+        SDL_MessageBoxButtonData{0, 2, "Clear Bet"},
+        SDL_MessageBoxButtonData{0, 3, "Aim Up"},
+        SDL_MessageBoxButtonData{0, 4, "Aim Down"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 5, "Throw"},
+    };
+    yipe::CasinoWager wager{player.gold, 0};
+    std::array<int, 3> scores{};
+    int throw_index = 0;
+    int aim_y = yipe::initial_dart_aim;
+    while (true) {
+        std::ostringstream message;
+        message << "Gold: " << wager.gold << "\nCurrent bet: " << wager.bet
+                << "\nAim: " << aim_y << "\nScores: " << scores[0] << ", "
+                << scores[1] << ", " << scores[2] << "\nToday's high score: "
+                << high_score;
+        const int choice = show_choice(window, "Darts", message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            if (throw_index != 0) {
+                show_message(window, "Darts", "Finish the current round first.");
+                continue;
+            }
+            const int amount = choose_bet(window, "Darts");
+            if (amount != 0) {
+                const yipe::WagerStatus status = yipe::place_casino_wager(wager, amount);
+                if (status != yipe::WagerStatus::placed) {
+                    show_message(window, "Darts", wager_status_message(status));
+                }
+            }
+        } else if (choice == 2) {
+            if (throw_index == 0) {
+                yipe::clear_casino_wager(wager);
+            }
+        } else if (choice == 3 || choice == 4) {
+            aim_y = yipe::adjust_dart_aim(aim_y, choice == 3);
+        } else if (choice == 5) {
+            if (wager.bet == 0) {
+                show_message(window, "Darts", "You must enter a bet before throwing.");
+                continue;
+            }
+            const yipe::DartThrowResult result =
+                yipe::throw_dart(aim_y, throw_index, random);
+            scores[static_cast<std::size_t>(throw_index)] = result.score;
+            ++throw_index;
+            aim_y = yipe::initial_dart_aim;
+            show_message(window, "Darts",
+                         "Throw " + std::to_string(throw_index) + " scored "
+                             + std::to_string(result.score) + ".");
+            if (throw_index == 3) {
+                const int total = scores[0] + scores[1] + scores[2];
+                const int payout = yipe::dart_round_payout(scores, wager.bet);
+                wager.gold += payout;
+                wager.bet = 0;
+                high_score = std::max(high_score, total);
+                std::ostringstream outcome;
+                outcome << "Round score: " << total << "\n";
+                if (payout > 0) {
+                    outcome << "You won " << payout << " gold!";
+                } else {
+                    outcome << "No payout.";
+                }
+                show_message(window, "Darts", outcome.str());
+                scores.fill(0);
+                throw_index = 0;
+            }
+        } else {
+            player.gold = wager.gold;
+            return;
+        }
+    }
+}
+
+void show_casino(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Slots"},
+        SDL_MessageBoxButtonData{0, 2, "Dot Racing"},
+        SDL_MessageBoxButtonData{0, 3, "Darts"},
+    };
+    int darts_high_score = 0;
+    while (true) {
+        const int choice = show_choice(
+            window, "Yipe! Casino", "Welcome to the Yipe! Casino.\nGold: "
+                                        + std::to_string(player.gold),
+            buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            show_slots(window, player, random);
+        } else if (choice == 2) {
+            show_dot_racing(window, player, random);
+        } else if (choice == 3) {
+            show_darts(window, player, random, darts_high_score);
+        } else {
+            return;
+        }
+    }
+}
+
 std::string inventory_item_name(std::uint16_t item_id) {
     constexpr std::array<std::string_view, 10> names{
         "French Fries", "Juicy Cheeseburger", "Spell Point Potion",
@@ -881,16 +1319,15 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         } else {
             switch (result.original_code) {
             case 5:
-                show_message(window, "Weapon Shop",
-                             "This entrance leads to a weapon shop.");
+                show_equipment_shop(window, game.player, game.location.map_id,
+                                    yipe::EquipmentKind::weapon);
                 break;
             case 6:
-                show_message(window, "Armor Shop",
-                             "This entrance leads to an armor shop.");
+                show_equipment_shop(window, game.player, game.location.map_id,
+                                    yipe::EquipmentKind::armor);
                 break;
             case 7:
-                show_message(window, "Heal Shop",
-                             "This entrance leads to a healing shop.");
+                show_healing_shop(window, game.player, random);
                 break;
             case 8:
                 if (game.location.map_id == 0x11) {
@@ -901,8 +1338,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 }
                 break;
             case 9:
-                show_message(window, "Magic Shop",
-                             "This entrance leads to a magic shop.");
+                show_magic_shop(window, game.player, random);
                 break;
             case 0x0c:
                 if (yipe::use_restoration_tile(game.player)) {
@@ -912,12 +1348,10 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 }
                 break;
             case 0x0d:
-                show_message(window, "Yipe! Casino",
-                             "This entrance leads to the casino.");
+                show_casino(window, game.player, random);
                 break;
             case 0x11:
-                show_message(window, "Special Ability Training Center",
-                             "This entrance leads to special ability training.");
+                show_ability_training(window, game.player, map.environment());
                 break;
             case 0x13:
                 show_message(window, "Locked Door",

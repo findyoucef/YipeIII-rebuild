@@ -49,6 +49,7 @@ class Player {
 public:
     static constexpr std::size_t inventory_size = 30;
     static constexpr std::size_t carried_inventory_size = 13;
+    static constexpr std::size_t spell_count = 15;
 
     Player();
     explicit Player(CharacterType type);
@@ -97,6 +98,7 @@ public:
     int enrage_base_intelligence = 0;
     int enrage_base_strength = 0;
     std::array<std::uint16_t, inventory_size> inventory{};
+    std::array<std::uint16_t, spell_count> spells{};
 
     // Meanings are not yet established; names retain their original object offsets.
     bool unknown_0062 = false;

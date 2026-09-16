@@ -36,6 +36,7 @@ void Player::initialize(CharacterType type) {
     unknown_0674 = false;
     inventory.fill(0);
     inventory[0] = 1;
+    spells.fill(0);
 
     switch (type) {
     case CharacterType::warrior:

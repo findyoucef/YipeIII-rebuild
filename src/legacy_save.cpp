@@ -163,6 +163,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     for (std::uint16_t& value : save.values_010c) {
         value = reader.u16();
     }
+    player.spells = save.values_010c;
     for (LegacyFlagValue& entry : save.flag_values) {
         entry.flag_0148 = reader.archive_bool();
         entry.value_0080 = reader.u16();
