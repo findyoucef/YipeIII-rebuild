@@ -26,6 +26,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -835,6 +836,239 @@ std::uint16_t binding(const yipe::GameSettings& settings,
     return settings.keys[static_cast<std::size_t>(action)];
 }
 
+using Glyph = std::array<std::uint8_t, 7>;
+
+Glyph glyph_for(char character) {
+    if (character >= 'a' && character <= 'z') {
+        character = static_cast<char>(character - 'a' + 'A');
+    }
+    switch (character) {
+    case 'A': return {0x0e, 0x11, 0x11, 0x1f, 0x11, 0x11, 0x11};
+    case 'B': return {0x1e, 0x11, 0x11, 0x1e, 0x11, 0x11, 0x1e};
+    case 'C': return {0x0f, 0x10, 0x10, 0x10, 0x10, 0x10, 0x0f};
+    case 'D': return {0x1e, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1e};
+    case 'E': return {0x1f, 0x10, 0x10, 0x1e, 0x10, 0x10, 0x1f};
+    case 'F': return {0x1f, 0x10, 0x10, 0x1e, 0x10, 0x10, 0x10};
+    case 'G': return {0x0f, 0x10, 0x10, 0x13, 0x11, 0x11, 0x0f};
+    case 'H': return {0x11, 0x11, 0x11, 0x1f, 0x11, 0x11, 0x11};
+    case 'I': return {0x1f, 0x04, 0x04, 0x04, 0x04, 0x04, 0x1f};
+    case 'J': return {0x01, 0x01, 0x01, 0x01, 0x11, 0x11, 0x0e};
+    case 'K': return {0x11, 0x12, 0x14, 0x18, 0x14, 0x12, 0x11};
+    case 'L': return {0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x1f};
+    case 'M': return {0x11, 0x1b, 0x15, 0x15, 0x11, 0x11, 0x11};
+    case 'N': return {0x11, 0x19, 0x19, 0x15, 0x13, 0x13, 0x11};
+    case 'O': return {0x0e, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0e};
+    case 'P': return {0x1e, 0x11, 0x11, 0x1e, 0x10, 0x10, 0x10};
+    case 'Q': return {0x0e, 0x11, 0x11, 0x11, 0x15, 0x12, 0x0d};
+    case 'R': return {0x1e, 0x11, 0x11, 0x1e, 0x14, 0x12, 0x11};
+    case 'S': return {0x0f, 0x10, 0x10, 0x0e, 0x01, 0x01, 0x1e};
+    case 'T': return {0x1f, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+    case 'U': return {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0e};
+    case 'V': return {0x11, 0x11, 0x11, 0x11, 0x11, 0x0a, 0x04};
+    case 'W': return {0x11, 0x11, 0x11, 0x15, 0x15, 0x15, 0x0a};
+    case 'X': return {0x11, 0x11, 0x0a, 0x04, 0x0a, 0x11, 0x11};
+    case 'Y': return {0x11, 0x11, 0x0a, 0x04, 0x04, 0x04, 0x04};
+    case 'Z': return {0x1f, 0x01, 0x02, 0x04, 0x08, 0x10, 0x1f};
+    case '0': return {0x0e, 0x11, 0x13, 0x15, 0x19, 0x11, 0x0e};
+    case '1': return {0x04, 0x0c, 0x14, 0x04, 0x04, 0x04, 0x1f};
+    case '2': return {0x0e, 0x11, 0x01, 0x02, 0x04, 0x08, 0x1f};
+    case '3': return {0x1e, 0x01, 0x01, 0x0e, 0x01, 0x01, 0x1e};
+    case '4': return {0x02, 0x06, 0x0a, 0x12, 0x1f, 0x02, 0x02};
+    case '5': return {0x1f, 0x10, 0x10, 0x1e, 0x01, 0x01, 0x1e};
+    case '6': return {0x0e, 0x10, 0x10, 0x1e, 0x11, 0x11, 0x0e};
+    case '7': return {0x1f, 0x01, 0x02, 0x04, 0x08, 0x08, 0x08};
+    case '8': return {0x0e, 0x11, 0x11, 0x0e, 0x11, 0x11, 0x0e};
+    case '9': return {0x0e, 0x11, 0x11, 0x0f, 0x01, 0x01, 0x0e};
+    case '[': return {0x0e, 0x08, 0x08, 0x08, 0x08, 0x08, 0x0e};
+    case ']': return {0x0e, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0e};
+    case '(': return {0x02, 0x04, 0x08, 0x08, 0x08, 0x04, 0x02};
+    case ')': return {0x08, 0x04, 0x02, 0x02, 0x02, 0x04, 0x08};
+    case ':': return {0x00, 0x04, 0x04, 0x00, 0x04, 0x04, 0x00};
+    case '.': return {0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x0c};
+    case ',': return {0x00, 0x00, 0x00, 0x00, 0x04, 0x04, 0x08};
+    case '-': return {0x00, 0x00, 0x00, 0x1f, 0x00, 0x00, 0x00};
+    case '/': return {0x01, 0x01, 0x02, 0x04, 0x08, 0x10, 0x10};
+    case '!': return {0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x04};
+    case '\'': return {0x04, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00};
+    case ' ': return {};
+    default: return {0x0e, 0x11, 0x01, 0x02, 0x04, 0x00, 0x04};
+    }
+}
+
+void draw_text(SDL_Renderer* renderer, int x, int y, std::string_view value,
+               SDL_Color color, int scale = 1) {
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    int cursor_x = x;
+    int cursor_y = y;
+    for (const char character : value) {
+        if (character == '\n') {
+            cursor_x = x;
+            cursor_y += 9 * scale;
+            continue;
+        }
+        const Glyph glyph = glyph_for(character);
+        for (std::size_t row = 0; row < glyph.size(); ++row) {
+            for (int column = 0; column < 5; ++column) {
+                if ((glyph[row] & (1u << static_cast<unsigned>(4 - column))) == 0) {
+                    continue;
+                }
+                const SDL_Rect pixel{
+                    cursor_x + column * scale,
+                    cursor_y + static_cast<int>(row) * scale,
+                    scale,
+                    scale,
+                };
+                SDL_RenderFillRect(renderer, &pixel);
+            }
+        }
+        cursor_x += 6 * scale;
+    }
+}
+
+struct CombatButton {
+    SDL_Rect bounds;
+    int action;
+    std::string label;
+};
+
+int combat_action_id(yipe::InputAction action) {
+    switch (action) {
+    case yipe::InputAction::attack: return 1;
+    case yipe::InputAction::use_item: return 2;
+    case yipe::InputAction::cast: return 3;
+    case yipe::InputAction::run: return 4;
+    case yipe::InputAction::special: return 6;
+    default: return 0;
+    }
+}
+
+void render_combat_picker(SDL_Renderer* renderer, const std::string& status,
+                          const std::array<CombatButton, 6>& buttons,
+                          int hovered_button) {
+    SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
+    SDL_RenderClear(renderer);
+    const SDL_Rect panel{12, 10, map_width - 24, map_height - 20};
+    SDL_SetRenderDrawColor(renderer, 224, 216, 184, 255);
+    SDL_RenderFillRect(renderer, &panel);
+    SDL_SetRenderDrawColor(renderer, 52, 42, 28, 255);
+    SDL_RenderDrawRect(renderer, &panel);
+    draw_text(renderer, 172, 20, "COMBAT", {52, 42, 28, 255}, 2);
+    draw_text(renderer, 24, 46, status, {32, 28, 24, 255});
+
+    for (std::size_t index = 0; index < buttons.size(); ++index) {
+        const CombatButton& button = buttons[index];
+        const bool hovered = static_cast<int>(index) == hovered_button;
+        SDL_SetRenderDrawColor(renderer, hovered ? 116 : 76,
+                              hovered ? 104 : 68, hovered ? 72 : 48, 255);
+        SDL_RenderFillRect(renderer, &button.bounds);
+        SDL_SetRenderDrawColor(renderer, 32, 28, 24, 255);
+        SDL_RenderDrawRect(renderer, &button.bounds);
+        const int text_width = static_cast<int>(button.label.size()) * 6;
+        draw_text(renderer,
+                  button.bounds.x + std::max(4, (button.bounds.w - text_width) / 2),
+                  button.bounds.y + 11, button.label, {255, 248, 220, 255});
+    }
+    SDL_RenderPresent(renderer);
+}
+
+int choose_combat_action(SDL_Renderer* renderer, const std::string& status,
+                         const yipe::GameSettings& settings) {
+    const auto label = [&settings](std::string_view name,
+                                   yipe::InputAction action) {
+        return std::string(name) + " ["
+            + std::string(yipe::key_binding_name(binding(settings, action))) + "]";
+    };
+    const std::array<CombatButton, 6> buttons{{
+        {{32, 142, 352, 29}, 1, label("Attack", yipe::InputAction::attack)},
+        {{32, 175, 352, 29}, 2, label("Use Item", yipe::InputAction::use_item)},
+        {{32, 208, 352, 29}, 3, label("Cast", yipe::InputAction::cast)},
+        {{32, 241, 352, 29}, 4, label("Flee", yipe::InputAction::run)},
+        {{32, 274, 352, 29}, 5, "Next Target [Arrows/Tab]"},
+        {{32, 307, 352, 29}, 6, label("Special", yipe::InputAction::special)},
+    }};
+    const Cursor arrow(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW), SDL_FreeCursor);
+    const Cursor hand(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND), SDL_FreeCursor);
+    int hovered_button = -1;
+    render_combat_picker(renderer, status, buttons, hovered_button);
+
+    while (true) {
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            throw std::runtime_error(std::string("SDL event wait failed: ")
+                                     + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT) {
+            return 0;
+        }
+        if (event.type == SDL_WINDOWEVENT
+            && (event.window.event == SDL_WINDOWEVENT_EXPOSED
+                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
+            render_combat_picker(renderer, status, buttons, hovered_button);
+            continue;
+        }
+        if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
+            const std::optional<std::uint16_t> key =
+                portable_key_code(event.key.keysym.sym);
+            if (key) {
+                const std::optional<yipe::InputAction> action =
+                    yipe::combat_action_for_key(settings, *key);
+                if (action) {
+                    return combat_action_id(*action);
+                }
+            }
+            if (event.key.keysym.sym == SDLK_TAB
+                || event.key.keysym.sym == SDLK_LEFT
+                || event.key.keysym.sym == SDLK_RIGHT
+                || event.key.keysym.sym == SDLK_UP
+                || event.key.keysym.sym == SDLK_DOWN) {
+                return 5;
+            }
+            if (event.key.keysym.sym == SDLK_RETURN
+                || event.key.keysym.sym == SDLK_KP_ENTER) {
+                return 1;
+            }
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
+                return 4;
+            }
+        }
+        if (event.type == SDL_MOUSEMOTION) {
+            float x = 0.0F;
+            float y = 0.0F;
+            SDL_RenderWindowToLogical(renderer, event.motion.x, event.motion.y,
+                                      &x, &y);
+            hovered_button = -1;
+            for (std::size_t index = 0; index < buttons.size(); ++index) {
+                const SDL_Rect& bounds = buttons[index].bounds;
+                if (x >= static_cast<float>(bounds.x)
+                    && x < static_cast<float>(bounds.x + bounds.w)
+                    && y >= static_cast<float>(bounds.y)
+                    && y < static_cast<float>(bounds.y + bounds.h)) {
+                    hovered_button = static_cast<int>(index);
+                    break;
+                }
+            }
+            SDL_SetCursor(hovered_button >= 0 ? hand.get() : arrow.get());
+            render_combat_picker(renderer, status, buttons, hovered_button);
+        }
+        if (event.type == SDL_MOUSEBUTTONUP
+            && event.button.button == SDL_BUTTON_LEFT) {
+            float x = 0.0F;
+            float y = 0.0F;
+            SDL_RenderWindowToLogical(renderer, event.button.x, event.button.y,
+                                      &x, &y);
+            for (const CombatButton& button : buttons) {
+                if (x >= static_cast<float>(button.bounds.x)
+                    && x < static_cast<float>(button.bounds.x + button.bounds.w)
+                    && y >= static_cast<float>(button.bounds.y)
+                    && y < static_cast<float>(
+                        button.bounds.y + button.bounds.h)) {
+                    return button.action;
+                }
+            }
+        }
+    }
+}
+
 std::optional<std::uint16_t> capture_key_binding(
     SDL_Window* window, yipe::InputAction action) {
     const std::string action_name(yipe::input_action_name(action));
@@ -1616,7 +1850,7 @@ void show_player_status(SDL_Window* window, const yipe::Player& player) {
     show_message(window, "Player Status", message.str());
 }
 
-enum class EncounterResult { victory, fled, defeat };
+enum class EncounterResult { victory, fled, defeat, quit_requested };
 
 std::string_view stat_increase_name(yipe::StatIncrease stat) {
     switch (stat) {
@@ -1692,39 +1926,17 @@ void play_combat_turn_sounds(
 }
 
 EncounterResult run_monster_encounter(
-    SDL_Window* window, const yipe::MonsterPlacement& placement,
+    SDL_Window* window, SDL_Renderer* renderer,
+    const yipe::MonsterPlacement& placement,
     yipe::Player& player, const yipe::WorldLocation& location,
     yipe::MsvcRandom& random, int map_environment,
     AudioPlayer& audio, const yipe::GameSettings& settings) {
     yipe::CombatEncounter encounter = yipe::start_monster_encounter(
         placement, player, random, map_environment);
-    const std::array<std::string, 6> labels{
-        "Attack [" + std::string(yipe::key_binding_name(
-            binding(settings, yipe::InputAction::attack))) + "]",
-        "Use Item [" + std::string(yipe::key_binding_name(
-            binding(settings, yipe::InputAction::use_item))) + "]",
-        "Cast [" + std::string(yipe::key_binding_name(
-            binding(settings, yipe::InputAction::cast))) + "]",
-        "Flee [" + std::string(yipe::key_binding_name(
-            binding(settings, yipe::InputAction::run))) + "]",
-        "Next Target",
-        "Special [" + std::string(yipe::key_binding_name(
-            binding(settings, yipe::InputAction::special))) + "]",
-    };
-    const std::array buttons{
-        SDL_MessageBoxButtonData{
-            SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, labels[0].c_str()},
-        SDL_MessageBoxButtonData{0, 2, labels[1].c_str()},
-        SDL_MessageBoxButtonData{0, 3, labels[2].c_str()},
-        SDL_MessageBoxButtonData{
-            SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 4, labels[3].c_str()},
-        SDL_MessageBoxButtonData{0, 5, labels[4].c_str()},
-        SDL_MessageBoxButtonData{0, 6, labels[5].c_str()},
-    };
 
     while (true) {
         std::ostringstream status;
-        status << "Monsters block your path.\n\nYour HP: " << player.health << "/"
+        status << "Monsters block your path.\nYour HP: " << player.health << "/"
                << player.maximum_health << "  AP: " << player.ability_points << "/"
                << player.maximum_ability_points;
         for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
@@ -1739,8 +1951,10 @@ EncounterResult run_monster_encounter(
                 status << " [target]";
             }
         }
-        const int action = show_choice(window, "Combat", status.str(), buttons.data(),
-                                       static_cast<int>(buttons.size()));
+        const int action = choose_combat_action(renderer, status.str(), settings);
+        if (action == 0) {
+            return EncounterResult::quit_requested;
+        }
         if (action == 1) {
             const auto previous_health = monster_healths(encounter);
             const yipe::CombatTurn turn =
@@ -2281,8 +2495,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (const std::optional<yipe::MonsterPlacement> placement =
                     monster_encounter_at(game)) {
                 const EncounterResult encounter = run_monster_encounter(
-                    window, *placement, game.player, game.location, random,
+                    window, renderer, *placement, game.player, game.location, random,
                     map.environment(), audio, settings);
+                if (encounter == EncounterResult::quit_requested) {
+                    save_current_game(window, save_path, game, random, false);
+                    return true;
+                }
                 if (encounter == EncounterResult::victory) {
                     auto& defeated = placement->respawns_after_map_reload
                         ? game.temporarily_defeated_monster_placements
@@ -2481,6 +2699,40 @@ int main(int argc, char* argv[]) {
                 game.location.map_id = map_id;
                 game.location.position = {1, 1};
                 render_game(renderer.get(), map, game_textures, game);
+            }
+            SDL_Event repeated_key{};
+            repeated_key.type = SDL_KEYDOWN;
+            repeated_key.key.repeat = 1;
+            repeated_key.key.keysym.sym = SDLK_i;
+            SDL_PushEvent(&repeated_key);
+            SDL_Event exposed{};
+            exposed.type = SDL_WINDOWEVENT;
+            exposed.window.event = SDL_WINDOWEVENT_EXPOSED;
+            SDL_PushEvent(&exposed);
+            SDL_Event combat_key = repeated_key;
+            combat_key.key.repeat = 0;
+            SDL_PushEvent(&combat_key);
+            const yipe::GameSettings default_settings;
+            if (choose_combat_action(
+                    renderer.get(),
+                    "Monsters block your path.\nYour HP: 10/10  AP: 5/5",
+                    default_settings) != 2) {
+                throw std::runtime_error(
+                    "combat picker did not consume the configured item key");
+            }
+            SDL_Event combat_click{};
+            combat_click.type = SDL_MOUSEBUTTONUP;
+            combat_click.button.button = SDL_BUTTON_LEFT;
+            SDL_RenderLogicalToWindow(
+                renderer.get(), 100.0F, 288.0F,
+                &combat_click.button.x, &combat_click.button.y);
+            SDL_PushEvent(&combat_click);
+            if (choose_combat_action(
+                    renderer.get(),
+                    "Monsters block your path.\nYour HP: 10/10  AP: 5/5",
+                    default_settings) != 5) {
+                throw std::runtime_error(
+                    "combat picker did not retain mouse target selection");
             }
             return 0;
         }

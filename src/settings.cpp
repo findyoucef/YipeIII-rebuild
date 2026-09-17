@@ -180,6 +180,17 @@ std::string_view key_binding_name(std::uint16_t key) {
     return "Unknown";
 }
 
+std::optional<InputAction> combat_action_for_key(
+    const GameSettings& settings, std::uint16_t key) {
+    for (std::size_t index = static_cast<std::size_t>(InputAction::attack);
+         index < input_action_count; ++index) {
+        if (settings.keys[index] == key) {
+            return static_cast<InputAction>(index);
+        }
+    }
+    return std::nullopt;
+}
+
 GameSettings settings_from_original(const OriginalAuxiliaryData& data) {
     GameSettings settings;
     for (std::size_t index = 0; index < data.keys_0174_to_0182.size(); ++index) {

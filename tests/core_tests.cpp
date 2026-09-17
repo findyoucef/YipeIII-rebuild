@@ -783,6 +783,18 @@ void test_settings_and_audio_catalog() {
               && yipe::key_binding_name(defaults.keys[9]) == "R"
               && yipe::input_action_name(yipe::InputAction::use_item) == "Use Item",
           "settings expose recovered movement and combat action names");
+    check(yipe::combat_action_for_key(defaults, 'A')
+                  == yipe::InputAction::attack
+              && yipe::combat_action_for_key(defaults, 'R')
+                  == yipe::InputAction::run
+              && yipe::combat_action_for_key(defaults, 'C')
+                  == yipe::InputAction::cast
+              && yipe::combat_action_for_key(defaults, 'I')
+                  == yipe::InputAction::use_item
+              && yipe::combat_action_for_key(defaults, 'S')
+                  == yipe::InputAction::special
+              && !yipe::combat_action_for_key(defaults, 0x26),
+          "combat key lookup covers all five configurable actions");
 
     yipe::GameSettings changed = defaults;
     changed.sound_enabled = false;

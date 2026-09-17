@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <string_view>
 
 namespace yipe {
@@ -48,6 +49,8 @@ struct GameSettings {
 
 [[nodiscard]] std::string_view input_action_name(InputAction action);
 [[nodiscard]] std::string_view key_binding_name(std::uint16_t key);
+[[nodiscard]] std::optional<InputAction> combat_action_for_key(
+    const GameSettings& settings, std::uint16_t key);
 [[nodiscard]] GameSettings settings_from_original(const OriginalAuxiliaryData& data);
 
 void save_settings_atomic(const std::filesystem::path& path,
