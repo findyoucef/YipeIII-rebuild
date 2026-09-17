@@ -180,7 +180,8 @@ struct GameTextures {
 
 GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::path& assets) {
     constexpr std::array resource_ids{133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-                                      143, 144, 145, 146, 147, 153, 377, 418, 460};
+                                      143, 144, 145, 146, 147, 153, 377, 391, 392, 393,
+                                      418, 460};
     std::vector<std::pair<int, Texture>> terrain;
     terrain.reserve(resource_ids.size());
     for (const int id : resource_ids) {
@@ -383,7 +384,8 @@ void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
 
 void render_game(SDL_Renderer* renderer, const yipe::Map& map,
                  const GameTextures& textures, yipe::MapPosition player,
-                 bool giant_beetle_defeated) {
+                 bool giant_beetle_defeated,
+                 const yipe::Player* player_state = nullptr) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     for (int x = 0; x < yipe::Map::width; ++x) {
@@ -401,6 +403,16 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
                                        tile_size, tile_size};
             copy_texture(renderer, textures.giant_beetle.get(), nullptr, &destination);
         }
+    }
+    const yipe::PrincessEvent& princess = map.events().princess;
+    if (princess.has_position()
+        && (player_state == nullptr
+            || player_state->inventory_values[princess.rescue_index] == 0)) {
+        const SDL_Rect destination{princess.position.x * tile_size,
+                                   princess.position.y * tile_size,
+                                   tile_size, tile_size};
+        copy_texture(renderer, textures.find(390 + princess.portrait_variant), nullptr,
+                     &destination);
     }
     const SDL_Rect player_destination{player.x * tile_size, player.y * tile_size,
                                       tile_size, tile_size};
@@ -424,6 +436,29 @@ int show_choice(SDL_Window* window, const char* title, const std::string& messag
         throw std::runtime_error(std::string("could not show choices: ") + SDL_GetError());
     }
     return selected;
+}
+
+void show_princess(SDL_Window* window, yipe::Player& player,
+                   const yipe::PrincessEvent& princess, yipe::MsvcRandom& random) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Gold"},
+        SDL_MessageBoxButtonData{0, 2, "Experience"},
+        SDL_MessageBoxButtonData{0, 3, "Kiss"},
+        SDL_MessageBoxButtonData{0, 4, "Mystery"},
+    };
+    const int choice = show_choice(
+        window, "Rescued Princess",
+        "The Princess thanks you for rescuing her. As a small reward, she offers "
+        "you one of the following gifts.",
+        buttons.data(), static_cast<int>(buttons.size()));
+    if (choice < 1 || choice > 4) {
+        return;
+    }
+    const yipe::PrincessReward reward = yipe::rescue_princess(
+        player, princess.rescue_index, static_cast<yipe::PrincessGift>(choice), random);
+    if (reward.rescued) {
+        show_message(window, "Princess Reward", reward.message);
+    }
 }
 
 std::optional<std::string> request_text(SDL_Window* window, const char* title,
@@ -1433,8 +1468,15 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
     }
     yipe::Map map = *restored_map;
     apply_map_tile_changes(map, game);
+    const bool completed_saved_finale = map.id() == 0x11
+        && yipe::complete_gatekeeper_finale(game.player);
     render_game(renderer, map, textures, game.location.position,
-                game.giant_beetle_defeated);
+                game.giant_beetle_defeated, &game.player);
+    if (completed_saved_finale) {
+        show_message(window, "Victory",
+                     "You've rescued all the princesses!!\n\n"
+                     "You are the hero of the entire world!!");
+    }
 
     while (true) {
         SDL_Event event{};
@@ -1449,7 +1491,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             && (event.window.event == SDL_WINDOWEVENT_EXPOSED
                 || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
         }
         if (event.type != SDL_KEYDOWN) {
             continue;
@@ -1459,25 +1501,25 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 return true;
             }
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
             continue;
         }
         if (event.key.keysym.sym == SDLK_F5) {
             save_current_game(window, save_path, game, random, true);
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
             continue;
         }
         if (event.key.keysym.sym == SDLK_i) {
             show_player_status(window, game.player);
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
             continue;
         }
         if (event.key.keysym.sym == SDLK_c) {
             cast_exploration_spell(window, game, map, random);
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
             continue;
         }
 
@@ -1525,6 +1567,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 }
             }
             bool changed_map = false;
+            bool completed_finale = false;
             if (result.original_code == 2) {
                 changed_map = yipe::cross_map_edge(game.location);
             } else if (result.original_code == 0x0e || result.original_code == 0x0f
@@ -1537,12 +1580,19 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 if (next_map) {
                     map = *next_map;
                     apply_map_tile_changes(map, game);
+                    completed_finale = map.id() == 0x11
+                        && yipe::complete_gatekeeper_finale(game.player);
                 } else {
                     game.location = previous_location;
                 }
             }
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
+            if (completed_finale) {
+                show_message(window, "Victory",
+                             "You've rescued all the princesses!!\n\n"
+                             "You are the hero of the entire world!!");
+            }
             if (result.original_code == 3) {
                 const std::uint16_t tile = map.tile(game.location.position);
                 if (tile == 0x26) {
@@ -1561,6 +1611,14 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     }
                 }
             }
+            const yipe::PrincessEvent& princess = map.events().princess;
+            if (princess.has_position()
+                && princess.position == game.location.position
+                && game.player.inventory_values[princess.rescue_index] == 0) {
+                show_princess(window, game.player, princess, random);
+                render_game(renderer, map, textures, game.location.position,
+                            game.giant_beetle_defeated, &game.player);
+            }
             if (has_encounter_at(game)) {
                 const EncounterResult encounter =
                     run_giant_beetle_encounter(window, game.player, random);
@@ -1574,7 +1632,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     return false;
                 }
                 render_game(renderer, map, textures, game.location.position,
-                            game.giant_beetle_defeated);
+                            game.giant_beetle_defeated, &game.player);
             }
         } else {
             switch (result.original_code) {
@@ -1656,7 +1714,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 break;
             }
             render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated);
+                        game.giant_beetle_defeated, &game.player);
         }
     }
 }

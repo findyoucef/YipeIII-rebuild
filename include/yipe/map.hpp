@@ -27,11 +27,22 @@ struct MapEvent {
     }
 };
 
+struct PrincessEvent {
+    MapPosition position{-1, -1};
+    int portrait_variant = 0;
+    std::size_t rescue_index = 0;
+
+    [[nodiscard]] bool has_position() const {
+        return position.x >= 0 && position.y >= 0;
+    }
+};
+
 struct MapEvents {
     MapEvent message;
     MapEvent overlay;
     std::array<MapEvent, 2> depth;
     std::array<MapEvent, 2> linked;
+    PrincessEvent princess;
 };
 
 class Map {

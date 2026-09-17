@@ -29,9 +29,9 @@ Regenerate it from a current Ghidra C export:
   --cpp-output src/generated/original_maps.cpp
 ```
 
-The version-2 catalog also extracts the compact event records initialized at
-`0x0041ec40`: 20 location messages, 10 overlay triggers, 26 depth portals, eight
-first linked records, and six second linked records. The extractor validates
+The version-3 catalog also extracts the compact event records initialized at
+`0x0041ec40`: 20 location messages, 10 overlay triggers, 20 princesses, 26 depth
+portals, eight first linked records, and six second linked records. The extractor validates
 those totals and every coordinate. It requires every loader to produce all 156
 tile values and stops on an incomplete table. Map IDs `0x76` through `0x78` are
 generated at runtime by `0x0041e0f0` instead of appearing in the static
@@ -88,16 +88,23 @@ The SDL dispatcher exposes the recovered entrance identities and implements the
 restoration, depth, surface-return, key-message, fire-wall, and King-dialog effects.
 The King selector preserves all 34 message/footer pairs, greeting time-of-day
 handling, quest flags, hint rolls, and gold/equipment/Lucky Rabbit Foot rewards.
-The core
-also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
+The 20 princess records retain position, one of three bitmap variants, and their
+one-time rescue index. The SDL view renders bitmaps 391–393 and removes a rescued
+princess on later map loads. Dialog 394 offers Gold, Experience, Kiss, and Mystery;
+the core preserves all formulas, healing/stat/item outcomes, two-roll Mystery
+selection, its high-threshold Rainbow Key override, and the serialized counter at
+player offset `+0x682`. Returning to map `0x11` after the keyed Gatekeeper victory
+with all 20 rescue values runs the reconstructed ending-state transition.
+
+The core also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
 The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles
 `0x56`/`0x57`. Generated event records
 now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
 visibility refresh performed by `0x19`. Native format version 5 introduced
-persistence for changed door and linked-mechanism tiles; current version 7
-retains it and the recovered King quest state.
+persistence for changed door and linked-mechanism tiles; current version 8
+retains it, the recovered King quest state, and the princess Mystery counter.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb

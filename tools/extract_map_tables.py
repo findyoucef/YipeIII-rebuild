@@ -15,6 +15,7 @@ TILE_COUNT = WIDTH * HEIGHT
 EVENT_HELPERS = {
     "0041cf40": "message",
     "0041cf70": "overlay",
+    "0041cff0": "princess",
     "0041d080": "depth",
     "0041d0b0": "depth",
     "0041d180": "linked_first",
@@ -23,6 +24,7 @@ EVENT_HELPERS = {
 EXPECTED_EVENT_CALLS = {
     "message": 20,
     "overlay": 10,
+    "princess": 20,
     "depth": 26,
     "linked_first": 8,
     "linked_second": 6,
@@ -66,18 +68,22 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
                     "overlay": None,
                     "depth": [],
                     "linked": [None, None],
+                    "princess": None,
                 },
             )
             for helper, raw_arguments in calls:
                 arguments = split_arguments(raw_arguments)
-                if len(arguments) != 4 or arguments[0] != "param_5":
+                kind = EVENT_HELPERS[helper]
+                expected_arguments = 5 if kind == "princess" else 4
+                if len(arguments) != expected_arguments or arguments[0] != "param_5":
                     raise ValueError(f"unexpected {helper} event call: {raw_arguments}")
                 event = {
                     "x": parse_signed_number(arguments[1]),
                     "y": parse_signed_number(arguments[2]),
                     "value": parse_signed_number(arguments[3]),
                 }
-                kind = EVENT_HELPERS[helper]
+                if kind == "princess":
+                    event["rescue_index"] = parse_signed_number(arguments[4])
                 counts[kind] += 1
                 if kind == "depth":
                     map_events["depth"].append(event)
@@ -100,6 +106,12 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
                 continue
             if not (-1 <= event["x"] < WIDTH and -1 <= event["y"] < HEIGHT):
                 raise ValueError(f"map {map_id:#x} has invalid event position {event}")
+        princess = map_events["princess"]
+        if princess is not None:
+            if not (0 <= princess["x"] < WIDTH and 0 <= princess["y"] < HEIGHT):
+                raise ValueError(f"map {map_id:#x} has invalid princess position {princess}")
+            if not (0 <= princess["rescue_index"] < 30):
+                raise ValueError(f"map {map_id:#x} has invalid princess index {princess}")
     return events
 
 
@@ -194,13 +206,14 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
                         "overlay": None,
                         "depth": [],
                         "linked": [None, None],
+                        "princess": None,
                     },
                 ),
             }
         )
 
     return {
-        "format": "yipe3-original-map-tables-v2",
+        "format": "yipe3-original-map-tables-v3",
         "source_dispatch": "0041e110",
         "source_events": "0041ec40",
         "dimensions": {
@@ -245,6 +258,12 @@ def render_cpp(result: dict[str, object]) -> str:
                 return "{{-1, -1}, -1}"
             return f"{{{{{event['x']}, {event['y']}}}, {event['value']}}}"
 
+        def princess_literal(event: dict[str, int] | None) -> str:
+            if event is None:
+                return "{{-1, -1}, 0, 0}"
+            return (f"{{{{{event['x']}, {event['y']}}}, {event['value']}, "
+                    f"{event['rescue_index']}}}")
+
         events = map_record["events"]
         depth = list(events["depth"])
         depth.extend([None] * (2 - len(depth)))
@@ -254,7 +273,8 @@ def render_cpp(result: dict[str, object]) -> str:
             f"{event_literal(events['message'])}, "
             f"{event_literal(events['overlay'])}, "
             f"{{{{{event_literal(depth[0])}, {event_literal(depth[1])}}}}}, "
-            f"{{{{{event_literal(linked[0])}, {event_literal(linked[1])}}}}}"
+            f"{{{{{event_literal(linked[0])}, {event_literal(linked[1])}}}}}, "
+            f"{princess_literal(events['princess'])}"
             "}},"
         )
     lines.extend(

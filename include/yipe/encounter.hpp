@@ -91,6 +91,7 @@ struct CombatEncounter {
     std::array<Monster, maximum_opponents> monsters{};
     int selected_target = 0;
     CombatReward pending_reward;
+    int map_environment = -1;
 };
 
 struct EncounterSetup {
@@ -99,6 +100,7 @@ struct EncounterSetup {
     int companion_type_1 = 0;
     int companion_type_2 = 0;
     int gatekeeper_state = 0;
+    int map_environment = -1;
 };
 
 enum class CombatOutcome { ongoing, victory, defeat };
@@ -129,7 +131,7 @@ struct FleeResult {
     int type_id, int opponent_count, MsvcRandom& random, const EncounterSetup& setup);
 [[nodiscard]] CombatEncounter start_monster_encounter(
     const MonsterPlacement& placement, const Player& player, MsvcRandom& random,
-    int gatekeeper_state = 0);
+    int map_environment = -1);
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 
 // Common combat formulas support one to three opponents from the recovered

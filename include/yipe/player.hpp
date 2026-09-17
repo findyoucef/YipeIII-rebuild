@@ -94,6 +94,7 @@ public:
     std::uint16_t gatekeeper_state = 0;
     std::uint16_t stamps_found = 0;
     std::uint16_t princesses_found = 0;
+    std::uint16_t princess_mystery_uses = 0;
     bool has_lucky_rabbit_foot = false;
     bool has_waterproof_shoe_spray = false;
     bool has_rainbow_key = false;

@@ -25,7 +25,8 @@ constexpr std::uint16_t ability_game_format_version = 3;
 constexpr std::uint16_t movement_game_format_version = 4;
 constexpr std::uint16_t map_changes_game_format_version = 5;
 constexpr std::uint16_t spells_game_format_version = 6;
-constexpr std::uint16_t game_format_version = 7;
+constexpr std::uint16_t quest_game_format_version = 7;
+constexpr std::uint16_t game_format_version = 8;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -209,6 +210,7 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_u16(payload, game.player.gatekeeper_state);
     append_u16(payload, game.player.stamps_found);
     append_u16(payload, game.player.princesses_found);
+    append_u16(payload, game.player.princess_mystery_uses);
     return payload;
 }
 
@@ -312,7 +314,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
         && version != ability_game_format_version
         && version != movement_game_format_version
         && version != map_changes_game_format_version
-        && version != spells_game_format_version && version != game_format_version) {
+        && version != spells_game_format_version
+        && version != quest_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -428,7 +431,7 @@ GameState load_game(const std::filesystem::path& path) {
             spell = reader.u16();
         }
     }
-    if (save.version == game_format_version) {
+    if (save.version >= quest_game_format_version) {
         game.player.quest_score = reader.i32();
         game.player.has_lucky_rabbit_foot = reader.u8() != 0;
         for (bool& flag : game.player.quest_flags) {
@@ -441,6 +444,9 @@ GameState load_game(const std::filesystem::path& path) {
         game.player.gatekeeper_state = reader.u16();
         game.player.stamps_found = reader.u16();
         game.player.princesses_found = reader.u16();
+    }
+    if (save.version >= game_format_version) {
+        game.player.princess_mystery_uses = reader.u16();
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

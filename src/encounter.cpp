@@ -511,11 +511,22 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
     encounter.pending_reward.experience += reward.experience;
     encounter.pending_reward.gold += reward.gold;
     if (!has_living_monster(encounter)) {
+        const int primary_type = encounter.monsters[0].type_id;
         result.outcome = CombatOutcome::victory;
         result.reward = encounter.pending_reward;
         result.reward.equipment_upgrade =
             finish_encounter_rewards(player, encounter, random);
         result.level_up = try_level_up(player, random);
+        if (primary_type >= 35 && primary_type != 41
+            && primary_type == encounter.map_environment + 34) {
+            ++player.stamps_found;
+        }
+        if (primary_type == 40 && encounter.map_environment == 6) {
+            player.gatekeeper_state = 1;
+        } else if (primary_type == 41 && player.gatekeeper_state == 1
+                   && player.has_underworld_key) {
+            player.gatekeeper_state = 2;
+        }
         clear_combat_status(player);
     } else {
         encounter.selected_target = first_living_monster(encounter);
@@ -617,6 +628,7 @@ CombatEncounter start_monster_encounter(int type_id, int opponent_count,
     }
 
     CombatEncounter encounter;
+    encounter.map_environment = setup.map_environment;
     encounter.monsters[0] = initialize_monster(type_id, random);
     int variant_roll = roll(random, 100);
     if (!generated_count) {
@@ -672,11 +684,11 @@ CombatEncounter start_monster_encounter(int type_id, int opponent_count,
 
 CombatEncounter start_monster_encounter(const MonsterPlacement& placement,
                                         const Player& player, MsvcRandom& random,
-                                        int gatekeeper_state) {
+                                        int map_environment) {
     return start_monster_encounter(
         placement.type_id, placement.encounter_size, random,
         {player.level, player.difficulty, placement.companion_type_1,
-         placement.companion_type_2, gatekeeper_state});
+         placement.companion_type_2, player.gatekeeper_state, map_environment});
 }
 
 Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {

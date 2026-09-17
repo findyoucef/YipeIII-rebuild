@@ -1,8 +1,10 @@
 #include "yipe/quest.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
 
 namespace yipe {
 namespace {
@@ -91,6 +93,14 @@ constexpr std::array<std::string_view, 34> footers{
     "You have completed everything in Yipe! III",
     "I guess you'll have to wait for Yipe! IV...",
 };
+
+std::string reward_message(std::string_view text, int amount) {
+    std::string result(text);
+    if (const std::size_t marker = result.find("xx"); marker != std::string::npos) {
+        result.replace(marker, 2, std::to_string(amount));
+    }
+    return result;
+}
 
 int select_message(Player& player, MsvcRandom& random) {
     const int stamps = static_cast<std::int16_t>(player.stamps_found);
@@ -232,6 +242,129 @@ int select_message(Player& player, MsvcRandom& random) {
 }
 
 } // namespace
+
+PrincessReward rescue_princess(Player& player, std::size_t rescue_index,
+                               PrincessGift gift, MsvcRandom& random) {
+    if (rescue_index >= player.inventory_values.size()) {
+        throw std::out_of_range("princess rescue index is outside the inventory value table");
+    }
+    if (gift < PrincessGift::gold || gift > PrincessGift::mystery) {
+        throw std::invalid_argument("unknown princess gift");
+    }
+    if (player.inventory_values[rescue_index] != 0) {
+        return {};
+    }
+
+    player.inventory_values[rescue_index] = 1;
+    ++player.princesses_found;
+    switch (gift) {
+    case PrincessGift::gold: {
+        const int level_amount = player.level * 3;
+        const int amount = random.next() % level_amount + level_amount + 275
+            + random.next() % 100;
+        player.gold += amount;
+        return {true, 1100, amount,
+                reward_message("The Princess gives you xx gold pieces!", amount)};
+    }
+    case PrincessGift::experience: {
+        const int amount = player.level * 4 + 125 + random.next() % 25;
+        player.experience += amount;
+        return {true, 1101, amount,
+                reward_message("The Princess rewards you with xx experience points!",
+                               amount)};
+    }
+    case PrincessGift::kiss:
+        player.ability_points = player.maximum_ability_points;
+        player.health = player.maximum_health;
+        player.spell_points = player.maximum_spell_points;
+        return {true, 1102, 0,
+                "The Princess gives you a polite kiss on the cheek.  You feel healed "
+                "from her gentle touch."};
+    case PrincessGift::mystery:
+        break;
+    }
+
+    ++player.princess_mystery_uses;
+    const int choice_roll = random.next();
+    int threshold = 0;
+    const auto signed_mystery_uses =
+        static_cast<std::int16_t>(player.princess_mystery_uses);
+    if (signed_mystery_uses > 2) {
+        threshold += signed_mystery_uses * 10;
+    }
+    if (player.level > 15) {
+        threshold += player.level;
+    }
+    if (player.level > 29) {
+        threshold += player.level;
+    }
+    const int condition_roll = random.next();
+    int choice = choice_roll % 10;
+    if (condition_roll % 97 + 25 < threshold && !player.has_rainbow_key) {
+        choice = 10;
+    }
+    switch (choice) {
+    case 0:
+    case 1:
+    case 7: {
+        const int amount = player.level < 20 ? 300 : 500;
+        player.gold += amount;
+        return {true, 1103, amount,
+                reward_message("The Princess gives you xx gold pieces and wishes "
+                               "you luck in your journey.", amount)};
+    }
+    case 2:
+    case 9:
+        player.maximum_health += 2;
+        return {true, 1104, 2,
+                "The Princess looks at you and winks her eye.  You notice your "
+                "maximum health has gone up a little."};
+    case 3:
+    case 6:
+    case 8:
+        player.health = player.maximum_health;
+        player.spell_points = player.maximum_spell_points;
+        return {true, 1105, 0,
+                "The Princess makes some kind of motion with her hand.  Your health "
+                "and spell points have been healed."};
+    case 4:
+        if (!player.has_rainbow_key) {
+            ++player.princess_mystery_uses;
+            return {true, 1106, 0,
+                    "The Princess tells you that one of her sisters carries a key.  "
+                    "Ask her for the Mystery gift and she shall give it to you."};
+        }
+        break;
+    case 5:
+        if (player.ring_rank < 4) {
+            ++player.ring_rank;
+            return {true, 1107, 1,
+                    "The Princess takes off her shiny ring and gives it to you."};
+        }
+        break;
+    default:
+        player.has_rainbow_key = true;
+        return {true, 1108, 0,
+                "The Princess nods at you and opens up a small pouch she is carrying.  "
+                "From it she takes a rainbow key and hands it to you."};
+    }
+
+    player.gold += 500;
+    return {true, 1103, 500,
+            reward_message("The Princess gives you xx gold pieces and wishes you luck "
+                           "in your journey.", 500)};
+}
+
+bool complete_gatekeeper_finale(Player& player) {
+    const auto rescued = std::count_if(
+        player.inventory_values.begin(), player.inventory_values.end(),
+        [](std::uint16_t value) { return value > 0; });
+    if (player.gatekeeper_state != 2 || rescued != 20) {
+        return false;
+    }
+    player.gatekeeper_state = 3;
+    return true;
+}
 
 KingConversation talk_to_king(Player& player, MsvcRandom& random, int local_hour) {
     int greeting_index = random.next() % 6;

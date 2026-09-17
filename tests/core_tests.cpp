@@ -366,6 +366,7 @@ void test_game_save() {
     original.player.gatekeeper_state = 2;
     original.player.stamps_found = 6;
     original.player.princesses_found = 14;
+    original.player.princess_mystery_uses = 7;
     original.player.has_lucky_rabbit_foot = true;
     original.player.quest_flags[8] = true;
     original.player.inventory_values[13] = 9;
@@ -379,16 +380,16 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 7 save restores progression and equipment");
+          "version 8 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 7 save restores combat settings and counters");
+          "version 8 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 7 save restores world location");
+          "version 8 save restores world location");
     check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 7 save restores encounter and random state");
+          "version 8 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -396,26 +397,34 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 7 save restores ability and active status state");
+          "version 8 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 7 save restores special movement state");
+          "version 8 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 7 save restores persistent map tile changes");
+          "version 8 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 7 save restores learned spells");
+          "version 8 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
               && loaded.player.stamps_found == 6
               && loaded.player.princesses_found == 14
+              && loaded.player.princess_mystery_uses == 7
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 7 save restores King quest state");
+          "version 8 save restores quest state");
+
+    remove_save_extension(path, sizeof(std::uint16_t), 7);
+    const yipe::GameState loaded_version_7 = yipe::load_game(path);
+    check(loaded_version_7.player.quest_score == 1500
+              && loaded_version_7.player.princesses_found == 14
+              && loaded_version_7.player.princess_mystery_uses == 0,
+          "version 7 saves retain King state and default the mystery counter");
 
     constexpr std::size_t quest_extension_size = 2 * sizeof(std::int32_t)
         + sizeof(std::uint8_t) + yipe::Player::quest_flag_count * sizeof(std::uint8_t)
@@ -525,6 +534,7 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         case 15: value = 3; break;
         case 16: value = 85; break;
         case 17: value = 22; break;
+        case 18: value = 7; break;
         case 26: value = 2; break;
         case 31: value = 1; break;
         default: break;
@@ -585,7 +595,8 @@ void test_legacy_save_import() {
               && player.quest_flags[29] && player.inventory_values[29] == 39
               && player.quest_progress_total == 51225
               && player.gatekeeper_state == 2 && player.stamps_found == 4
-              && player.princesses_found == 11,
+              && player.princesses_found == 11
+              && player.princess_mystery_uses == 7,
           "legacy import maps recovered King quest state");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
@@ -705,6 +716,7 @@ void test_static_map_catalog_and_edges() {
     int depth_events = 0;
     int linked_first = 0;
     int linked_second = 0;
+    int princesses = 0;
     for (int map_id = 1; map_id <= 0x85; ++map_id) {
         const std::optional<yipe::Map> catalog_map = yipe::original_map(map_id);
         if (!catalog_map) {
@@ -717,10 +729,20 @@ void test_static_map_catalog_and_edges() {
             [](const yipe::MapEvent& event) { return event.has_position(); }));
         linked_first += catalog_map->events().linked[0].has_position() ? 1 : 0;
         linked_second += catalog_map->events().linked[1].has_position() ? 1 : 0;
+        princesses += catalog_map->events().princess.has_position() ? 1 : 0;
     }
     check(messages == 20 && overlays == 10 && depth_events == 26
-              && linked_first == 8 && linked_second == 3,
+              && linked_first == 8 && linked_second == 3 && princesses == 20,
           "generated maps preserve all statically configured movement-event positions");
+    const yipe::PrincessEvent first_princess = yipe::original_map(0x2e)->events().princess;
+    const yipe::PrincessEvent last_princess = yipe::original_map(0x85)->events().princess;
+    check(first_princess.position == yipe::MapPosition{7, 1}
+              && first_princess.portrait_variant == 1
+              && first_princess.rescue_index == 13
+              && last_princess.position == yipe::MapPosition{1, 9}
+              && last_princess.portrait_variant == 2
+              && last_princess.rescue_index == 20,
+          "princess events preserve the recovered endpoint records");
 
     yipe::WorldLocation location;
     location.position = {12, 5};
@@ -1805,6 +1827,122 @@ void test_king_quest_dialog() {
           "the final King conversation grants the fixed end-game equipment");
 }
 
+void test_quest_progression_events() {
+    yipe::Player gold_player;
+    yipe::MsvcRandom gold_random(1);
+    const yipe::PrincessReward gold = yipe::rescue_princess(
+        gold_player, 13, yipe::PrincessGift::gold, gold_random);
+    check(gold.rescued && gold.message_resource_id == 1100 && gold.amount == 347
+              && gold.message == "The Princess gives you 347 gold pieces!"
+              && gold_player.gold == 347 && gold_player.princesses_found == 1
+              && gold_player.inventory_values[13] == 1
+              && gold_random.state() == 0xc823f683u,
+          "gold rescue reward preserves its two seeded rolls and one-time flag");
+    const std::uint32_t after_gold = gold_random.state();
+    check(!yipe::rescue_princess(gold_player, 13, yipe::PrincessGift::gold,
+                                 gold_random).rescued
+              && gold_player.gold == 347 && gold_random.state() == after_gold,
+          "an already rescued princess cannot grant another reward");
+
+    yipe::Player experience_player;
+    yipe::MsvcRandom experience_random(1);
+    const yipe::PrincessReward experience = yipe::rescue_princess(
+        experience_player, 15, yipe::PrincessGift::experience, experience_random);
+    check(experience.message_resource_id == 1101 && experience.amount == 145
+              && experience_player.experience == 145
+              && experience_random.state() == 0x29e2c0u,
+          "experience rescue reward preserves its one seeded roll");
+
+    yipe::Player kissed_player;
+    kissed_player.health = 1;
+    kissed_player.spell_points = 2;
+    kissed_player.ability_points = 3;
+    kissed_player.maximum_spell_points = 9;
+    yipe::MsvcRandom kiss_random(1);
+    const yipe::PrincessReward kiss = yipe::rescue_princess(
+        kissed_player, 2, yipe::PrincessGift::kiss, kiss_random);
+    check(kiss.message_resource_id == 1102
+              && kissed_player.health == kissed_player.maximum_health
+              && kissed_player.spell_points == 9
+              && kissed_player.ability_points == kissed_player.maximum_ability_points
+              && kiss_random.state() == 1,
+          "kiss reward restores all three pools without consuming randomness");
+
+    yipe::Player clue_player;
+    yipe::MsvcRandom clue_random(5);
+    const yipe::PrincessReward clue = yipe::rescue_princess(
+        clue_player, 8, yipe::PrincessGift::mystery, clue_random);
+    check(clue.message_resource_id == 1106 && clue_player.princess_mystery_uses == 2
+              && !clue_player.has_rainbow_key,
+          "mystery roll four gives the clue and advances its counter twice");
+
+    yipe::Player ring_player;
+    yipe::MsvcRandom ring_random(2);
+    const yipe::PrincessReward ring = yipe::rescue_princess(
+        ring_player, 11, yipe::PrincessGift::mystery, ring_random);
+    check(ring.message_resource_id == 1107 && ring_player.ring_rank == 1
+              && ring_player.princess_mystery_uses == 1,
+          "mystery roll five grants a ring below the recovered rank cap");
+
+    yipe::Player key_player;
+    key_player.princess_mystery_uses = 100;
+    yipe::MsvcRandom key_random(1);
+    const yipe::PrincessReward key = yipe::rescue_princess(
+        key_player, 16, yipe::PrincessGift::mystery, key_random);
+    check(key.message_resource_id == 1108 && key_player.has_rainbow_key
+              && key_player.princess_mystery_uses == 101,
+          "a high mystery threshold selects the recovered rainbow-key case");
+
+    const auto win_battle = [](yipe::Player& player, int type_id, int environment) {
+        player.health = 10000;
+        player.maximum_health = 10000;
+        player.level = 40;
+        player.strength = 100;
+        player.weapon_rank = 42;
+        yipe::MsvcRandom random(1);
+        yipe::CombatEncounter encounter = yipe::start_monster_encounter(
+            type_id, 1, random,
+            yipe::EncounterSetup{player.level, player.difficulty, 0, 0,
+                                 0, environment});
+        encounter.monsters[0].health = 1;
+        yipe::CombatTurn turn;
+        do {
+            turn = yipe::resolve_attack_turn(player, encounter, random);
+        } while (turn.outcome == yipe::CombatOutcome::ongoing);
+        return turn.outcome;
+    };
+
+    yipe::Player stamp_player;
+    check(win_battle(stamp_player, 35, 1) == yipe::CombatOutcome::victory
+              && stamp_player.stamps_found == 1,
+          "the boss matching environment plus 34 grants one stamp");
+    yipe::Player wrong_environment;
+    static_cast<void>(win_battle(wrong_environment, 35, 2));
+    check(wrong_environment.stamps_found == 0,
+          "a boss outside its matching environment does not grant a stamp");
+
+    yipe::Player first_gatekeeper;
+    static_cast<void>(win_battle(first_gatekeeper, 40, 6));
+    check(first_gatekeeper.stamps_found == 1 && first_gatekeeper.gatekeeper_state == 1,
+          "the environment-six boss grants the final stamp and first Gatekeeper state");
+
+    yipe::Player final_gatekeeper;
+    final_gatekeeper.gatekeeper_state = 1;
+    final_gatekeeper.has_underworld_key = true;
+    static_cast<void>(win_battle(final_gatekeeper, 41, 0));
+    check(final_gatekeeper.gatekeeper_state == 2 && final_gatekeeper.stamps_found == 0,
+          "the keyed Gatekeeper victory advances state without granting a stamp");
+
+    yipe::Player finale;
+    finale.gatekeeper_state = 2;
+    std::fill(finale.inventory_values.begin() + 1,
+              finale.inventory_values.begin() + 21, 1);
+    check(yipe::complete_gatekeeper_finale(finale) && finale.gatekeeper_state == 3,
+          "returning with all 20 rescue slots completes the Gatekeeper finale");
+    check(!yipe::complete_gatekeeper_finale(finale),
+          "the finale transition can only occur once");
+}
+
 void test_recovered_spells() {
     const auto& spells = yipe::spell_definitions();
     check(spells.size() == 12 && spells[0].name == "Return to Surface"
@@ -2148,6 +2286,7 @@ int main() {
     test_weapon_damage_catalog();
     test_equipment_combat_ratings();
     test_king_quest_dialog();
+    test_quest_progression_events();
     test_recovered_spells();
     test_first_playable_flow();
 

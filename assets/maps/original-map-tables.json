@@ -1,5 +1,5 @@
 {
-  "format": "yipe3-original-map-tables-v2",
+  "format": "yipe3-original-map-tables-v3",
   "source_dispatch": "0041e110",
   "source_events": "0041ec40",
   "dimensions": {
@@ -204,7 +204,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -403,7 +404,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -602,7 +604,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -801,7 +804,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1000,7 +1004,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1199,7 +1204,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1398,7 +1404,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1597,7 +1604,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1796,7 +1804,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -1995,7 +2004,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -2194,7 +2204,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -2393,7 +2404,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -2596,7 +2608,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -2795,7 +2808,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -2994,7 +3008,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -3193,7 +3208,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -3392,7 +3408,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -3595,7 +3612,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -3794,7 +3812,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -3993,7 +4012,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -4192,7 +4212,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -4391,7 +4412,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -4594,7 +4616,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -4793,7 +4816,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -4992,7 +5016,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -5191,7 +5216,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -5394,7 +5420,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -5593,7 +5620,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -5792,7 +5820,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -5991,7 +6020,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -6190,7 +6220,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -6393,7 +6424,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -6592,7 +6624,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -6791,7 +6824,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -6990,7 +7024,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -7189,7 +7224,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -7388,7 +7424,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -7593,7 +7630,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -7810,7 +7848,8 @@
             "y": 8,
             "value": 40
           }
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -8027,7 +8066,8 @@
             "y": 5,
             "value": 73
           }
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -8234,7 +8274,8 @@
             "y": -1,
             "value": 83
           }
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -8441,7 +8482,13 @@
             "y": 5,
             "value": 83
           }
-        ]
+        ],
+        "princess": {
+          "x": 7,
+          "y": 1,
+          "value": 1,
+          "rescue_index": 13
+        }
       }
     },
     {
@@ -8640,7 +8687,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -8839,7 +8887,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -9044,7 +9093,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 11,
+          "y": 6,
+          "value": 3,
+          "rescue_index": 15
+        }
       }
     },
     {
@@ -9247,7 +9302,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -9450,7 +9506,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 4,
+          "y": 3,
+          "value": 3,
+          "rescue_index": 2
+        }
       }
     },
     {
@@ -9649,7 +9711,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -9854,7 +9917,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -10053,7 +10117,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -10260,7 +10325,8 @@
             "y": -1,
             "value": 40
           }
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -10463,7 +10529,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -10668,7 +10735,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -10873,7 +10941,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -11072,7 +11141,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -11281,7 +11351,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -11490,7 +11561,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -11693,7 +11765,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -11896,7 +11969,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -12095,7 +12169,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -12294,7 +12369,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 9,
+          "y": 6,
+          "value": 2,
+          "rescue_index": 8
+        }
       }
     },
     {
@@ -12503,7 +12584,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -12708,7 +12790,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -12915,7 +12998,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -13114,7 +13198,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -13313,7 +13398,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -13518,7 +13604,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -13728,7 +13815,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -13931,7 +14019,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -14140,7 +14229,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 2,
+          "y": 1,
+          "value": 1,
+          "rescue_index": 11
+        }
       }
     },
     {
@@ -14345,7 +14440,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -14550,7 +14646,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -14749,7 +14846,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -14954,7 +15052,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -15163,7 +15262,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -15370,7 +15470,8 @@
             "y": -1,
             "value": -1
           }
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -15577,7 +15678,8 @@
             "value": -1
           },
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -15780,7 +15882,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 1,
+          "value": 2,
+          "rescue_index": 16
+        }
       }
     },
     {
@@ -15983,7 +16091,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -16182,7 +16291,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 9,
+          "y": 5,
+          "value": 3,
+          "rescue_index": 9
+        }
       }
     },
     {
@@ -16387,7 +16502,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -16586,7 +16702,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 11,
+          "y": 1,
+          "value": 2,
+          "rescue_index": 14
+        }
       }
     },
     {
@@ -16789,7 +16911,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 10,
+          "value": 3,
+          "rescue_index": 18
+        }
       }
     },
     {
@@ -16988,7 +17116,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -17187,7 +17316,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -17386,7 +17516,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -17585,7 +17716,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -17788,7 +17920,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -17991,7 +18124,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 11,
+          "y": 3,
+          "value": 1,
+          "rescue_index": 17
+        }
       }
     },
     {
@@ -18194,7 +18333,8 @@
             "value": -1
           },
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -18393,7 +18533,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 8,
+          "y": 1,
+          "value": 1,
+          "rescue_index": 10
+        }
       }
     },
     {
@@ -18592,7 +18738,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 10,
+          "value": 2,
+          "rescue_index": 5
+        }
       }
     },
     {
@@ -18791,7 +18943,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -18990,7 +19143,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -19189,7 +19343,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 11,
+          "y": 3,
+          "value": 2,
+          "rescue_index": 4
+        }
       }
     },
     {
@@ -19388,7 +19548,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -19587,7 +19748,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -19792,7 +19954,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 10,
+          "value": 1,
+          "rescue_index": 7
+        }
       }
     },
     {
@@ -19997,7 +20165,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -20200,7 +20369,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -20399,7 +20569,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 8,
+          "y": 8,
+          "value": 1,
+          "rescue_index": 1
+        }
       }
     },
     {
@@ -20602,7 +20778,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -20807,7 +20984,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -21006,7 +21184,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -21205,7 +21384,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 11,
+          "y": 1,
+          "value": 3,
+          "rescue_index": 6
+        }
       }
     },
     {
@@ -21410,7 +21595,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -21615,7 +21801,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -21820,7 +22007,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 1,
+          "value": 2,
+          "rescue_index": 3
+        }
       }
     },
     {
@@ -22023,7 +22216,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 9,
+          "y": 1,
+          "value": 3,
+          "rescue_index": 12
+        }
       }
     },
     {
@@ -22222,7 +22421,8 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": null
       }
     },
     {
@@ -22421,7 +22621,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 2,
+          "y": 9,
+          "value": 1,
+          "rescue_index": 19
+        }
       }
     },
     {
@@ -22624,7 +22830,13 @@
         "linked": [
           null,
           null
-        ]
+        ],
+        "princess": {
+          "x": 1,
+          "y": 9,
+          "value": 2,
+          "rescue_index": 20
+        }
       }
     }
   ]

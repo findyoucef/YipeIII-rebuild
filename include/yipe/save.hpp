@@ -33,8 +33,8 @@ struct GameState {
 // equipment, world location, encounter completion, and random state. Version 3
 // added special-ability state; version 4 added movement-item and restoration
 // state; version 5 added persistent map-tile changes; version 6 adds learned
-// spells; version 7 adds the recovered King quest state while retaining all
-// readers.
+// spells; version 7 adds the recovered King quest state; version 8 adds the
+// princess mystery-reward counter while retaining all readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

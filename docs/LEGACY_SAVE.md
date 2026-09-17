@@ -74,7 +74,7 @@ and the recovered extended item-status fields. The King-dialog trace also maps
 `+0x05c` to its quest score/value, `+0x063` to the Lucky Rabbit Foot, the 30
 `+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
 the sum of the 50 `+0x584` values to the early equipment hint, and extended
-entries 2, 8, and 9 to Gatekeeper, stamp, and princess state. Offset-based
+entries 2, 8, 9, and 18 to Gatekeeper, stamp, princess, and Mystery-reward state. Offset-based
 arrays remain in the import object so future reconstruction does not require
 reparsing the file.
 
@@ -99,8 +99,9 @@ state, gives version-2 files a full starting AP pool, and defaults fields added
 by newer formats. Version 5 appends changed map IDs, coordinates, and tile values
 so opened doors and linked mechanisms survive map changes and restart. Version 6
 appends the 15 learned-spell values recovered from legacy offset `+0x10c`.
-Version 7 appends the recovered King quest state and Lucky Rabbit Foot. The
-loader accepts all seven versions. Writes use a temporary file and atomic
+Version 7 appends the recovered King quest state and Lucky Rabbit Foot. Version 8
+appends the princess Mystery-reward counter recovered from offset `+0x682`. The
+loader accepts all eight versions. Writes use a temporary file and atomic
 replacement so a failed write does not destroy the previous save.
 
 ## Verification status
