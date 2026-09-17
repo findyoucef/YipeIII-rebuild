@@ -5,6 +5,7 @@
 #include "yipe/random.hpp"
 
 #include <array>
+#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -12,7 +13,10 @@
 
 namespace yipe {
 
+inline constexpr std::size_t original_monster_placement_count = 186;
+
 struct MonsterPlacement {
+    std::uint16_t placement_index = 0;
     int type_id = 0;
     MapPosition position;
     int slot = 0;

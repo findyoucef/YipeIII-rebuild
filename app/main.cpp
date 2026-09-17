@@ -163,17 +163,16 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
 }
 
 struct GameTextures {
-    std::vector<std::pair<int, Texture>> terrain;
+    std::vector<std::pair<int, Texture>> bitmaps;
     Texture warrior;
-    Texture giant_beetle;
 
     [[nodiscard]] SDL_Texture* find(int resource_id) const {
-        for (const auto& [id, texture] : terrain) {
+        for (const auto& [id, texture] : bitmaps) {
             if (id == resource_id) {
                 return texture.get();
             }
         }
-        throw std::runtime_error("missing terrain bitmap resource "
+        throw std::runtime_error("missing bitmap resource "
                                  + std::to_string(resource_id));
     }
 };
@@ -182,14 +181,17 @@ GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::p
     constexpr std::array resource_ids{133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
                                       143, 144, 145, 146, 147, 153, 377, 391, 392, 393,
                                       418, 460};
-    std::vector<std::pair<int, Texture>> terrain;
-    terrain.reserve(resource_ids.size());
+    std::vector<std::pair<int, Texture>> bitmaps;
+    bitmaps.reserve(resource_ids.size() + 41);
     for (const int id : resource_ids) {
-        terrain.emplace_back(
+        bitmaps.emplace_back(
             id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp")));
     }
-    return {std::move(terrain), load_bitmap(renderer, assets / "406-1033.bmp", true),
-            load_bitmap(renderer, assets / "175-1033.bmp", true)};
+    for (int id = 174; id <= 214; ++id) {
+        bitmaps.emplace_back(
+            id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp"), true));
+    }
+    return {std::move(bitmaps), load_bitmap(renderer, assets / "406-1033.bmp", true)};
 }
 
 struct TileGraphic {
@@ -382,10 +384,15 @@ void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
     }
 }
 
+bool monster_placement_defeated(const yipe::GameState& game,
+                                std::uint16_t placement_index) {
+    return std::find(game.defeated_monster_placements.begin(),
+                     game.defeated_monster_placements.end(), placement_index)
+        != game.defeated_monster_placements.end();
+}
+
 void render_game(SDL_Renderer* renderer, const yipe::Map& map,
-                 const GameTextures& textures, yipe::MapPosition player,
-                 bool giant_beetle_defeated,
-                 const yipe::Player* player_state = nullptr) {
+                 const GameTextures& textures, const yipe::GameState& game) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     for (int x = 0; x < yipe::Map::width; ++x) {
@@ -395,26 +402,32 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
             copy_texture(renderer, graphic.texture, &graphic.source, &destination);
         }
     }
-    if (!giant_beetle_defeated && map.id() == 0x0b) {
-        for (const yipe::MonsterPlacement& monster :
-             yipe::original_monsters_for_map(map.id())) {
-            const SDL_Rect destination{monster.position.x * tile_size,
-                                       monster.position.y * tile_size,
+    for (const yipe::MonsterPlacement& placement : yipe::original_monsters_for_map(
+             map.id(), game.player.difficulty, game.player.level)) {
+        if (!monster_placement_defeated(game, placement.placement_index)) {
+            const std::optional<yipe::MonsterDefinition> monster =
+                yipe::original_monster_definition(placement.type_id);
+            if (!monster) {
+                throw std::logic_error("monster placement has no recovered definition");
+            }
+            const SDL_Rect destination{placement.position.x * tile_size,
+                                       placement.position.y * tile_size,
                                        tile_size, tile_size};
-            copy_texture(renderer, textures.giant_beetle.get(), nullptr, &destination);
+            copy_texture(renderer, textures.find(monster->bitmap_resource_id), nullptr,
+                         &destination);
         }
     }
     const yipe::PrincessEvent& princess = map.events().princess;
     if (princess.has_position()
-        && (player_state == nullptr
-            || player_state->inventory_values[princess.rescue_index] == 0)) {
+        && game.player.inventory_values[princess.rescue_index] == 0) {
         const SDL_Rect destination{princess.position.x * tile_size,
                                    princess.position.y * tile_size,
                                    tile_size, tile_size};
         copy_texture(renderer, textures.find(390 + princess.portrait_variant), nullptr,
                      &destination);
     }
-    const SDL_Rect player_destination{player.x * tile_size, player.y * tile_size,
+    const SDL_Rect player_destination{game.location.position.x * tile_size,
+                                      game.location.position.y * tile_size,
                                       tile_size, tile_size};
     copy_texture(renderer, textures.warrior.get(), nullptr, &player_destination);
     SDL_RenderPresent(renderer);
@@ -1213,7 +1226,7 @@ std::string_view stat_increase_name(yipe::StatIncrease stat) {
 
 void append_victory_details(std::ostringstream& message, const yipe::CombatTurn& turn,
                             const yipe::Player& player) {
-    message << "\n\nThe Giant Beetle is defeated.\nYou gain "
+    message << "\n\nAll monsters are defeated.\nYou gain "
             << turn.reward.experience << " experience and " << turn.reward.gold
             << " gold.";
     if (turn.reward.equipment_upgrade != yipe::EquipmentUpgrade::none) {
@@ -1232,22 +1245,38 @@ void append_victory_details(std::ostringstream& message, const yipe::CombatTurn&
     }
 }
 
-EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& player,
-                                            yipe::MsvcRandom& random) {
-    yipe::CombatEncounter encounter = yipe::start_monster_encounter(2, 1, random);
-    yipe::Monster& monster = encounter.monsters[0];
+EncounterResult run_monster_encounter(SDL_Window* window,
+                                      const yipe::MonsterPlacement& placement,
+                                      yipe::Player& player, yipe::MsvcRandom& random,
+                                      int map_environment) {
+    yipe::CombatEncounter encounter = yipe::start_monster_encounter(
+        placement, player, random, map_environment);
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Attack"},
         SDL_MessageBoxButtonData{0, 2, "Use Item"},
         SDL_MessageBoxButtonData{0, 3, "Cast Spell"},
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 4, "Flee"},
+        SDL_MessageBoxButtonData{0, 5, "Next Target"},
+        SDL_MessageBoxButtonData{0, 6, "Use Ability"},
     };
 
     while (true) {
         std::ostringstream status;
-        status << "A Giant Beetle blocks your path.\n\nYour HP: " << player.health << "/"
-               << player.maximum_health << "\nGiant Beetle HP: " << monster.health << "/"
-               << monster.maximum_health;
+        status << "Monsters block your path.\n\nYour HP: " << player.health << "/"
+               << player.maximum_health << "  AP: " << player.ability_points << "/"
+               << player.maximum_ability_points;
+        for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+            const yipe::Monster& monster = encounter.monsters[slot];
+            if (monster.type_id == 0) {
+                continue;
+            }
+            status << "\n" << slot + 1 << ". " << monster.name << " HP: "
+                   << std::max(monster.health, 0) << "/" << monster.maximum_health;
+            if (static_cast<int>(slot) == encounter.selected_target
+                && monster.health > 0) {
+                status << " [target]";
+            }
+        }
         const int action = show_choice(window, "Combat", status.str(), buttons.data(),
                                        static_cast<int>(buttons.size()));
         if (action == 1) {
@@ -1260,7 +1289,7 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
                 show_message(window, "Victory", result.str());
                 return EncounterResult::victory;
             }
-            result << "\nThe Giant Beetle deals " << turn.monster_damage << " damage.";
+            result << "\nThe monsters deal " << turn.monster_damage << " damage.";
             show_message(window, turn.outcome == yipe::CombatOutcome::defeat ? "Defeat"
                                                                              : "Combat",
                          result.str());
@@ -1285,7 +1314,7 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
             if (used.amount != 0) {
                 result << " (" << used.amount << ")";
             }
-            result << ".\nThe Giant Beetle deals " << response.monster_damage << " damage.";
+            result << ".\nThe monsters deal " << response.monster_damage << " damage.";
             show_message(window, response.outcome == yipe::CombatOutcome::defeat ? "Defeat"
                                                                                  : "Combat",
                          result.str());
@@ -1324,7 +1353,7 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
                 show_message(window, "Victory", result.str());
                 return EncounterResult::victory;
             }
-            result << "\nThe Giant Beetle deals " << spell.turn.monster_damage
+            result << "\nThe monsters deal " << spell.turn.monster_damage
                    << " damage.";
             show_message(window,
                          spell.turn.outcome == yipe::CombatOutcome::defeat
@@ -1333,33 +1362,76 @@ EncounterResult run_giant_beetle_encounter(SDL_Window* window, yipe::Player& pla
             if (spell.turn.outcome == yipe::CombatOutcome::defeat) {
                 return EncounterResult::defeat;
             }
-        } else {
+        } else if (action == 4) {
             const yipe::FleeResult result = yipe::try_flee(player, encounter, random);
             if (result.escaped) {
-                show_message(window, "Combat", "You escaped from the Giant Beetle.");
+                show_message(window, "Combat", "You escaped from the monsters.");
                 return EncounterResult::fled;
             }
             show_message(window, result.player_defeated ? "Defeat" : "Combat",
-                         "You fail to escape. The Giant Beetle deals "
+                         "You fail to escape. The monsters deal "
                              + std::to_string(result.monster_damage) + " damage.");
             if (result.player_defeated) {
                 return EncounterResult::defeat;
             }
+        } else if (action == 5) {
+            for (std::size_t offset = 1; offset <= encounter.monsters.size(); ++offset) {
+                const std::size_t slot =
+                    (static_cast<std::size_t>(encounter.selected_target) + offset)
+                    % encounter.monsters.size();
+                if (encounter.monsters[slot].health > 0) {
+                    encounter.selected_target = static_cast<int>(slot);
+                    break;
+                }
+            }
+        } else if (action == 6) {
+            if (player.special_ability == yipe::SpecialAbility::none) {
+                show_message(window, "Combat", "You have not learned a special ability.");
+                continue;
+            }
+            if (player.ability_points < 3) {
+                show_message(window, "Combat",
+                             "You need three ability points to use your special ability.");
+                continue;
+            }
+            const int previous_ability_points = player.ability_points;
+            const yipe::CombatTurn turn =
+                yipe::resolve_special_ability_turn(player, encounter, random);
+            if (player.ability_points == previous_ability_points) {
+                show_message(window, "Combat",
+                             "Your special ability cannot take effect right now.");
+                continue;
+            }
+
+            std::ostringstream result;
+            result << "You use your special ability.";
+            if (turn.player_damage > 0) {
+                result << "\nIt deals " << turn.player_damage << " damage.";
+            }
+            if (player.special_ability_duration > 0) {
+                result << "\nIts effect will last for "
+                       << player.special_ability_duration << " combat actions.";
+            }
+            if (turn.outcome == yipe::CombatOutcome::victory) {
+                append_victory_details(result, turn, player);
+                show_message(window, "Victory", result.str());
+                return EncounterResult::victory;
+            }
+            show_message(window, "Combat", result.str());
         }
     }
 }
 
-bool has_encounter_at(const yipe::GameState& game) {
-    if (game.giant_beetle_defeated || game.location.map_id != 0x0b) {
-        return false;
-    }
-    for (const yipe::MonsterPlacement& monster :
-         yipe::original_monsters_for_map(game.location.map_id)) {
-        if (monster.position == game.location.position) {
-            return true;
+std::optional<yipe::MonsterPlacement> monster_encounter_at(
+    const yipe::GameState& game) {
+    for (const yipe::MonsterPlacement& placement : yipe::original_monsters_for_map(
+             game.location.map_id, game.player.difficulty, game.player.level)) {
+        if (placement.position == game.location.position
+            && !monster_placement_defeated(game, placement.placement_index)) {
+            return placement;
         }
     }
-    return false;
+    return std::nullopt;
 }
 
 void apply_map_tile_changes(yipe::Map& map, const yipe::GameState& game) {
@@ -1470,8 +1542,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
     apply_map_tile_changes(map, game);
     const bool completed_saved_finale = map.id() == 0x11
         && yipe::complete_gatekeeper_finale(game.player);
-    render_game(renderer, map, textures, game.location.position,
-                game.giant_beetle_defeated, &game.player);
+    render_game(renderer, map, textures, game);
     if (completed_saved_finale) {
         show_message(window, "Victory",
                      "You've rescued all the princesses!!\n\n"
@@ -1490,8 +1561,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         if (event.type == SDL_WINDOWEVENT
             && (event.window.event == SDL_WINDOWEVENT_EXPOSED
                 || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
         }
         if (event.type != SDL_KEYDOWN) {
             continue;
@@ -1500,26 +1570,22 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (confirm_quit(window, save_path, game, random)) {
                 return true;
             }
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
             continue;
         }
         if (event.key.keysym.sym == SDLK_F5) {
             save_current_game(window, save_path, game, random, true);
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
             continue;
         }
         if (event.key.keysym.sym == SDLK_i) {
             show_player_status(window, game.player);
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
             continue;
         }
         if (event.key.keysym.sym == SDLK_c) {
             cast_exploration_spell(window, game, map, random);
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
             continue;
         }
 
@@ -1586,8 +1652,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     game.location = previous_location;
                 }
             }
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
             if (completed_finale) {
                 show_message(window, "Victory",
                              "You've rescued all the princesses!!\n\n"
@@ -1616,23 +1681,33 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 && princess.position == game.location.position
                 && game.player.inventory_values[princess.rescue_index] == 0) {
                 show_princess(window, game.player, princess, random);
-                render_game(renderer, map, textures, game.location.position,
-                            game.giant_beetle_defeated, &game.player);
+                render_game(renderer, map, textures, game);
             }
-            if (has_encounter_at(game)) {
-                const EncounterResult encounter =
-                    run_giant_beetle_encounter(window, game.player, random);
+            if (const std::optional<yipe::MonsterPlacement> placement =
+                    monster_encounter_at(game)) {
+                const EncounterResult encounter = run_monster_encounter(
+                    window, *placement, game.player, random, map.environment());
                 if (encounter == EncounterResult::victory) {
-                    game.giant_beetle_defeated = true;
+                    game.defeated_monster_placements.push_back(
+                        placement->placement_index);
                 } else if (encounter == EncounterResult::fled) {
                     game.location = previous_location;
+                    if (map.id() != game.location.map_id) {
+                        const std::optional<yipe::Map> previous_map =
+                            load_world_map(game.location, random);
+                        if (!previous_map) {
+                            throw std::runtime_error(
+                                "could not restore the map after fleeing");
+                        }
+                        map = *previous_map;
+                        apply_map_tile_changes(map, game);
+                    }
                 } else {
                     show_message(window, "Defeat",
                                  "Your adventure has ended. Load a saved game to try again.");
                     return false;
                 }
-                render_game(renderer, map, textures, game.location.position,
-                            game.giant_beetle_defeated, &game.player);
+                render_game(renderer, map, textures, game);
             }
         } else {
             switch (result.original_code) {
@@ -1713,8 +1788,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             default:
                 break;
             }
-            render_game(renderer, map, textures, game.location.position,
-                        game.giant_beetle_defeated, &game.player);
+            render_game(renderer, map, textures, game);
         }
     }
 }
@@ -1754,17 +1828,22 @@ int main(int argc, char* argv[]) {
         if (smoke_test) {
             render_startup(renderer.get(), menu.get(), copyright.get());
             prepare_game_view(window.get(), renderer.get());
+            yipe::GameState game;
             for (int map_id = 0; map_id <= 0x85; ++map_id) {
                 const std::optional<yipe::Map> map = yipe::original_map(map_id);
                 if (map) {
-                    render_game(renderer.get(), *map, game_textures, {5, 5}, false);
+                    game.location.map_id = map_id;
+                    game.location.position = {5, 5};
+                    render_game(renderer.get(), *map, game_textures, game);
                 }
             }
             for (int map_id = 0x76; map_id <= 0x78; ++map_id) {
                 yipe::MsvcRandom random(1);
                 const yipe::Map map =
                     yipe::generate_original_map(map_id, {1, 1}, random);
-                render_game(renderer.get(), map, game_textures, {1, 1}, false);
+                game.location.map_id = map_id;
+                game.location.position = {1, 1};
+                render_game(renderer.get(), map, game_textures, game);
             }
             return 0;
         }

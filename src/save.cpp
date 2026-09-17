@@ -1,5 +1,7 @@
 #include "yipe/save.hpp"
 
+#include "yipe/encounter.hpp"
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -26,7 +28,9 @@ constexpr std::uint16_t movement_game_format_version = 4;
 constexpr std::uint16_t map_changes_game_format_version = 5;
 constexpr std::uint16_t spells_game_format_version = 6;
 constexpr std::uint16_t quest_game_format_version = 7;
-constexpr std::uint16_t game_format_version = 8;
+constexpr std::uint16_t princess_game_format_version = 8;
+constexpr std::uint16_t game_format_version = 9;
+constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
     output.push_back(value);
@@ -171,7 +175,12 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_i32(payload, game.location.map_layer);
     append_u8(payload, game.location.alternate_map_set ? 1 : 0);
     append_i32(payload, game.location.map_id);
-    append_u8(payload, game.giant_beetle_defeated ? 1 : 0);
+    append_u8(payload,
+              std::find(game.defeated_monster_placements.begin(),
+                        game.defeated_monster_placements.end(),
+                        legacy_giant_beetle_placement_index)
+                      != game.defeated_monster_placements.end()
+                  ? 1 : 0);
     append_u32(payload, game.random_state);
     append_i32(payload, game.player.ability_points);
     append_i32(payload, game.player.maximum_ability_points);
@@ -211,6 +220,21 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     append_u16(payload, game.player.stamps_found);
     append_u16(payload, game.player.princesses_found);
     append_u16(payload, game.player.princess_mystery_uses);
+    if (game.defeated_monster_placements.size()
+        > std::numeric_limits<std::uint32_t>::max()) {
+        throw std::runtime_error("too many defeated monster placements to save");
+    }
+    append_u32(payload,
+               static_cast<std::uint32_t>(game.defeated_monster_placements.size()));
+    std::array<bool, original_monster_placement_count> seen_placements{};
+    for (const std::uint16_t placement : game.defeated_monster_placements) {
+        if (placement >= original_monster_placement_count
+            || seen_placements[placement]) {
+            throw std::runtime_error("invalid defeated monster placement in save state");
+        }
+        seen_placements[placement] = true;
+        append_u16(payload, placement);
+    }
     return payload;
 }
 
@@ -315,7 +339,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
         && version != movement_game_format_version
         && version != map_changes_game_format_version
         && version != spells_game_format_version
-        && version != quest_game_format_version && version != game_format_version) {
+        && version != quest_game_format_version
+        && version != princess_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -377,7 +402,7 @@ GameState load_game(const std::filesystem::path& path) {
     game.location.map_layer = reader.i32();
     game.location.alternate_map_set = reader.u8() != 0;
     game.location.map_id = reader.i32();
-    game.giant_beetle_defeated = reader.u8() != 0;
+    const bool legacy_giant_beetle_defeated = reader.u8() != 0;
     game.random_state = reader.u32();
     if (save.version == progression_game_format_version) {
         game.player.maximum_ability_points =
@@ -445,8 +470,30 @@ GameState load_game(const std::filesystem::path& path) {
         game.player.stamps_found = reader.u16();
         game.player.princesses_found = reader.u16();
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= princess_game_format_version) {
         game.player.princess_mystery_uses = reader.u16();
+    }
+    if (save.version >= game_format_version) {
+        const std::uint32_t placement_count = reader.u32();
+        if (placement_count > reader.remaining() / sizeof(std::uint16_t)) {
+            throw std::runtime_error(
+                "save contains an invalid defeated monster placement count");
+        }
+        game.defeated_monster_placements.reserve(placement_count);
+        std::array<bool, original_monster_placement_count> seen_placements{};
+        for (std::uint32_t index = 0; index < placement_count; ++index) {
+            const std::uint16_t placement = reader.u16();
+            if (placement >= original_monster_placement_count
+                || seen_placements[placement]) {
+                throw std::runtime_error(
+                    "save contains an invalid defeated monster placement");
+            }
+            seen_placements[placement] = true;
+            game.defeated_monster_placements.push_back(placement);
+        }
+    } else if (legacy_giant_beetle_defeated) {
+        game.defeated_monster_placements.push_back(
+            legacy_giant_beetle_placement_index);
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

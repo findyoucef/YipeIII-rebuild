@@ -103,8 +103,9 @@ now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacemen
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
 visibility refresh performed by `0x19`. Native format version 5 introduced
-persistence for changed door and linked-mechanism tiles; current version 8
-retains it, the recovered King quest state, and the princess Mystery counter.
+persistence for changed door and linked-mechanism tiles; current version 9
+retains it, the recovered King quest state, the princess Mystery counter, and
+all defeated monster placement indices.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -129,10 +130,11 @@ an improvement. Failed purchases do not deduct gold.
 ## Monster catalogs
 
 The event initializer at `0x0041ec40` creates 186 monster placements on 84 maps,
-with up to five slots per map. The generated catalogs preserve each monster
-type, tile coordinate, slot, encounter size, and the original `+0x36c` and
-`+0x371` flags. Difficulty changes some group sizes and late-game monster types;
-player level changes the selections on maps `0x39` and `0x75`. Maps `0x76`
+with up to five slots per map. The generated catalogs assign each record a
+stable index and preserve its monster type, tile coordinate, slot, encounter
+size, and original `+0x36c` and `+0x371` flags. Difficulty changes some group
+sizes and late-game monster types; player level changes the selections on maps
+`0x39` and `0x75`. Maps `0x76`
 through `0x78` receive types 32, 33, and 34 even though their terrain is generated
 separately.
 
@@ -164,17 +166,23 @@ the three size-zero placements on map `0x14`. The four player special abilities
 and their Invisibility/Enrage combat statuses are implemented from the static
 branches. High-rank placements now override their generated companions and
 scale primary health by player level. The Gatekeeper's empowered setup, attack,
-defense, and damage branches are also implemented. The King dialog now consumes
-the Gatekeeper state for its hints and rewards; the event paths that advance
-that state and the remaining monster-specific branches still need reconstruction
-before the application enables all encounters.
+defense, and damage branches are also implemented. The King dialog consumes the
+Gatekeeper state for its hints and rewards, and the recovered boss victories
+advance stamp and Gatekeeper state when combat is started with the current map
+environment.
 
-The first reachable static encounter is the Giant Beetle on map `0x0b` at
-`(2,8)`. The route from the north-edge entry at `(5,10)` is covered by the
-playable-flow test. Bitmap resource 175 is drawn at the placement until the
-encounter is won; the version-5 native save preserves its defeated state.
+The SDL application materializes every placement with the player's current
+difficulty and level, renders its definition's bitmap resource 174–214, and
+starts the recovered group setup when the player enters its tile. It exposes
+target cycling, items, spells, trained special abilities, and fleeing for every
+group. A victory stores the placement's stable index in native save version 9 so
+it remains removed after map changes and restart; versions 2–8 migrate their
+historical Giant Beetle bit to placement index 5. Fleeing leaves the placement
+active and returns the player to the previous location, including across map
+boundaries.
 
-The start-area renderer currently needs bitmap resources 133, 134, 137, 139,
-141, 142, 377, and 418. Resource 406 is the initial type-1 character image.
+The map renderer uses terrain bitmap resources 133–147, 153, 377, 418, and 460;
+monster resources 174–214; princess resources 391–393; and resource 406 for the
+initial type-1 character image.
 Tile-to-source-rectangle mappings come from the draw switch at `0x0040cc10`, and
 bitmap loading comes from `0x0040b8a0`.

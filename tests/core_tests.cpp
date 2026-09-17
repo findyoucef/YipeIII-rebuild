@@ -298,7 +298,7 @@ void test_native_save() {
     const yipe::GameState upgraded_from_v1 = yipe::load_game(path);
     check(upgraded_from_v1.player.name == original.name
               && upgraded_from_v1.location.map_id == 0x11
-              && !upgraded_from_v1.giant_beetle_defeated,
+              && upgraded_from_v1.defeated_monster_placements.empty(),
           "version 1 player save loads with default world state");
 
     yipe::Player replacement(yipe::CharacterType::rogue);
@@ -371,7 +371,7 @@ void test_game_save() {
     original.player.quest_flags[8] = true;
     original.player.inventory_values[13] = 9;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
-    original.giant_beetle_defeated = true;
+    original.defeated_monster_placements = {5, 38, 185};
     original.random_state = 0x12345678u;
     original.map_tile_changes = {{0x2b, {6, 1}, 40}, {0x2b, {5, 8}, 34}};
 
@@ -380,16 +380,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 8 save restores progression and equipment");
+          "version 9 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 8 save restores combat settings and counters");
+          "version 9 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 8 save restores world location");
-    check(loaded.giant_beetle_defeated && loaded.random_state == 0x12345678u,
-          "version 8 save restores encounter and random state");
+          "version 9 save restores world location");
+    check(loaded.defeated_monster_placements == original.defeated_monster_placements
+              && loaded.random_state == 0x12345678u,
+          "version 9 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -397,17 +398,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 8 save restores ability and active status state");
+          "version 9 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 8 save restores special movement state");
+          "version 9 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 8 save restores persistent map tile changes");
+          "version 9 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 8 save restores learned spells");
+          "version 9 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -417,7 +418,17 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 8 save restores quest state");
+          "version 9 save restores quest state");
+
+    remove_save_extension(path, sizeof(std::uint32_t)
+                                    + original.defeated_monster_placements.size()
+                                        * sizeof(std::uint16_t),
+                          8);
+    const yipe::GameState loaded_version_8 = yipe::load_game(path);
+    check(loaded_version_8.defeated_monster_placements
+                  == std::vector<std::uint16_t>{5}
+              && loaded_version_8.player.princess_mystery_uses == 7,
+          "version 8 saves migrate the first encounter and retain princess state");
 
     remove_save_extension(path, sizeof(std::uint16_t), 7);
     const yipe::GameState loaded_version_7 = yipe::load_game(path);
@@ -1171,7 +1182,8 @@ void test_recovered_casino_games() {
 
 void test_giant_beetle_encounter() {
     const auto placements = yipe::original_monsters_for_map(0x0b);
-    check(placements.size() == 1 && placements[0].type_id == 2
+    check(placements.size() == 1 && placements[0].placement_index == 5
+              && placements[0].type_id == 2
               && placements[0].position == yipe::MapPosition{2, 8}
               && placements[0].slot == 0 && placements[0].encounter_size == 1
               && !placements[0].flag_36c && !placements[0].flag_371,
@@ -1552,18 +1564,25 @@ void test_special_abilities() {
 
 void test_monster_placement_catalog() {
     std::size_t placement_count = 0;
+    std::array<bool, yipe::original_monster_placement_count> placement_indices{};
     int flag_36c_count = 0;
     int flag_371_count = 0;
     for (int map_id = 0; map_id <= 0x85; ++map_id) {
         for (const yipe::MonsterPlacement& placement :
              yipe::original_monsters_for_map(map_id)) {
             ++placement_count;
+            if (placement.placement_index < placement_indices.size()) {
+                placement_indices[placement.placement_index] = true;
+            }
             flag_36c_count += placement.flag_36c ? 1 : 0;
             flag_371_count += placement.flag_371 ? 1 : 0;
         }
     }
     check(placement_count == 186 && flag_36c_count == 23 && flag_371_count == 16,
           "generated catalog exposes every recovered monster placement and flag");
+    check(std::all_of(placement_indices.begin(), placement_indices.end(),
+                      [](bool present) { return present; }),
+          "every recovered placement has a stable catalog index");
 
     check(yipe::original_monsters_for_map(8, 3, 1)[1].encounter_size == 3,
           "difficulty controls dynamic encounter size");
@@ -1628,11 +1647,12 @@ void test_monster_definition_catalog() {
                                         high_rank_player.level)[0];
     yipe::MsvcRandom high_rank_random(1);
     const yipe::CombatEncounter high_rank_encounter = yipe::start_monster_encounter(
-        high_rank_placement, high_rank_player, high_rank_random);
+        high_rank_placement, high_rank_player, high_rank_random, 1);
     check(high_rank_encounter.monsters[0].type_id == 35
               && high_rank_encounter.monsters[0].health == 111
               && high_rank_encounter.monsters[1].type_id == 8
               && high_rank_encounter.monsters[2].type_id == 8
+              && high_rank_encounter.map_environment == 1
               && high_rank_random.state() == 2179684817u,
           "high-rank placement setup applies companion overrides and level scaling");
 
@@ -2226,24 +2246,27 @@ void test_first_playable_flow() {
     yipe::GameState game;
     game.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     yipe::MsvcRandom random(1);
-    yipe::Monster monster = yipe::start_single_monster_encounter(2, random);
+    const yipe::MonsterPlacement placement =
+        yipe::original_monsters_for_map(0x0b)[0];
+    yipe::CombatEncounter encounter = yipe::start_monster_encounter(
+        placement, game.player, random, map->environment());
     const yipe::CombatTurn opening =
-        yipe::resolve_attack_turn(game.player, monster, random);
+        yipe::resolve_attack_turn(game.player, encounter, random);
     check(opening.monster_damage == 2 && game.player.health == 11,
           "playable flow takes combat damage before item use");
     const yipe::ItemUseResult item = game.player.use_inventory_item(0, random, false, true);
     check(item.consumed && game.player.inventory[0] == 0,
           "playable flow consumes the starting healing item in combat");
-    static_cast<void>(yipe::resolve_monster_turn(game.player, monster, random));
+    static_cast<void>(yipe::resolve_monster_turn(game.player, encounter, random));
 
     yipe::CombatTurn turn;
     for (int attempt = 0; attempt < 30 && turn.outcome == yipe::CombatOutcome::ongoing;
          ++attempt) {
-        turn = yipe::resolve_attack_turn(game.player, monster, random);
+        turn = yipe::resolve_attack_turn(game.player, encounter, random);
     }
     check(turn.outcome == yipe::CombatOutcome::victory,
           "playable flow can finish the encounter after using an item");
-    game.giant_beetle_defeated = true;
+    game.defeated_monster_placements.push_back(placement.placement_index);
     game.random_state = random.state();
 
     const std::filesystem::path path =
@@ -2251,7 +2274,9 @@ void test_first_playable_flow() {
     yipe::save_game_atomic(path, game);
     const yipe::GameState resumed = yipe::load_game(path);
     check(resumed.location.position == yipe::MapPosition{2, 8}
-              && resumed.giant_beetle_defeated && resumed.player.inventory[0] == 0
+              && resumed.defeated_monster_placements
+                  == std::vector<std::uint16_t>{placement.placement_index}
+              && resumed.player.inventory[0] == 0
               && resumed.player.experience > 0 && resumed.random_state == random.state(),
           "playable flow resumes its location, encounter, inventory, reward, and random state");
     std::filesystem::remove(path);

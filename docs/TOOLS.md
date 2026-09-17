@@ -75,8 +75,9 @@ IDs `0x76`–`0x78` are intentionally excluded.
   --cpp-output src/generated/original_monster_definitions.cpp
 ```
 
-The placement extractor validates all 186 records before generating the runtime
-catalog. The definition extractor joins the 41 setup-stat records, damage
+The placement extractor validates all 186 records and assigns stable catalog
+indices before generating the runtime catalog. The definition extractor joins
+the 41 setup-stat records, damage
 ranges, resource names, and bitmap IDs, and fails when any required field is
 missing.
 

@@ -252,9 +252,12 @@ int resolve_value(PlacementValue value, int difficulty, int player_level) {
 std::vector<MonsterPlacement> original_monsters_for_map(
     int map_id, int difficulty, int player_level) {
     std::vector<MonsterPlacement> result;
-    for (const OriginalMonsterPlacementRecord& placement : placements) {
+    for (std::size_t placement_index = 0; placement_index < placements.size();
+         ++placement_index) {
+        const OriginalMonsterPlacementRecord& placement = placements[placement_index];
         if (placement.map_id == map_id) {
-            result.push_back({resolve_value(placement.type_id, difficulty, player_level),
+            result.push_back({static_cast<std::uint16_t>(placement_index),
+                              resolve_value(placement.type_id, difficulty, player_level),
                               placement.position, placement.slot,
                               resolve_value(placement.encounter_size, difficulty,
                                             player_level),
