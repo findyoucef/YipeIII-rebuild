@@ -14,17 +14,27 @@ length byte. Longer strings use `ff` plus a 16-bit length; `ffff` then selects a
 | File order | In-memory offset | Type | Meaning |
 | --- | ---: | --- | --- |
 | 0 | `+0x004` and `+0x0b8` | 45 × (`CString`, `i32`) | High score names and values, interleaved on disk |
-| 1 | `+0x174`…`+0x182` | 8 × `u16` | Primary movement/action virtual-key codes |
+| 1 | `+0x174`…`+0x182` | 8 × `u16` | Northwest, north, northeast, west, east, southwest, south, and southeast virtual-key codes |
 | 2 | `+0x190` | `i32` | Registration-related value; exact name pending |
 | 3 | `+0x170` | `i32` | Registration-related value; exact name pending |
-| 4 | `+0x184`, `+0x18c`, `+0x186`, `+0x188`, `+0x18a` | 5 × `u16` | Combat command virtual-key codes in serializer order |
+| 4 | `+0x184`, `+0x18c`, `+0x186`, `+0x188`, `+0x18a` | 5 × `u16` | Run, attack, cast, use-item, and special virtual-key codes in serializer order |
 | 5 | `+0x16c` | `i32` | Registration-related value; exact name pending |
 
-The default key codes are `g`, Up, `i`, Left, Right, `a`, Down, `c`, followed
-in memory by `R`, `C`, `I`, `S`, `A`. The captured file contains default key
-codes, names `Yip` and `Youcef` in the middle 15-entry score group, and values
-1302, 0, and 4529 in the three registration-related fields.
+The first eight defaults are Windows virtual-key values, not character codes:
+Numpad 7, Up, Numpad 9, Left, Right, Numpad 1, Down, and Numpad 3. The five
+combat defaults in memory order are Run `R`, Cast `C`, Use Item `I`, Special
+`S`, and Attack `A`. The captured file contains those defaults, names `Yip`
+and `Youcef` in the middle 15-entry score group, and values 1302, 0, and 4529
+in the three registration-related fields.
 
 `load_original_auxiliary_data` implements a bounded reader for this exact field
 order. It rejects truncation, trailing bytes, and the Unicode string variant,
 which has not been observed in a real Yipe! III file.
+
+The rebuild does not overwrite `Yipe3.dat`. `settings_from_original` imports
+its 13 bindings into the portable `GameSettings` action order: eight movement
+directions followed by Attack, Run, Cast, Use Item, and Special. Native
+`settings.y3r` stores those bindings and the sound toggle with a versioned
+header and checksum; high scores and the three unresolved registration fields
+remain outside that native settings file. The original sound toggle is an
+application-profile `Y3Settings/Sounds` value rather than part of `Yipe3.dat`.

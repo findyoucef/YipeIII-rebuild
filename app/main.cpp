@@ -1,3 +1,4 @@
+#include "yipe/audio.hpp"
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
@@ -5,6 +6,7 @@
 #include "yipe/random.hpp"
 #include "yipe/quest.hpp"
 #include "yipe/save.hpp"
+#include "yipe/settings.hpp"
 #include "yipe/shop.hpp"
 #include "yipe/spell.hpp"
 
@@ -14,8 +16,11 @@
 #include <array>
 #include <ctime>
 #include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <limits>
+#include <map>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -38,12 +43,18 @@ using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
 using Texture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>;
 using Cursor = std::unique_ptr<SDL_Cursor, decltype(&SDL_FreeCursor)>;
 
-enum class StartupChoice { new_game, load_game, quit };
+enum class StartupChoice { new_game, load_game, settings, quit };
+
+struct RuntimeAssets {
+    std::filesystem::path bitmaps;
+    std::filesystem::path audio;
+    std::filesystem::path monster_sounds;
+};
 
 class SdlSession {
 public:
     SdlSession() {
-        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
             throw std::runtime_error(std::string("SDL initialization failed: ") + SDL_GetError());
         }
     }
@@ -51,6 +62,162 @@ public:
 
     SdlSession(const SdlSession&) = delete;
     SdlSession& operator=(const SdlSession&) = delete;
+};
+
+class AudioPlayer {
+public:
+    explicit AudioPlayer(const RuntimeAssets& assets)
+        : audio_directory_(assets.audio),
+          monster_sound_directory_(assets.monster_sounds) {
+        SDL_AudioSpec desired{};
+        desired.freq = 44'100;
+        desired.format = AUDIO_S16SYS;
+        desired.channels = 1;
+        desired.samples = 4'096;
+        device_ = SDL_OpenAudioDevice(nullptr, 0, &desired, &output_, 0);
+        if (device_ == 0) {
+            error_ = std::string("could not open the audio device: ") + SDL_GetError();
+            return;
+        }
+
+        try {
+            for (const yipe::SoundEffect& effect : yipe::sound_effects()) {
+                effect_clips_.emplace(
+                    effect.id, load_clip(audio_directory_ / effect.asset_name));
+            }
+        } catch (const std::runtime_error& error) {
+            error_ = error.what();
+            effect_clips_.clear();
+            SDL_CloseAudioDevice(device_);
+            device_ = 0;
+        }
+    }
+
+    ~AudioPlayer() {
+        if (device_ != 0) {
+            SDL_CloseAudioDevice(device_);
+        }
+    }
+
+    AudioPlayer(const AudioPlayer&) = delete;
+    AudioPlayer& operator=(const AudioPlayer&) = delete;
+
+    [[nodiscard]] bool available() const { return device_ != 0; }
+    [[nodiscard]] const std::string& error() const { return error_; }
+
+    void stop() const {
+        if (device_ != 0) {
+            SDL_ClearQueuedAudio(device_);
+        }
+    }
+
+    void play(int sound_id, bool enabled) {
+        if (!enabled || device_ == 0 || sound_id == 0) {
+            return;
+        }
+        const auto found = effect_clips_.find(sound_id);
+        if (found == effect_clips_.end()) {
+            std::cerr << "Yipe! III: unknown sound effect " << sound_id << '\n';
+            return;
+        }
+        queue(found->second);
+    }
+
+    void play_monster_death(int monster_type, bool enabled) {
+        if (!enabled || device_ == 0) {
+            return;
+        }
+        const int file_id = yipe::monster_sound_file_id(monster_type);
+        const std::filesystem::path path =
+            monster_sound_directory_ / (std::to_string(file_id) + ".wav");
+        if (!std::filesystem::exists(path)) {
+            play(12, true);
+            return;
+        }
+        try {
+            auto [position, inserted] = monster_clips_.try_emplace(file_id);
+            if (inserted) {
+                position->second = load_clip(path);
+            }
+            queue(position->second);
+        } catch (const std::runtime_error& error) {
+            std::cerr << "Yipe! III: " << error.what()
+                      << "; using the generic monster-death sound\n";
+            play(12, true);
+        }
+    }
+
+    void validate_packaged_monster_sounds() {
+        constexpr std::array file_ids{
+            2, 3, 4, 5, 6, 8, 9, 13, 15, 16,
+            19, 20, 21, 24, 25, 28, 31, 35, 37, 40,
+        };
+        for (const int file_id : file_ids) {
+            const std::filesystem::path path =
+                monster_sound_directory_ / (std::to_string(file_id) + ".wav");
+            monster_clips_[file_id] = load_clip(path);
+        }
+    }
+
+private:
+    std::vector<Uint8> load_clip(const std::filesystem::path& path) const {
+        SDL_AudioSpec source{};
+        Uint8* raw_buffer = nullptr;
+        Uint32 raw_length = 0;
+        if (SDL_LoadWAV(path.string().c_str(), &source, &raw_buffer, &raw_length)
+            == nullptr) {
+            throw std::runtime_error("could not load " + path.string() + ": "
+                                     + SDL_GetError());
+        }
+        std::unique_ptr<Uint8, decltype(&SDL_FreeWAV)> raw(raw_buffer, SDL_FreeWAV);
+        if (raw_length > static_cast<Uint32>(std::numeric_limits<int>::max())) {
+            throw std::runtime_error("audio asset is too large: " + path.string());
+        }
+
+        SDL_AudioCVT converter{};
+        const int conversion = SDL_BuildAudioCVT(
+            &converter, source.format, source.channels, source.freq,
+            output_.format, output_.channels, output_.freq);
+        if (conversion < 0) {
+            throw std::runtime_error("could not prepare " + path.string() + ": "
+                                     + SDL_GetError());
+        }
+        const std::size_t capacity = conversion == 1
+            ? static_cast<std::size_t>(raw_length)
+                * static_cast<std::size_t>(converter.len_mult)
+            : static_cast<std::size_t>(raw_length);
+        std::vector<Uint8> converted(capacity);
+        std::memcpy(converted.data(), raw.get(), static_cast<std::size_t>(raw_length));
+        if (conversion == 1) {
+            converter.buf = converted.data();
+            converter.len = static_cast<int>(raw_length);
+            if (SDL_ConvertAudio(&converter) != 0) {
+                throw std::runtime_error("could not convert " + path.string() + ": "
+                                         + SDL_GetError());
+            }
+            converted.resize(static_cast<std::size_t>(converter.len_cvt));
+        } else {
+            converted.resize(static_cast<std::size_t>(raw_length));
+        }
+        return converted;
+    }
+
+    void queue(const std::vector<Uint8>& clip) const {
+        SDL_ClearQueuedAudio(device_);
+        if (SDL_QueueAudio(device_, clip.data(), static_cast<Uint32>(clip.size())) != 0) {
+            std::cerr << "Yipe! III: could not queue audio: " << SDL_GetError() << '\n';
+            return;
+        }
+        SDL_PauseAudioDevice(device_, 0);
+    }
+
+    std::filesystem::path audio_directory_;
+    std::filesystem::path monster_sound_directory_;
+    SDL_AudioDeviceID device_ = 0;
+    SDL_AudioSpec output_{};
+    std::map<int, std::vector<Uint8>> effect_clips_;
+    std::map<int, std::vector<Uint8>> monster_clips_;
+    std::string error_;
 };
 
 Texture load_bitmap(SDL_Renderer* renderer, const std::filesystem::path& path,
@@ -72,19 +239,27 @@ Texture load_bitmap(SDL_Renderer* renderer, const std::filesystem::path& path,
     return texture;
 }
 
-std::filesystem::path runtime_asset_directory(const char* executable) {
+RuntimeAssets runtime_assets(const char* executable) {
     std::unique_ptr<char, decltype(&SDL_free)> base_path(SDL_GetBasePath(), SDL_free);
     if (base_path) {
         const std::filesystem::path beside_executable =
             std::filesystem::path(base_path.get()) / "assets";
         if (std::filesystem::exists(beside_executable / "379-1033.bmp")) {
-            return beside_executable;
+            return {
+                beside_executable,
+                beside_executable / "audio",
+                beside_executable / "MonsterSounds",
+            };
         }
     }
 
-    const std::filesystem::path source_tree = "assets/embedded/bitmaps";
-    if (std::filesystem::exists(source_tree / "379-1033.bmp")) {
-        return source_tree;
+    const std::filesystem::path embedded = "assets/embedded";
+    if (std::filesystem::exists(embedded / "bitmaps/379-1033.bmp")) {
+        return {
+            embedded / "bitmaps",
+            embedded / "audio",
+            "assets/original/MonsterSounds",
+        };
     }
     throw std::runtime_error(std::string("could not locate runtime assets for ") + executable);
 }
@@ -136,6 +311,9 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
             }
             if (event.key.keysym.sym == SDLK_l) {
                 return StartupChoice::load_game;
+            }
+            if (event.key.keysym.sym == SDLK_s) {
+                return StartupChoice::settings;
             }
             if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
                 return StartupChoice::quit;
@@ -569,14 +747,230 @@ std::optional<yipe::CharacterType> choose_character(SDL_Window* window) {
     return static_cast<yipe::CharacterType>(choice);
 }
 
-std::filesystem::path default_save_path() {
+std::filesystem::path default_preference_directory() {
     std::unique_ptr<char, decltype(&SDL_free)> preference_path(
         SDL_GetPrefPath("Yipe Software", "Yipe III Rebuild"), SDL_free);
     if (!preference_path) {
-        throw std::runtime_error(std::string("could not locate the save directory: ")
+        throw std::runtime_error(std::string("could not locate the settings directory: ")
                                  + SDL_GetError());
     }
-    return std::filesystem::path(preference_path.get()) / "save.y3r";
+    return preference_path.get();
+}
+
+std::optional<std::uint16_t> portable_key_code(SDL_Keycode key) {
+    if (key >= SDLK_a && key <= SDLK_z) {
+        return static_cast<std::uint16_t>('A' + (key - SDLK_a));
+    }
+    if (key >= SDLK_0 && key <= SDLK_9) {
+        return static_cast<std::uint16_t>('0' + (key - SDLK_0));
+    }
+    if (key >= SDLK_F1 && key <= SDLK_F12) {
+        return static_cast<std::uint16_t>(0x70 + (key - SDLK_F1));
+    }
+    switch (key) {
+    case SDLK_BACKSPACE:
+        return 0x08;
+    case SDLK_TAB:
+        return 0x09;
+    case SDLK_RETURN:
+    case SDLK_KP_ENTER:
+        return 0x0d;
+    case SDLK_ESCAPE:
+        return 0x1b;
+    case SDLK_SPACE:
+        return 0x20;
+    case SDLK_PAGEUP:
+        return 0x21;
+    case SDLK_PAGEDOWN:
+        return 0x22;
+    case SDLK_END:
+        return 0x23;
+    case SDLK_HOME:
+        return 0x24;
+    case SDLK_LEFT:
+        return 0x25;
+    case SDLK_UP:
+        return 0x26;
+    case SDLK_RIGHT:
+        return 0x27;
+    case SDLK_DOWN:
+        return 0x28;
+    case SDLK_INSERT:
+        return 0x2d;
+    case SDLK_DELETE:
+        return 0x2e;
+    case SDLK_KP_0:
+        return 0x60;
+    case SDLK_KP_1:
+        return 0x61;
+    case SDLK_KP_2:
+        return 0x62;
+    case SDLK_KP_3:
+        return 0x63;
+    case SDLK_KP_4:
+        return 0x64;
+    case SDLK_KP_5:
+        return 0x65;
+    case SDLK_KP_6:
+        return 0x66;
+    case SDLK_KP_7:
+        return 0x67;
+    case SDLK_KP_8:
+        return 0x68;
+    case SDLK_KP_9:
+        return 0x69;
+    default:
+        return std::nullopt;
+    }
+}
+
+std::uint16_t binding(const yipe::GameSettings& settings,
+                      yipe::InputAction action) {
+    return settings.keys[static_cast<std::size_t>(action)];
+}
+
+std::optional<std::uint16_t> capture_key_binding(
+    SDL_Window* window, yipe::InputAction action) {
+    const std::string action_name(yipe::input_action_name(action));
+    show_message(window, "Edit Keys",
+                 "Press OK, then press the new key for " + action_name
+                     + ".\n\nPress Escape to cancel.");
+    const std::string original_title = SDL_GetWindowTitle(window);
+    SDL_SetWindowTitle(window, ("Yipe! III - press key for " + action_name).c_str());
+    while (true) {
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            SDL_SetWindowTitle(window, original_title.c_str());
+            throw std::runtime_error(std::string("SDL event wait failed: ")
+                                     + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT) {
+            SDL_PushEvent(&event);
+            SDL_SetWindowTitle(window, original_title.c_str());
+            return std::nullopt;
+        }
+        if (event.type != SDL_KEYDOWN || event.key.repeat != 0) {
+            continue;
+        }
+        SDL_SetWindowTitle(window, original_title.c_str());
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+            return std::nullopt;
+        }
+        const std::optional<std::uint16_t> key =
+            portable_key_code(event.key.keysym.sym);
+        if (!key) {
+            show_message(window, "Edit Keys",
+                         "That key is not supported. Letters, numbers, arrows, "
+                         "navigation keys, the numeric keypad, and F1-F12 are supported.");
+        }
+        return key;
+    }
+}
+
+std::optional<yipe::InputAction> choose_binding_action(
+    SDL_Window* window, bool combat) {
+    constexpr std::array movement_buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{0, 1, "Northwest"},
+        SDL_MessageBoxButtonData{0, 2, "North"},
+        SDL_MessageBoxButtonData{0, 3, "Northeast"},
+        SDL_MessageBoxButtonData{0, 4, "West"},
+        SDL_MessageBoxButtonData{0, 5, "East"},
+        SDL_MessageBoxButtonData{0, 6, "Southwest"},
+        SDL_MessageBoxButtonData{0, 7, "South"},
+        SDL_MessageBoxButtonData{0, 8, "Southeast"},
+    };
+    constexpr std::array combat_buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{0, 9, "Attack"},
+        SDL_MessageBoxButtonData{0, 10, "Run"},
+        SDL_MessageBoxButtonData{0, 11, "Cast"},
+        SDL_MessageBoxButtonData{0, 12, "Use Item"},
+        SDL_MessageBoxButtonData{0, 13, "Special"},
+    };
+    const int choice = combat
+        ? show_choice(window, "Combat Keys", "Choose a command to change.",
+                      combat_buttons.data(), static_cast<int>(combat_buttons.size()))
+        : show_choice(window, "Movement Keys", "Choose a direction to change.",
+                      movement_buttons.data(), static_cast<int>(movement_buttons.size()));
+    if (choice < 1 || choice > static_cast<int>(yipe::input_action_count)) {
+        return std::nullopt;
+    }
+    return static_cast<yipe::InputAction>(choice - 1);
+}
+
+std::string settings_summary(const yipe::GameSettings& settings) {
+    std::ostringstream summary;
+    summary << "Sound: " << (settings.sound_enabled ? "On" : "Off")
+            << "\n\nMovement";
+    for (std::size_t index = 0; index < 8; ++index) {
+        const auto action = static_cast<yipe::InputAction>(index);
+        summary << "\n" << yipe::input_action_name(action) << ": "
+                << yipe::key_binding_name(settings.keys[index]);
+    }
+    summary << "\n\nCombat";
+    for (std::size_t index = 8; index < yipe::input_action_count; ++index) {
+        const auto action = static_cast<yipe::InputAction>(index);
+        summary << "\n" << yipe::input_action_name(action) << ": "
+                << yipe::key_binding_name(settings.keys[index]);
+    }
+    return summary.str();
+}
+
+void show_settings(SDL_Window* window, yipe::GameSettings& settings,
+                   const std::filesystem::path& path, AudioPlayer& audio) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Done"},
+        SDL_MessageBoxButtonData{0, 1, "Toggle Sound"},
+        SDL_MessageBoxButtonData{0, 2, "Movement Keys"},
+        SDL_MessageBoxButtonData{0, 3, "Combat Keys"},
+        SDL_MessageBoxButtonData{0, 4, "Restore Defaults"},
+    };
+    bool changed = false;
+    while (true) {
+        const int choice = show_choice(window, "Settings", settings_summary(settings),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            if (!settings.sound_enabled && !audio.available()) {
+                show_message(window, "Audio Unavailable", audio.error());
+                continue;
+            }
+            settings.sound_enabled = !settings.sound_enabled;
+            if (!settings.sound_enabled) {
+                audio.stop();
+            } else {
+                audio.play(152, true);
+            }
+            changed = true;
+        } else if (choice == 2 || choice == 3) {
+            const std::optional<yipe::InputAction> action =
+                choose_binding_action(window, choice == 3);
+            if (!action) {
+                continue;
+            }
+            const std::optional<std::uint16_t> key =
+                capture_key_binding(window, *action);
+            if (key) {
+                settings.keys[static_cast<std::size_t>(*action)] = *key;
+                changed = true;
+            }
+        } else if (choice == 4) {
+            settings = yipe::GameSettings{};
+            if (!audio.available()) {
+                settings.sound_enabled = false;
+            }
+            changed = true;
+        } else {
+            if (changed) {
+                try {
+                    yipe::save_settings_atomic(path, settings);
+                } catch (const std::runtime_error& error) {
+                    show_message(window, "Settings Save Failed", error.what());
+                }
+            }
+            return;
+        }
+    }
 }
 
 std::string purchase_message(const yipe::ShopStockItem& item,
@@ -850,7 +1244,8 @@ int choose_bet(SDL_Window* window, const char* title) {
                        buttons.data(), static_cast<int>(buttons.size()));
 }
 
-void show_slots(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random) {
+void show_slots(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random,
+                AudioPlayer& audio, const yipe::GameSettings& settings) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
         SDL_MessageBoxButtonData{0, 1, "Insert 10"},
@@ -878,6 +1273,7 @@ void show_slots(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& rand
             outcome << result.symbols[0] << " | " << result.symbols[1] << " | "
                     << result.symbols[2] << "\n";
             if (result.payout > 0) {
+                audio.play(145, settings.sound_enabled);
                 outcome << "You won " << result.payout << " credits!";
             } else {
                 outcome << "No match.";
@@ -893,7 +1289,8 @@ void show_slots(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& rand
 }
 
 void show_dot_racing(SDL_Window* window, yipe::Player& player,
-                     yipe::MsvcRandom& random) {
+                     yipe::MsvcRandom& random, AudioPlayer& audio,
+                     const yipe::GameSettings& settings) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
         SDL_MessageBoxButtonData{0, 1, "Add Bet"},
@@ -944,6 +1341,7 @@ void show_dot_racing(SDL_Window* window, yipe::Player& player,
                              "Enter a bet and select a dot before starting the race.");
                 continue;
             }
+            audio.play(35, settings.sound_enabled);
             const yipe::DotRaceResult result =
                 yipe::race_dots(wager, selected_dot, random);
             std::ostringstream outcome;
@@ -963,7 +1361,8 @@ void show_dot_racing(SDL_Window* window, yipe::Player& player,
 }
 
 void show_darts(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random,
-                int& high_score) {
+                int& high_score, AudioPlayer& audio,
+                const yipe::GameSettings& settings) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
         SDL_MessageBoxButtonData{0, 1, "Add Bet"},
@@ -1007,8 +1406,10 @@ void show_darts(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& rand
                 show_message(window, "Darts", "You must enter a bet before throwing.");
                 continue;
             }
+            audio.play(148, settings.sound_enabled);
             const yipe::DartThrowResult result =
                 yipe::throw_dart(aim_y, throw_index, random);
+            audio.play(147, settings.sound_enabled);
             scores[static_cast<std::size_t>(throw_index)] = result.score;
             ++throw_index;
             aim_y = yipe::initial_dart_aim;
@@ -1039,7 +1440,8 @@ void show_darts(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& rand
     }
 }
 
-void show_casino(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random) {
+void show_casino(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& random,
+                 AudioPlayer& audio, const yipe::GameSettings& settings) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Slots"},
@@ -1053,11 +1455,11 @@ void show_casino(SDL_Window* window, yipe::Player& player, yipe::MsvcRandom& ran
                                         + std::to_string(player.gold),
             buttons.data(), static_cast<int>(buttons.size()));
         if (choice == 1) {
-            show_slots(window, player, random);
+            show_slots(window, player, random, audio, settings);
         } else if (choice == 2) {
-            show_dot_racing(window, player, random);
+            show_dot_racing(window, player, random, audio, settings);
         } else if (choice == 3) {
-            show_darts(window, player, random, darts_high_score);
+            show_darts(window, player, random, darts_high_score, audio, settings);
         } else {
             return;
         }
@@ -1245,19 +1647,72 @@ void append_victory_details(std::ostringstream& message, const yipe::CombatTurn&
     }
 }
 
-EncounterResult run_monster_encounter(SDL_Window* window,
-                                      const yipe::MonsterPlacement& placement,
-                                      yipe::Player& player, yipe::MsvcRandom& random,
-                                      int map_environment) {
+std::array<int, yipe::CombatEncounter::maximum_opponents> monster_healths(
+    const yipe::CombatEncounter& encounter) {
+    std::array<int, yipe::CombatEncounter::maximum_opponents> health{};
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        health[slot] = encounter.monsters[slot].health;
+    }
+    return health;
+}
+
+void play_defeated_monsters(
+    AudioPlayer& audio, const yipe::GameSettings& settings,
+    const std::array<int, yipe::CombatEncounter::maximum_opponents>& previous_health,
+    const yipe::CombatEncounter& encounter) {
+    for (std::size_t slot = 0; slot < encounter.monsters.size(); ++slot) {
+        if (previous_health[slot] > 0 && encounter.monsters[slot].health < 1) {
+            audio.play_monster_death(
+                encounter.monsters[slot].type_id, settings.sound_enabled);
+        }
+    }
+}
+
+void play_combat_turn_sounds(
+    AudioPlayer& audio, const yipe::GameSettings& settings,
+    const std::array<int, yipe::CombatEncounter::maximum_opponents>& previous_health,
+    const yipe::CombatEncounter& encounter, const yipe::CombatTurn& turn,
+    bool player_attack_sound) {
+    if (player_attack_sound && turn.player_damage > 0) {
+        audio.play(130, settings.sound_enabled);
+    }
+    play_defeated_monsters(audio, settings, previous_health, encounter);
+    if (turn.monster_damage > 0) {
+        audio.play(134, settings.sound_enabled);
+    }
+    if (turn.outcome == yipe::CombatOutcome::defeat) {
+        audio.play(128, settings.sound_enabled);
+    }
+}
+
+EncounterResult run_monster_encounter(
+    SDL_Window* window, const yipe::MonsterPlacement& placement,
+    yipe::Player& player, yipe::MsvcRandom& random, int map_environment,
+    AudioPlayer& audio, const yipe::GameSettings& settings) {
     yipe::CombatEncounter encounter = yipe::start_monster_encounter(
         placement, player, random, map_environment);
-    constexpr std::array buttons{
-        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Attack"},
-        SDL_MessageBoxButtonData{0, 2, "Use Item"},
-        SDL_MessageBoxButtonData{0, 3, "Cast Spell"},
-        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 4, "Flee"},
-        SDL_MessageBoxButtonData{0, 5, "Next Target"},
-        SDL_MessageBoxButtonData{0, 6, "Use Ability"},
+    const std::array<std::string, 6> labels{
+        "Attack [" + std::string(yipe::key_binding_name(
+            binding(settings, yipe::InputAction::attack))) + "]",
+        "Use Item [" + std::string(yipe::key_binding_name(
+            binding(settings, yipe::InputAction::use_item))) + "]",
+        "Cast [" + std::string(yipe::key_binding_name(
+            binding(settings, yipe::InputAction::cast))) + "]",
+        "Flee [" + std::string(yipe::key_binding_name(
+            binding(settings, yipe::InputAction::run))) + "]",
+        "Next Target",
+        "Special [" + std::string(yipe::key_binding_name(
+            binding(settings, yipe::InputAction::special))) + "]",
+    };
+    const std::array buttons{
+        SDL_MessageBoxButtonData{
+            SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, labels[0].c_str()},
+        SDL_MessageBoxButtonData{0, 2, labels[1].c_str()},
+        SDL_MessageBoxButtonData{0, 3, labels[2].c_str()},
+        SDL_MessageBoxButtonData{
+            SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 4, labels[3].c_str()},
+        SDL_MessageBoxButtonData{0, 5, labels[4].c_str()},
+        SDL_MessageBoxButtonData{0, 6, labels[5].c_str()},
     };
 
     while (true) {
@@ -1280,8 +1735,11 @@ EncounterResult run_monster_encounter(SDL_Window* window,
         const int action = show_choice(window, "Combat", status.str(), buttons.data(),
                                        static_cast<int>(buttons.size()));
         if (action == 1) {
+            const auto previous_health = monster_healths(encounter);
             const yipe::CombatTurn turn =
                 yipe::resolve_attack_turn(player, encounter, random);
+            play_combat_turn_sounds(
+                audio, settings, previous_health, encounter, turn, true);
             std::ostringstream result;
             result << "You deal " << turn.player_damage << " damage.";
             if (turn.outcome == yipe::CombatOutcome::victory) {
@@ -1307,8 +1765,15 @@ EncounterResult run_monster_encounter(SDL_Window* window,
                 show_message(window, "Inventory", used.message);
                 continue;
             }
+            audio.play(used.sound_id, settings.sound_enabled);
             const yipe::CombatTurn response =
                 yipe::resolve_monster_turn(player, encounter, random);
+            if (response.monster_damage > 0) {
+                audio.play(134, settings.sound_enabled);
+            }
+            if (response.outcome == yipe::CombatOutcome::defeat) {
+                audio.play(128, settings.sound_enabled);
+            }
             std::ostringstream result;
             result << used.message;
             if (used.amount != 0) {
@@ -1327,12 +1792,17 @@ EncounterResult run_monster_encounter(SDL_Window* window,
             if (!selection) {
                 continue;
             }
+            const auto previous_health = monster_healths(encounter);
             const yipe::CombatSpellResult spell = yipe::resolve_spell_turn(
                 player, encounter, selection->index, selection->power, random);
             if (spell.status != yipe::SpellCastStatus::cast) {
                 show_message(window, "Spells", spell_failure_message(spell.status));
                 continue;
             }
+            audio.play(yipe::spell_sound_id(selection->index),
+                       settings.sound_enabled);
+            play_combat_turn_sounds(
+                audio, settings, previous_health, encounter, spell.turn, false);
 
             std::ostringstream result;
             result << "You cast " << yipe::spell_definitions()[selection->index].name
@@ -1368,6 +1838,12 @@ EncounterResult run_monster_encounter(SDL_Window* window,
                 show_message(window, "Combat", "You escaped from the monsters.");
                 return EncounterResult::fled;
             }
+            if (result.monster_damage > 0) {
+                audio.play(134, settings.sound_enabled);
+            }
+            if (result.player_defeated) {
+                audio.play(128, settings.sound_enabled);
+            }
             show_message(window, result.player_defeated ? "Defeat" : "Combat",
                          "You fail to escape. The monsters deal "
                              + std::to_string(result.monster_damage) + " damage.");
@@ -1395,6 +1871,7 @@ EncounterResult run_monster_encounter(SDL_Window* window,
                 continue;
             }
             const int previous_ability_points = player.ability_points;
+            const auto previous_health = monster_healths(encounter);
             const yipe::CombatTurn turn =
                 yipe::resolve_special_ability_turn(player, encounter, random);
             if (player.ability_points == previous_ability_points) {
@@ -1402,6 +1879,10 @@ EncounterResult run_monster_encounter(SDL_Window* window,
                              "Your special ability cannot take effect right now.");
                 continue;
             }
+            audio.play(yipe::ability_sound_id(player.special_ability),
+                       settings.sound_enabled);
+            play_combat_turn_sounds(
+                audio, settings, previous_health, encounter, turn, false);
 
             std::ostringstream result;
             result << "You use your special ability.";
@@ -1451,7 +1932,8 @@ std::optional<yipe::Map> load_world_map(const yipe::WorldLocation& location,
 }
 
 void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
-                            yipe::Map& map, yipe::MsvcRandom& random) {
+                            yipe::Map& map, yipe::MsvcRandom& random,
+                            AudioPlayer& audio, const yipe::GameSettings& settings) {
     const std::optional<SpellSelection> selection =
         choose_spell(window, game.player, false);
     if (!selection) {
@@ -1463,6 +1945,7 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
         show_message(window, "Spells", spell_failure_message(result.status));
         return;
     }
+    audio.play(yipe::spell_sound_id(selection->index), settings.sound_enabled);
     if (result.location_changed) {
         const std::optional<yipe::Map> destination =
             load_world_map(game.location, random);
@@ -1488,6 +1971,25 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
     message << "\nSpell points: " << game.player.spell_points << "/"
             << game.player.maximum_spell_points;
     show_message(window, "Spells", message.str());
+}
+
+void use_exploration_item(SDL_Window* window, yipe::Player& player,
+                          yipe::MsvcRandom& random, AudioPlayer& audio,
+                          const yipe::GameSettings& settings) {
+    const std::optional<std::size_t> slot = choose_inventory_item(window, player);
+    if (!slot) {
+        return;
+    }
+    const yipe::ItemUseResult result =
+        player.use_inventory_item(*slot, random, true, false);
+    if (result.consumed) {
+        audio.play(result.sound_id, settings.sound_enabled);
+    }
+    std::string message = result.message;
+    if (result.amount != 0) {
+        message += " (" + std::to_string(result.amount) + ")";
+    }
+    show_message(window, "Inventory", message);
 }
 
 void remember_map_tile(yipe::GameState& game, const yipe::Map& map,
@@ -1531,7 +2033,9 @@ bool confirm_quit(SDL_Window* window, const std::filesystem::path& save_path,
 }
 
 bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures,
-              yipe::GameState game, const std::filesystem::path& save_path) {
+              yipe::GameState game, const std::filesystem::path& save_path,
+              const std::filesystem::path& settings_path,
+              yipe::GameSettings& settings, AudioPlayer& audio) {
     prepare_game_view(window, renderer);
     yipe::MsvcRandom random(game.random_state);
     const std::optional<yipe::Map> restored_map = load_world_map(game.location, random);
@@ -1544,6 +2048,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         && yipe::complete_gatekeeper_finale(game.player);
     render_game(renderer, map, textures, game);
     if (completed_saved_finale) {
+        audio.play(129, settings.sound_enabled);
         show_message(window, "Victory",
                      "You've rescued all the princesses!!\n\n"
                      "You are the hero of the entire world!!");
@@ -1578,37 +2083,70 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_i) {
+        if (event.key.keysym.sym == SDLK_F10) {
+            show_settings(window, settings, settings_path, audio);
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_t
+            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
             show_player_status(window, game.player);
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_c) {
-            cast_exploration_spell(window, game, map, random);
-            render_game(renderer, map, textures, game);
-            continue;
-        }
 
+        const std::optional<std::uint16_t> key =
+            portable_key_code(event.key.keysym.sym);
         int delta_x = 0;
         int delta_y = 0;
-        switch (event.key.keysym.sym) {
-        case SDLK_LEFT:
-        case SDLK_a:
+        if (key && *key == binding(settings, yipe::InputAction::northwest)) {
             delta_x = -1;
-            break;
-        case SDLK_RIGHT:
-        case SDLK_d:
-            delta_x = 1;
-            break;
-        case SDLK_UP:
-        case SDLK_w:
             delta_y = -1;
-            break;
-        case SDLK_DOWN:
-        case SDLK_s:
+        } else if (key && *key == binding(settings, yipe::InputAction::north)) {
+            delta_y = -1;
+        } else if (key && *key == binding(settings, yipe::InputAction::northeast)) {
+            delta_x = 1;
+            delta_y = -1;
+        } else if (key && *key == binding(settings, yipe::InputAction::west)) {
+            delta_x = -1;
+        } else if (key && *key == binding(settings, yipe::InputAction::east)) {
+            delta_x = 1;
+        } else if (key && *key == binding(settings, yipe::InputAction::southwest)) {
+            delta_x = -1;
             delta_y = 1;
-            break;
-        default:
+        } else if (key && *key == binding(settings, yipe::InputAction::south)) {
+            delta_y = 1;
+        } else if (key && *key == binding(settings, yipe::InputAction::southeast)) {
+            delta_x = 1;
+            delta_y = 1;
+        } else {
+            switch (event.key.keysym.sym) {
+            case SDLK_a:
+                delta_x = -1;
+                break;
+            case SDLK_d:
+                delta_x = 1;
+                break;
+            case SDLK_w:
+                delta_y = -1;
+                break;
+            case SDLK_s:
+                delta_y = 1;
+                break;
+            default:
+                break;
+            }
+        }
+        if (delta_x == 0 && delta_y == 0) {
+            if (key && *key == binding(settings, yipe::InputAction::use_item)) {
+                use_exploration_item(
+                    window, game.player, random, audio, settings);
+                render_game(renderer, map, textures, game);
+            } else if (key && *key == binding(settings, yipe::InputAction::cast)) {
+                cast_exploration_spell(
+                    window, game, map, random, audio, settings);
+                render_game(renderer, map, textures, game);
+            }
             continue;
         }
         const yipe::WorldLocation previous_location = game.location;
@@ -1624,6 +2162,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (result.original_code == 0x12) {
                 map.open_door(previous_location.position, game.location.position);
                 remember_map_tile(game, map, game.location.position);
+                audio.play(131, settings.sound_enabled);
             } else if (result.original_code == 0x1a) {
                 if (map.toggle_linked_tiles()) {
                     remember_map_tile(game, map, map.events().linked[0].position);
@@ -1654,6 +2193,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             }
             render_game(renderer, map, textures, game);
             if (completed_finale) {
+                audio.play(129, settings.sound_enabled);
                 show_message(window, "Victory",
                              "You've rescued all the princesses!!\n\n"
                              "You are the hero of the entire world!!");
@@ -1686,7 +2226,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (const std::optional<yipe::MonsterPlacement> placement =
                     monster_encounter_at(game)) {
                 const EncounterResult encounter = run_monster_encounter(
-                    window, *placement, game.player, random, map.environment());
+                    window, *placement, game.player, random, map.environment(),
+                    audio, settings);
                 if (encounter == EncounterResult::victory) {
                     game.defeated_monster_placements.push_back(
                         placement->placement_index);
@@ -1735,13 +2276,14 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 break;
             case 0x0c:
                 if (yipe::use_restoration_tile(game.player)) {
+                    audio.play(206, settings.sound_enabled);
                     show_message(window, "Restored",
                                  "Your health, spell points, and ability points are fully "
                                  "restored.");
                 }
                 break;
             case 0x0d:
-                show_casino(window, game.player, random);
+                show_casino(window, game.player, random, audio, settings);
                 break;
             case 0x11:
                 show_ability_training(window, game.player, map.environment());
@@ -1756,6 +2298,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 break;
             case 0x15:
             {
+                audio.play(140, settings.sound_enabled);
                 const std::time_t now = std::time(nullptr);
                 const std::tm* local_time = std::localtime(&now);
                 const int hour = local_time == nullptr ? 12 : local_time->tm_hour;
@@ -1771,8 +2314,10 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();
                 apply_map_tile_changes(map, game);
+                audio.play(201, settings.sound_enabled);
                 break;
             case 0x17: {
+                audio.play(144, settings.sound_enabled);
                 const int damage = yipe::apply_fire_wall(game.player, random);
                 show_message(window, "Fire Wall",
                              "OUCH! You burn your hand slightly on the fire wall and lose "
@@ -1783,6 +2328,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 if (const std::optional<yipe::MapPosition> destination =
                         map.linked_destination()) {
                     game.location.position = *destination;
+                    audio.play(142, settings.sound_enabled);
                 }
                 break;
             default:
@@ -1799,7 +2345,24 @@ int main(int argc, char* argv[]) {
     try {
         const bool smoke_test = argc == 2 && std::string(argv[1]) == "--smoke-test";
         const SdlSession sdl;
-        const std::filesystem::path assets = runtime_asset_directory(argv[0]);
+        const RuntimeAssets assets = runtime_assets(argv[0]);
+        const std::filesystem::path preference_directory =
+            default_preference_directory();
+        const std::filesystem::path save_path = preference_directory / "save.y3r";
+        const std::filesystem::path settings_path =
+            preference_directory / "settings.y3r";
+        yipe::GameSettings settings;
+        std::string settings_warning;
+        if (std::filesystem::exists(settings_path)) {
+            try {
+                settings = yipe::load_settings(settings_path);
+            } catch (const std::runtime_error& error) {
+                settings.sound_enabled = false;
+                settings_warning = std::string(error.what())
+                    + "\n\nDefaulting sound off and restoring default keys.";
+                std::cerr << "Yipe! III: " << settings_warning << '\n';
+            }
+        }
 
         const Uint32 window_flags = smoke_test ? SDL_WINDOW_HIDDEN : SDL_WINDOW_RESIZABLE;
         Window window(SDL_CreateWindow("Yipe! III", SDL_WINDOWPOS_CENTERED,
@@ -1822,10 +2385,24 @@ int main(int argc, char* argv[]) {
         }
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
-        const Texture menu = load_bitmap(renderer.get(), assets / "379-1033.bmp");
-        const Texture copyright = load_bitmap(renderer.get(), assets / "326-1033.bmp");
-        const GameTextures game_textures = load_game_textures(renderer.get(), assets);
+        AudioPlayer audio(assets);
+        if (settings.sound_enabled && !audio.available()) {
+            settings.sound_enabled = false;
+            settings_warning = audio.error() + "\n\nDefaulting sound off.";
+            std::cerr << "Yipe! III: " << settings_warning << '\n';
+        }
+
+        const Texture menu =
+            load_bitmap(renderer.get(), assets.bitmaps / "379-1033.bmp");
+        const Texture copyright =
+            load_bitmap(renderer.get(), assets.bitmaps / "326-1033.bmp");
+        const GameTextures game_textures =
+            load_game_textures(renderer.get(), assets.bitmaps);
         if (smoke_test) {
+            if (!audio.available()) {
+                throw std::runtime_error(audio.error());
+            }
+            audio.validate_packaged_monster_sounds();
             render_startup(renderer.get(), menu.get(), copyright.get());
             prepare_game_view(window.get(), renderer.get());
             yipe::GameState game;
@@ -1848,9 +2425,12 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        const std::filesystem::path save_path = default_save_path();
+        if (!settings_warning.empty()) {
+            show_message(window.get(), "Settings Warning", settings_warning);
+        }
         while (true) {
             prepare_startup_view(window.get(), renderer.get());
+            audio.play(152, settings.sound_enabled);
             switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
             case StartupChoice::new_game: {
                 const std::optional<yipe::CharacterType> type = choose_character(window.get());
@@ -1860,7 +2440,8 @@ int main(int argc, char* argv[]) {
                 yipe::GameState game;
                 game.player = yipe::Player(*type);
                 game.random_state = static_cast<std::uint32_t>(std::time(nullptr));
-                if (run_game(window.get(), renderer.get(), game_textures, game, save_path)) {
+                if (run_game(window.get(), renderer.get(), game_textures, game,
+                             save_path, settings_path, settings, audio)) {
                     return 0;
                 }
                 break;
@@ -1868,12 +2449,16 @@ int main(int argc, char* argv[]) {
             case StartupChoice::load_game:
                 try {
                     if (run_game(window.get(), renderer.get(), game_textures,
-                                 yipe::load_game(save_path), save_path)) {
+                                 yipe::load_game(save_path), save_path, settings_path,
+                                 settings, audio)) {
                         return 0;
                     }
                 } catch (const std::exception& error) {
                     show_message(window.get(), "Load Game Failed", error.what());
                 }
+                break;
+            case StartupChoice::settings:
+                show_settings(window.get(), settings, settings_path, audio);
                 break;
             case StartupChoice::quit:
                 return 0;

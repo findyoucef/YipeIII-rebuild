@@ -15,7 +15,7 @@ struct HighScoreEntry {
 struct OriginalAuxiliaryData {
     std::array<HighScoreEntry, 45> high_scores{};
 
-    // Names are intentionally offset-based until their actions are established from callers.
+    // Offset-based groups preserve the original serializer and in-memory order.
     std::array<std::uint16_t, 8> keys_0174_to_0182{};
     std::int32_t value_0190 = 0;
     std::int32_t value_0170 = 0;

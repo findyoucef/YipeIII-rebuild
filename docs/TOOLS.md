@@ -45,6 +45,11 @@ python3 tools/catalog_windows_ui.py assets/embedded/raw
 
 The resulting `assets/embedded/ui-catalog.json` records all dialog/control geometry, labels, IDs, styles, the application menu tree, and accelerator bindings.
 
+CMake copies all prepared embedded WAV files and the 20 supplied external
+monster WAV files into the runtime asset tree. The application smoke test uses
+SDL's dummy video and audio drivers, decodes every dispatched embedded effect,
+and verifies that every packaged monster WAV is present and decodable.
+
 ## Recover static map tables
 
 ```bash

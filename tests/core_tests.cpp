@@ -1,3 +1,4 @@
+#include "yipe/audio.hpp"
 #include "yipe/auxiliary_data.hpp"
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
@@ -8,6 +9,7 @@
 #include "yipe/quest.hpp"
 #include "yipe/random.hpp"
 #include "yipe/save.hpp"
+#include "yipe/settings.hpp"
 #include "yipe/shop.hpp"
 #include "yipe/spell.hpp"
 
@@ -671,6 +673,9 @@ void test_original_auxiliary_data() {
           "original auxiliary reader restores in-memory combat key order");
     check(data.value_0190 == 1302 && data.value_0170 == 0 && data.value_016c == 4529,
           "original auxiliary reader decodes captured registration-related values");
+    const yipe::GameSettings imported = yipe::settings_from_original(data);
+    check(imported.keys == yipe::default_key_bindings(),
+          "original auxiliary keys import into native settings");
 
     const std::filesystem::path temporary =
         std::filesystem::temp_directory_path() / "yipe3-truncated-auxiliary-test.dat";
@@ -690,6 +695,82 @@ void test_original_auxiliary_data() {
     }
     check(rejected, "original auxiliary reader rejects truncation");
     std::filesystem::remove(temporary);
+}
+
+void test_settings_and_audio_catalog() {
+    const yipe::GameSettings defaults;
+    check(defaults.sound_enabled && defaults.keys == yipe::default_key_bindings(),
+          "native settings preserve original sound and key defaults");
+    check(yipe::key_binding_name(defaults.keys[0]) == "Numpad 7"
+              && yipe::key_binding_name(defaults.keys[8]) == "A"
+              && yipe::key_binding_name(defaults.keys[9]) == "R"
+              && yipe::input_action_name(yipe::InputAction::use_item) == "Use Item",
+          "settings expose recovered movement and combat action names");
+
+    yipe::GameSettings changed = defaults;
+    changed.sound_enabled = false;
+    changed.keys[static_cast<std::size_t>(yipe::InputAction::north)] = 0x57;
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "yipe3-settings-test.y3r";
+    yipe::save_settings_atomic(path, changed);
+    check(yipe::load_settings(path) == changed,
+          "native settings round-trip sound and key bindings");
+
+    std::vector<std::uint8_t> bytes;
+    {
+        std::ifstream input(path, std::ios::binary);
+        bytes.assign(std::istreambuf_iterator<char>(input),
+                     std::istreambuf_iterator<char>());
+    }
+    std::vector<std::uint8_t> corrupted = bytes;
+    corrupted.back() ^= 1;
+    write_bytes(path, corrupted);
+    bool rejected = false;
+    try {
+        static_cast<void>(yipe::load_settings(path));
+    } catch (const std::runtime_error&) {
+        rejected = true;
+    }
+    check(rejected, "native settings reject checksum corruption");
+
+    bytes.push_back(0);
+    write_bytes(path, bytes);
+    rejected = false;
+    try {
+        static_cast<void>(yipe::load_settings(path));
+    } catch (const std::runtime_error&) {
+        rejected = true;
+    }
+    check(rejected, "native settings reject trailing data");
+    std::filesystem::remove(path);
+
+    check(yipe::sound_effects().size() == 37,
+          "sound catalog contains every original dispatcher entry");
+    check(std::all_of(yipe::sound_effects().begin(), yipe::sound_effects().end(),
+                      [](const yipe::SoundEffect& effect) {
+                          return yipe::sound_asset_name(effect.id)
+                              == effect.asset_name;
+                      }),
+          "sound IDs resolve to their prepared embedded assets");
+    check(!yipe::sound_asset_name(139) && !yipe::sound_asset_name(999),
+          "sound catalog rejects IDs absent from the original dispatcher");
+    check(yipe::monster_sound_file_id(10) == 8
+              && yipe::monster_sound_file_id(11) == 8
+              && yipe::monster_sound_file_id(22) == 21
+              && yipe::monster_sound_file_id(27) == 25
+              && yipe::monster_sound_file_id(39) == 35
+              && yipe::monster_sound_file_id(38) == 40
+              && yipe::monster_sound_file_id(24) == 24,
+          "monster sound catalog preserves shared-file aliases");
+    check(yipe::spell_sound_id(0) == 201 && yipe::spell_sound_id(7) == 206
+              && yipe::spell_sound_id(9) == 210
+              && yipe::spell_sound_id(11) == 209,
+          "spell sound IDs preserve recovered effect selection");
+    check(yipe::ability_sound_id(yipe::SpecialAbility::backstab) == 130
+              && yipe::ability_sound_id(yipe::SpecialAbility::frighten) == 151
+              && yipe::ability_sound_id(yipe::SpecialAbility::invisibility) == 40
+              && yipe::ability_sound_id(yipe::SpecialAbility::enrage) == 136,
+          "ability sound IDs preserve recovered effect selection");
 }
 
 void test_starting_map() {
@@ -2296,6 +2377,7 @@ int main() {
     test_game_save();
     test_legacy_save_import();
     test_original_auxiliary_data();
+    test_settings_and_audio_catalog();
     test_starting_map();
     test_static_map_catalog_and_edges();
     test_runtime_generated_maps();

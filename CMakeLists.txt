@@ -13,6 +13,7 @@ add_library(yipe_core
     src/generated/original_monster_definitions.cpp
     src/generated/original_monsters.cpp
     src/generated/original_weapon_damage.cpp
+    src/audio.cpp
     src/auxiliary_data.cpp
     src/casino.cpp
     src/encounter.cpp
@@ -23,6 +24,7 @@ add_library(yipe_core
     src/quest.cpp
     src/random.cpp
     src/save.cpp
+    src/settings.cpp
     src/shop.cpp
     src/spell.cpp
 )
@@ -48,6 +50,20 @@ foreach(YIPE_BITMAP_ID RANGE 174 214)
     configure_file(assets/embedded/bitmaps/${YIPE_BITMAP_ID}-1033.bmp
                    "${YIPE_RUNTIME_ASSET_DIR}/${YIPE_BITMAP_ID}-1033.bmp" COPYONLY)
 endforeach()
+file(GLOB YIPE_EMBEDDED_AUDIO CONFIGURE_DEPENDS
+     "${CMAKE_CURRENT_SOURCE_DIR}/assets/embedded/audio/*.wav")
+foreach(YIPE_AUDIO_FILE IN LISTS YIPE_EMBEDDED_AUDIO)
+    get_filename_component(YIPE_AUDIO_NAME "${YIPE_AUDIO_FILE}" NAME)
+    configure_file("${YIPE_AUDIO_FILE}"
+                   "${YIPE_RUNTIME_ASSET_DIR}/audio/${YIPE_AUDIO_NAME}" COPYONLY)
+endforeach()
+file(GLOB YIPE_MONSTER_AUDIO CONFIGURE_DEPENDS
+     "${CMAKE_CURRENT_SOURCE_DIR}/assets/original/MonsterSounds/*.wav")
+foreach(YIPE_AUDIO_FILE IN LISTS YIPE_MONSTER_AUDIO)
+    get_filename_component(YIPE_AUDIO_NAME "${YIPE_AUDIO_FILE}" NAME)
+    configure_file("${YIPE_AUDIO_FILE}"
+                   "${YIPE_RUNTIME_ASSET_DIR}/MonsterSounds/${YIPE_AUDIO_NAME}" COPYONLY)
+endforeach()
 
 enable_testing()
 add_executable(yipe_core_tests tests/core_tests.cpp)
@@ -59,5 +75,5 @@ target_compile_definitions(yipe_core_tests PRIVATE
 add_test(NAME yipe_core_tests COMMAND yipe_core_tests)
 add_test(NAME yipe_app_smoke COMMAND yipe3 --smoke-test)
 set_tests_properties(yipe_app_smoke PROPERTIES
-    ENVIRONMENT "SDL_VIDEODRIVER=dummy"
+    ENVIRONMENT "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy"
 )
