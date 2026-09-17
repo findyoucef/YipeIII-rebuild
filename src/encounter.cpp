@@ -5,6 +5,16 @@
 #include <stdexcept>
 
 namespace yipe {
+
+bool monster_placement_contains(const MonsterPlacement& placement,
+                                MapPosition position) {
+    const int width = placement.occupies_two_by_two_tiles ? 2 : 1;
+    return position.x >= placement.position.x
+        && position.x < placement.position.x + width
+        && position.y >= placement.position.y
+        && position.y < placement.position.y + width;
+}
+
 int player_attack_equipment_rating(const Player& player) {
     int value = player.weapon_rank;
     if (player.helmet_rank == 5) {
@@ -355,7 +365,7 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
         }
         break;
     case 1: {
-        const int maximum = player.unknown_0654_stat_cap_mode == 2 ? 29 : 23;
+        const int maximum = player.stat_cap_mode == 2 ? 29 : 23;
         if (player.weapon_rank < maximum) {
             ++player.weapon_rank;
             return EquipmentUpgrade::weapon;

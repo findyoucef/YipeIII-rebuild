@@ -30,8 +30,8 @@ struct OriginalMonsterPlacementRecord {
     PlacementValue encounter_size;
     PlacementValue companion_type_1;
     PlacementValue companion_type_2;
-    bool flag_36c;
-    bool flag_371;
+    bool respawns_after_map_reload;
+    bool occupies_two_by_two_tiles;
 };
 
 constexpr std::array<OriginalMonsterPlacementRecord, 186> placements{{
@@ -265,10 +265,19 @@ std::vector<MonsterPlacement> original_monsters_for_map(
                                             player_level),
                               resolve_value(placement.companion_type_2, difficulty,
                                             player_level),
-                              placement.flag_36c, placement.flag_371});
+                              placement.respawns_after_map_reload,
+                              placement.occupies_two_by_two_tiles});
         }
     }
     return result;
+}
+
+bool original_monster_placement_respawns_after_map_reload(
+    std::uint16_t placement_index) {
+    if (placement_index >= placements.size()) {
+        throw std::out_of_range("monster placement index is out of range");
+    }
+    return placements[placement_index].respawns_after_map_reload;
 }
 
 } // namespace yipe

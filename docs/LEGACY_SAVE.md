@@ -101,10 +101,15 @@ so opened doors and linked mechanisms survive map changes and restart. Version 6
 appends the 15 learned-spell values recovered from legacy offset `+0x10c`.
 Version 7 appends the recovered King quest state and Lucky Rabbit Foot. Version 8
 appends the princess Mystery-reward counter recovered from offset `+0x682`.
-Version 9 appends the stable indices of every defeated monster placement. The
-loader accepts all nine versions and migrates the first-encounter bit in versions
-2–8 to the Giant Beetle's placement index 5. Writes use a temporary file and
-atomic replacement so a failed write does not destroy the previous save.
+Version 9 appends the stable indices of every permanently defeated monster
+placement. Version 10 appends the signed region coordinates for the entrance
+saved by the original Return-to-Surface state. When importing version 9, defeats
+now known to be reload-respawning migrate into the transient current-map state
+instead of becoming permanent. The loader accepts all ten
+versions, derives missing return coordinates from the current region for older
+files, and migrates the first-encounter bit in versions 2–8 to the Giant
+Beetle's placement index 5. Writes use a temporary file and atomic replacement
+so a failed write does not destroy the previous save.
 
 ## Verification status
 

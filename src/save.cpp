@@ -29,7 +29,8 @@ constexpr std::uint16_t map_changes_game_format_version = 5;
 constexpr std::uint16_t spells_game_format_version = 6;
 constexpr std::uint16_t quest_game_format_version = 7;
 constexpr std::uint16_t princess_game_format_version = 8;
-constexpr std::uint16_t game_format_version = 9;
+constexpr std::uint16_t monster_game_format_version = 9;
+constexpr std::uint16_t game_format_version = 10;
 constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
@@ -141,15 +142,15 @@ std::vector<std::uint8_t> encode_player_payload(const Player& player) {
     for (const std::uint16_t item : player.inventory) {
         append_u16(payload, item);
     }
-    append_u8(payload, player.unknown_0062 ? 1 : 0);
+    append_u8(payload, player.alternate_map_set ? 1 : 0);
     append_u8(payload, player.has_bonus_healing_ring ? 1 : 0);
-    append_i32(payload, player.unknown_004c);
-    append_i32(payload, player.unknown_0654_stat_cap_mode);
-    append_u16(payload, player.unknown_0664);
-    append_u16(payload, player.unknown_066a);
-    append_u16(payload, player.unknown_067e);
-    append_u16(payload, player.unknown_0680);
-    append_u16(payload, player.unknown_0692);
+    append_i32(payload, player.current_map_id);
+    append_i32(payload, player.stat_cap_mode);
+    append_u16(payload, static_cast<std::uint16_t>(player.surface_return_map_id));
+    append_u16(payload, player.random_encounter_threshold);
+    append_u16(payload, player.saved_random_encounter_threshold);
+    append_u16(payload, player.monster_repellent_steps);
+    append_u16(payload, player.pending_relocation);
     return payload;
 }
 
@@ -235,6 +236,10 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
         seen_placements[placement] = true;
         append_u16(payload, placement);
     }
+    append_u16(payload,
+               static_cast<std::uint16_t>(game.player.surface_return_region_x));
+    append_u16(payload,
+               static_cast<std::uint16_t>(game.player.surface_return_region_y));
     return payload;
 }
 
@@ -252,15 +257,15 @@ Player decode_player_payload(Reader& reader) {
     for (std::uint16_t& item : player.inventory) {
         item = reader.u16();
     }
-    player.unknown_0062 = reader.u8() != 0;
+    player.alternate_map_set = reader.u8() != 0;
     player.has_bonus_healing_ring = reader.u8() != 0;
-    player.unknown_004c = reader.i32();
-    player.unknown_0654_stat_cap_mode = reader.i32();
-    player.unknown_0664 = reader.u16();
-    player.unknown_066a = reader.u16();
-    player.unknown_067e = reader.u16();
-    player.unknown_0680 = reader.u16();
-    player.unknown_0692 = reader.u16();
+    player.current_map_id = reader.i32();
+    player.stat_cap_mode = reader.i32();
+    player.surface_return_map_id = static_cast<std::int16_t>(reader.u16());
+    player.random_encounter_threshold = reader.u16();
+    player.saved_random_encounter_threshold = reader.u16();
+    player.monster_repellent_steps = reader.u16();
+    player.pending_relocation = reader.u16();
     return player;
 }
 
@@ -340,7 +345,8 @@ DecodedSave read_save(const std::filesystem::path& path) {
         && version != map_changes_game_format_version
         && version != spells_game_format_version
         && version != quest_game_format_version
-        && version != princess_game_format_version && version != game_format_version) {
+        && version != princess_game_format_version
+        && version != monster_game_format_version && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -473,7 +479,7 @@ GameState load_game(const std::filesystem::path& path) {
     if (save.version >= princess_game_format_version) {
         game.player.princess_mystery_uses = reader.u16();
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= monster_game_format_version) {
         const std::uint32_t placement_count = reader.u32();
         if (placement_count > reader.remaining() / sizeof(std::uint16_t)) {
             throw std::runtime_error(
@@ -489,11 +495,29 @@ GameState load_game(const std::filesystem::path& path) {
                     "save contains an invalid defeated monster placement");
             }
             seen_placements[placement] = true;
-            game.defeated_monster_placements.push_back(placement);
+            if (save.version == monster_game_format_version
+                && original_monster_placement_respawns_after_map_reload(
+                    placement)) {
+                game.temporarily_defeated_monster_placements.push_back(
+                    placement);
+            } else {
+                game.defeated_monster_placements.push_back(placement);
+            }
         }
     } else if (legacy_giant_beetle_defeated) {
         game.defeated_monster_placements.push_back(
             legacy_giant_beetle_placement_index);
+    }
+    if (save.version >= game_format_version) {
+        game.player.surface_return_region_x =
+            static_cast<std::int16_t>(reader.u16());
+        game.player.surface_return_region_y =
+            static_cast<std::int16_t>(reader.u16());
+    } else {
+        game.player.surface_return_region_x =
+            static_cast<std::int16_t>(game.location.region_x);
+        game.player.surface_return_region_y =
+            static_cast<std::int16_t>(game.location.region_y);
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

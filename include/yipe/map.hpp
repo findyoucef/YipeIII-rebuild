@@ -94,6 +94,19 @@ struct WorldLocation {
 [[nodiscard]] bool cross_map_edge(WorldLocation& location);
 void ascend_to_surface(WorldLocation& location);
 void return_to_surface(WorldLocation& location);
+[[nodiscard]] std::optional<MapPosition> surface_return_position(const Map& map);
+
+enum class PendingRelocation : std::uint16_t {
+    none = 0,
+    surface = 1,
+    yipe = 2,
+};
+
+// Applies the deferred relocation values written by the original item/spell
+// routines. The caller loads the destination map and, for a surface return,
+// places the player below its final 0x36/0x39 entrance tile.
+[[nodiscard]] PendingRelocation apply_pending_relocation(
+    Player& player, WorldLocation& location);
 
 // Reconstructs the layer changes at 0x00444ad0. Codes 0x0e and 0x10 descend;
 // code 0x0f ascends. Leaving the original three layers returns to the surface.

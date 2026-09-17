@@ -60,7 +60,9 @@ public:
 
     // Reconstructs the consumable-item switch at 0x00445750.
     ItemUseResult use_inventory_item(std::size_t slot, MsvcRandom& random,
-                                     bool play_sound = true, bool in_combat = false);
+                                     bool play_sound = true, bool in_combat = false,
+                                     int current_map_id = 0x11,
+                                     bool alternate_map_set = false);
 
     [[nodiscard]] int maximum_stat() const;
 
@@ -110,16 +112,17 @@ public:
     std::array<bool, quest_flag_count> quest_flags{};
     std::array<std::uint16_t, spell_count> spells{};
 
-    // Meanings are not yet established; names retain their original object offsets.
-    bool unknown_0062 = false;
+    bool alternate_map_set = false;
     bool has_bonus_healing_ring = false;
-    int unknown_004c = 17;
-    int unknown_0654_stat_cap_mode = 0;
-    std::uint16_t unknown_0664 = 0;
-    std::uint16_t unknown_066a = 85;
-    std::uint16_t unknown_067e = 85;
-    std::uint16_t unknown_0680 = 0;
-    std::uint16_t unknown_0692 = 0;
+    int current_map_id = 0x11;
+    int stat_cap_mode = 0;
+    std::int16_t surface_return_map_id = 0;
+    std::int16_t surface_return_region_x = 0;
+    std::int16_t surface_return_region_y = 0;
+    std::uint16_t random_encounter_threshold = 85;
+    std::uint16_t saved_random_encounter_threshold = 85;
+    std::uint16_t monster_repellent_steps = 0;
+    std::uint16_t pending_relocation = 0;
 
 private:
     void initialize(CharacterType type);

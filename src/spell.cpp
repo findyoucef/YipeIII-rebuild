@@ -102,7 +102,7 @@ ExplorationSpellResult cast_exploration_spell(
     if (result.status != SpellCastStatus::cast) {
         return result;
     }
-    if (spell == 0 && (location.map_layer == 0 || player.unknown_0062)) {
+    if (spell == 0 && (location.map_layer == 0 || location.alternate_map_set)) {
         result.status = SpellCastStatus::unavailable;
         return result;
     }
@@ -115,8 +115,8 @@ ExplorationSpellResult cast_exploration_spell(
     player.spell_points -= spell_point_cost(player, spell, power);
     switch (spell) {
     case 0:
-        player.unknown_0692 = 1;
-        ascend_to_surface(location);
+        player.pending_relocation =
+            static_cast<std::uint16_t>(PendingRelocation::surface);
         result.location_changed = true;
         break;
     case 1: {
@@ -128,16 +128,18 @@ ExplorationSpellResult cast_exploration_spell(
         break;
     }
     case 4: {
-        if (player.unknown_066a < 100) {
-            player.unknown_067e = player.unknown_066a;
+        if (player.random_encounter_threshold < 100) {
+            player.saved_random_encounter_threshold =
+                player.random_encounter_threshold;
         }
         const int level_roll = random.next();
         const int intelligence_roll = random.next();
         int duration = (level_roll % (player.level / 2 + 1) + 9
                         + intelligence_roll % (player.intelligence + 1)) * power_value;
         duration = std::min(duration, 75);
-        player.unknown_0680 = static_cast<std::uint16_t>(player.unknown_0680 + duration);
-        player.unknown_066a = 125;
+        player.monster_repellent_steps =
+            static_cast<std::uint16_t>(player.monster_repellent_steps + duration);
+        player.random_encounter_threshold = 125;
         result.repellent_duration = duration;
         break;
     }
@@ -145,9 +147,8 @@ ExplorationSpellResult cast_exploration_spell(
         result.healing = apply_healing(player, player.maximum_health - player.health);
         break;
     case 8:
-        player.unknown_0692 = 2;
-        return_to_surface(location);
-        player.unknown_0062 = false;
+        player.pending_relocation =
+            static_cast<std::uint16_t>(PendingRelocation::yipe);
         result.location_changed = true;
         break;
     case 9: {

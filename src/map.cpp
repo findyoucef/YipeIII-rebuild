@@ -275,6 +275,45 @@ void return_to_surface(WorldLocation& location) {
     location.map_id = 0x11;
 }
 
+std::optional<MapPosition> surface_return_position(const Map& map) {
+    std::optional<MapPosition> result;
+    for (int x = 1; x < Map::width - 1; ++x) {
+        for (int y = 1; y < Map::height - 1; ++y) {
+            const std::uint16_t tile = map.tile({x, y});
+            if (tile == 0x36 || tile == 0x39) {
+                result = MapPosition{x, y + 1};
+            }
+        }
+    }
+    return result;
+}
+
+PendingRelocation apply_pending_relocation(Player& player,
+                                           WorldLocation& location) {
+    const PendingRelocation relocation =
+        static_cast<PendingRelocation>(player.pending_relocation);
+    switch (relocation) {
+    case PendingRelocation::none:
+        return relocation;
+    case PendingRelocation::surface:
+        location.region_x = player.surface_return_region_x;
+        location.region_y = player.surface_return_region_y;
+        location.map_layer = 0;
+        location.alternate_map_set = false;
+        location.map_id = player.surface_return_map_id;
+        break;
+    case PendingRelocation::yipe:
+        return_to_surface(location);
+        break;
+    default:
+        throw std::runtime_error("player has an invalid pending relocation");
+    }
+    player.pending_relocation = static_cast<std::uint16_t>(PendingRelocation::none);
+    player.current_map_id = location.map_id;
+    player.alternate_map_set = location.alternate_map_set;
+    return relocation;
+}
+
 bool change_map_depth(WorldLocation& location, int original_code) {
     int layer_change = 0;
     if (original_code == 0x0f) {

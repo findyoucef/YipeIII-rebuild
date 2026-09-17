@@ -102,10 +102,13 @@ The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles
 now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
-visibility refresh performed by `0x19`. Native format version 5 introduced
-persistence for changed door and linked-mechanism tiles; current version 9
-retains it, the recovered King quest state, the princess Mystery counter, and
-all defeated monster placement indices.
+visibility refresh performed by `0x19`. Return-to-Surface items and spells use
+the entrance map and region saved by the `0x0e` descent path, then
+`0x0041e090` places the player immediately below the final `0x36`/`0x39`
+entrance on that map. Native format version 5 introduced persistence for changed
+door and linked-mechanism tiles; current version 10 retains it, the recovered
+King quest state, the princess Mystery counter, permanent monster defeats, and
+the saved surface-return region.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -152,7 +155,11 @@ arguments become the companion monster types held at generated-map offsets
 `+0x38c` and `+0x390`; the combat constructor replaces slots 1 and 2 with
 those types for primary monsters above type 34. The generated catalog exposes
 the fixed and difficulty-derived values as `companion_type_1` and
-`companion_type_2`. The separate `+0x371` placement flag remains unresolved.
+`companion_type_2`. The separate byte at `+0x371` marks a 64×64 monster that
+occupies the placement tile plus its east, south, and southeast neighbors.
+The byte at `+0x36c` makes a defeated placement return the next time its map is
+loaded; the other placements remain absent through the per-map player flags at
+`+0x34e`.
 
 The setup table at `0x00405640` and attack table at `0x004042e0` provide all 41
 monster definitions. The generated definition catalog joins their names from
@@ -173,13 +180,17 @@ environment.
 
 The SDL application materializes every placement with the player's current
 difficulty and level, renders its definition's bitmap resource 174–214, and
-starts the recovered group setup when the player enters its tile. It exposes
+starts the recovered group setup when the player enters any tile in its
+one-tile or 2×2 footprint. It exposes
 target cycling, items, spells, trained special abilities, and fleeing for every
-group. A victory stores the placement's stable index in native save version 9 so
-it remains removed after map changes and restart; versions 2–8 migrate their
-historical Giant Beetle bit to placement index 5. Fleeing leaves the placement
-active and returns the player to the previous location, including across map
-boundaries.
+group. A victory stores a non-respawning placement's stable index in native
+save version 10 so it remains removed after map changes and restart. A
+respawning placement is hidden only on the current map instance and returns
+after a map reload, matching the `+0x36c` load-time bypass. Version 9 defeats
+with this flag migrate to transient state, while versions 2–8 migrate their
+historical Giant Beetle bit to placement index 5. Fleeing leaves the
+placement active and returns the player to the previous location, including
+across map boundaries.
 
 The map renderer uses terrain bitmap resources 133–147, 153, 377, 418, and 460;
 monster resources 174–214; princess resources 391–393; and resource 406 for the

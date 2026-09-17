@@ -151,8 +151,8 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     save.unknown_006c = reader.archive_bool();
     save.unknown_0060 = reader.archive_bool();
     save.unknown_0061 = reader.archive_bool();
-    player.unknown_0062 = reader.archive_bool();
-    save.game.location.alternate_map_set = player.unknown_0062;
+    player.alternate_map_set = reader.archive_bool();
+    save.game.location.alternate_map_set = player.alternate_map_set;
     save.unknown_0063 = reader.archive_bool();
     player.has_waterproof_shoe_spray = reader.archive_bool();
     save.unknown_64c = reader.archive_bool();
@@ -190,16 +190,22 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     }
 
     player.gatekeeper_state = save.extended_entries[2].value_065e;
-    player.unknown_0664 = save.extended_entries[3].value_065e;
-    player.unknown_066a = save.extended_entries[6].value_065e;
+    player.surface_return_map_id =
+        static_cast<std::int16_t>(save.extended_entries[3].value_065e);
+    player.surface_return_region_x =
+        static_cast<std::int16_t>(save.extended_entries[4].value_065e);
+    player.surface_return_region_y =
+        static_cast<std::int16_t>(save.extended_entries[5].value_065e);
+    player.random_encounter_threshold = save.extended_entries[6].value_065e;
     player.stamps_found = save.extended_entries[8].value_065e;
     player.princesses_found = save.extended_entries[9].value_065e;
     player.has_tree_climbing_shoes = save.extended_entries[11].value_065e == 1;
     player.combat_style = signed_u16(save.extended_entries[15].value_065e);
-    player.unknown_067e = save.extended_entries[16].value_065e;
-    player.unknown_0680 = save.extended_entries[17].value_065e;
+    player.saved_random_encounter_threshold =
+        save.extended_entries[16].value_065e;
+    player.monster_repellent_steps = save.extended_entries[17].value_065e;
     player.princess_mystery_uses = save.extended_entries[18].value_065e;
-    player.unknown_0692 = save.extended_entries[26].value_065e;
+    player.pending_relocation = save.extended_entries[26].value_065e;
     player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
 
     save.game.location.position.x = signed_u16(reader.u16());
@@ -215,6 +221,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.experience = reader.i32();
     save.trailing_healing_flag = reader.archive_bool();
     save.game.location.map_id = map_id_for(save.game.location);
+    player.current_map_id = save.game.location.map_id;
     save.validation_passed = validation_matches(save);
     return save;
 }

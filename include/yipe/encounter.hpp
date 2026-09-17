@@ -23,8 +23,8 @@ struct MonsterPlacement {
     int encounter_size = 0;
     int companion_type_1 = 0;
     int companion_type_2 = 0;
-    bool flag_36c = false;
-    bool flag_371 = false;
+    bool respawns_after_map_reload = false;
+    bool occupies_two_by_two_tiles = false;
 };
 
 // Static placements reconstructed from the map-event initializer at 0x0041ec40.
@@ -32,6 +32,10 @@ struct MonsterPlacement {
 // player level, so those values are supplied when materializing a map's records.
 [[nodiscard]] std::vector<MonsterPlacement> original_monsters_for_map(
     int map_id, int difficulty = 2, int player_level = 1);
+[[nodiscard]] bool original_monster_placement_respawns_after_map_reload(
+    std::uint16_t placement_index);
+[[nodiscard]] bool monster_placement_contains(
+    const MonsterPlacement& placement, MapPosition position);
 
 struct Monster {
     int type_id = 0;

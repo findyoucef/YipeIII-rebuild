@@ -1,5 +1,7 @@
 #include "yipe/player.hpp"
 
+#include "yipe/map.hpp"
+
 #include <algorithm>
 #include <array>
 #include <stdexcept>
@@ -46,6 +48,16 @@ void Player::initialize(CharacterType type) {
     inventory[0] = 1;
     spells.fill(0);
     spells[0] = 1;
+    alternate_map_set = false;
+    current_map_id = 0x11;
+    stat_cap_mode = 0;
+    surface_return_map_id = 0;
+    surface_return_region_x = 0;
+    surface_return_region_y = 0;
+    random_encounter_threshold = 85;
+    saved_random_encounter_threshold = 85;
+    monster_repellent_steps = 0;
+    pending_relocation = 0;
 
     switch (type) {
     case CharacterType::warrior:
@@ -89,10 +101,10 @@ bool Player::adjust_health(int delta) {
 }
 
 int Player::maximum_stat() const {
-    if (unknown_0654_stat_cap_mode == 1) {
+    if (stat_cap_mode == 1) {
         return 40;
     }
-    if (unknown_0654_stat_cap_mode == 2) {
+    if (stat_cap_mode == 2) {
         return 50;
     }
     return 30;
@@ -206,7 +218,8 @@ LevelUpResult try_level_up(Player& player, MsvcRandom& random) {
 }
 
 ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
-                                         bool play_sound, bool in_combat) {
+                                         bool play_sound, bool in_combat,
+                                         int map_id, bool in_alternate_map_set) {
     if (slot >= inventory.size()) {
         throw std::out_of_range("inventory slot is out of range");
     }
@@ -257,29 +270,30 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
         return result;
     }
     case 4: {
-        if (unknown_066a < 100) {
-            unknown_067e = unknown_066a;
+        if (random_encounter_threshold < 100) {
+            saved_random_encounter_threshold = random_encounter_threshold;
         }
         const int first_roll = random.next();
         int duration = random.next() % intelligence + 25 + first_roll % (level / 2 + 1);
         duration = std::min(duration, 80);
-        unknown_0680 = static_cast<std::uint16_t>(unknown_0680 + duration);
-        unknown_066a = 125;
+        monster_repellent_steps =
+            static_cast<std::uint16_t>(monster_repellent_steps + duration);
+        random_encounter_threshold = 125;
         inventory[slot] = 0;
         result = {true, duration, play_sound ? 0x0e : 0,
                   "Roaming monsters will now stay away"};
         return result;
     }
     case 5:
-        if (unknown_0664 == 1) {
+        if (surface_return_map_id == 1) {
             result.message = "You have already used a potion to return to the surface";
             return result;
         }
-        if (unknown_004c < 40) {
+        if (map_id < 40) {
             result.message = "You are already on the surface";
             return result;
         }
-        if (unknown_0062) {
+        if (in_alternate_map_set) {
             result.message = "The surface potion has no effect here";
             return result;
         }
@@ -287,7 +301,8 @@ ItemUseResult Player::use_inventory_item(std::size_t slot, MsvcRandom& random,
             result.message = "You cannot use this potion while fighting";
             return result;
         }
-        unknown_0692 = 1;
+        pending_relocation =
+            static_cast<std::uint16_t>(PendingRelocation::surface);
         inventory[slot] = 0;
         return {true, 0, play_sound ? 0x0e : 0,
                 "The surface potion will take effect"};

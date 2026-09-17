@@ -56,8 +56,8 @@ class Placement:
     y: int
     slot: int
     size_expression: str
-    flag_36c: bool
-    flag_371: bool
+    respawns_after_map_reload: bool
+    occupies_two_by_two_tiles: bool
     companion_type_1_expression: str | None = None
     companion_type_2_expression: str | None = None
 
@@ -91,8 +91,10 @@ def parse_placements(path: Path) -> list[Placement]:
                         y=parse_constant(arguments[3], "y"),
                         slot=parse_constant(arguments[4], "slot"),
                         size_expression=arguments[5],
-                        flag_36c=parse_constant(arguments[6], "flag_36c") != 0,
-                        flag_371=helper == "0041d780",
+                        respawns_after_map_reload=(
+                            parse_constant(arguments[6], "respawn flag") != 0
+                        ),
+                        occupies_two_by_two_tiles=helper == "0041d780",
                         companion_type_1_expression=(
                             arguments[7] if helper == "0041d780" else None
                         ),
@@ -139,7 +141,7 @@ def value_source(expression: str) -> tuple[str, int]:
 
 def render_json(placements: list[Placement]) -> dict[str, object]:
     return {
-        "format": "yipe3-original-monster-placements-v3",
+        "format": "yipe3-original-monster-placements-v4",
         "source": "0041ec40",
         "placements": [
             {
@@ -151,8 +153,8 @@ def render_json(placements: list[Placement]) -> dict[str, object]:
                 "x": placement.x,
                 "y": placement.y,
                 "encounter_size_expression": placement.size_expression,
-                "flag_36c": placement.flag_36c,
-                "flag_371": placement.flag_371,
+                "respawns_after_map_reload": placement.respawns_after_map_reload,
+                "occupies_two_by_two_tiles": placement.occupies_two_by_two_tiles,
                 "companion_type_1_expression": placement.companion_type_1_expression,
                 "companion_type_2_expression": placement.companion_type_2_expression,
             }
@@ -208,8 +210,8 @@ def render_cpp(placements: list[Placement]) -> str:
         "    PlacementValue encounter_size;",
         "    PlacementValue companion_type_1;",
         "    PlacementValue companion_type_2;",
-        "    bool flag_36c;",
-        "    bool flag_371;",
+        "    bool respawns_after_map_reload;",
+        "    bool occupies_two_by_two_tiles;",
         "};",
         "",
         f"constexpr std::array<OriginalMonsterPlacementRecord, {len(placements)}> placements{{{{",
@@ -222,8 +224,8 @@ def render_cpp(placements: list[Placement]) -> str:
             f"{render_value(placement.size_expression)}, "
             f"{render_value(placement.companion_type_1_expression or '0')}, "
             f"{render_value(placement.companion_type_2_expression or '0')}, "
-            f"{'true' if placement.flag_36c else 'false'}, "
-            f"{'true' if placement.flag_371 else 'false'}"
+            f"{'true' if placement.respawns_after_map_reload else 'false'}, "
+            f"{'true' if placement.occupies_two_by_two_tiles else 'false'}"
             "},"
         )
     lines.extend(
@@ -272,10 +274,19 @@ def render_cpp(placements: list[Placement]) -> str:
             "                                            player_level),",
             "                              resolve_value(placement.companion_type_2, difficulty,",
             "                                            player_level),",
-            "                              placement.flag_36c, placement.flag_371});",
+            "                              placement.respawns_after_map_reload,",
+            "                              placement.occupies_two_by_two_tiles});",
             "        }",
             "    }",
             "    return result;",
+            "}",
+            "",
+            "bool original_monster_placement_respawns_after_map_reload(",
+            "    std::uint16_t placement_index) {",
+            "    if (placement_index >= placements.size()) {",
+            '        throw std::out_of_range("monster placement index is out of range");',
+            "    }",
+            "    return placements[placement_index].respawns_after_map_reload;",
             "}",
             "",
             "} // namespace yipe",

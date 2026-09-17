@@ -262,6 +262,61 @@ void test_stat_and_maximum_items() {
           "maximum-health item raises current and maximum equally");
 }
 
+void test_relocation_item() {
+    yipe::Player player;
+    player.inventory[1] = 5;
+    player.surface_return_map_id = 0x11;
+    player.surface_return_region_x = 0;
+    player.surface_return_region_y = 0;
+    yipe::MsvcRandom random(1);
+
+    const yipe::ItemUseResult used =
+        player.use_inventory_item(1, random, false, false, 0x39, false);
+    check(used.consumed && player.inventory[1] == 0
+              && player.pending_relocation
+                  == static_cast<std::uint16_t>(yipe::PendingRelocation::surface),
+          "Return to Surface Potion is consumed underground and queues relocation");
+
+    yipe::WorldLocation cave{{7, 4}, 0, 0, 1, false, 0x39};
+    check(yipe::apply_pending_relocation(player, cave)
+                  == yipe::PendingRelocation::surface
+              && cave.map_id == 0x11 && cave.map_layer == 0
+              && player.pending_relocation == 0,
+          "Return to Surface Potion restores the recorded surface map");
+
+    yipe::Map::Tiles tiles{};
+    tiles[static_cast<std::size_t>(3 * yipe::Map::height + 4)] = 0x36;
+    const yipe::Map return_map(0x11, 0, tiles);
+    check(yipe::surface_return_position(return_map)
+                  == yipe::MapPosition{3, 5},
+          "surface relocation places the player below the recovered entrance tile");
+
+    player.inventory[1] = 5;
+    const yipe::ItemUseResult on_surface =
+        player.use_inventory_item(1, random, false, false, 0x11, false);
+    check(!on_surface.consumed && player.inventory[1] == 5,
+          "Return to Surface Potion is retained while already on the surface");
+
+    const yipe::ItemUseResult alternate =
+        player.use_inventory_item(1, random, false, false, 0x9b, true);
+    check(!alternate.consumed && player.inventory[1] == 5,
+          "Return to Surface Potion is retained in the alternate map set");
+
+    const yipe::ItemUseResult combat_on_surface =
+        player.use_inventory_item(1, random, false, true, 0x11, false);
+    check(combat_on_surface.message == "You are already on the surface",
+          "surface restriction precedes the combat restriction");
+    const yipe::ItemUseResult combat_in_alternate =
+        player.use_inventory_item(1, random, false, true, 0x9b, true);
+    check(combat_in_alternate.message == "The surface potion has no effect here",
+          "alternate-map restriction precedes the combat restriction");
+    const yipe::ItemUseResult combat_underground =
+        player.use_inventory_item(1, random, false, true, 0x39, false);
+    check(combat_underground.message
+              == "You cannot use this potion while fighting",
+          "valid underground combat reports the fighting restriction");
+}
+
 void test_item_names() {
     const auto supplied = yipe::load_item_names(
         std::filesystem::path(YIPE_TEST_ASSET_DIR) / "Yipe3Items.txt");
@@ -286,7 +341,7 @@ void test_native_save() {
     original.maximum_spell_points = 19;
     original.inventory[4] = 9;
     original.has_bonus_healing_ring = true;
-    original.unknown_0680 = 77;
+    original.monster_repellent_steps = 77;
 
     yipe::save_player_atomic(path, original);
     const yipe::Player loaded = yipe::load_player(path);
@@ -295,8 +350,8 @@ void test_native_save() {
     check(loaded.health == 7 && loaded.maximum_spell_points == 19,
           "native save restores health and spell points");
     check(loaded.inventory == original.inventory, "native save restores inventory");
-    check(loaded.has_bonus_healing_ring && loaded.unknown_0680 == 77,
-          "native save preserves reconstructed unknown fields");
+    check(loaded.has_bonus_healing_ring && loaded.monster_repellent_steps == 77,
+          "native save preserves recovered item-effect state");
     const yipe::GameState upgraded_from_v1 = yipe::load_game(path);
     check(upgraded_from_v1.player.name == original.name
               && upgraded_from_v1.location.map_id == 0x11
@@ -370,10 +425,13 @@ void test_game_save() {
     original.player.princesses_found = 14;
     original.player.princess_mystery_uses = 7;
     original.player.has_lucky_rabbit_foot = true;
+    original.player.surface_return_map_id = 0x21;
+    original.player.surface_return_region_x = -4;
+    original.player.surface_return_region_y = 2;
     original.player.quest_flags[8] = true;
     original.player.inventory_values[13] = 9;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
-    original.defeated_monster_placements = {5, 38, 185};
+    original.defeated_monster_placements = {5, 14, 38, 185};
     original.random_state = 0x12345678u;
     original.map_tile_changes = {{0x2b, {6, 1}, 40}, {0x2b, {5, 8}, 34}};
 
@@ -382,17 +440,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 9 save restores progression and equipment");
+          "version 10 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 9 save restores combat settings and counters");
+          "version 10 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 9 save restores world location");
+          "version 10 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 9 save restores encounter and random state");
+          "version 10 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -400,17 +458,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 9 save restores ability and active status state");
+          "version 10 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 9 save restores special movement state");
+          "version 10 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 9 save restores persistent map tile changes");
+          "version 10 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 9 save restores learned spells");
+          "version 10 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -420,7 +478,21 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 9 save restores quest state");
+          "version 10 save restores quest state");
+    check(loaded.player.surface_return_map_id == 0x21
+              && loaded.player.surface_return_region_x == -4
+              && loaded.player.surface_return_region_y == 2,
+          "version 10 save restores the surface-return anchor");
+
+    remove_save_extension(path, 2 * sizeof(std::uint16_t), 9);
+    const yipe::GameState loaded_version_9 = yipe::load_game(path);
+    check(loaded_version_9.defeated_monster_placements
+                 == std::vector<std::uint16_t>({5, 38, 185})
+              && loaded_version_9.temporarily_defeated_monster_placements
+                 == std::vector<std::uint16_t>({14})
+              && loaded_version_9.player.surface_return_region_x == 0
+              && loaded_version_9.player.surface_return_region_y == 1,
+          "version 9 saves migrate repeatable encounters and derive the missing return region");
 
     remove_save_extension(path, sizeof(std::uint32_t)
                                     + original.defeated_monster_placements.size()
@@ -540,6 +612,8 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         switch (index) {
         case 2: value = 2; break;
         case 3: value = 1; break;
+        case 4: value = 0xfffc; break;
+        case 5: value = 0xffff; break;
         case 6: value = 125; break;
         case 8: value = 4; break;
         case 9: value = 11; break;
@@ -602,7 +676,10 @@ void test_legacy_save_import() {
           "legacy import maps recovered difficulty, movement, and combat state");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
               && player.spells == imported.values_010c
-              && player.has_bonus_healing_ring && player.unknown_0680 == 22,
+              && player.has_bonus_healing_ring && player.monster_repellent_steps == 22
+              && player.surface_return_map_id == 1
+              && player.surface_return_region_x == -4
+              && player.surface_return_region_y == -1,
           "legacy import maps inventory, spells, and recovered extended fields");
     check(player.quest_score == 123 && player.has_lucky_rabbit_foot
               && player.quest_flags[29] && player.inventory_values[29] == 39
@@ -1267,7 +1344,8 @@ void test_giant_beetle_encounter() {
               && placements[0].type_id == 2
               && placements[0].position == yipe::MapPosition{2, 8}
               && placements[0].slot == 0 && placements[0].encounter_size == 1
-              && !placements[0].flag_36c && !placements[0].flag_371,
+              && !placements[0].respawns_after_map_reload
+              && !placements[0].occupies_two_by_two_tiles,
           "map 0x0b exposes the recovered Giant Beetle placement");
     check(yipe::original_monsters_for_map(0x11).empty(),
           "maps without recovered placements remain empty");
@@ -1646,8 +1724,8 @@ void test_special_abilities() {
 void test_monster_placement_catalog() {
     std::size_t placement_count = 0;
     std::array<bool, yipe::original_monster_placement_count> placement_indices{};
-    int flag_36c_count = 0;
-    int flag_371_count = 0;
+    int respawning_count = 0;
+    int two_by_two_count = 0;
     for (int map_id = 0; map_id <= 0x85; ++map_id) {
         for (const yipe::MonsterPlacement& placement :
              yipe::original_monsters_for_map(map_id)) {
@@ -1655,12 +1733,13 @@ void test_monster_placement_catalog() {
             if (placement.placement_index < placement_indices.size()) {
                 placement_indices[placement.placement_index] = true;
             }
-            flag_36c_count += placement.flag_36c ? 1 : 0;
-            flag_371_count += placement.flag_371 ? 1 : 0;
+            respawning_count += placement.respawns_after_map_reload ? 1 : 0;
+            two_by_two_count += placement.occupies_two_by_two_tiles ? 1 : 0;
         }
     }
-    check(placement_count == 186 && flag_36c_count == 23 && flag_371_count == 16,
-          "generated catalog exposes every recovered monster placement and flag");
+    check(placement_count == 186 && respawning_count == 23
+              && two_by_two_count == 16,
+          "generated catalog exposes every recovered monster placement behavior");
     check(std::all_of(placement_indices.begin(), placement_indices.end(),
                       [](bool present) { return present; }),
           "every recovered placement has a stable catalog index");
@@ -1689,6 +1768,14 @@ void test_monster_placement_catalog() {
     check(yipe::original_monsters_for_map(0x6e, 2, 1)[0].companion_type_2 == 0
               && yipe::original_monsters_for_map(0x6e, 3, 1)[0].companion_type_2 == 12,
           "map 0x6e enables its third companion only on difficulty three");
+    const yipe::MonsterPlacement large =
+        yipe::original_monsters_for_map(0x4c, 2, 1)[0];
+    check(yipe::monster_placement_contains(large, {8, 5})
+              && yipe::monster_placement_contains(large, {9, 5})
+              && yipe::monster_placement_contains(large, {8, 6})
+              && yipe::monster_placement_contains(large, {9, 6})
+              && !yipe::monster_placement_contains(large, {10, 6}),
+          "extended placements occupy the recovered two-by-two footprint");
 }
 
 void test_monster_definition_catalog() {
@@ -2071,10 +2158,16 @@ void test_recovered_spells() {
     const yipe::ExplorationSpellResult surface = yipe::cast_exploration_spell(
         surface_caster, cave, 0, yipe::SpellPower::low, surface_random);
     check(surface.status == yipe::SpellCastStatus::cast && surface.location_changed
-              && cave.position == yipe::MapPosition{7, 4} && cave.map_layer == 0
-              && cave.map_id == 0x11 && surface_caster.spell_points == 5
-              && surface_caster.unknown_0692 == 1,
-          "Return to Surface preserves position and restores the matching surface map");
+              && cave.position == yipe::MapPosition{7, 4} && cave.map_layer == 1
+              && cave.map_id == 0x39 && surface_caster.spell_points == 5
+              && surface_caster.pending_relocation == 1,
+          "Return to Surface queues the recovered deferred relocation");
+    surface_caster.surface_return_map_id = 0x11;
+    check(yipe::apply_pending_relocation(surface_caster, cave)
+                  == yipe::PendingRelocation::surface
+              && cave.map_layer == 0 && cave.map_id == 0x11
+              && surface_caster.pending_relocation == 0,
+          "the deferred surface relocation restores its saved map");
     const yipe::ExplorationSpellResult already_on_surface =
         yipe::cast_exploration_spell(surface_caster, cave, 0,
                                      yipe::SpellPower::low, surface_random);
@@ -2109,9 +2202,9 @@ void test_recovered_spells() {
         repellent_random);
     check(repellent.status == yipe::SpellCastStatus::cast
               && repellent.repellent_duration == 46
-              && repellent_caster.unknown_066a == 125
-              && repellent_caster.unknown_067e == 85
-              && repellent_caster.unknown_0680 == 46
+              && repellent_caster.random_encounter_threshold == 125
+              && repellent_caster.saved_random_encounter_threshold == 85
+              && repellent_caster.monster_repellent_steps == 46
               && repellent_caster.spell_points == 72,
           "Stinky Smell applies the recovered capped duration and status fields");
 
@@ -2136,11 +2229,17 @@ void test_recovered_spells() {
     yipe::MsvcRandom town_random(1);
     const yipe::ExplorationSpellResult town = yipe::cast_exploration_spell(
         town_caster, distant_surface, 8, yipe::SpellPower::low, town_random);
-    check(town.location_changed && distant_surface.position == yipe::MapPosition{4, 5}
+    check(town.location_changed && distant_surface.position == yipe::MapPosition{12, 8}
+              && distant_surface.map_id == 0x75 && town_caster.spell_points == 85
+              && town_caster.pending_relocation == 2,
+          "Return to Yipe queues the recovered deferred relocation");
+    check(yipe::apply_pending_relocation(town_caster, distant_surface)
+                  == yipe::PendingRelocation::yipe
+              && distant_surface.position == yipe::MapPosition{4, 5}
               && distant_surface.region_x == 0 && distant_surface.region_y == 0
-              && distant_surface.map_id == 0x11 && town_caster.spell_points == 85
-              && town_caster.unknown_0692 == 2,
-          "Return to Yipe relocates a surface caster to the recovered town position");
+              && distant_surface.map_id == 0x11
+              && town_caster.pending_relocation == 0,
+          "the deferred Yipe relocation restores the town position");
 
     yipe::Player super_healer;
     super_healer.spells[9] = 1;
@@ -2372,6 +2471,7 @@ int main() {
     test_level_progression();
     test_healing_item();
     test_stat_and_maximum_items();
+    test_relocation_item();
     test_item_names();
     test_native_save();
     test_game_save();

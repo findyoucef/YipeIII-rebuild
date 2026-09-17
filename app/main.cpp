@@ -563,10 +563,14 @@ void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
 }
 
 bool monster_placement_defeated(const yipe::GameState& game,
-                                std::uint16_t placement_index) {
-    return std::find(game.defeated_monster_placements.begin(),
-                     game.defeated_monster_placements.end(), placement_index)
-        != game.defeated_monster_placements.end();
+                                const yipe::MonsterPlacement& placement) {
+    const auto contains = [index = placement.placement_index](const auto& placements) {
+        return std::find(placements.begin(), placements.end(), index)
+            != placements.end();
+    };
+    return contains(game.temporarily_defeated_monster_placements)
+        || (!placement.respawns_after_map_reload
+            && contains(game.defeated_monster_placements));
 }
 
 void render_game(SDL_Renderer* renderer, const yipe::Map& map,
@@ -582,15 +586,17 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
     }
     for (const yipe::MonsterPlacement& placement : yipe::original_monsters_for_map(
              map.id(), game.player.difficulty, game.player.level)) {
-        if (!monster_placement_defeated(game, placement.placement_index)) {
+        if (!monster_placement_defeated(game, placement)) {
             const std::optional<yipe::MonsterDefinition> monster =
                 yipe::original_monster_definition(placement.type_id);
             if (!monster) {
                 throw std::logic_error("monster placement has no recovered definition");
             }
+            const int extent = placement.occupies_two_by_two_tiles
+                ? tile_size * 2 : tile_size;
             const SDL_Rect destination{placement.position.x * tile_size,
                                        placement.position.y * tile_size,
-                                       tile_size, tile_size};
+                                       extent, extent};
             copy_texture(renderer, textures.find(monster->bitmap_resource_id), nullptr,
                          &destination);
         }
@@ -1687,7 +1693,8 @@ void play_combat_turn_sounds(
 
 EncounterResult run_monster_encounter(
     SDL_Window* window, const yipe::MonsterPlacement& placement,
-    yipe::Player& player, yipe::MsvcRandom& random, int map_environment,
+    yipe::Player& player, const yipe::WorldLocation& location,
+    yipe::MsvcRandom& random, int map_environment,
     AudioPlayer& audio, const yipe::GameSettings& settings) {
     yipe::CombatEncounter encounter = yipe::start_monster_encounter(
         placement, player, random, map_environment);
@@ -1760,7 +1767,9 @@ EncounterResult run_monster_encounter(
                 continue;
             }
             const yipe::ItemUseResult used =
-                player.use_inventory_item(*slot, random, true, true);
+                player.use_inventory_item(
+                    *slot, random, true, true, location.map_id,
+                    location.alternate_map_set);
             if (!used.consumed) {
                 show_message(window, "Inventory", used.message);
                 continue;
@@ -1907,8 +1916,8 @@ std::optional<yipe::MonsterPlacement> monster_encounter_at(
     const yipe::GameState& game) {
     for (const yipe::MonsterPlacement& placement : yipe::original_monsters_for_map(
              game.location.map_id, game.player.difficulty, game.player.level)) {
-        if (placement.position == game.location.position
-            && !monster_placement_defeated(game, placement.placement_index)) {
+        if (yipe::monster_placement_contains(placement, game.location.position)
+            && !monster_placement_defeated(game, placement)) {
             return placement;
         }
     }
@@ -1931,6 +1940,35 @@ std::optional<yipe::Map> load_world_map(const yipe::WorldLocation& location,
     return yipe::original_map(location.map_id);
 }
 
+void synchronize_player_location(yipe::GameState& game) {
+    game.player.current_map_id = game.location.map_id;
+    game.player.alternate_map_set = game.location.alternate_map_set;
+}
+
+bool apply_pending_relocation(yipe::GameState& game, yipe::Map& map,
+                              yipe::MsvcRandom& random) {
+    const yipe::PendingRelocation relocation =
+        yipe::apply_pending_relocation(game.player, game.location);
+    if (relocation == yipe::PendingRelocation::none) {
+        return false;
+    }
+    const std::optional<yipe::Map> destination =
+        load_world_map(game.location, random);
+    if (!destination) {
+        throw std::runtime_error("relocation destination map is unavailable");
+    }
+    map = *destination;
+    if (relocation == yipe::PendingRelocation::surface) {
+        if (const std::optional<yipe::MapPosition> position =
+                yipe::surface_return_position(map)) {
+            game.location.position = *position;
+        }
+    }
+    game.temporarily_defeated_monster_placements.clear();
+    apply_map_tile_changes(map, game);
+    return true;
+}
+
 void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
                             yipe::Map& map, yipe::MsvcRandom& random,
                             AudioPlayer& audio, const yipe::GameSettings& settings) {
@@ -1947,13 +1985,7 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
     }
     audio.play(yipe::spell_sound_id(selection->index), settings.sound_enabled);
     if (result.location_changed) {
-        const std::optional<yipe::Map> destination =
-            load_world_map(game.location, random);
-        if (!destination) {
-            throw std::runtime_error("spell destination map is unavailable");
-        }
-        map = *destination;
-        apply_map_tile_changes(map, game);
+        static_cast<void>(apply_pending_relocation(game, map, random));
     }
 
     std::ostringstream message;
@@ -1973,15 +2005,19 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
     show_message(window, "Spells", message.str());
 }
 
-void use_exploration_item(SDL_Window* window, yipe::Player& player,
+void use_exploration_item(SDL_Window* window, yipe::GameState& game,
+                          yipe::Map& map,
                           yipe::MsvcRandom& random, AudioPlayer& audio,
                           const yipe::GameSettings& settings) {
-    const std::optional<std::size_t> slot = choose_inventory_item(window, player);
+    const std::optional<std::size_t> slot =
+        choose_inventory_item(window, game.player);
     if (!slot) {
         return;
     }
     const yipe::ItemUseResult result =
-        player.use_inventory_item(*slot, random, true, false);
+        game.player.use_inventory_item(
+            *slot, random, true, false, game.location.map_id,
+            game.location.alternate_map_set);
     if (result.consumed) {
         audio.play(result.sound_id, settings.sound_enabled);
     }
@@ -1990,6 +2026,9 @@ void use_exploration_item(SDL_Window* window, yipe::Player& player,
         message += " (" + std::to_string(result.amount) + ")";
     }
     show_message(window, "Inventory", message);
+    if (apply_pending_relocation(game, map, random)) {
+        audio.play(201, settings.sound_enabled);
+    }
 }
 
 void remember_map_tile(yipe::GameState& game, const yipe::Map& map,
@@ -2010,6 +2049,7 @@ void save_current_game(SDL_Window* window, const std::filesystem::path& path,
                        yipe::GameState& game, const yipe::MsvcRandom& random,
                        bool show_confirmation) {
     game.random_state = random.state();
+    synchronize_player_location(game);
     yipe::save_game_atomic(path, game);
     if (show_confirmation) {
         show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
@@ -2043,7 +2083,13 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         throw std::runtime_error("save contains an unsupported world location");
     }
     yipe::Map map = *restored_map;
-    apply_map_tile_changes(map, game);
+    if (!apply_pending_relocation(game, map, random)) {
+        synchronize_player_location(game);
+        apply_map_tile_changes(map, game);
+    }
+    if (!map.contains(game.location.position)) {
+        throw std::runtime_error("save contains an invalid relocation destination");
+    }
     const bool completed_saved_finale = map.id() == 0x11
         && yipe::complete_gatekeeper_finale(game.player);
     render_game(renderer, map, textures, game);
@@ -2139,8 +2185,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         if (delta_x == 0 && delta_y == 0) {
             if (key && *key == binding(settings, yipe::InputAction::use_item)) {
-                use_exploration_item(
-                    window, game.player, random, audio, settings);
+                use_exploration_item(window, game, map, random, audio, settings);
                 render_game(renderer, map, textures, game);
             } else if (key && *key == binding(settings, yipe::InputAction::cast)) {
                 cast_exploration_spell(
@@ -2184,6 +2229,16 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     load_world_map(game.location, random);
                 if (next_map) {
                     map = *next_map;
+                    if (result.original_code == 0x0e) {
+                        game.player.surface_return_map_id =
+                            static_cast<std::int16_t>(previous_location.map_id);
+                        game.player.surface_return_region_x =
+                            static_cast<std::int16_t>(previous_location.region_x);
+                        game.player.surface_return_region_y =
+                            static_cast<std::int16_t>(previous_location.region_y);
+                    }
+                    game.temporarily_defeated_monster_placements.clear();
+                    synchronize_player_location(game);
                     apply_map_tile_changes(map, game);
                     completed_finale = map.id() == 0x11
                         && yipe::complete_gatekeeper_finale(game.player);
@@ -2226,13 +2281,16 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (const std::optional<yipe::MonsterPlacement> placement =
                     monster_encounter_at(game)) {
                 const EncounterResult encounter = run_monster_encounter(
-                    window, *placement, game.player, random, map.environment(),
-                    audio, settings);
+                    window, *placement, game.player, game.location, random,
+                    map.environment(), audio, settings);
                 if (encounter == EncounterResult::victory) {
-                    game.defeated_monster_placements.push_back(
-                        placement->placement_index);
+                    auto& defeated = placement->respawns_after_map_reload
+                        ? game.temporarily_defeated_monster_placements
+                        : game.defeated_monster_placements;
+                    defeated.push_back(placement->placement_index);
                 } else if (encounter == EncounterResult::fled) {
                     game.location = previous_location;
+                    synchronize_player_location(game);
                     if (map.id() != game.location.map_id) {
                         const std::optional<yipe::Map> previous_map =
                             load_world_map(game.location, random);
@@ -2313,6 +2371,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             case 0x16:
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();
+                game.temporarily_defeated_monster_placements.clear();
+                synchronize_player_location(game);
                 apply_map_tile_changes(map, game);
                 audio.play(201, settings.sound_enabled);
                 break;

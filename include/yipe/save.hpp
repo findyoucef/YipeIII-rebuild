@@ -27,6 +27,9 @@ struct GameState {
     std::uint32_t random_state = 1;
     std::vector<MapTileChange> map_tile_changes;
     std::vector<std::uint16_t> defeated_monster_placements;
+    // Repeatable placements stay absent only until another map is loaded.
+    // This transient list is intentionally excluded from native saves.
+    std::vector<std::uint16_t> temporarily_defeated_monster_placements;
 };
 
 // Version 2 extended the player-only version 1 payload with progression,
@@ -35,7 +38,8 @@ struct GameState {
 // state; version 5 added persistent map-tile changes; version 6 adds learned
 // spells; version 7 adds the recovered King quest state; version 8 adds the
 // princess mystery-reward counter; version 9 adds all defeated monster
-// placement indices while retaining all readers.
+// placement indices; version 10 adds the saved surface-return region while
+// retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 
