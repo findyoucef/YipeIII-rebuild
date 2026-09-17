@@ -74,6 +74,21 @@ private:
     MapEvents events_;
 };
 
+struct MapVisibility {
+    int map_id = -1;
+    std::array<bool, Map::tile_count> visible{};
+    std::array<bool, Map::tile_count> expanded{};
+
+    [[nodiscard]] bool contains(MapPosition position) const;
+};
+
+// Surface maps begin fully revealed. Underground maps reproduce the original
+// room-reveal flood through non-opaque cells at 0x0041cc00/0x0041cc50.
+void initialize_map_visibility(MapVisibility& visibility, const Map& map,
+                               MapPosition player_position);
+void reveal_map_from(MapVisibility& visibility, const Map& map,
+                     MapPosition player_position);
+
 [[nodiscard]] Map starting_map();
 [[nodiscard]] std::optional<Map> original_map(int id);
 // Maps 0x76-0x78 are generated from the current entry position rather than a

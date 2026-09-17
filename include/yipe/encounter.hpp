@@ -37,6 +37,57 @@ struct MonsterPlacement {
 [[nodiscard]] bool monster_placement_contains(
     const MonsterPlacement& placement, MapPosition position);
 
+struct RoamingEncounterUnlocks {
+    bool environment_2_expanded = false;
+    bool environment_3_expanded = false;
+    bool environment_5_expanded = false;
+    bool environment_6_expanded = false;
+    int default_environment_monster_limit = 33;
+};
+
+struct RoamingMonster {
+    int type_id = 0;
+    MapPosition position{-1, -1};
+};
+
+enum class RoamingMonsterMove {
+    stayed,
+    moved,
+    encountered_player,
+};
+
+enum class RoamingMonsterUpdate {
+    none,
+    spawned,
+    moved,
+    encountered_player,
+};
+
+// Reconstructs the random encounter trigger at 0x00410ed0.
+[[nodiscard]] bool should_spawn_roaming_monster(
+    const Player& player, const WorldLocation& location,
+    std::uint16_t destination_tile, MsvcRandom& random);
+[[nodiscard]] bool roaming_monster_allowed(
+    int environment, int monster_type, bool alternate_map_set);
+// Reconstructs the type/environment filtering and placement loop at 0x0041d920.
+[[nodiscard]] std::optional<RoamingMonster> spawn_roaming_monster(
+    const Map& map, const Player& player, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
+    MsvcRandom& random);
+// Reconstructs the pursuit/random-step loop at 0x00411d00.
+[[nodiscard]] RoamingMonsterMove move_roaming_monster(
+    RoamingMonster& monster, const Map& map, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    MsvcRandom& random);
+[[nodiscard]] RoamingMonsterUpdate update_roaming_monster(
+    std::optional<RoamingMonster>& monster, const Map& map,
+    const Player& player, const WorldLocation& location,
+    std::uint16_t destination_tile,
+    const std::vector<MonsterPlacement>& static_placements,
+    const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
+    MsvcRandom& random);
+
 struct Monster {
     int type_id = 0;
     std::string_view name;

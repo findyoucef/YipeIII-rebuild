@@ -1,10 +1,12 @@
 #pragma once
 
+#include "yipe/encounter.hpp"
 #include "yipe/map.hpp"
 #include "yipe/player.hpp"
 
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <vector>
 
 namespace yipe {
@@ -30,6 +32,10 @@ struct GameState {
     // Repeatable placements stay absent only until another map is loaded.
     // This transient list is intentionally excluded from native saves.
     std::vector<std::uint16_t> temporarily_defeated_monster_placements;
+    // Randomly spawned monsters are map-instance state in the original and
+    // are intentionally excluded from native saves.
+    std::optional<RoamingMonster> roaming_monster;
+    MapVisibility map_visibility;
 };
 
 // Version 2 extended the player-only version 1 payload with progression,

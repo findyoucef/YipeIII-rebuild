@@ -192,6 +192,21 @@ historical Giant Beetle bit to placement index 5. Fleeing leaves the
 placement active and returns the player to the previous location, including
 across map boundaries.
 
+Random roaming encounters follow the movement-time path at `0x00410ed0` and
+`0x0041d920`. Each eligible movement attempt compares one random roll with the
+saved encounter threshold after applying terrain, map-depth, and critical-health
+adjustments. At most one transient roaming monster is then selected through the
+map environment's compatibility table and placed on an unoccupied revealed
+cell. It pursues the player diagonally on later movement attempts, occasionally
+chooses one of eight random neighboring cells, and starts the same size-zero
+group combat used by the original `-1` encounter slot. Victory and fleeing both
+clear it, while loading another map resets all transient roaming state.
+
+Maps below ID `0x29` begin fully visible. Later maps initialize hidden and use
+the original eight-connected room flood from `0x0041cc00`/`0x0041cc50`,
+revealing opaque boundary tiles without propagating through them. Visibility is
+map-instance state and is not written to native saves.
+
 The map renderer uses terrain bitmap resources 133–147, 153, 377, 418, and 460;
 monster resources 174–214; princess resources 391–393; and resource 406 for the
 initial type-1 character image.

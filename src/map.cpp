@@ -15,6 +15,58 @@ bool is_interior(MapPosition position) {
            && position.y != Map::height - 1;
 }
 
+std::size_t map_index(MapPosition position) {
+    return static_cast<std::size_t>(
+        position.x * Map::height + position.y);
+}
+
+bool blocks_map_reveal(std::uint16_t tile) {
+    switch (tile) {
+    case 0x22:
+    case 0x23:
+    case 0x24:
+    case 0x25:
+    case 0x3e:
+    case 0x3f:
+    case 0x40:
+    case 0x43:
+    case 0x44:
+    case 0x5a:
+        return true;
+    default:
+        return false;
+    }
+}
+
+void reveal_area(MapVisibility& visibility, const Map& map,
+                 MapPosition center) {
+    for (int x = center.x - 1; x <= center.x + 1; ++x) {
+        for (int y = center.y - 1; y <= center.y + 1; ++y) {
+            const MapPosition position{x, y};
+            if (map.contains(position)) {
+                visibility.visible[map_index(position)] = true;
+            }
+        }
+    }
+    for (int x = center.x - 1; x <= center.x + 1; ++x) {
+        for (int y = center.y - 1; y <= center.y + 1; ++y) {
+            const MapPosition position{x, y};
+            if (!map.contains(position)) {
+                continue;
+            }
+            const std::size_t index = map_index(position);
+            if (visibility.expanded[index]) {
+                continue;
+            }
+            visibility.expanded[index] = true;
+            if (!blocks_map_reveal(map.tile(position))
+                && visibility.visible[index]) {
+                reveal_area(visibility, map, position);
+            }
+        }
+    }
+}
+
 void set_generated_tile(Map::Tiles& tiles, int x, int y, std::uint16_t tile) {
     tiles[static_cast<std::size_t>(x * Map::height + y)] = tile;
 }
@@ -46,6 +98,32 @@ Map::Map(int id, int environment, Tiles tiles, MapEvents events)
 
 bool Map::contains(MapPosition position) const {
     return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
+}
+
+bool MapVisibility::contains(MapPosition position) const {
+    return position.x >= 0 && position.x < Map::width
+        && position.y >= 0 && position.y < Map::height
+        && visible[map_index(position)];
+}
+
+void initialize_map_visibility(MapVisibility& visibility, const Map& map,
+                               MapPosition player_position) {
+    visibility.map_id = map.id();
+    const bool fully_visible = map.id() < 0x29;
+    visibility.visible.fill(fully_visible);
+    visibility.expanded.fill(fully_visible);
+    if (!fully_visible) {
+        reveal_area(visibility, map, player_position);
+    }
+}
+
+void reveal_map_from(MapVisibility& visibility, const Map& map,
+                     MapPosition player_position) {
+    if (visibility.map_id != map.id()) {
+        initialize_map_visibility(visibility, map, player_position);
+        return;
+    }
+    reveal_area(visibility, map, player_position);
 }
 
 std::uint16_t Map::tile(MapPosition position) const {

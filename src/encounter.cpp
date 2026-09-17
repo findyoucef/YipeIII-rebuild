@@ -53,6 +53,194 @@ int roll(MsvcRandom& random, int bound) {
     return random.next() % std::max(bound, 1);
 }
 
+bool map_event_at(const MapEvents& events, MapPosition position) {
+    if ((events.message.has_position() && events.message.position == position)
+        || (events.overlay.has_position() && events.overlay.position == position)
+        || (events.princess.has_position()
+            && events.princess.position == position)) {
+        return true;
+    }
+    for (const MapEvent& event : events.depth) {
+        if (event.has_position() && event.position == position) {
+            return true;
+        }
+    }
+    for (const MapEvent& event : events.linked) {
+        if (event.has_position() && event.position == position) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool roaming_tile_allowed(std::uint16_t tile, int monster_type) {
+    constexpr std::array<std::uint16_t, 43> generally_allowed{
+        0x2d, 0x2f, 0x08, 0x29, 0x2a, 0x33, 0x02, 0x28, 0x37, 0x32, 0x34,
+        0x35, 0x38, 0x53, 0x3c, 0x2c, 0x0b, 0x16, 0x17, 0x18, 0x19, 0x1a,
+        0x26, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x27, 0x46, 0x47, 0x48,
+        0x49, 0x5d, 0x5e, 0x5f, 0x52, 0x65, 0x66, 0x67, 0x68, 0x69,
+    };
+    if (std::find(generally_allowed.begin(), generally_allowed.end(), tile)
+        != generally_allowed.end()) {
+        return true;
+    }
+    if (monster_type >= 0x19 && monster_type <= 0x1d
+        && ((tile >= 0x0d && tile <= 0x15)
+            || (tile >= 0x4a && tile <= 0x51))) {
+        return true;
+    }
+    return monster_type == 6
+        && (tile == 0x21 || tile == 0x2e || tile == 0x31
+            || (tile >= 0x0e && tile <= 0x15));
+}
+
+bool roaming_position_available(
+    const Map& map, int monster_type, MapPosition position,
+    const std::vector<MonsterPlacement>& static_placements) {
+    if (!map.contains(position)
+        || !roaming_tile_allowed(map.tile(position), monster_type)
+        || map_event_at(map.events(), position)) {
+        return false;
+    }
+    return std::none_of(
+        static_placements.begin(), static_placements.end(),
+        [position](const MonsterPlacement& placement) {
+            return monster_placement_contains(placement, position);
+        });
+}
+
+bool roaming_monster_allowed_impl(int environment, int monster_type,
+                                  bool alternate_map_set) {
+    constexpr std::array<int, 42> surface_allowed{
+        0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+    constexpr std::array<int, 42> required_environment{
+        0, 1, 1, 1, -1, 1, -1, 1, 2, 0, 2, 2, 2, 3, 3, 0, 3, -1, 3, 4, 3,
+        4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, -1, -1, -1, -1, -1, -1,
+        -1,
+    };
+    if (monster_type < 1
+        || monster_type >= static_cast<int>(surface_allowed.size())) {
+        return false;
+    }
+
+    bool allowed = environment == 0
+        ? surface_allowed[static_cast<std::size_t>(monster_type)] != 0
+        : required_environment[static_cast<std::size_t>(monster_type)] == 0
+            || required_environment[static_cast<std::size_t>(monster_type)]
+                == environment;
+    if (environment == 7
+        && required_environment[static_cast<std::size_t>(monster_type)] >= 0) {
+        allowed = true;
+    }
+    if (alternate_map_set
+        && (monster_type < 3 || monster_type == 0x11
+            || monster_type == 0x13)) {
+        allowed = false;
+    }
+    return allowed;
+}
+
+int roaming_monster_candidate(
+    int environment, int map_id, const Player& player,
+    const RoamingEncounterUnlocks& unlocks, MsvcRandom& random) {
+    int monster_type = 0;
+    switch (environment) {
+    case 0:
+        monster_type = roll(random, player.level + 2) + 1;
+        break;
+    case 1:
+        monster_type = roll(random, 7) + 1;
+        break;
+    case 2:
+        monster_type =
+            roll(random, map_id < 0x51 && !unlocks.environment_2_expanded ? 9 : 13)
+            + 2;
+        break;
+    case 3:
+        monster_type =
+            roll(random, map_id > 0x50 || unlocks.environment_3_expanded ? 12 : 8)
+            + 9;
+        break;
+    case 4:
+        monster_type =
+            roll(random, map_id > 0x50 || player.spells[11] != 0 ? 16 : 14) + 9;
+        break;
+    case 5:
+        monster_type =
+            roll(random, map_id > 0x50 || unlocks.environment_5_expanded ? 16 : 13)
+            + 0x0f;
+        break;
+    case 6:
+        monster_type =
+            roll(random, map_id < 0x51 && !unlocks.environment_6_expanded ? 3 : 5)
+            + 0x1e;
+        break;
+    default: {
+        const int limit = unlocks.default_environment_monster_limit >= 33 ? 33
+            : unlocks.default_environment_monster_limit >= 24 ? 24 : 20;
+        monster_type = roll(random, limit) + 1;
+        break;
+    }
+    }
+    if (player.level < 4) {
+        monster_type = roll(random, player.level + 1) + 1;
+    }
+    if (monster_type > 40) {
+        monster_type = 0x23 - roll(random, 0x0b);
+    }
+    return monster_type;
+}
+
+MapPosition step_toward(MapPosition from, MapPosition target) {
+    if (from.x < target.x) {
+        ++from.x;
+    } else if (target.x < from.x) {
+        --from.x;
+    }
+    if (from.y < target.y) {
+        ++from.y;
+    } else if (target.y < from.y) {
+        --from.y;
+    }
+    return from;
+}
+
+MapPosition random_adjacent_step(MapPosition from, MsvcRandom& random) {
+    switch (roll(random, 8)) {
+    case 0:
+        --from.x;
+        --from.y;
+        break;
+    case 1: ++from.x; break;
+    case 2: --from.x; break;
+    case 3: ++from.y; break;
+    case 4: --from.y; break;
+    case 5:
+        ++from.x;
+        --from.y;
+        break;
+    case 6:
+        --from.x;
+        ++from.y;
+        break;
+    case 7:
+        ++from.x;
+        ++from.y;
+        break;
+    }
+    from.x = std::max(from.x, 0);
+    from.y = std::max(from.y, 0);
+    if (from.x > 12) {
+        from.x = 11;
+    }
+    if (from.y > 11) {
+        from.y = 11;
+    }
+    return from;
+}
+
 int monster_attack_bonus(const Player& player, const Monster& monster,
                          MsvcRandom& random) {
     int value = 0;
@@ -611,6 +799,126 @@ void replace_monster_with_rabbit(CombatEncounter& encounter) {
 }
 
 } // namespace
+
+bool should_spawn_roaming_monster(
+    const Player& player, const WorldLocation& location,
+    std::uint16_t destination_tile, MsvcRandom& random) {
+    int threshold = player.random_encounter_threshold;
+    if (destination_tile == 8
+        || (destination_tile >= 0x16 && destination_tile <= 0x1a)) {
+        threshold += 11;
+    } else if (destination_tile == 0x2f || destination_tile == 0x32) {
+        threshold -= 10;
+    }
+    if (location.map_id > 0x28) {
+        threshold -= 5;
+    }
+    if (location.map_id > 0x50) {
+        threshold -= 5;
+    }
+    if (player.health > 0 && player.maximum_health / player.health > 7) {
+        threshold += 7 - player.difficulty;
+    }
+    return threshold < roll(random, 100);
+}
+
+bool roaming_monster_allowed(int environment, int monster_type,
+                             bool alternate_map_set) {
+    return roaming_monster_allowed_impl(
+        environment, monster_type, alternate_map_set);
+}
+
+std::optional<RoamingMonster> spawn_roaming_monster(
+    const Map& map, const Player& player, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
+    MsvcRandom& random) {
+    if (map.id() == 0x11 || map.id() == 8 || map.id() == 0x1b
+        || map.id() == 0x75) {
+        return std::nullopt;
+    }
+
+    int monster_type = 0;
+    for (int attempt = 0; attempt < 15; ++attempt) {
+        const int candidate = roaming_monster_candidate(
+            map.environment(), map.id(), player, unlocks, random);
+        if (roaming_monster_allowed_impl(
+                map.environment(), candidate, player.alternate_map_set)) {
+            monster_type = candidate;
+            break;
+        }
+    }
+    if (monster_type == 0) {
+        return std::nullopt;
+    }
+
+    for (int attempt = 0; attempt < 10; ++attempt) {
+        const MapPosition candidate{roll(random, 12), roll(random, 9)};
+        if (candidate != player_position
+            && visibility.contains(candidate)
+            && roaming_position_available(
+                map, monster_type, candidate, static_placements)) {
+            return RoamingMonster{monster_type, candidate};
+        }
+    }
+    return std::nullopt;
+}
+
+RoamingMonsterMove move_roaming_monster(
+    RoamingMonster& monster, const Map& map, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    MsvcRandom& random) {
+    MapPosition candidate = step_toward(monster.position, player_position);
+    for (int attempt = 0; attempt < 5; ++attempt) {
+        if (roll(random, 100) < 9) {
+            candidate = random_adjacent_step(monster.position, random);
+            continue;
+        }
+        if (candidate == player_position) {
+            return RoamingMonsterMove::encountered_player;
+        }
+        if (roaming_position_available(
+                map, monster.type_id, candidate, static_placements)) {
+            monster.position = candidate;
+            return RoamingMonsterMove::moved;
+        }
+        candidate = random_adjacent_step(monster.position, random);
+    }
+    return RoamingMonsterMove::stayed;
+}
+
+RoamingMonsterUpdate update_roaming_monster(
+    std::optional<RoamingMonster>& monster, const Map& map,
+    const Player& player, const WorldLocation& location,
+    std::uint16_t destination_tile,
+    const std::vector<MonsterPlacement>& static_placements,
+    const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
+    MsvcRandom& random) {
+    const bool had_monster = monster.has_value();
+    const bool spawn_requested = should_spawn_roaming_monster(
+        player, location, destination_tile, random);
+    if (!had_monster && spawn_requested) {
+        monster = spawn_roaming_monster(
+            map, player, location.position, static_placements, visibility,
+            unlocks, random);
+        return monster ? RoamingMonsterUpdate::spawned
+                       : RoamingMonsterUpdate::none;
+    }
+    if (!had_monster) {
+        return RoamingMonsterUpdate::none;
+    }
+
+    switch (move_roaming_monster(
+        *monster, map, location.position, static_placements, random)) {
+    case RoamingMonsterMove::stayed:
+        return RoamingMonsterUpdate::none;
+    case RoamingMonsterMove::moved:
+        return RoamingMonsterUpdate::moved;
+    case RoamingMonsterMove::encountered_player:
+        return RoamingMonsterUpdate::encountered_player;
+    }
+    throw std::logic_error("unknown roaming monster movement result");
+}
 
 CombatEncounter start_monster_encounter(int type_id, int opponent_count,
                                         MsvcRandom& random, int player_level) {

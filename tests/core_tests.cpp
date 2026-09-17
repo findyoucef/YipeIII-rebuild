@@ -1790,6 +1790,124 @@ void test_monster_placement_catalog() {
           "extended placements occupy the recovered two-by-two footprint");
 }
 
+void test_roaming_monsters() {
+    yipe::Player player;
+    player.level = 10;
+    player.health = 10;
+    player.maximum_health = 10;
+    player.random_encounter_threshold = 40;
+    yipe::WorldLocation location;
+    location.map_id = 20;
+
+    yipe::MsvcRandom trigger_random(1);
+    check(yipe::should_spawn_roaming_monster(
+              player, location, 2, trigger_random),
+          "roaming encounter threshold accepts a roll above the adjusted chance");
+    yipe::MsvcRandom terrain_random(1);
+    check(!yipe::should_spawn_roaming_monster(
+               player, location, 8, terrain_random),
+          "roaming encounter terrain modifier raises the encounter threshold");
+    player.maximum_health = 80;
+    yipe::MsvcRandom critical_health_random(1);
+    check(!yipe::should_spawn_roaming_monster(
+               player, location, 2, critical_health_random),
+          "critical health raises the roaming encounter threshold");
+    player.maximum_health = 10;
+    player.random_encounter_threshold = 125;
+    yipe::MsvcRandom repellent_random(1);
+    check(!yipe::should_spawn_roaming_monster(
+               player, location, 2, repellent_random),
+          "monster repellent prevents roaming encounter generation");
+    check(yipe::roaming_monster_allowed(0, 4, false)
+              && !yipe::roaming_monster_allowed(0, 5, false)
+              && yipe::roaming_monster_allowed(1, 5, false)
+              && !yipe::roaming_monster_allowed(1, 8, false)
+              && yipe::roaming_monster_allowed(2, 8, false)
+              && yipe::roaming_monster_allowed(7, 34, false)
+              && !yipe::roaming_monster_allowed(7, 35, false)
+              && !yipe::roaming_monster_allowed(1, 1, true),
+          "roaming environment and alternate-map filters match both recovered tables");
+
+    yipe::Map::Tiles tiles{};
+    tiles.fill(2);
+    const yipe::Map map(20, 1, tiles);
+    yipe::MapVisibility visibility;
+    yipe::initialize_map_visibility(visibility, map, {5, 5});
+    check(visibility.contains({0, 0}) && visibility.contains({12, 11}),
+          "surface maps begin fully revealed");
+    player.random_encounter_threshold = 40;
+    yipe::MsvcRandom spawn_random(1);
+    const std::optional<yipe::RoamingMonster> spawned =
+        yipe::spawn_roaming_monster(
+            map, player, {5, 5}, {}, visibility, {}, spawn_random);
+    check(spawned
+              && spawned->type_id == 7
+              && spawned->position == yipe::MapPosition{11, 7},
+          "roaming monster generation preserves type and position random order");
+
+    const yipe::Map excluded_map(8, 1, tiles);
+    yipe::MsvcRandom excluded_random(1);
+    const std::uint32_t excluded_state = excluded_random.state();
+    check(!yipe::spawn_roaming_monster(
+               excluded_map, player, {5, 5}, {}, visibility, {},
+               excluded_random)
+              && excluded_random.state() == excluded_state,
+          "maps excluded by the original generator do not consume spawn rolls");
+
+    yipe::Map::Tiles dungeon_tiles{};
+    dungeon_tiles.fill(0x22);
+    dungeon_tiles[static_cast<std::size_t>(5 * yipe::Map::height + 5)] = 2;
+    const yipe::Map dungeon(0x39, 1, dungeon_tiles);
+    yipe::MapVisibility dungeon_visibility;
+    yipe::initialize_map_visibility(dungeon_visibility, dungeon, {5, 5});
+    check(dungeon_visibility.contains({4, 4})
+              && dungeon_visibility.contains({6, 6})
+              && !dungeon_visibility.contains({3, 3}),
+          "underground visibility reveals the current room through opaque borders");
+
+    yipe::RoamingMonster pursuing{7, {1, 1}};
+    yipe::MsvcRandom movement_random(1);
+    check(yipe::move_roaming_monster(
+              pursuing, map, {4, 4}, {}, movement_random)
+                  == yipe::RoamingMonsterMove::moved
+              && pursuing.position == yipe::MapPosition{2, 2},
+          "roaming monsters pursue the player diagonally");
+
+    yipe::RoamingMonster adjacent{7, {1, 1}};
+    yipe::MsvcRandom collision_random(1);
+    check(yipe::move_roaming_monster(
+              adjacent, map, {2, 2}, {}, collision_random)
+                  == yipe::RoamingMonsterMove::encountered_player
+              && adjacent.position == yipe::MapPosition{1, 1},
+          "roaming pursuit reports combat without moving onto the player");
+
+    yipe::MonsterPlacement blocker;
+    blocker.position = {2, 2};
+    std::vector<yipe::MonsterPlacement> blockers{blocker};
+    yipe::RoamingMonster diverted{7, {1, 1}};
+    yipe::MsvcRandom diverted_random(1);
+    check(yipe::move_roaming_monster(
+              diverted, map, {4, 4}, blockers, diverted_random)
+                  == yipe::RoamingMonsterMove::moved
+              && diverted.position == yipe::MapPosition{1, 2},
+          "blocked roaming pursuit falls back to a random adjacent step");
+
+    player.random_encounter_threshold = 125;
+    std::optional<yipe::RoamingMonster> existing =
+        yipe::RoamingMonster{7, {1, 1}};
+    yipe::MsvcRandom update_random(1);
+    yipe::MsvcRandom update_reference(1);
+    static_cast<void>(update_reference.next());
+    static_cast<void>(update_reference.next());
+    check(yipe::update_roaming_monster(
+              existing, map, player, location, 2, {}, visibility, {},
+              update_random)
+                  == yipe::RoamingMonsterUpdate::moved
+              && existing->position == yipe::MapPosition{2, 2}
+              && update_random.state() == update_reference.state(),
+          "existing roaming monsters consume the encounter roll before pursuit");
+}
+
 void test_monster_definition_catalog() {
     const auto bunny = yipe::original_monster_definition(1);
     const auto beetle = yipe::original_monster_definition(2);
@@ -2501,6 +2619,7 @@ int main() {
     test_multi_monster_encounter();
     test_special_abilities();
     test_monster_placement_catalog();
+    test_roaming_monsters();
     test_monster_definition_catalog();
     test_weapon_damage_catalog();
     test_equipment_combat_ratings();
