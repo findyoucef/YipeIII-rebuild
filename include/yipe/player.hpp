@@ -51,6 +51,7 @@ public:
     static constexpr std::size_t carried_inventory_size = 13;
     static constexpr std::size_t spell_count = 15;
     static constexpr std::size_t quest_flag_count = 30;
+    static constexpr std::size_t monster_history_size = 42;
 
     Player();
     explicit Player(CharacterType type);
@@ -111,6 +112,7 @@ public:
     std::array<std::uint16_t, inventory_size> inventory_values{};
     std::array<bool, quest_flag_count> quest_flags{};
     std::array<std::uint16_t, spell_count> spells{};
+    std::array<bool, monster_history_size> encountered_monster_types{};
 
     bool alternate_map_set = false;
     bool has_bonus_healing_ring = false;

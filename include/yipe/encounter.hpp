@@ -38,10 +38,6 @@ struct MonsterPlacement {
     const MonsterPlacement& placement, MapPosition position);
 
 struct RoamingEncounterUnlocks {
-    bool environment_2_expanded = false;
-    bool environment_3_expanded = false;
-    bool environment_5_expanded = false;
-    bool environment_6_expanded = false;
     int default_environment_monster_limit = 33;
 };
 
@@ -206,7 +202,7 @@ struct FleeResult {
 [[nodiscard]] CombatEncounter start_monster_encounter(
     int type_id, int opponent_count, MsvcRandom& random, const EncounterSetup& setup);
 [[nodiscard]] CombatEncounter start_monster_encounter(
-    const MonsterPlacement& placement, const Player& player, MsvcRandom& random,
+    const MonsterPlacement& placement, Player& player, MsvcRandom& random,
     int map_environment = -1);
 [[nodiscard]] Monster start_single_monster_encounter(int type_id, MsvcRandom& random);
 

@@ -107,7 +107,7 @@ visibility refresh performed by `0x19`. Return-to-Surface items and spells use
 the entrance map and region saved by the `0x0e` descent path, then
 `0x0041e090` places the player immediately below the final `0x36`/`0x39`
 entrance on that map. Native format version 5 introduced persistence for changed
-door and linked-mechanism tiles; current version 10 retains it, the recovered
+door and linked-mechanism tiles; current version 11 retains it, the recovered
 King quest state, the princess Mystery counter, permanent monster defeats, and
 the saved surface-return region.
 
@@ -185,7 +185,7 @@ starts the recovered group setup when the player enters any tile in its
 one-tile or 2×2 footprint. It exposes
 target cycling, items, spells, trained special abilities, and fleeing for every
 group. A victory stores a non-respawning placement's stable index in native
-save version 10 so it remains removed after map changes and restart. A
+save version 11 so it remains removed after map changes and restart. A
 respawning placement is hidden only on the current map instance and returns
 after a map reload, matching the `+0x36c` load-time bypass. Version 9 defeats
 with this flag migrate to transient state, while versions 2–8 migrate their
@@ -202,6 +202,15 @@ cell. It pursues the player diagonally on later movement attempts, occasionally
 chooses one of eight random neighboring cells, and starts the same size-zero
 group combat used by the original `-1` encounter slot. Victory and fleeing both
 clear it, while loading another map resets all transient roaming state.
+
+Combat construction at `0x004025e0` records every opponent type in the original
+50-byte history array at `+0x552`. Roaming selection reads entries 36–40 to
+expand the eligible type range for environments 2–6 after those monster types
+have appeared. The rebuild records the same three combat slots, imports entries
+0–41 from legacy saves, and persists them in native save version 11. The two
+registration checks used to cap the default environment at types 20, 24, or 33
+remain represented by the explicit roaming-access input; the initial rebuild
+scope enables the full supplied content.
 
 The separate map-authored pursuer at offsets `+0x394`–`+0x3a4` is initialized
 by `0x0041d840`. Twenty-one maps use fixed monster types and origins; map

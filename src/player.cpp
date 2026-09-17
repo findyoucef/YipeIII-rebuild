@@ -48,6 +48,7 @@ void Player::initialize(CharacterType type) {
     inventory[0] = 1;
     spells.fill(0);
     spells[0] = 1;
+    encountered_monster_types.fill(false);
     alternate_map_set = false;
     current_map_id = 0x11;
     stat_cap_mode = 0;

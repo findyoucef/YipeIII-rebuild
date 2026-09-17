@@ -430,6 +430,9 @@ void test_game_save() {
     original.player.surface_return_region_y = 2;
     original.player.quest_flags[8] = true;
     original.player.inventory_values[13] = 9;
+    original.player.encountered_monster_types[36] = true;
+    original.player.encountered_monster_types[38] = true;
+    original.player.encountered_monster_types[40] = true;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.defeated_monster_placements = {5, 14, 38, 185};
     original.random_state = 0x12345678u;
@@ -440,17 +443,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 10 save restores progression and equipment");
+          "version 11 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 10 save restores combat settings and counters");
+          "version 11 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 10 save restores world location");
+          "version 11 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 10 save restores encounter and random state");
+          "version 11 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -458,17 +461,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 10 save restores ability and active status state");
+          "version 11 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 10 save restores special movement state");
+          "version 11 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 10 save restores persistent map tile changes");
+          "version 11 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 10 save restores learned spells");
+          "version 11 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -478,11 +481,26 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 10 save restores quest state");
+          "version 11 save restores quest state");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 10 save restores the surface-return anchor");
+          "version 11 save restores the surface-return anchor");
+    check(loaded.player.encountered_monster_types
+              == original.player.encountered_monster_types,
+          "version 11 save restores per-monster encounter history");
+
+    remove_save_extension(
+        path,
+        yipe::Player::monster_history_size * sizeof(std::uint8_t), 10);
+    const yipe::GameState loaded_version_10 = yipe::load_game(path);
+    check(loaded_version_10.player.surface_return_region_x == -4
+              && loaded_version_10.player.surface_return_region_y == 2
+              && std::none_of(
+                  loaded_version_10.player.encountered_monster_types.begin(),
+                  loaded_version_10.player.encountered_monster_types.end(),
+                  [](bool encountered) { return encountered; }),
+          "version 10 saves retain the return region and default encounter history");
 
     remove_save_extension(path, 2 * sizeof(std::uint16_t), 9);
     const yipe::GameState loaded_version_9 = yipe::load_game(path);
@@ -628,7 +646,7 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         }
         append_u16(bytes, value);
         append_i32(bytes, static_cast<std::int32_t>(1000 + index));
-        append_i32(bytes, index == 4 ? 1 : 0);
+        append_i32(bytes, index == 4 || index == 36 || index == 38 ? 1 : 0);
     }
     for (const std::uint16_t value : std::array<std::uint16_t, 5>{2, 8, 0, 1, 0}) {
         append_u16(bytes, value);
@@ -686,7 +704,9 @@ void test_legacy_save_import() {
               && player.quest_progress_total == 51225
               && player.gatekeeper_state == 2 && player.stamps_found == 4
               && player.princesses_found == 11
-              && player.princess_mystery_uses == 7,
+              && player.princess_mystery_uses == 7
+              && player.encountered_monster_types[36]
+              && player.encountered_monster_types[38],
           "legacy import maps recovered King quest state");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
@@ -1858,6 +1878,32 @@ void test_roaming_monsters() {
               && spawned->type_id == 7
               && spawned->position == yipe::MapPosition{11, 7},
           "roaming monster generation preserves type and position random order");
+
+    constexpr std::array<int, 5> locked_types{10, 15, 22, 27, 32};
+    constexpr std::array<int, 5> expanded_types{9, 14, 23, 29, 31};
+    for (int environment = 2; environment <= 6; ++environment) {
+        const yipe::Map environment_map(20, environment, tiles);
+        yipe::Player locked_player = player;
+        yipe::MsvcRandom locked_random(1);
+        const std::optional<yipe::RoamingMonster> locked =
+            yipe::spawn_roaming_monster(
+                environment_map, locked_player, {5, 5}, {}, visibility, {},
+                locked_random);
+        yipe::Player expanded_player = player;
+        expanded_player.encountered_monster_types[
+            static_cast<std::size_t>(environment + 34)] = true;
+        yipe::MsvcRandom expanded_random(1);
+        const std::optional<yipe::RoamingMonster> expanded =
+            yipe::spawn_roaming_monster(
+                environment_map, expanded_player, {5, 5}, {}, visibility, {},
+                expanded_random);
+        const std::size_t index = static_cast<std::size_t>(environment - 2);
+        check(locked && expanded
+                  && locked->type_id == locked_types[index]
+                  && expanded->type_id == expanded_types[index],
+              "encounter history expands each late roaming-monster pool");
+    }
+
     yipe::MsvcRandom blocked_spawn_random(1);
     const std::optional<yipe::RoamingMonster> blocked_spawn =
         yipe::spawn_roaming_monster(
@@ -2032,6 +2078,9 @@ void test_monster_definition_catalog() {
               && high_rank_encounter.map_environment == 1
               && high_rank_random.state() == 2179684817u,
           "high-rank placement setup applies companion overrides and level scaling");
+    check(high_rank_player.encountered_monster_types[35]
+              && high_rank_player.encountered_monster_types[8],
+          "combat setup records every encountered monster type");
 
     yipe::MsvcRandom empowered_random(1);
     const yipe::CombatEncounter empowered = yipe::start_monster_encounter(

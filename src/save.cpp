@@ -30,7 +30,8 @@ constexpr std::uint16_t spells_game_format_version = 6;
 constexpr std::uint16_t quest_game_format_version = 7;
 constexpr std::uint16_t princess_game_format_version = 8;
 constexpr std::uint16_t monster_game_format_version = 9;
-constexpr std::uint16_t game_format_version = 10;
+constexpr std::uint16_t surface_return_game_format_version = 10;
+constexpr std::uint16_t game_format_version = 11;
 constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
@@ -240,6 +241,9 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
                static_cast<std::uint16_t>(game.player.surface_return_region_x));
     append_u16(payload,
                static_cast<std::uint16_t>(game.player.surface_return_region_y));
+    for (const bool encountered : game.player.encountered_monster_types) {
+        append_u8(payload, encountered ? 1 : 0);
+    }
     return payload;
 }
 
@@ -346,7 +350,9 @@ DecodedSave read_save(const std::filesystem::path& path) {
         && version != spells_game_format_version
         && version != quest_game_format_version
         && version != princess_game_format_version
-        && version != monster_game_format_version && version != game_format_version) {
+        && version != monster_game_format_version
+        && version != surface_return_game_format_version
+        && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
     const std::uint32_t payload_size = header.u32();
@@ -508,7 +514,7 @@ GameState load_game(const std::filesystem::path& path) {
         game.defeated_monster_placements.push_back(
             legacy_giant_beetle_placement_index);
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= surface_return_game_format_version) {
         game.player.surface_return_region_x =
             static_cast<std::int16_t>(reader.u16());
         game.player.surface_return_region_y =
@@ -518,6 +524,11 @@ GameState load_game(const std::filesystem::path& path) {
             static_cast<std::int16_t>(game.location.region_x);
         game.player.surface_return_region_y =
             static_cast<std::int16_t>(game.location.region_y);
+    }
+    if (save.version >= game_format_version) {
+        for (bool& encountered : game.player.encountered_monster_types) {
+            encountered = reader.u8() != 0;
+        }
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

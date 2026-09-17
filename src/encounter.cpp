@@ -160,26 +160,32 @@ int roaming_monster_candidate(
         break;
     case 2:
         monster_type =
-            roll(random, map_id < 0x51 && !unlocks.environment_2_expanded ? 9 : 13)
+            roll(random,
+                 map_id < 0x51 && !player.encountered_monster_types[36] ? 9 : 13)
             + 2;
         break;
     case 3:
         monster_type =
-            roll(random, map_id > 0x50 || unlocks.environment_3_expanded ? 12 : 8)
+            roll(random,
+                 map_id > 0x50 || player.encountered_monster_types[37] ? 12 : 8)
             + 9;
         break;
     case 4:
         monster_type =
-            roll(random, map_id > 0x50 || player.spells[11] != 0 ? 16 : 14) + 9;
+            roll(random,
+                 map_id > 0x50 || player.encountered_monster_types[38] ? 16 : 14)
+            + 9;
         break;
     case 5:
         monster_type =
-            roll(random, map_id > 0x50 || unlocks.environment_5_expanded ? 16 : 13)
+            roll(random,
+                 map_id > 0x50 || player.encountered_monster_types[39] ? 16 : 13)
             + 0x0f;
         break;
     case 6:
         monster_type =
-            roll(random, map_id < 0x51 && !unlocks.environment_6_expanded ? 3 : 5)
+            roll(random,
+                 map_id < 0x51 && !player.encountered_monster_types[40] ? 3 : 5)
             + 0x1e;
         break;
     default: {
@@ -1055,12 +1061,21 @@ CombatEncounter start_monster_encounter(int type_id, int opponent_count,
 }
 
 CombatEncounter start_monster_encounter(const MonsterPlacement& placement,
-                                        const Player& player, MsvcRandom& random,
+                                        Player& player, MsvcRandom& random,
                                         int map_environment) {
-    return start_monster_encounter(
+    CombatEncounter encounter = start_monster_encounter(
         placement.type_id, placement.encounter_size, random,
         {player.level, player.difficulty, placement.companion_type_1,
          placement.companion_type_2, player.gatekeeper_state, map_environment});
+    for (const Monster& monster : encounter.monsters) {
+        if (monster.type_id >= 0
+            && monster.type_id
+                < static_cast<int>(player.encountered_monster_types.size())) {
+            player.encountered_monster_types[
+                static_cast<std::size_t>(monster.type_id)] = true;
+        }
+    }
+    return encounter;
 }
 
 Monster start_single_monster_encounter(int type_id, MsvcRandom& random) {

@@ -188,6 +188,11 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
         entry.flag_0552 = reader.archive_bool();
         player.quest_progress_total += entry.value_0584;
     }
+    for (std::size_t index = 0;
+         index < player.encountered_monster_types.size(); ++index) {
+        player.encountered_monster_types[index] =
+            save.extended_entries[index].flag_0552;
+    }
 
     player.gatekeeper_state = save.extended_entries[2].value_065e;
     player.surface_return_map_id =

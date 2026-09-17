@@ -74,9 +74,11 @@ and the recovered extended item-status fields. The King-dialog trace also maps
 `+0x05c` to its quest score/value, `+0x063` to the Lucky Rabbit Foot, the 30
 `+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
 the sum of the 50 `+0x584` values to the early equipment hint, and extended
-entries 2, 8, 9, and 18 to Gatekeeper, stamp, princess, and Mystery-reward state. Offset-based
-arrays remain in the import object so future reconstruction does not require
-reparsing the file.
+entries 2, 8, 9, and 18 to Gatekeeper, stamp, princess, and Mystery-reward
+state. Combat setup marks `+0x552[monster_type]` for each opponent, so entries
+0–41 are imported as per-monster encounter history; entries 42–49 remain
+available in the offset-based import object. Other unresolved arrays likewise
+remain there so future reconstruction does not require reparsing the file.
 
 The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
@@ -103,13 +105,14 @@ Version 7 appends the recovered King quest state and Lucky Rabbit Foot. Version 
 appends the princess Mystery-reward counter recovered from offset `+0x682`.
 Version 9 appends the stable indices of every permanently defeated monster
 placement. Version 10 appends the signed region coordinates for the entrance
-saved by the original Return-to-Surface state. When importing version 9, defeats
-now known to be reload-respawning migrate into the transient current-map state
-instead of becoming permanent. The loader accepts all ten
-versions, derives missing return coordinates from the current region for older
-files, and migrates the first-encounter bit in versions 2–8 to the Giant
-Beetle's placement index 5. Writes use a temporary file and atomic replacement
-so a failed write does not destroy the previous save.
+saved by the original Return-to-Surface state. Version 11 appends encounter
+history for monster type IDs 0–41. When importing version 9, defeats now known
+to be reload-respawning migrate into the transient current-map state instead of
+becoming permanent. The loader accepts all eleven versions, derives missing
+return coordinates from the current region for older files, and migrates the
+first-encounter bit in versions 2–8 to the Giant Beetle's placement index 5.
+Writes use a temporary file and atomic replacement so a failed write does not
+destroy the previous save.
 
 ## Verification status
 
