@@ -898,6 +898,7 @@ void test_static_map_catalog_and_edges() {
     int linked_first = 0;
     int linked_second = 0;
     int princesses = 0;
+    int pursuing_monsters = 0;
     for (int map_id = 1; map_id <= 0x85; ++map_id) {
         const std::optional<yipe::Map> catalog_map = yipe::original_map(map_id);
         if (!catalog_map) {
@@ -911,9 +912,12 @@ void test_static_map_catalog_and_edges() {
         linked_first += catalog_map->events().linked[0].has_position() ? 1 : 0;
         linked_second += catalog_map->events().linked[1].has_position() ? 1 : 0;
         princesses += catalog_map->events().princess.has_position() ? 1 : 0;
+        pursuing_monsters +=
+            catalog_map->events().pursuer.has_position() ? 1 : 0;
     }
     check(messages == 20 && overlays == 10 && depth_events == 26
-              && linked_first == 8 && linked_second == 3 && princesses == 20,
+              && linked_first == 8 && linked_second == 3 && princesses == 20
+              && pursuing_monsters == 22,
           "generated maps preserve all statically configured movement-event positions");
     const yipe::PrincessEvent first_princess = yipe::original_map(0x2e)->events().princess;
     const yipe::PrincessEvent last_princess = yipe::original_map(0x85)->events().princess;
@@ -924,6 +928,16 @@ void test_static_map_catalog_and_edges() {
               && last_princess.portrait_variant == 2
               && last_princess.rescue_index == 20,
           "princess events preserve the recovered endpoint records");
+    const yipe::PursuingMonsterEvent fixed_pursuer =
+        yipe::original_map(0x0d)->events().pursuer;
+    const yipe::PursuingMonsterEvent scaled_pursuer =
+        yipe::original_map(0x10)->events().pursuer;
+    check(fixed_pursuer.position == yipe::MapPosition{7, 6}
+              && fixed_pursuer.type_for_level(1) == 19
+              && scaled_pursuer.position == yipe::MapPosition{5, 4}
+              && scaled_pursuer.type_for_level(5) == 1
+              && scaled_pursuer.type_for_level(6) == 6,
+          "map-authored pursuers preserve fixed and level-dependent records");
 
     yipe::WorldLocation location;
     location.position = {12, 5};
@@ -1844,6 +1858,14 @@ void test_roaming_monsters() {
               && spawned->type_id == 7
               && spawned->position == yipe::MapPosition{11, 7},
           "roaming monster generation preserves type and position random order");
+    yipe::MsvcRandom blocked_spawn_random(1);
+    const std::optional<yipe::RoamingMonster> blocked_spawn =
+        yipe::spawn_roaming_monster(
+            map, player, {5, 5}, {}, visibility, {}, blocked_spawn_random,
+            yipe::MapPosition{11, 7});
+    check(blocked_spawn
+              && blocked_spawn->position != yipe::MapPosition{11, 7},
+          "roaming monster generation avoids the map-authored pursuer");
 
     const yipe::Map excluded_map(8, 1, tiles);
     yipe::MsvcRandom excluded_random(1);
@@ -1906,6 +1928,63 @@ void test_roaming_monsters() {
               && existing->position == yipe::MapPosition{2, 2}
               && update_random.state() == update_reference.state(),
           "existing roaming monsters consume the encounter roll before pursuit");
+
+    const std::optional<yipe::Map> authored_map = yipe::original_map(0x10);
+    check(authored_map.has_value(),
+          "level-dependent pursuer map remains in the static catalog");
+    const std::optional<yipe::PursuingMonster> low_level_pursuer =
+        yipe::pursuing_monster_for_map(*authored_map, 5);
+    const std::optional<yipe::PursuingMonster> high_level_pursuer =
+        yipe::pursuing_monster_for_map(*authored_map, 6);
+    check(low_level_pursuer && low_level_pursuer->type_id == 1
+              && low_level_pursuer->position == yipe::MapPosition{5, 4}
+              && low_level_pursuer->origin == yipe::MapPosition{5, 4}
+              && high_level_pursuer && high_level_pursuer->type_id == 6,
+          "map loads create the recovered level-dependent pursuer");
+
+    yipe::PursuingMonster authored{19, {5, 4}, {5, 4}};
+    yipe::MsvcRandom authored_random(1);
+    yipe::MsvcRandom authored_reference(1);
+    static_cast<void>(authored_reference.next());
+    static_cast<void>(authored_reference.next());
+    check(yipe::move_pursuing_monster(
+              authored, map, {9, 8}, {}, std::nullopt, visibility,
+              authored_random)
+                  == yipe::RoamingMonsterMove::moved
+              && authored.position == yipe::MapPosition{5, 5}
+              && authored_random.state() == authored_reference.state(),
+          "visible map-authored pursuers preserve random-step order");
+
+    yipe::PursuingMonster authored_collision{19, {1, 1}, {1, 1}};
+    yipe::MsvcRandom authored_collision_random(100);
+    check(yipe::move_pursuing_monster(
+              authored_collision, map, {2, 2}, {}, std::nullopt, visibility,
+              authored_collision_random)
+                  == yipe::RoamingMonsterMove::encountered_player
+              && authored_collision.position == yipe::MapPosition{1, 1},
+          "map-authored pursuit starts combat without entering the player tile");
+
+    yipe::MapVisibility hidden_visibility;
+    yipe::PursuingMonster hidden{19, {1, 1}, {1, 1}};
+    yipe::MsvcRandom hidden_random(1);
+    const std::uint32_t hidden_state = hidden_random.state();
+    check(yipe::move_pursuing_monster(
+              hidden, map, {2, 2}, {}, std::nullopt, hidden_visibility,
+              hidden_random)
+                  == yipe::RoamingMonsterMove::stayed
+              && hidden.position == yipe::MapPosition{1, 1}
+              && hidden_random.state() == hidden_state,
+          "unrevealed map-authored pursuers stay put without consuming randomness");
+
+    yipe::PursuingMonster blocked_pursuer{19, {5, 4}, {5, 4}};
+    yipe::MsvcRandom blocked_pursuer_random(100);
+    check(yipe::move_pursuing_monster(
+              blocked_pursuer, map, {9, 8}, {},
+              yipe::RoamingMonster{7, {6, 5}}, visibility,
+              blocked_pursuer_random)
+                  != yipe::RoamingMonsterMove::encountered_player
+              && blocked_pursuer.position != yipe::MapPosition{6, 5},
+          "map-authored pursuers avoid the transient roaming monster");
 }
 
 void test_monster_definition_catalog() {

@@ -2,6 +2,7 @@
 #include "yipe/spell.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace yipe {
@@ -96,10 +97,14 @@ bool roaming_tile_allowed(std::uint16_t tile, int monster_type) {
 
 bool roaming_position_available(
     const Map& map, int monster_type, MapPosition position,
-    const std::vector<MonsterPlacement>& static_placements) {
-    if (!map.contains(position)
+    const std::vector<MonsterPlacement>& static_placements,
+    std::optional<MapPosition> blocked_monster_position = std::nullopt) {
+    if (!map.contains(position) || position.y >= Map::height - 1
         || !roaming_tile_allowed(map.tile(position), monster_type)
         || map_event_at(map.events(), position)) {
+        return false;
+    }
+    if (blocked_monster_position && position == *blocked_monster_position) {
         return false;
     }
     return std::none_of(
@@ -832,7 +837,8 @@ std::optional<RoamingMonster> spawn_roaming_monster(
     const Map& map, const Player& player, MapPosition player_position,
     const std::vector<MonsterPlacement>& static_placements,
     const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
-    MsvcRandom& random) {
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position) {
     if (map.id() == 0x11 || map.id() == 8 || map.id() == 0x1b
         || map.id() == 0x75) {
         return std::nullopt;
@@ -857,7 +863,8 @@ std::optional<RoamingMonster> spawn_roaming_monster(
         if (candidate != player_position
             && visibility.contains(candidate)
             && roaming_position_available(
-                map, monster_type, candidate, static_placements)) {
+                map, monster_type, candidate, static_placements,
+                pursuing_monster_position)) {
             return RoamingMonster{monster_type, candidate};
         }
     }
@@ -867,7 +874,8 @@ std::optional<RoamingMonster> spawn_roaming_monster(
 RoamingMonsterMove move_roaming_monster(
     RoamingMonster& monster, const Map& map, MapPosition player_position,
     const std::vector<MonsterPlacement>& static_placements,
-    MsvcRandom& random) {
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position) {
     MapPosition candidate = step_toward(monster.position, player_position);
     for (int attempt = 0; attempt < 5; ++attempt) {
         if (roll(random, 100) < 9) {
@@ -878,7 +886,8 @@ RoamingMonsterMove move_roaming_monster(
             return RoamingMonsterMove::encountered_player;
         }
         if (roaming_position_available(
-                map, monster.type_id, candidate, static_placements)) {
+                map, monster.type_id, candidate, static_placements,
+                pursuing_monster_position)) {
             monster.position = candidate;
             return RoamingMonsterMove::moved;
         }
@@ -893,14 +902,15 @@ RoamingMonsterUpdate update_roaming_monster(
     std::uint16_t destination_tile,
     const std::vector<MonsterPlacement>& static_placements,
     const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
-    MsvcRandom& random) {
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position) {
     const bool had_monster = monster.has_value();
     const bool spawn_requested = should_spawn_roaming_monster(
         player, location, destination_tile, random);
     if (!had_monster && spawn_requested) {
         monster = spawn_roaming_monster(
             map, player, location.position, static_placements, visibility,
-            unlocks, random);
+            unlocks, random, pursuing_monster_position);
         return monster ? RoamingMonsterUpdate::spawned
                        : RoamingMonsterUpdate::none;
     }
@@ -909,7 +919,8 @@ RoamingMonsterUpdate update_roaming_monster(
     }
 
     switch (move_roaming_monster(
-        *monster, map, location.position, static_placements, random)) {
+        *monster, map, location.position, static_placements, random,
+        pursuing_monster_position)) {
     case RoamingMonsterMove::stayed:
         return RoamingMonsterUpdate::none;
     case RoamingMonsterMove::moved:
@@ -918,6 +929,49 @@ RoamingMonsterUpdate update_roaming_monster(
         return RoamingMonsterUpdate::encountered_player;
     }
     throw std::logic_error("unknown roaming monster movement result");
+}
+
+std::optional<PursuingMonster> pursuing_monster_for_map(
+    const Map& map, int player_level) {
+    const PursuingMonsterEvent& event = map.events().pursuer;
+    if (!event.has_position()) {
+        return std::nullopt;
+    }
+    return PursuingMonster{
+        event.type_for_level(player_level), event.position, event.position};
+}
+
+RoamingMonsterMove move_pursuing_monster(
+    PursuingMonster& monster, const Map& map, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    const std::optional<RoamingMonster>& roaming_monster,
+    const MapVisibility& visibility, MsvcRandom& random) {
+    if (!visibility.contains(monster.position)) {
+        return RoamingMonsterMove::stayed;
+    }
+    const std::optional<MapPosition> roaming_position =
+        roaming_monster
+        ? std::optional<MapPosition>{roaming_monster->position}
+        : std::nullopt;
+    for (int attempt = 0; attempt < 5; ++attempt) {
+        const MapPosition candidate = roll(random, 100) < 55
+            ? random_adjacent_step(monster.position, random)
+            : step_toward(monster.position, player_position);
+        if (candidate == player_position) {
+            return RoamingMonsterMove::encountered_player;
+        }
+        if (std::abs(candidate.x - monster.origin.x) > 2
+            || std::abs(candidate.y - monster.origin.y) > 2) {
+            continue;
+        }
+        if (roaming_position_available(
+                map, monster.type_id, candidate, static_placements,
+                roaming_position)) {
+            monster.position = candidate;
+            return RoamingMonsterMove::moved;
+        }
+    }
+    return RoamingMonsterMove::stayed;
 }
 
 CombatEncounter start_monster_encounter(int type_id, int opponent_count,

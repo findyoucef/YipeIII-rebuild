@@ -20,6 +20,7 @@ EVENT_HELPERS = {
     "0041d0b0": "depth",
     "0041d180": "linked_first",
     "0041d1e0": "linked_second",
+    "0041d840": "pursuer",
 }
 EXPECTED_EVENT_CALLS = {
     "message": 20,
@@ -28,6 +29,7 @@ EXPECTED_EVENT_CALLS = {
     "depth": 26,
     "linked_first": 8,
     "linked_second": 6,
+    "pursuer": 21,
 }
 
 
@@ -46,8 +48,23 @@ def split_arguments(arguments: str) -> list[str]:
 
 def parse_events(path: Path) -> dict[int, dict[str, object]]:
     text = path.read_text(encoding="utf-8")
+    level_pursuer = re.search(
+        r"if \((\d+) < param_4\) \{\s*"
+        r"FUN_0041d840\(param_5,([^,]+),([^,]+),([^)]+)\);\s*"
+        r"return;\s*}\s*"
+        r"FUN_0041d840\(param_5,([^,]+),([^,]+),([^)]+)\);",
+        text,
+        re.DOTALL,
+    )
+    if level_pursuer is None:
+        raise ValueError("missing level-dependent pursuer")
+    switch_text = text[: level_pursuer.start()]
     matches = list(
-        re.finditer(r"^\s*case\s+(0x[0-9a-fA-F]+|\d+):", text, re.MULTILINE)
+        re.finditer(
+            r"^\s*case\s+(0x[0-9a-fA-F]+|\d+):",
+            switch_text,
+            re.MULTILINE,
+        )
     )
     events: dict[int, dict[str, object]] = {}
     counts = {name: 0 for name in EXPECTED_EVENT_CALLS}
@@ -55,8 +72,12 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
     helper_pattern = "|".join(EVENT_HELPERS)
     for index, match in enumerate(matches):
         pending_map_ids.append(parse_number(match.group(1)))
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        body = text[match.end() : end]
+        end = (
+            matches[index + 1].start()
+            if index + 1 < len(matches)
+            else len(switch_text)
+        )
+        body = switch_text[match.end() : end]
         calls = re.findall(rf"FUN_({helper_pattern})\((.*?)\);", body, re.DOTALL)
         if not body.strip():
             continue
@@ -69,6 +90,7 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
                     "depth": [],
                     "linked": [None, None],
                     "princess": None,
+                    "pursuer": None,
                 },
             )
             for helper, raw_arguments in calls:
@@ -77,11 +99,18 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
                 expected_arguments = 5 if kind == "princess" else 4
                 if len(arguments) != expected_arguments or arguments[0] != "param_5":
                     raise ValueError(f"unexpected {helper} event call: {raw_arguments}")
-                event = {
-                    "x": parse_signed_number(arguments[1]),
-                    "y": parse_signed_number(arguments[2]),
-                    "value": parse_signed_number(arguments[3]),
-                }
+                if kind == "pursuer":
+                    event = {
+                        "x": parse_signed_number(arguments[2]),
+                        "y": parse_signed_number(arguments[3]),
+                        "value": parse_signed_number(arguments[1]),
+                    }
+                else:
+                    event = {
+                        "x": parse_signed_number(arguments[1]),
+                        "y": parse_signed_number(arguments[2]),
+                        "value": parse_signed_number(arguments[3]),
+                    }
                 if kind == "princess":
                     event["rescue_index"] = parse_signed_number(arguments[4])
                 counts[kind] += 1
@@ -95,17 +124,49 @@ def parse_events(path: Path) -> dict[int, dict[str, object]]:
                     map_events[kind] = event
         pending_map_ids = []
 
+    threshold, high_type, high_x, high_y, low_type, low_x, low_y = (
+        parse_signed_number(value.strip()) for value in level_pursuer.groups()
+    )
+    if (high_x, high_y) != (low_x, low_y):
+        raise ValueError("level-dependent pursuer changes its origin")
+    events.setdefault(
+        0x10,
+        {
+            "message": None,
+            "overlay": None,
+            "depth": [],
+            "linked": [None, None],
+            "princess": None,
+            "pursuer": None,
+        },
+    )["pursuer"] = {
+        "x": low_x,
+        "y": low_y,
+        "value": low_type,
+        "upgraded_value": high_type,
+        "upgrade_level": threshold + 1,
+    }
+
     if counts != EXPECTED_EVENT_CALLS:
         raise ValueError(f"unexpected event call counts: {counts}")
     for map_id, map_events in events.items():
         if len(map_events["depth"]) > 2:
             raise ValueError(f"map {map_id:#x} has more than two depth events")
         for event in [map_events["message"], map_events["overlay"],
-                      *map_events["depth"], *map_events["linked"]]:
+                      *map_events["depth"], *map_events["linked"],
+                      map_events["pursuer"]]:
             if event is None:
                 continue
             if not (-1 <= event["x"] < WIDTH and -1 <= event["y"] < HEIGHT):
                 raise ValueError(f"map {map_id:#x} has invalid event position {event}")
+        pursuer = map_events["pursuer"]
+        if pursuer is not None and not (1 <= pursuer["value"] <= 41):
+            raise ValueError(f"map {map_id:#x} has invalid pursuer {pursuer}")
+        if pursuer is not None and pursuer.get("upgraded_value", 0) != 0:
+            if not (1 <= pursuer["upgraded_value"] <= 41):
+                raise ValueError(f"map {map_id:#x} has invalid upgraded pursuer {pursuer}")
+            if pursuer.get("upgrade_level", 0) < 1:
+                raise ValueError(f"map {map_id:#x} has invalid pursuer level {pursuer}")
         princess = map_events["princess"]
         if princess is not None:
             if not (0 <= princess["x"] < WIDTH and 0 <= princess["y"] < HEIGHT):
@@ -207,13 +268,14 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
                         "depth": [],
                         "linked": [None, None],
                         "princess": None,
+                        "pursuer": None,
                     },
                 ),
             }
         )
 
     return {
-        "format": "yipe3-original-map-tables-v3",
+        "format": "yipe3-original-map-tables-v4",
         "source_dispatch": "0041e110",
         "source_events": "0041ec40",
         "dimensions": {
@@ -264,6 +326,15 @@ def render_cpp(result: dict[str, object]) -> str:
             return (f"{{{{{event['x']}, {event['y']}}}, {event['value']}, "
                     f"{event['rescue_index']}}}")
 
+        def pursuer_literal(event: dict[str, int] | None) -> str:
+            if event is None:
+                return "{{-1, -1}, 0, 0, 0}"
+            return (
+                f"{{{{{event['x']}, {event['y']}}}, {event['value']}, "
+                f"{event.get('upgraded_value', 0)}, "
+                f"{event.get('upgrade_level', 0)}}}"
+            )
+
         events = map_record["events"]
         depth = list(events["depth"])
         depth.extend([None] * (2 - len(depth)))
@@ -274,7 +345,8 @@ def render_cpp(result: dict[str, object]) -> str:
             f"{event_literal(events['overlay'])}, "
             f"{{{{{event_literal(depth[0])}, {event_literal(depth[1])}}}}}, "
             f"{{{{{event_literal(linked[0])}, {event_literal(linked[1])}}}}}, "
-            f"{princess_literal(events['princess'])}"
+            f"{princess_literal(events['princess'])}, "
+            f"{pursuer_literal(events['pursuer'])}"
             "}},"
         )
     lines.extend(

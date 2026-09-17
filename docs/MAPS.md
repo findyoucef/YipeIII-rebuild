@@ -29,9 +29,10 @@ Regenerate it from a current Ghidra C export:
   --cpp-output src/generated/original_maps.cpp
 ```
 
-The version-3 catalog also extracts the compact event records initialized at
+The version-4 catalog also extracts the compact event records initialized at
 `0x0041ec40`: 20 location messages, 10 overlay triggers, 20 princesses, 26 depth
-portals, eight first linked records, and six second linked records. The extractor validates
+portals, eight first linked records, six second linked records, 21 fixed
+map-authored pursuers, and one level-dependent pursuer. The extractor validates
 those totals and every coordinate. It requires every loader to produce all 156
 tile values and stops on an incomplete table. Map IDs `0x76` through `0x78` are
 generated at runtime by `0x0041e0f0` instead of appearing in the static
@@ -201,6 +202,18 @@ cell. It pursues the player diagonally on later movement attempts, occasionally
 chooses one of eight random neighboring cells, and starts the same size-zero
 group combat used by the original `-1` encounter slot. Victory and fleeing both
 clear it, while loading another map resets all transient roaming state.
+
+The separate map-authored pursuer at offsets `+0x394`–`+0x3a4` is initialized
+by `0x0041d840`. Twenty-one maps use fixed monster types and origins; map
+`0x10` selects type 1 below level 6 and type 6 thereafter. On each eligible
+movement turn, `0x00411b10` moves a visible pursuer randomly 55 percent of the
+time and otherwise steps directly toward the player. It makes at most five
+attempts, remains within two tiles of its original position, and avoids static
+placements and the random roaming monster. Contact starts the same size-zero
+group combat through the original `-2` encounter slot. Victory removes the
+pursuer for the current map instance, fleeing leaves it in place, and loading
+the map again restores it at its origin. The SDL renderer and movement loop
+preserve that lifecycle.
 
 Maps below ID `0x29` begin fully visible. Later maps initialize hidden and use
 the original eight-connected room flood from `0x0041cc00`/`0x0041cc50`,

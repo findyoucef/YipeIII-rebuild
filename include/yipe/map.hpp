@@ -37,12 +37,29 @@ struct PrincessEvent {
     }
 };
 
+struct PursuingMonsterEvent {
+    MapPosition position{-1, -1};
+    int type_id = 0;
+    int upgraded_type_id = 0;
+    int upgrade_level = 0;
+
+    [[nodiscard]] bool has_position() const {
+        return position.x >= 0 && position.y >= 0;
+    }
+
+    [[nodiscard]] int type_for_level(int level) const {
+        return upgraded_type_id > 0 && level >= upgrade_level
+            ? upgraded_type_id : type_id;
+    }
+};
+
 struct MapEvents {
     MapEvent message;
     MapEvent overlay;
     std::array<MapEvent, 2> depth;
     std::array<MapEvent, 2> linked;
     PrincessEvent princess;
+    PursuingMonsterEvent pursuer;
 };
 
 class Map {

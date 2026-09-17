@@ -1,5 +1,5 @@
 {
-  "format": "yipe3-original-map-tables-v3",
+  "format": "yipe3-original-map-tables-v4",
   "source_dispatch": "0041e110",
   "source_events": "0041ec40",
   "dimensions": {
@@ -205,7 +205,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -405,7 +406,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -605,7 +607,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -805,7 +808,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -1005,7 +1009,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -1205,7 +1210,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -1405,7 +1411,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -1605,7 +1612,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -1805,7 +1813,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -2005,7 +2014,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -2205,7 +2215,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -2405,7 +2416,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -2609,7 +2621,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 7,
+          "y": 6,
+          "value": 19
+        }
       }
     },
     {
@@ -2809,7 +2826,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -3009,7 +3027,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -3209,7 +3228,14 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 5,
+          "y": 4,
+          "value": 1,
+          "upgraded_value": 6,
+          "upgrade_level": 6
+        }
       }
     },
     {
@@ -3409,7 +3435,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -3613,7 +3640,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -3813,7 +3841,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -4013,7 +4042,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -4213,7 +4243,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 2,
+          "y": 10,
+          "value": 19
+        }
       }
     },
     {
@@ -4413,7 +4448,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -4617,7 +4653,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -4817,7 +4854,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -5017,7 +5055,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -5217,7 +5256,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -5421,7 +5461,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -5621,7 +5662,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -5821,7 +5863,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -6021,7 +6064,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -6221,7 +6265,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -6425,7 +6470,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -6625,7 +6671,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -6825,7 +6872,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -7025,7 +7073,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -7225,7 +7274,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -7425,7 +7475,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -7631,7 +7682,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -7849,7 +7901,8 @@
             "value": 40
           }
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -8067,7 +8120,8 @@
             "value": 73
           }
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -8275,7 +8329,12 @@
             "value": 83
           }
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 3,
+          "y": 5,
+          "value": 26
+        }
       }
     },
     {
@@ -8488,6 +8547,11 @@
           "y": 1,
           "value": 1,
           "rescue_index": 13
+        },
+        "pursuer": {
+          "x": 3,
+          "y": 3,
+          "value": 26
         }
       }
     },
@@ -8688,7 +8752,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -8888,7 +8953,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 4,
+          "y": 7,
+          "value": 19
+        }
       }
     },
     {
@@ -9099,7 +9169,8 @@
           "y": 6,
           "value": 3,
           "rescue_index": 15
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -9303,7 +9374,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -9512,7 +9584,8 @@
           "y": 3,
           "value": 3,
           "rescue_index": 2
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -9712,7 +9785,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 6,
+          "y": 3,
+          "value": 10
+        }
       }
     },
     {
@@ -9918,7 +9996,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -10118,7 +10197,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -10326,7 +10406,8 @@
             "value": 40
           }
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -10530,7 +10611,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -10736,7 +10818,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -10942,7 +11025,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -11142,7 +11226,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 4,
+          "y": 4,
+          "value": 13
+        }
       }
     },
     {
@@ -11352,7 +11441,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -11562,7 +11652,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -11766,7 +11857,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 7,
+          "y": 5,
+          "value": 26
+        }
       }
     },
     {
@@ -11970,7 +12066,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -12170,7 +12267,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 3,
+          "y": 3,
+          "value": 10
+        }
       }
     },
     {
@@ -12375,6 +12477,11 @@
           "y": 6,
           "value": 2,
           "rescue_index": 8
+        },
+        "pursuer": {
+          "x": 2,
+          "y": 9,
+          "value": 10
         }
       }
     },
@@ -12585,7 +12692,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 6,
+          "y": 10,
+          "value": 10
+        }
       }
     },
     {
@@ -12791,7 +12903,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -12999,7 +13112,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 5,
+          "y": 8,
+          "value": 17
+        }
       }
     },
     {
@@ -13199,7 +13317,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -13399,7 +13518,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 9,
+          "y": 8,
+          "value": 10
+        }
       }
     },
     {
@@ -13605,7 +13729,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -13816,7 +13941,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 2,
+          "y": 2,
+          "value": 14
+        }
       }
     },
     {
@@ -14020,7 +14150,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -14235,7 +14366,8 @@
           "y": 1,
           "value": 1,
           "rescue_index": 11
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -14441,7 +14573,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -14647,7 +14780,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -14847,7 +14981,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -15053,7 +15188,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 2,
+          "y": 2,
+          "value": 22
+        }
       }
     },
     {
@@ -15263,7 +15403,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -15471,7 +15612,8 @@
             "value": -1
           }
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -15679,7 +15821,8 @@
           },
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -15888,7 +16031,8 @@
           "y": 1,
           "value": 2,
           "rescue_index": 16
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -16092,7 +16236,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -16297,6 +16442,11 @@
           "y": 5,
           "value": 3,
           "rescue_index": 9
+        },
+        "pursuer": {
+          "x": 6,
+          "y": 4,
+          "value": 23
         }
       }
     },
@@ -16503,7 +16653,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -16708,7 +16859,8 @@
           "y": 1,
           "value": 2,
           "rescue_index": 14
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -16917,7 +17069,8 @@
           "y": 10,
           "value": 3,
           "rescue_index": 18
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -17117,7 +17270,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -17317,7 +17471,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -17517,7 +17672,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -17717,7 +17873,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -17921,7 +18078,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -18130,6 +18288,11 @@
           "y": 3,
           "value": 1,
           "rescue_index": 17
+        },
+        "pursuer": {
+          "x": 2,
+          "y": 5,
+          "value": 17
         }
       }
     },
@@ -18334,7 +18497,8 @@
           },
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -18539,7 +18703,8 @@
           "y": 1,
           "value": 1,
           "rescue_index": 10
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -18744,7 +18909,8 @@
           "y": 10,
           "value": 2,
           "rescue_index": 5
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -18944,7 +19110,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 6,
+          "y": 8,
+          "value": 16
+        }
       }
     },
     {
@@ -19144,7 +19315,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -19349,7 +19521,8 @@
           "y": 3,
           "value": 2,
           "rescue_index": 4
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -19549,7 +19722,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -19749,7 +19923,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 2,
+          "y": 8,
+          "value": 18
+        }
       }
     },
     {
@@ -19960,7 +20139,8 @@
           "y": 10,
           "value": 1,
           "rescue_index": 7
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -20166,7 +20346,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -20370,7 +20551,12 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": {
+          "x": 10,
+          "y": 4,
+          "value": 27
+        }
       }
     },
     {
@@ -20575,7 +20761,8 @@
           "y": 8,
           "value": 1,
           "rescue_index": 1
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -20779,7 +20966,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -20985,7 +21173,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -21185,7 +21374,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -21390,7 +21580,8 @@
           "y": 1,
           "value": 3,
           "rescue_index": 6
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -21596,7 +21787,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -21802,7 +21994,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -22013,6 +22206,11 @@
           "y": 1,
           "value": 2,
           "rescue_index": 3
+        },
+        "pursuer": {
+          "x": 6,
+          "y": 8,
+          "value": 12
         }
       }
     },
@@ -22222,7 +22420,8 @@
           "y": 1,
           "value": 3,
           "rescue_index": 12
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -22422,7 +22621,8 @@
           null,
           null
         ],
-        "princess": null
+        "princess": null,
+        "pursuer": null
       }
     },
     {
@@ -22627,7 +22827,8 @@
           "y": 9,
           "value": 1,
           "rescue_index": 19
-        }
+        },
+        "pursuer": null
       }
     },
     {
@@ -22836,7 +23037,8 @@
           "y": 9,
           "value": 2,
           "rescue_index": 20
-        }
+        },
+        "pursuer": null
       }
     }
   ]

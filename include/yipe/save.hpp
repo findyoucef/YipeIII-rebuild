@@ -35,6 +35,8 @@ struct GameState {
     // Randomly spawned monsters are map-instance state in the original and
     // are intentionally excluded from native saves.
     std::optional<RoamingMonster> roaming_monster;
+    // Map-authored pursuers also reset to their origin whenever a map loads.
+    std::optional<PursuingMonster> pursuing_monster;
     MapVisibility map_visibility;
 };
 

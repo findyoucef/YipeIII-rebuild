@@ -50,6 +50,12 @@ struct RoamingMonster {
     MapPosition position{-1, -1};
 };
 
+struct PursuingMonster {
+    int type_id = 0;
+    MapPosition position{-1, -1};
+    MapPosition origin{-1, -1};
+};
+
 enum class RoamingMonsterMove {
     stayed,
     moved,
@@ -74,19 +80,30 @@ enum class RoamingMonsterUpdate {
     const Map& map, const Player& player, MapPosition player_position,
     const std::vector<MonsterPlacement>& static_placements,
     const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
-    MsvcRandom& random);
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position = std::nullopt);
 // Reconstructs the pursuit/random-step loop at 0x00411d00.
 [[nodiscard]] RoamingMonsterMove move_roaming_monster(
     RoamingMonster& monster, const Map& map, MapPosition player_position,
     const std::vector<MonsterPlacement>& static_placements,
-    MsvcRandom& random);
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position = std::nullopt);
 [[nodiscard]] RoamingMonsterUpdate update_roaming_monster(
     std::optional<RoamingMonster>& monster, const Map& map,
     const Player& player, const WorldLocation& location,
     std::uint16_t destination_tile,
     const std::vector<MonsterPlacement>& static_placements,
     const MapVisibility& visibility, const RoamingEncounterUnlocks& unlocks,
-    MsvcRandom& random);
+    MsvcRandom& random,
+    std::optional<MapPosition> pursuing_monster_position = std::nullopt);
+[[nodiscard]] std::optional<PursuingMonster> pursuing_monster_for_map(
+    const Map& map, int player_level);
+// Reconstructs the bounded map-authored pursuer at 0x00411b10.
+[[nodiscard]] RoamingMonsterMove move_pursuing_monster(
+    PursuingMonster& monster, const Map& map, MapPosition player_position,
+    const std::vector<MonsterPlacement>& static_placements,
+    const std::optional<RoamingMonster>& roaming_monster,
+    const MapVisibility& visibility, MsvcRandom& random);
 
 struct Monster {
     int type_id = 0;
