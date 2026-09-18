@@ -135,6 +135,10 @@ public:
     std::uint16_t pending_relocation = 0;
     bool entered_hell_through_secret_passage = false;
     HellGatekeeperState hell_gatekeeper_state = HellGatekeeperState::absent;
+    bool bridge_treasure_available = true;
+    bool healing_water_available = true;
+    bool cave_coins_collected = false;
+    std::uint16_t snow_search_count = 0;
 
 private:
     void initialize(CharacterType type);

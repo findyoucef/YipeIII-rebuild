@@ -22,6 +22,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -436,6 +437,11 @@ void test_game_save() {
     original.player.death_count = 12;
     original.player.hell_gatekeeper_state = yipe::HellGatekeeperState::paid;
     original.player.entered_hell_through_secret_passage = true;
+    original.player.bridge_treasure_available = false;
+    original.player.healing_water_available = false;
+    original.player.cave_coins_collected = true;
+    original.player.snow_search_count = 3;
+    original.player.pending_relocation = 4;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.defeated_monster_placements = {5, 14, 38, 185};
     original.random_state = 0x12345678u;
@@ -446,17 +452,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 12 save restores progression and equipment");
+          "version 13 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 12 save restores combat settings and counters");
+          "version 13 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 12 save restores world location");
+          "version 13 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 12 save restores encounter and random state");
+          "version 13 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -464,17 +470,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 12 save restores ability and active status state");
+          "version 13 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 12 save restores special movement state");
+          "version 13 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 12 save restores persistent map tile changes");
+          "version 13 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 12 save restores learned spells");
+          "version 13 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -484,19 +490,36 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 12 save restores quest state");
+          "version 13 save restores quest state");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 12 save restores the surface-return anchor");
+          "version 13 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 12 save restores per-monster encounter history");
+          "version 13 save restores per-monster encounter history");
     check(loaded.player.death_count == 12
               && loaded.player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid
               && loaded.player.entered_hell_through_secret_passage,
-          "version 12 save restores death and Hell recovery state");
+          "version 13 save restores death and Hell recovery state");
+    check(!loaded.player.bridge_treasure_available
+              && !loaded.player.healing_water_available
+              && loaded.player.cave_coins_collected
+              && loaded.player.snow_search_count == 3
+              && loaded.player.pending_relocation == 4,
+          "version 13 save restores Other action state and deferred travel");
+
+    remove_save_extension(path, 3 * sizeof(std::uint8_t) + sizeof(std::uint16_t), 12);
+    const yipe::GameState loaded_version_12 = yipe::load_game(path);
+    check(loaded_version_12.player.death_count == 12
+              && loaded_version_12.player.hell_gatekeeper_state == yipe::HellGatekeeperState::paid
+              && loaded_version_12.player.entered_hell_through_secret_passage
+              && loaded_version_12.player.bridge_treasure_available
+              && loaded_version_12.player.healing_water_available
+              && !loaded_version_12.player.cave_coins_collected
+              && loaded_version_12.player.snow_search_count == 0,
+          "version 12 saves retain death state and default Other action state");
 
     constexpr std::size_t death_extension_size = sizeof(std::int32_t)
         + sizeof(std::uint16_t) + sizeof(std::uint8_t);
@@ -663,6 +686,8 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         case 18: value = 7; break;
         case 19: value = 0xffff; break;
         case 26: value = 2; break;
+        case 27: value = 1; break;
+        case 30: value = 3; break;
         case 31: value = 1; break;
         default: break;
         }
@@ -717,6 +742,9 @@ void test_legacy_save_import() {
               && player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid,
           "legacy import maps recovered difficulty, movement, and combat state");
+    check(player.bridge_treasure_available && player.healing_water_available
+              && player.cave_coins_collected && player.snow_search_count == 3,
+          "legacy import maps the Other action flags and snow-search counter");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
               && player.spells == imported.values_010c
               && player.has_bonus_healing_ring && player.monster_repellent_steps == 22
@@ -1087,6 +1115,238 @@ void test_runtime_generated_maps() {
           "a nondefault entry receives its recovered extra corridor and random calls");
     check(reachable_paths(alternate_entry) == alternate_paths,
           "the alternate entry connects to every generated corridor");
+}
+
+void test_other_action() {
+    const auto make_map = [](std::uint16_t tile, int id = 0x11) {
+        yipe::Map::Tiles tiles;
+        tiles.fill(tile);
+        return yipe::Map(id, 0, tiles);
+    };
+    constexpr yipe::MapPosition position{5, 5};
+    yipe::Player player;
+    check(player.bridge_treasure_available && player.healing_water_available
+              && !player.cave_coins_collected && player.snow_search_count == 0,
+          "Other action defaults match the original player initializer");
+    yipe::MsvcRandom random(1);
+    yipe::Map bridge = make_map(0x0b, 0x21);
+    const int initial_gold = player.gold;
+    const int initial_experience = player.experience;
+    check(yipe::perform_other_action(player, bridge, position, random).message_resource_id == 1007
+              && player.gold == initial_gold + 600
+              && player.experience == initial_experience + 21
+              && !player.bridge_treasure_available,
+          "the hidden bridge treasure awards 600 gold and 20-29 experience once");
+    const auto after_bridge = random.state();
+    check(yipe::perform_other_action(player, bridge, position, random).message_resource_id == 1004
+              && player.gold == initial_gold + 600 && random.state() == after_bridge,
+          "rechecking the bridge neither grants treasure nor consumes a random roll");
+    player.bridge_treasure_available = true;
+    yipe::Map ordinary_bridge = make_map(0x0b);
+    check(yipe::perform_other_action(player, ordinary_bridge, position, random).message_resource_id == 1004
+              && player.bridge_treasure_available && random.state() == after_bridge,
+          "only map 0x21 contains bridge treasure");
+
+    yipe::Map water = make_map(0x26, 6);
+    player.health = 20;
+    player.maximum_health = 100;
+    player.level = 5;
+    player.intelligence = 13;
+    random = yipe::MsvcRandom(1);
+    const yipe::OtherActionResult drink = yipe::perform_other_action(player, water, position, random);
+    check(drink.message_resource_id == 1008 && drink.sound_id == 143
+              && player.health == 32 && !player.healing_water_available,
+          "healing water rolls dryness before level-based healing");
+    const auto after_drink = random.state();
+    check(yipe::perform_other_action(player, water, position, random).message_resource_id == 1009
+              && random.state() == after_drink && player.health == 32,
+          "a dry water hole cannot heal or consume random values");
+    yipe::initialize_map_actions(player, water);
+    player.has_bonus_healing_ring = true;
+    random = yipe::MsvcRandom(1);
+    static_cast<void>(yipe::perform_other_action(player, water, position, random));
+    check(player.health == 57, "the ring adds intelligence to Other-action healing");
+    player.health = 95;
+    player.healing_water_available = true;
+    player.difficulty = 1;
+    random = yipe::MsvcRandom(1);
+    static_cast<void>(yipe::perform_other_action(player, water, position, random));
+    check(player.health == 100 && player.healing_water_available,
+          "healing caps at maximum HP and the dryness threshold is difficulty plus 40");
+    const auto full_health_random = random.state();
+    check(yipe::perform_other_action(player, water, position, random).message_resource_id == 1009
+              && player.healing_water_available && random.state() == full_health_random,
+          "the original full-health water message is dry without actually drying the hole");
+    yipe::Map ordinary_water = make_map(0x26);
+    player.health = 20;
+    check(yipe::perform_other_action(player, ordinary_water, position, random).message_resource_id == 1003
+              && player.health == 20 && random.state() == full_health_random,
+          "water outside map 6 is refreshing but does not heal");
+
+    yipe::Map coins = make_map(0x47, 0x45);
+    const int before_coins = player.gold;
+    check(yipe::perform_other_action(player, coins, position, random).message_resource_id == 146
+              && player.cave_coins_collected && player.gold == before_coins + 180,
+          "the cave coin pile grants exactly 180 gold");
+    check(yipe::perform_other_action(player, coins, position, random).message_resource_id == 147
+              && player.gold == before_coins + 180,
+          "the cave coin pile stays empty on later searches");
+    yipe::Map flowers = make_map(0x35, 0x12);
+    const yipe::OtherActionResult flower_action =
+        yipe::perform_other_action(player, flowers, position, random);
+    check(flower_action.message_resource_id == 1023 && flower_action.sound_id == 152
+              && flowers.tile({3, 7}) == 0x46 && flowers.tile({4, 7}) == 0x46,
+          "the special flowers lower both recovered mountain tiles");
+
+    yipe::Map snow = make_map(0x69);
+    random = yipe::MsvcRandom(1);
+    const int before_snow = player.gold;
+    check(yipe::perform_other_action(player, snow, position, random).message_resource_id == 1048
+              && player.gold == before_snow + 402 && player.snow_search_count == 1,
+          "the first snow search grants 401-410 gold, not the rounded resource text amount");
+    check(yipe::perform_other_action(player, snow, position, random).message_resource_id == 1049
+              && player.gold == before_snow + 510 && player.snow_search_count == 2,
+          "the second snow search grants 101-110 gold");
+    const auto after_snow_rewards = random.state();
+    check(yipe::perform_other_action(player, snow, position, random).message_resource_id == 1050
+              && player.snow_search_count == 3 && random.state() == after_snow_rewards,
+          "the third snow search warns without consuming a random roll");
+    player.health = 3;
+    const yipe::OtherActionResult frostbite =
+        yipe::perform_other_action(player, snow, position, random);
+    check(frostbite.message_resource_id == 1051 && frostbite.sound_id == 144
+              && player.health == 1 && player.snow_search_count == 2,
+          "frostbite is nonlethal and resets the snow state to the warning stage");
+    static_cast<void>(yipe::perform_other_action(player, snow, position, random));
+    static_cast<void>(yipe::perform_other_action(player, snow, position, random));
+    check(player.gold == before_snow + 510 && player.health == 1,
+          "repeated snow searches alternate warning and frostbite, never more gold");
+    player.health = 50;
+    player.snow_search_count = 3;
+    random = yipe::MsvcRandom(1);
+    static_cast<void>(yipe::perform_other_action(player, snow, position, random));
+    check(player.health == 34 && player.snow_search_count == 2,
+          "frostbite applies the recovered 5-19 damage before the one-HP floor");
+
+    constexpr std::array<std::pair<std::uint16_t, int>, 24> fixed_messages{{
+        {3, 1044}, {8, 1018}, {0x16, 1018}, {0x17, 1018}, {0x18, 1018},
+        {0x19, 1018}, {0x1a, 1018}, {0x1b, 1036}, {0x20, 1047},
+        {0x29, 1017}, {0x2a, 1017}, {0x2c, 1013}, {0x2f, 1015},
+        {0x35, 1012}, {0x36, 1053}, {0x39, 1053}, {0x3c, 1016},
+        {0x43, 1005}, {0x44, 1005}, {0x45, 1040}, {0x46, 1002},
+        {0x47, 1055}, {0x49, 1055}, {0x65, 1035},
+    }};
+    for (const auto& [tile, expected] : fixed_messages) {
+        yipe::Map map = make_map(tile);
+        const auto before = random.state();
+        const auto result = yipe::perform_other_action(player, map, position, random);
+        check(result.message_resource_id == expected && !result.message.empty()
+                  && result.sound_id == 0 && before == random.state(),
+              "fixed Other messages preserve resource IDs and consume no random values");
+    }
+    yipe::Map tally = make_map(0x49, 0x57);
+    check(yipe::perform_other_action(player, tally, position, random).message_resource_id == 1054,
+          "map 0x57 exposes the tally-mark clue");
+    yipe::Map lowered = make_map(0x46, 0x12);
+    check(yipe::perform_other_action(player, lowered, position, random).message_resource_id == 1043,
+          "lowered mountain tiles retain their area-specific description");
+
+    for (std::uint32_t seed = 1; seed <= 300; ++seed) {
+        constexpr std::array<std::array<int, 4>, 6> random_messages{{
+            {0x1f, 71, 1046, 1006}, {0x27, 21, 1042, 1041},
+            {0x28, 26, 1045, 1041}, {0x32, 61, 1037, 1014},
+            {0x33, 41, 1038, 1010}, {0x53, 31, 1052, 1041},
+        }};
+        for (const auto& branch : random_messages) {
+            yipe::Map map = make_map(static_cast<std::uint16_t>(branch[0]));
+            yipe::MsvcRandom expected(seed);
+            const int message = expected.next() % 100 < branch[1] ? branch[2] : branch[3];
+            random = yipe::MsvcRandom(seed);
+            check(yipe::perform_other_action(player, map, position, random).message_resource_id == message
+                      && random.state() == expected.state(),
+                  "random terrain descriptions preserve threshold and single-roll order");
+        }
+        for (const std::uint16_t tile : {2, 0x48, 0x56, 0x57, 0x2d, 8, 0x34}) {
+            yipe::Map map = make_map(tile, 1);
+            player.health = 10;
+            player.gatekeeper_state = seed % 4;
+            yipe::MsvcRandom expected(seed);
+            const int roll = expected.next();
+            int message = 1002;
+            if (tile == 0x56 || tile == 0x57) {
+                if (roll % 100 >= 76) {
+                    message = player.gatekeeper_state < 3 ? 1032 : 1034;
+                } else {
+                    const int second = expected.next() % 100;
+                    if (second >= 61 && tile == 0x57) {
+                        message = 1033;
+                    }
+                }
+            } else if (tile == 0x2d) {
+                message = roll % 4 == 0 ? 1002 : 1024 + roll % 4;
+            } else if (tile == 8) {
+                message = roll % 50 < 29 ? 1018 : roll % 50 < 46 ? 1030 : 1031;
+            } else if (tile == 0x34) {
+                message = roll % 100 > 79 ? 1024 : 1011;
+            } else if (tile == 2 && roll % 100 >= 86) {
+                message = 1039;
+            } else if (roll % 100 < 10) {
+                message = 1028;
+            }
+            random = yipe::MsvcRandom(seed);
+            const auto result = yipe::perform_other_action(player, map, position, random);
+            check(result.message_resource_id == message && random.state() == expected.state(),
+                  "Other preserves road, sand, grass, bee, and both tree random branches");
+            check(player.health == (message == 1024 ? 8 : 10)
+                      && result.sound_id == (message == 1024 ? 50 : 0),
+                  "only the bee branch damages health and plays its sound");
+        }
+    }
+    yipe::Map bee = make_map(0x34);
+    player.health = 3;
+    const auto before_bee = random.state();
+    check(yipe::perform_other_action(player, bee, position, random).message_resource_id == 1011
+              && player.health == 3 && random.state() == before_bee,
+          "low-health players bypass both bee damage and its random roll");
+
+    yipe::Map tunnel = make_map(0x42);
+    yipe::WorldLocation location;
+    const int before_hell = player.health;
+    const auto tunnel_result = yipe::perform_other_action(player, tunnel, position, random);
+    check(tunnel_result.message.empty() && player.pending_relocation == 3
+              && yipe::apply_pending_relocation(player, location) == yipe::PendingRelocation::hell
+              && location.map_id == 0x75 && location.position == yipe::MapPosition{6, 10}
+              && location.region_x == -4 && location.region_y == -1
+              && location.map_layer == 0 && location.alternate_map_set
+              && player.current_map_id == 0x75 && player.alternate_map_set
+              && player.pending_relocation == 0 && player.entered_hell_through_secret_passage
+              && player.hell_gatekeeper_state == yipe::HellGatekeeperState::waiting
+              && player.health == before_hell && player.death_count == 0,
+          "Other defers secret Hell entry without counting a death or changing HP");
+    player.hell_gatekeeper_state = yipe::HellGatekeeperState::defeated;
+    static_cast<void>(yipe::perform_other_action(player, tunnel, position, random));
+    static_cast<void>(yipe::apply_pending_relocation(player, location));
+    check(player.hell_gatekeeper_state == yipe::HellGatekeeperState::defeated,
+          "secret entry cannot revive a defeated Hell Gatekeeper");
+
+    yipe::Map stones = *yipe::original_map(3);
+    const auto original_stone_tile = stones.tile({4, 7});
+    player.stamps_found = 4;
+    yipe::initialize_map_actions(player, stones);
+    check(stones.tile({4, 7}) == original_stone_tile && original_stone_tile != 0x46,
+          "the stone-circle action tile remains unavailable before five stamps");
+    player.stamps_found = 5;
+    yipe::initialize_map_actions(player, stones);
+    check(stones.tile({4, 7}) == 0x46, "five stamps activate the stone circle on map entry");
+    static_cast<void>(yipe::perform_other_action(player, stones, {4, 7}, random));
+    check(player.pending_relocation == 4
+              && yipe::apply_pending_relocation(player, location) == yipe::PendingRelocation::stone_circle
+              && location.map_id == 0x15 && location.position == yipe::MapPosition{6, 8}
+              && location.region_x == -2 && location.region_y == -1
+              && location.map_layer == 0 && !location.alternate_map_set
+              && player.current_map_id == 0x15 && !player.alternate_map_set
+              && player.pending_relocation == 0,
+          "the stone circle reaches the recovered surface destination and synchronizes player state");
 }
 
 void test_special_movement_actions() {
@@ -2861,6 +3121,7 @@ int main() {
     test_static_map_catalog_and_edges();
     test_runtime_generated_maps();
     test_special_movement_actions();
+    test_other_action();
     test_starting_shop();
     test_recovered_shop_transactions();
     test_recovered_casino_games();

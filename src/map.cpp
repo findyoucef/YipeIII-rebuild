@@ -10,6 +10,73 @@
 namespace yipe {
 namespace {
 
+std::string_view other_action_message(int resource_id) {
+    if (resource_id == 146) {
+        return "You pile up the coins scattered about the floor and put them into your pocket.  In all, it looks like you gained about 180 coins.";
+    }
+    if (resource_id == 147) {
+        return "You search the floor again.  It looks like you've already gathered up all the loose gold.";
+    }
+    constexpr std::array<std::string_view, 54> messages{
+        "You find nothing of interest right here.",
+        "Yummm!  That water sure tastes refreshing!",
+        "You find nothing of interest underneath the bridge.",
+        "You are standing in a narrow crack in the wall.  This must be some type of secret passage.",
+        "You lie down and make a pretty snow angel in the cool winter snow.",
+        "Looking under the bridge you find a small pile of gold!  You take a quick look to see that nobody is looking and you pocket the 600 gold pieces.",
+        "Not only does the water taste great, but it heals some of your wounds!",
+        "The water hole is temporarily dry.",
+        "You take a moment to rest on the warm rock.",
+        "The pretty flowers smell as good as they look.",
+        "These flowers give off no distinctive smell, but they sure look nice.",
+        "Upon looking at the skull closely, you decide you have no idea what type of animal it came from.",
+        "The small plant you are standing on tickles your leg.",
+        "You are standing on an old desert plant.  There is nothing of importance about it.",
+        "A spike seems to be coming out of the wall right towards you!  You better move fast!",
+        "There is an interesting crack in the ground here.  At the moment it doesn't seem big enough for you to fall into it.",
+        "You don't notice anything out of the ordinary on the small stone path that you are standing on.",
+        "", "", "", "",
+        "The grounds shakes for a minute and suddenly part of the mountain range lowers into the ground before you!",
+        "As you take a closer look at the flower, a bee pops out and stings you on the nose.  Ouch!!",
+        "You notice that the sand feels soft under your feet.",
+        "The sand feels warm from the hot sun.",
+        "You pick up some sand and let it trickle through your fingers.",
+        "Not finding anything of interest, you decide to sing a short song.",
+        "",
+        "You don't notice anything around you, however you do seem to feel a little safer standing on this road.",
+        "This section of the road looks to be in good shape.  Some of the other sections don't seem to be as nice as this particular part.",
+        "You have a nice view of the land from up here in this tree.  Sure is a pretty world.  Too bad there are so many monsters wandering around.",
+        "From up in this tree it looks like something is moving down in the sand below you.  It's probably just a little sand bug.",
+        "You get a nice warm feeling inside yourself when you look out upon the world of Yipe!  You feel pride in knowing that you're the one who saved the world!",
+        "You are standing at the bottom of a mountain.  A few pebbles lay scattered around the sandy area below you.",
+        "Some sand comes up onto the grass right here.  You don't find anything else interesting.",
+        "You are standing right on top of a small plant in the middle of a grassy area.  You do not notice anything unusual about the plant.",
+        "Below you is a sturdy rock that is halfway buried into the ground.  It looks just right for sitting on.",
+        "You find nothing of interest in the grassy area that you are currently standing on.",
+        "You have discovered a secret little path through the mountains right here.  There was no way to see this path from below.",
+        "You find nothing of interest in this part of the cave.",
+        "The cave floor below you feels a little chilly.  Other than that, there's nothing particularly interesting right here.",
+        "You can't quite tell what seems so strange about the mountains right here.  Perhaps you should keep looking around this area.",
+        "How did you get up on this mountain?!?  Hopefully you have a way to climb down from up here!",
+        "The cave floor below you is surprisingly smooth.  Perhaps it has been worn down by the high number of monsters that have walked through here!",
+        "Below you is a patch of snow.  Digging around in the snow you do not find anything of interest.",
+        "The snow starts to melt away into the grass right here.",
+        "You dig around in the snow for a few minutes and your work pays off.  Below the snow was a pile of around 400 gold coins!!",
+        "After checking one more time in the snow, it looks like you missed a few gold coins the first time you checked.  You've found another 100 coins!",
+        "At this point your hand is starting to get cold.  You should probably stop searching for gold coins.",
+        "Ouch!!!  It looks like you've got frost bite!  The pain in your hand is just a little too much to keep searching.  You take a small amount of damange.",
+        "As you take a moment to notice, you feel a slight breeze blowing throughout this cave.",
+        "You are standing right on the entrance to an underground cave.",
+        "While looking at the tally marks you notice the shape of the walls around you seem to be in the shape of a letter.",
+        "Other than what you've already discovered, there is nothing else of interest here.",
+    };
+    if (resource_id < 1002 || resource_id > 1055
+        || messages[static_cast<std::size_t>(resource_id - 1002)].empty()) {
+        throw std::logic_error("unknown Other action message");
+    }
+    return messages[static_cast<std::size_t>(resource_id - 1002)];
+}
+
 bool is_interior(MapPosition position) {
     return position.x != 0 && position.x != Map::width - 1 && position.y != 0
            && position.y != Map::height - 1;
@@ -383,6 +450,12 @@ PendingRelocation apply_pending_relocation(Player& player,
     case PendingRelocation::yipe:
         return_to_surface(location);
         break;
+    case PendingRelocation::hell:
+        enter_hell(player, location, true);
+        break;
+    case PendingRelocation::stone_circle:
+        location = {{6, 8}, -2, -1, 0, false, 0x15};
+        break;
     default:
         throw std::runtime_error("player has an invalid pending relocation");
     }
@@ -390,6 +463,182 @@ PendingRelocation apply_pending_relocation(Player& player,
     player.current_map_id = location.map_id;
     player.alternate_map_set = location.alternate_map_set;
     return relocation;
+}
+
+void enter_hell(Player& player, WorldLocation& location, bool through_secret_passage) {
+    player.entered_hell_through_secret_passage = through_secret_passage;
+    if (player.hell_gatekeeper_state == HellGatekeeperState::absent) {
+        player.hell_gatekeeper_state = HellGatekeeperState::waiting;
+    }
+    location = {{6, 10}, -4, -1, 0, true, 0x75};
+    player.current_map_id = location.map_id;
+    player.alternate_map_set = true;
+}
+
+void initialize_map_actions(Player& player, Map& map) {
+    if (map.id() != 0) {
+        player.healing_water_available = true;
+    }
+    if (map.id() == 3 && player.stamps_found >= 5) {
+        map.restore_tile({4, 7}, 0x46);
+    }
+}
+
+OtherActionResult perform_other_action(Player& player, Map& map,
+                                       MapPosition position, MsvcRandom& random) {
+    const std::uint16_t tile = map.tile(position);
+    int message = 1002;
+    int sound = 0;
+    switch (tile) {
+    case 3: message = 1044; break;
+    case 8:
+    case 0x16:
+    case 0x17:
+    case 0x18:
+    case 0x19:
+    case 0x1a:
+        message = 1018;
+        if (map.id() != 0x11 && map.id() != 0x1b) {
+            const int roll = random.next() % 50;
+            message = roll < 29 ? 1018 : roll < 46 ? 1030 : 1031;
+        }
+        break;
+    case 0x0b:
+        message = 1004;
+        if (map.id() == 0x21 && player.bridge_treasure_available) {
+            player.bridge_treasure_available = false;
+            player.gold += 600;
+            player.experience += random.next() % 10 + 20;
+            message = 1007;
+        }
+        break;
+    case 0x1b: message = 1036; break;
+    case 0x1f: message = random.next() % 100 < 71 ? 1046 : 1006; break;
+    case 0x20: message = 1047; break;
+    case 0x26:
+        message = 1003;
+        sound = 143;
+        if (map.id() == 6) {
+            message = 1009;
+            sound = 0;
+            if (player.healing_water_available && player.health < player.maximum_health) {
+                if (random.next() % 100 < player.difficulty + 40) {
+                    player.healing_water_available = false;
+                }
+                const int healing = random.next() % 10 + player.level
+                    + (player.has_bonus_healing_ring ? player.intelligence : 0);
+                static_cast<void>(player.adjust_health(healing));
+                message = 1008;
+                sound = 143;
+            }
+        }
+        break;
+    case 0x27: message = random.next() % 100 < 21 ? 1042 : 1041; break;
+    case 0x28: message = random.next() % 100 < 26 ? 1045 : 1041; break;
+    case 0x29:
+    case 0x2a: message = 1017; break;
+    case 0x2c: message = 1013; break;
+    case 0x2d: {
+        const int roll = random.next() % 4;
+        message = roll == 0 ? 1002 : 1024 + roll;
+        break;
+    }
+    case 0x2f: message = 1015; break;
+    case 0x32: message = random.next() % 100 < 61 ? 1037 : 1014; break;
+    case 0x33: message = random.next() % 100 < 41 ? 1038 : 1010; break;
+    case 0x34:
+        message = 1011;
+        if (player.health > 3 && random.next() % 100 > 79) {
+            if (!player.adjust_health(-2)) {
+                player.health = 1;
+            }
+            message = 1024;
+            sound = 50;
+        }
+        break;
+    case 0x35:
+        message = 1012;
+        if (map.id() == 0x12) {
+            map.restore_tile({3, 7}, 0x46);
+            map.restore_tile({4, 7}, 0x46);
+            message = 1023;
+            sound = 152;
+        }
+        break;
+    case 0x36:
+    case 0x39: message = 1053; break;
+    case 0x3c: message = 1016; break;
+    case 0x42:
+        player.pending_relocation = static_cast<std::uint16_t>(PendingRelocation::hell);
+        return {};
+    case 0x43:
+    case 0x44: message = 1005; break;
+    case 0x45: message = 1040; break;
+    case 0x46:
+        if (map.id() == 3) {
+            player.pending_relocation = static_cast<std::uint16_t>(PendingRelocation::stone_circle);
+            return {};
+        }
+        if (map.id() == 0x12) {
+            message = 1043;
+        }
+        break;
+    case 0x47:
+        message = 1055;
+        if (map.id() == 0x45) {
+            message = player.cave_coins_collected ? 147 : 146;
+            if (!player.cave_coins_collected) {
+                player.cave_coins_collected = true;
+                player.gold += 180;
+            }
+        }
+        break;
+    case 0x49: message = map.id() == 0x57 ? 1054 : 1055; break;
+    case 0x53: message = random.next() % 100 < 31 ? 1052 : 1041; break;
+    case 0x56:
+    case 0x57:
+        if (random.next() % 100 < 76) {
+            const int roll = random.next() % 100;
+            if (roll >= 61 && tile == 0x57) {
+                message = 1033;
+            }
+        } else {
+            message = player.gatekeeper_state < 3 ? 1032 : 1034;
+        }
+        break;
+    case 0x65: message = 1035; break;
+    case 0x69:
+        if (player.snow_search_count == 0) {
+            player.snow_search_count = 1;
+            player.gold += random.next() % 10 + 401;
+            message = 1048;
+        } else if (player.snow_search_count == 1) {
+            player.snow_search_count = 2;
+            player.gold += random.next() % 10 + 101;
+            message = 1049;
+        } else if (player.snow_search_count == 2) {
+            player.snow_search_count = 3;
+            message = 1050;
+        } else {
+            if (!player.adjust_health(-5 - random.next() % 15)) {
+                player.health = 1;
+            }
+            player.snow_search_count = 2;
+            message = 1051;
+            sound = 144;
+        }
+        break;
+    default: {
+        const int roll = random.next() % 100;
+        if (roll >= 86 && tile == 2) {
+            message = 1039;
+        } else if (roll <= 9) {
+            message = 1028;
+        }
+        break;
+    }
+    }
+    return {message, sound, other_action_message(message)};
 }
 
 bool change_map_depth(WorldLocation& location, int original_code) {

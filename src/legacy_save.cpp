@@ -151,6 +151,8 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     save.unknown_006c = reader.archive_bool();
     save.unknown_0060 = reader.archive_bool();
     save.unknown_0061 = reader.archive_bool();
+    player.bridge_treasure_available = save.unknown_0060;
+    player.healing_water_available = save.unknown_0061;
     player.alternate_map_set = reader.archive_bool();
     save.game.location.alternate_map_set = player.alternate_map_set;
     save.unknown_0063 = reader.archive_bool();
@@ -215,6 +217,8 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.hell_gatekeeper_state = static_cast<HellGatekeeperState>(
         signed_u16(save.extended_entries[19].value_065e));
     player.pending_relocation = save.extended_entries[26].value_065e;
+    player.cave_coins_collected = save.extended_entries[27].value_065e != 0;
+    player.snow_search_count = save.extended_entries[30].value_065e;
     player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
 
     save.game.location.position.x = signed_u16(reader.u16());

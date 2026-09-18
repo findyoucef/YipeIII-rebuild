@@ -132,13 +132,31 @@ enum class PendingRelocation : std::uint16_t {
     none = 0,
     surface = 1,
     yipe = 2,
+    hell = 3,
+    stone_circle = 4,
 };
 
-// Applies the deferred relocation values written by the original item/spell
+// Applies the deferred relocation values written by the original item/spell/Other
 // routines. The caller loads the destination map and, for a surface return,
 // places the player below its final 0x36/0x39 entrance tile.
 [[nodiscard]] PendingRelocation apply_pending_relocation(
     Player& player, WorldLocation& location);
+
+// Common Hell entry; death-specific HP and counter changes belong to combat.
+void enter_hell(Player& player, WorldLocation& location, bool through_secret_passage);
+
+struct OtherActionResult {
+    int message_resource_id = 0;
+    int sound_id = 0;
+    std::string_view message;
+};
+
+// Map-entry water refill and stamp-gated stone circle at 0x0040de80.
+void initialize_map_actions(Player& player, Map& map);
+
+// Reconstructs the tile-specific Other command at 0x00416440.
+[[nodiscard]] OtherActionResult perform_other_action(
+    Player& player, Map& map, MapPosition position, MsvcRandom& random);
 
 // Reconstructs the layer changes at 0x00444ad0. Codes 0x0e and 0x10 descend;
 // code 0x0f ascends. Leaving the original three layers returns to the surface.

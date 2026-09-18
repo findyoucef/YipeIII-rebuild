@@ -2276,7 +2276,8 @@ void synchronize_player_location(yipe::GameState& game) {
     game.player.alternate_map_set = game.location.alternate_map_set;
 }
 
-void initialize_transient_monsters(yipe::GameState& game, const yipe::Map& map) {
+void initialize_map_state(yipe::GameState& game, yipe::Map& map) {
+    yipe::initialize_map_actions(game.player, map);
     game.roaming_monster.reset();
     game.pursuing_monster =
         yipe::pursuing_monster_for_map(map, game.player.level);
@@ -2294,7 +2295,7 @@ void recover_from_combat_defeat(SDL_Window* window, yipe::GameState& game,
     }
     map = *hell;
     game.temporarily_defeated_monster_placements.clear();
-    initialize_transient_monsters(game, map);
+    initialize_map_state(game, map);
     apply_map_tile_changes(map, game);
     yipe::initialize_map_visibility(
         game.map_visibility, map, game.location.position);
@@ -2320,7 +2321,7 @@ bool apply_pending_relocation(yipe::GameState& game, yipe::Map& map,
         }
     }
     game.temporarily_defeated_monster_placements.clear();
-    initialize_transient_monsters(game, map);
+    initialize_map_state(game, map);
     apply_map_tile_changes(map, game);
     yipe::initialize_map_visibility(
         game.map_visibility, map, game.location.position);
@@ -2403,6 +2404,16 @@ void remember_map_tile(yipe::GameState& game, const yipe::Map& map,
     }
 }
 
+yipe::OtherActionResult use_other_action(yipe::GameState& game, yipe::Map& map,
+                                         yipe::MsvcRandom& random) {
+    const yipe::OtherActionResult result = yipe::perform_other_action(
+        game.player, map, game.location.position, random);
+    if (!apply_pending_relocation(game, map, random)) {
+        yipe::reveal_map_from(game.map_visibility, map, game.location.position);
+    }
+    return result;
+}
+
 void save_current_game(SDL_Window* window, const std::filesystem::path& path,
                        yipe::GameState& game, const yipe::MsvcRandom& random,
                        bool show_confirmation) {
@@ -2443,7 +2454,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
     yipe::Map map = *restored_map;
     if (!apply_pending_relocation(game, map, random)) {
         synchronize_player_location(game);
-        initialize_transient_monsters(game, map);
+        initialize_map_state(game, map);
         apply_map_tile_changes(map, game);
         yipe::initialize_map_visibility(
             game.map_visibility, map, game.location.position);
@@ -2499,6 +2510,18 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             && (event.key.keysym.mod & KMOD_CTRL) != 0) {
             show_player_status(window, game.player);
             render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_o
+            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+            if (event.key.repeat == 0) {
+                const yipe::OtherActionResult result = use_other_action(game, map, random);
+                audio.play(result.sound_id, settings.sound_enabled);
+                if (!result.message.empty()) {
+                    show_message(window, "Other", std::string(result.message));
+                }
+                render_game(renderer, map, textures, game);
+            }
             continue;
         }
 
@@ -2602,7 +2625,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                             static_cast<std::int16_t>(previous_location.region_y);
                     }
                     game.temporarily_defeated_monster_placements.clear();
-                    initialize_transient_monsters(game, map);
+                    initialize_map_state(game, map);
                     synchronize_player_location(game);
                     apply_map_tile_changes(map, game);
                     yipe::initialize_map_visibility(
@@ -2625,12 +2648,13 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (result.original_code == 3) {
                 const std::uint16_t tile = map.tile(game.location.position);
                 if (tile == 0x26) {
-                    show_message(window, "Water Hole", "You are standing on a water hole.");
+                    show_message(window, "Water Hole",
+                                 "You are standing on a water hole. Press Ctrl+O (Other) to drink.");
                 } else if (tile == 0x42) {
                     show_message(
                         window, "Underworld Tunnel",
                         "You find a special tunnel leading down into the depths of the "
-                        "underworld.");
+                        "underworld. Press Ctrl+O (Other) to travel to Yipe Hell.");
                 } else if (tile == 0x56 || tile == 0x57) {
                     show_message(window, "Tree",
                                  "You climb over the tree using your special shoes.");
@@ -2638,6 +2662,18 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                         && !game.player.has_bonus_healing_ring) {
                         show_secret_tree(window, game.player);
                     }
+                } else if (map.id() == 3) {
+                    show_message(window, "Stones",
+                                 "The three stones surrounding you start to glow. "
+                                 "Press Ctrl+O (Other) to investigate.");
+                } else if (map.id() == 0x12) {
+                    show_message(window, "Mountains",
+                                 "You notice something strange about the flowers and "
+                                 "mountains around this area. Press Ctrl+O (Other) to investigate.");
+                } else if (map.id() == 0x45 && !game.player.cave_coins_collected) {
+                    show_message(window, "Coins",
+                                 "You find a small pile of coins on the floor. "
+                                 "Press Ctrl+O (Other) to take them.");
                 }
             }
             const yipe::MapEvent& message = map.events().message;
@@ -2679,7 +2715,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                                 "could not restore the map after fleeing");
                         }
                         map = *previous_map;
-                        initialize_transient_monsters(game, map);
+                        initialize_map_state(game, map);
                         apply_map_tile_changes(map, game);
                         yipe::initialize_map_visibility(
                             game.map_visibility, map, game.location.position);
@@ -2805,7 +2841,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();
                 game.temporarily_defeated_monster_placements.clear();
-                initialize_transient_monsters(game, map);
+                initialize_map_state(game, map);
                 suppress_roaming_update = true;
                 synchronize_player_location(game);
                 apply_map_tile_changes(map, game);
@@ -3025,11 +3061,11 @@ int main(int argc, char* argv[]) {
             prepare_game_view(window.get(), renderer.get());
             yipe::GameState game;
             for (int map_id = 0; map_id <= 0x85; ++map_id) {
-                const std::optional<yipe::Map> map = yipe::original_map(map_id);
+                std::optional<yipe::Map> map = yipe::original_map(map_id);
                 if (map) {
                     game.location.map_id = map_id;
                     game.location.position = {5, 5};
-                    initialize_transient_monsters(game, *map);
+                    initialize_map_state(game, *map);
                     yipe::initialize_map_visibility(
                         game.map_visibility, *map, game.location.position);
                     render_game(renderer.get(), *map, game_textures, game);
@@ -3037,14 +3073,57 @@ int main(int argc, char* argv[]) {
             }
             for (int map_id = 0x76; map_id <= 0x78; ++map_id) {
                 yipe::MsvcRandom random(1);
-                const yipe::Map map =
+                yipe::Map map =
                     yipe::generate_original_map(map_id, {1, 1}, random);
                 game.location.map_id = map_id;
                 game.location.position = {1, 1};
-                initialize_transient_monsters(game, map);
+                initialize_map_state(game, map);
                 yipe::initialize_map_visibility(
                     game.map_visibility, map, game.location.position);
                 render_game(renderer.get(), map, game_textures, game);
+            }
+            yipe::MsvcRandom other_random(1);
+            game = yipe::GameState{};
+            yipe::Map other_map = *yipe::original_map(0x12);
+            game.location = {{5, 8}, 1, 0, 0, false, 0x12};
+            if (!yipe::try_move(other_map, game.location.position, 0, -1).position_changed
+                || other_map.tile(game.location.position) != 0x35) {
+                throw std::runtime_error("the special flowers are not reachable");
+            }
+            const yipe::OtherActionResult flowers =
+                use_other_action(game, other_map, other_random);
+            if (flowers.message_resource_id != 1023 || !game.map_tile_changes.empty()
+                || other_map.tile({3, 7}) != 0x46 || other_map.tile({4, 7}) != 0x46) {
+                throw std::runtime_error("Other did not open the temporary mountain passage");
+            }
+            other_map = *yipe::original_map(0x12);
+            apply_map_tile_changes(other_map, game);
+            if (other_map.tile({3, 7}) != 3 || other_map.tile({4, 7}) != 3) {
+                throw std::runtime_error("Other passage did not reset on map reload");
+            }
+            other_map = *yipe::original_map(0x1f);
+            game.location = {{4, 7}, -4, -3, 0, false, 0x1f};
+            if (yipe::try_move(other_map, game.location.position, 0, 1).original_code != 3
+                || other_map.tile(game.location.position) != 0x42) {
+                throw std::runtime_error("the secret Hell tunnel is not reachable");
+            }
+            const int health_before_tunnel = game.player.health;
+            static_cast<void>(use_other_action(game, other_map, other_random));
+            if (other_map.id() != 0x75 || game.map_visibility.map_id != 0x75
+                || game.player.health != health_before_tunnel || game.player.death_count != 0
+                || !game.player.entered_hell_through_secret_passage) {
+                throw std::runtime_error("Other did not enter Hell without a death");
+            }
+            render_game(renderer.get(), other_map, game_textures, game);
+            other_map = *yipe::original_map(3);
+            game.location = {{4, 7}, -2, 2, 0, false, 3};
+            game.player.stamps_found = 5;
+            initialize_map_state(game, other_map);
+            static_cast<void>(use_other_action(game, other_map, other_random));
+            if (other_map.id() != 0x15 || game.map_visibility.map_id != 0x15
+                || game.location.position != yipe::MapPosition{6, 8}
+                || game.player.pending_relocation != 0) {
+                throw std::runtime_error("Other did not follow the stone-circle relocation");
             }
             SDL_Event repeated_key{};
             repeated_key.type = SDL_KEYDOWN;

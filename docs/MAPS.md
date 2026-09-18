@@ -115,9 +115,10 @@ visibility refresh performed by `0x19`. Return-to-Surface items and spells use
 the entrance map and region saved by the `0x0e` descent path, then
 `0x0041e090` places the player immediately below the final `0x36`/`0x39`
 entrance on that map. Native format version 5 introduced persistence for changed
-door and linked-mechanism tiles; current version 12 retains it, the recovered
+door and linked-mechanism tiles; current version 13 retains it, the recovered
 King quest state, the princess Mystery counter, permanent monster defeats, the
-saved surface-return region, encounter history, and death/Hell recovery state.
+saved surface-return region, encounter history, death/Hell recovery state, and
+Other-action treasure/water/snow state.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -138,6 +139,40 @@ the player enters that tile. Its purchase path follows `0x00441250`: seven
 consumables use the first free slot among the 13 carried-item slots, while the
 four equipment rows update their matching slot only when the purchased tier is
 an improvement. Failed purchases do not deduct gold.
+
+## Other action
+
+The tile switch at `0x00416440` is exposed through Ctrl+O in exploration, without
+changing the 13 recovered key bindings. It does not advance roaming or pursuing
+monsters. Resource IDs and random-call order are preserved; SDL message boxes
+adapt the original message area. Water, stone-circle, mountain, and coin-pile
+movement hints identify the new control. The other map-specific movement hints
+at `0x004121c0` remain follow-up work.
+
+| Tile / map | Effect |
+| --- | --- |
+| `0x0b` / `0x21` | Once-only 600 gold and 20–29 experience from the bridge |
+| `0x26` / `6` | Heal `level + rand()%10`, plus intelligence with the bonus-healing ring; roll dryness first against `difficulty + 40` percent |
+| `0x26` / other maps | Drinking message and sound, without healing |
+| `0x35` / `0x12` | Lower mountain tiles `(3,7)` and `(4,7)` to `0x46` for the current map instance |
+| `0x42` | Queue relocation 3: secret Hell entry at `(6,10)`, map `0x75`, without death or HP changes |
+| `0x46` / `3` | Queue relocation 4: map `0x15`, position `(6,8)`, region `(-2,-1)`, surface and ordinary map set |
+| `0x47` / `0x45` | Once-only 180 gold from the cave floor |
+| `0x69` | First search gives 401–410 gold, second 101–110; later searches alternate a warning and nonlethal 5–19 damage |
+
+Remaining tile branches provide terrain descriptions; the bee branch on tile
+`0x34` consumes one roll only above three HP, stings for two HP on rolls 80–99,
+and never kills. The water hole reports dry at full HP without actually consuming
+its availability or a random roll. `0x0040de80` refills the healing-water flag
+on nonzero map loads and enables the stone-circle tile `(4,7)` after five stamps.
+Secret entry shares only the Hell destination/Gatekeeper setup with combat death.
+
+The mountain action's player `+0x06c` flag requests a redraw, which
+`0x0040d610` clears; it is not a permanent unlock. The mountain opening is not
+added to native map-tile changes, so reloading restores the original mountains.
+Bridge treasure, cave coins, and snow search progress are player state and do
+survive loading. Native version 13 also stores water availability, although the
+subsequent map initialization refills it just as ordinary map entry does.
 
 ## Monster catalogs
 

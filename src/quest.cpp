@@ -335,19 +335,7 @@ CombatDefeatResult resolve_combat_defeat(Player& player,
         player, player.death_count + 1, monster_type, random);
     player.health = 1;
     ++player.death_count;
-    player.entered_hell_through_secret_passage = false;
-    if (player.hell_gatekeeper_state == HellGatekeeperState::absent) {
-        player.hell_gatekeeper_state = HellGatekeeperState::waiting;
-    }
-
-    location.position = {6, 10};
-    location.region_x = -4;
-    location.region_y = -1;
-    location.map_layer = 0;
-    location.alternate_map_set = true;
-    location.map_id = 0x75;
-    player.current_map_id = location.map_id;
-    player.alternate_map_set = true;
+    enter_hell(player, location, false);
     return {701 + message_index,
             defeat_messages[static_cast<std::size_t>(message_index)]};
 }

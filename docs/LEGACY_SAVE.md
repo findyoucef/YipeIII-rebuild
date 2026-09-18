@@ -77,7 +77,11 @@ the sum of the 50 `+0x584` values to the early equipment hint, and extended
 entries 2, 8, 9, and 18 to Gatekeeper, stamp, princess, and Mystery-reward
 state. Player offset `+0x658` stores the death count, extended entry 14 records
 entry through the secret Yipe Hell passage, and extended entry 19 stores the
-local Hell Gatekeeper state. Combat setup marks `+0x552[monster_type]` for each
+local Hell Gatekeeper state. The Other action maps `+0x060` and `+0x061` to bridge
+treasure and healing-water availability, extended entry 27 (`+0x694`) to collected
+cave coins, and entry 30 (`+0x69a`) to the snow-search stage. `+0x06c` remains in
+the offset-based import object: it is a transient redraw request, not a saved
+mountain unlock. Combat setup marks `+0x552[monster_type]` for each
 opponent, so entries 0–41 are imported as per-monster encounter history;
 entries 42–49 remain available in the offset-based import object. Other
 unresolved arrays likewise remain there so future reconstruction does not
@@ -110,9 +114,12 @@ Version 9 appends the stable indices of every permanently defeated monster
 placement. Version 10 appends the signed region coordinates for the entrance
 saved by the original Return-to-Surface state. Version 11 appends encounter
 history for monster type IDs 0–41. Version 12 appends the death count, local
-Hell Gatekeeper state, and secret-passage entry flag. When importing version 9,
+Hell Gatekeeper state, and secret-passage entry flag. Version 13 appends three
+one-byte flags for bridge treasure, healing water, and collected cave coins,
+followed by the 16-bit snow-search stage. Earlier versions default both
+availability flags to true and the coin/snow progress to zero. When importing version 9,
 defeats now known to be reload-respawning migrate into the transient current-map
-state instead of becoming permanent. The loader accepts all twelve versions,
+state instead of becoming permanent. The loader accepts all thirteen versions,
 derives missing return coordinates from the current region for older files,
 and migrates the first-encounter bit in versions 2–8 to the Giant Beetle's
 placement index 5. Writes use a temporary file and atomic replacement so a
