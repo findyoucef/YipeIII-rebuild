@@ -719,6 +719,9 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
         player, target, encounter.monsters[0].type_id, selected_slot, random);
     encounter.pending_reward.experience += reward.experience;
     encounter.pending_reward.gold += reward.gold;
+    if (target.type_id == 35) {
+        player.has_defeated_wormoid = true;
+    }
     if (!has_living_monster(encounter)) {
         const int primary_type = encounter.monsters[0].type_id;
         result.outcome = CombatOutcome::victory;

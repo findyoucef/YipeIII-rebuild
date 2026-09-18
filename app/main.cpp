@@ -2277,7 +2277,7 @@ void synchronize_player_location(yipe::GameState& game) {
 }
 
 void initialize_map_state(yipe::GameState& game, yipe::Map& map) {
-    yipe::initialize_map_actions(game.player, map);
+    yipe::initialize_map_actions(game.player, map, game.location.position);
     game.roaming_monster.reset();
     game.pursuing_monster =
         yipe::pursuing_monster_for_map(map, game.player.level);
@@ -2662,18 +2662,14 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                         && !game.player.has_bonus_healing_ring) {
                         show_secret_tree(window, game.player);
                     }
-                } else if (map.id() == 3) {
-                    show_message(window, "Stones",
-                                 "The three stones surrounding you start to glow. "
-                                 "Press Ctrl+O (Other) to investigate.");
-                } else if (map.id() == 0x12) {
-                    show_message(window, "Mountains",
-                                 "You notice something strange about the flowers and "
-                                 "mountains around this area. Press Ctrl+O (Other) to investigate.");
-                } else if (map.id() == 0x45 && !game.player.cave_coins_collected) {
-                    show_message(window, "Coins",
-                                 "You find a small pile of coins on the floor. "
-                                 "Press Ctrl+O (Other) to take them.");
+                } else {
+                    std::string hint(yipe::map_movement_hint(game.player, map.id()));
+                    if (!hint.empty()) {
+                        if (map.id() == 3 || map.id() == 0x12 || map.id() == 0x45) {
+                            hint += "\n\nPress Ctrl+O (Other) to investigate.";
+                        }
+                        show_message(window, "Location", hint);
+                    }
                 }
             }
             const yipe::MapEvent& message = map.events().message;
@@ -3124,6 +3120,27 @@ int main(int argc, char* argv[]) {
                 || game.location.position != yipe::MapPosition{6, 8}
                 || game.player.pending_relocation != 0) {
                 throw std::runtime_error("Other did not follow the stone-circle relocation");
+            }
+            other_map = *yipe::original_map(0x2d);
+            game.location = {{10, 9}, 0, 0, 1, false, 0x2d};
+            game.player.strength = 40;
+            initialize_map_state(game, other_map);
+            if (yipe::try_move(other_map, game.location.position, 1, 0).original_code != 0x1a
+                || !other_map.toggle_linked_tiles() || other_map.tile({12, 9}) != 0x53) {
+                throw std::runtime_error("the strength-gated passage did not open");
+            }
+            other_map = *yipe::original_map(0x2c);
+            game.location = {{0, 5}, 0, 0, 1, false, 0x2c};
+            initialize_map_state(game, other_map);
+            if (other_map.tile({0, 5}) != 0x53 || other_map.tile({0, 4}) != 0x25) {
+                throw std::runtime_error("map arrival did not clear only the occupied wall tile");
+            }
+            game.player.gatekeeper_state = 1;
+            yipe::enter_hell(game.player, game.location, true);
+            other_map = *yipe::original_map(0x75);
+            initialize_map_state(game, other_map);
+            if (other_map.tile({12, 1}) != 0x27) {
+                throw std::runtime_error("quest progress did not open Hell's east boundary");
             }
             SDL_Event repeated_key{};
             repeated_key.type = SDL_KEYDOWN;

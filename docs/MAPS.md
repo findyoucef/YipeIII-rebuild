@@ -146,8 +146,8 @@ The tile switch at `0x00416440` is exposed through Ctrl+O in exploration, withou
 changing the 13 recovered key bindings. It does not advance roaming or pursuing
 monsters. Resource IDs and random-call order are preserved; SDL message boxes
 adapt the original message area. Water, stone-circle, mountain, and coin-pile
-movement hints identify the new control. The other map-specific movement hints
-at `0x004121c0` remain follow-up work.
+movement hints identify the new control. The complete map-specific hint selector
+is documented below.
 
 | Tile / map | Effect |
 | --- | --- |
@@ -173,6 +173,55 @@ added to native map-tile changes, so reloading restores the original mountains.
 Bridge treasure, cave coins, and snow search progress are player state and do
 survive loading. Native version 13 also stores water availability, although the
 subsequent map initialization refills it just as ordinary map entry does.
+
+## Movement hints and entry-time terrain
+
+The action-3 movement branch at `0x0040e880` handles water holes, climbable
+trees (including the existing secret-tree puzzle), and the Hell tunnel before
+selecting a map-specific hint through `0x004121c0`. SDL retains this precedence
+and appends the Ctrl+O control to the three hints that suggest using Other.
+
+| Map | String resource | Hint / condition |
+| --- | --- | --- |
+| `3` | 641 | Glowing stones |
+| `0x12` | 639 | Strange flowers and mountains |
+| `0x2c` | 635 | A space where a wall once stood |
+| `0x2d` | 636 | A pushable wall, with insufficient-strength text |
+| `0x39` | 631 | A crack to the north |
+| `0x45` | 632 | A coin pile, only before collection |
+| `0x48` | 633 | Dungeon danger, only at level 10 or below |
+| `0x4a` | 634 | A faint cry, only while rescue slot 11 is zero |
+| `0x57` | 637 | Six tally marks |
+| `0x5a` | 640 | A wall message about a group of stones |
+| `0x6d` | 638 | A giant monster, only before a Wormoid defeat |
+
+The last condition intentionally follows the original's defeat-counter index
+34, corresponding to monster type 35 (Wormoid), not type 40 (Earth Giant).
+`has_defeated_wormoid` records the zero/nonzero condition when an actual kill
+is processed through ordinary attacks, Backstab, or damaging spells. It is
+independent of encounter history and full-group victory; Frighten does not
+record a kill. Ordinary attacks that end in a fatal counterattack return before
+processing that pending kill, as in `0x00403a80`/`0x00405040`.
+
+After loading terrain, `0x0040de80` applies these entry-time rules through the
+same initialization path for starting/resumed games, transitions, relocations,
+combat recovery, and flee restoration:
+
+| Condition | Effect |
+| --- | --- |
+| Map `0x2d`, strength at least 40 | Change `(11,9)` from hint tile `0x49` to linked-wall action `0x5f` |
+| Map `0x75`, global quest Gatekeeper state at least 1 | Open `(12,1)` with tile `0x27`; local Hell payment/defeat is not this condition |
+| Map `3`, at least five stamps | Enable the stone circle at `(4,7)` with tile `0x46` |
+| Occupied entry tile is `0x25` | Replace only that cell with floor `0x53` |
+| Nonzero map ID | Refill healing-water availability |
+
+Gatekeeper/stamp thresholds retain the original signed 16-bit comparisons.
+The pushable-wall text itself has no strength condition: the entry patch changes
+its movement action, so a strong player activates the linked wall instead of
+seeing that hint. These initialization patches do not add persistent tile-change
+records; linked mechanisms continue to use their existing persistence path.
+Earlier entry eligibility checks and the map-`0x15` helper at `0x00412f30`
+remain separate follow-up work, not completed entry coverage.
 
 ## Monster catalogs
 

@@ -139,6 +139,7 @@ public:
     bool healing_water_available = true;
     bool cave_coins_collected = false;
     std::uint16_t snow_search_count = 0;
+    bool has_defeated_wormoid = false;
 
 private:
     void initialize(CharacterType type);

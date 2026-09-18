@@ -441,6 +441,7 @@ void test_game_save() {
     original.player.healing_water_available = false;
     original.player.cave_coins_collected = true;
     original.player.snow_search_count = 3;
+    original.player.has_defeated_wormoid = true;
     original.player.pending_relocation = 4;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.defeated_monster_placements = {5, 14, 38, 185};
@@ -452,17 +453,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 13 save restores progression and equipment");
+          "version 14 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 13 save restores combat settings and counters");
+          "version 14 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 13 save restores world location");
+          "version 14 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 13 save restores encounter and random state");
+          "version 14 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -470,17 +471,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 13 save restores ability and active status state");
+          "version 14 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 13 save restores special movement state");
+          "version 14 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 13 save restores persistent map tile changes");
+          "version 14 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 13 save restores learned spells");
+          "version 14 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -490,25 +491,34 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 13 save restores quest state");
+          "version 14 save restores quest state");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 13 save restores the surface-return anchor");
+          "version 14 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 13 save restores per-monster encounter history");
+          "version 14 save restores per-monster encounter history");
     check(loaded.player.death_count == 12
               && loaded.player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid
               && loaded.player.entered_hell_through_secret_passage,
-          "version 13 save restores death and Hell recovery state");
+          "version 14 save restores death and Hell recovery state");
     check(!loaded.player.bridge_treasure_available
               && !loaded.player.healing_water_available
               && loaded.player.cave_coins_collected
               && loaded.player.snow_search_count == 3
               && loaded.player.pending_relocation == 4,
-          "version 13 save restores Other action state and deferred travel");
+          "version 14 save restores Other action state and deferred travel");
+    check(loaded.player.has_defeated_wormoid,
+          "version 14 saves preserve the Wormoid-defeat hint flag");
+
+    remove_save_extension(path, sizeof(std::uint8_t), 13);
+    const yipe::GameState loaded_version_13 = yipe::load_game(path);
+    check(!loaded_version_13.player.has_defeated_wormoid
+              && loaded_version_13.player.cave_coins_collected
+              && loaded_version_13.player.snow_search_count == 3,
+          "version 13 saves retain Other state without inventing missing defeat history");
 
     remove_save_extension(path, 3 * sizeof(std::uint8_t) + sizeof(std::uint16_t), 12);
     const yipe::GameState loaded_version_12 = yipe::load_game(path);
@@ -623,7 +633,8 @@ void test_game_save() {
     std::filesystem::remove(path);
 }
 
-std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
+std::vector<std::uint8_t> legacy_save_bytes(const std::string& name,
+                                          std::int32_t wormoid_defeats = 1034) {
     std::vector<std::uint8_t> bytes;
     if (name.size() < 0xff) {
         bytes.push_back(static_cast<std::uint8_t>(name.size()));
@@ -692,7 +703,8 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         default: break;
         }
         append_u16(bytes, value);
-        append_i32(bytes, static_cast<std::int32_t>(1000 + index));
+        append_i32(bytes, index == 34 ? wormoid_defeats
+                                     : static_cast<std::int32_t>(1000 + index));
         append_i32(bytes, index == 4 || index == 36 || index == 38 ? 1 : 0);
     }
     for (const std::uint16_t value : std::array<std::uint16_t, 5>{2, 8, 0, 1, 0}) {
@@ -761,6 +773,8 @@ void test_legacy_save_import() {
               && player.encountered_monster_types[36]
               && player.encountered_monster_types[38],
           "legacy import maps recovered King quest state");
+    check(player.has_defeated_wormoid && !player.encountered_monster_types[35],
+          "legacy import reads Wormoid defeat index 34 independently of encounter flags");
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
               && imported.flag_values[4].flag_0148
@@ -770,6 +784,10 @@ void test_legacy_save_import() {
               && imported.extended_entries[4].flag_0552
               && imported.trailing_healing_flag,
           "legacy import retains unresolved serialized fields");
+
+    write_bytes(path, legacy_save_bytes("Legacy", 0));
+    check(!yipe::load_legacy_save(path).game.player.has_defeated_wormoid,
+          "other legacy defeat counters do not suppress the giant hint");
 
     std::vector<std::uint8_t> invalid_validation = bytes;
     write_u32(invalid_validation, 1 + 6 + 13 * sizeof(std::int32_t), 0);
@@ -1161,7 +1179,7 @@ void test_other_action() {
     check(yipe::perform_other_action(player, water, position, random).message_resource_id == 1009
               && random.state() == after_drink && player.health == 32,
           "a dry water hole cannot heal or consume random values");
-    yipe::initialize_map_actions(player, water);
+    yipe::initialize_map_actions(player, water, position);
     player.has_bonus_healing_ring = true;
     random = yipe::MsvcRandom(1);
     static_cast<void>(yipe::perform_other_action(player, water, position, random));
@@ -1332,11 +1350,11 @@ void test_other_action() {
     yipe::Map stones = *yipe::original_map(3);
     const auto original_stone_tile = stones.tile({4, 7});
     player.stamps_found = 4;
-    yipe::initialize_map_actions(player, stones);
+    yipe::initialize_map_actions(player, stones, {4, 7});
     check(stones.tile({4, 7}) == original_stone_tile && original_stone_tile != 0x46,
           "the stone-circle action tile remains unavailable before five stamps");
     player.stamps_found = 5;
-    yipe::initialize_map_actions(player, stones);
+    yipe::initialize_map_actions(player, stones, {4, 7});
     check(stones.tile({4, 7}) == 0x46, "five stamps activate the stone circle on map entry");
     static_cast<void>(yipe::perform_other_action(player, stones, {4, 7}, random));
     check(player.pending_relocation == 4
@@ -1347,6 +1365,169 @@ void test_other_action() {
               && player.current_map_id == 0x15 && !player.alternate_map_set
               && player.pending_relocation == 0,
           "the stone circle reaches the recovered surface destination and synchronizes player state");
+}
+
+void test_map_entry_and_hints() {
+    yipe::Player player;
+    const std::array<std::pair<int, std::string_view>, 11> hints{{
+        {3, "The three stones surrounding you start to glow."},
+        {0x12, "You notice something strange about the flowers"},
+        {0x2c, "You sense that this space seems different."},
+        {0x2d, "You notice that the wall next to you could be pushed open."},
+        {0x39, "You notice a crack in the wall to the north of you."},
+        {0x45, "You find a small pile of coins on the floor."},
+        {0x48, "Suddenly you sense that you are not yet strong or powerful enough"},
+        {0x4a, "You hear the faint cry of a young female."},
+        {0x57, "You notice six tally marks etched into the strangely shaped wall"},
+        {0x5a, "A message on the wall says:  A group of stones holds the entrance."},
+        {0x6d, "You feel very small standing in front of this giant monster."},
+    }};
+    for (const auto& [map_id, text] : hints) {
+        check(yipe::map_movement_hint(player, map_id).starts_with(text),
+              "map " + std::to_string(map_id) + " selects its recovered hint");
+    }
+    check(yipe::map_movement_hint(player, 0x11).empty()
+              && yipe::map_movement_hint(player, -1).empty(),
+          "unspecified maps have no movement hint");
+    player.cave_coins_collected = true;
+    player.level = 10;
+    player.inventory_values[10] = 1;
+    player.encountered_monster_types[35] = true;
+    check(yipe::map_movement_hint(player, 0x45).empty()
+              && !yipe::map_movement_hint(player, 0x48).empty()
+              && !yipe::map_movement_hint(player, 0x4a).empty()
+              && !yipe::map_movement_hint(player, 0x6d).empty(),
+          "coins suppress their hint, but level ten, other rescues, and encounters do not");
+    player.level = 11;
+    player.inventory_values[11] = 1;
+    player.has_defeated_wormoid = true;
+    check(yipe::map_movement_hint(player, 0x48).empty()
+              && yipe::map_movement_hint(player, 0x4a).empty()
+              && yipe::map_movement_hint(player, 0x6d).empty(),
+          "level eleven, rescue slot eleven, and a Wormoid defeat suppress their hints");
+
+    yipe::Map passage = *yipe::original_map(0x2d);
+    player.strength = 39;
+    yipe::initialize_map_actions(player, passage, {11, 9});
+    check(passage.tile({11, 9}) == 0x49,
+          "strength 39 leaves the passage hint tile unchanged");
+    player.strength = 40;
+    yipe::initialize_map_actions(player, passage, {11, 9});
+    check(passage.tile({11, 9}) == 0x5f
+              && !yipe::map_movement_hint(player, 0x2d).empty(),
+          "strength 40 changes the movement action, not the unconditional hint selector");
+    yipe::MapPosition position{10, 9};
+    check(yipe::try_move(passage, position, 1, 0).original_code == 0x1a,
+          "the strength-gated tile dispatches the linked-wall action");
+    check(passage.toggle_linked_tiles() && passage.tile({12, 9}) == 0x53,
+          "the recovered linked action opens the east boundary");
+    passage = *yipe::original_map(0x2d);
+    player.strength = 39;
+    yipe::initialize_map_actions(player, passage, {11, 9});
+    check(passage.tile({11, 9}) == 0x49 && passage.tile({12, 9}) == 0x25,
+          "entry patches are recomputed from the original terrain on reload");
+
+    yipe::Map hell = *yipe::original_map(0x75);
+    player.hell_gatekeeper_state = yipe::HellGatekeeperState::defeated;
+    yipe::initialize_map_actions(player, hell, {6, 10});
+    check(hell.tile({12, 1}) == 0x24,
+          "defeating the local Hell Gatekeeper does not unlock the quest boundary");
+    for (std::uint16_t state : {1, 2}) {
+        player.gatekeeper_state = state;
+        hell = *yipe::original_map(0x75);
+        yipe::initialize_map_actions(player, hell, {6, 10});
+        check(hell.tile({12, 1}) == 0x27,
+              "either progressed quest Gatekeeper state opens Hell's east boundary");
+    }
+    player.gatekeeper_state = 0xffff;
+    hell = *yipe::original_map(0x75);
+    yipe::initialize_map_actions(player, hell, {6, 10});
+    yipe::Map stones = *yipe::original_map(3);
+    player.stamps_found = 0xffff;
+    yipe::initialize_map_actions(player, stones, {4, 7});
+    check(hell.tile({12, 1}) == 0x24 && stones.tile({4, 7}) != 0x46,
+          "entry gates preserve the original signed-short comparisons");
+
+    yipe::Map arrival = *yipe::original_map(0x2c);
+    yipe::initialize_map_actions(player, arrival, {0, 5});
+    check(arrival.tile({0, 5}) == 0x53 && arrival.tile({0, 4}) == 0x25
+              && arrival.tile({0, 6}) == 0x25,
+          "only the occupied wall tile becomes floor on entry");
+    player.healing_water_available = false;
+    yipe::Map::Tiles tiles;
+    tiles.fill(0x25);
+    yipe::Map map_zero(0, 0, tiles);
+    yipe::initialize_map_actions(player, map_zero, {2, 3});
+    check(map_zero.tile({2, 3}) == 0x53 && !player.healing_water_available,
+          "map zero corrects the arrival tile without refilling water");
+    bool rejected = false;
+    try {
+        yipe::initialize_map_actions(player, map_zero, {-1, 3});
+    } catch (const std::out_of_range&) {
+        rejected = true;
+    }
+    check(rejected, "invalid map entry coordinates are reported");
+}
+
+void test_movement_hint_defeat_state() {
+    const auto fresh_encounter = [] {
+        yipe::CombatEncounter encounter;
+        encounter.monsters[0] = {35, "Wormoid", 175, 1, 1, 0, 1, 100, 0, false};
+        encounter.monsters[1] = {2, "Giant Beetle", 175, 100, 100, 0, 1, 1, 0, false};
+        return encounter;
+    };
+    for (int action = 0; action < 4; ++action) {
+        yipe::Player player;
+        player.health = 1000;
+        player.maximum_health = 1000;
+        player.weapon_rank = 42;
+        player.strength = 100;
+        player.special_ability = yipe::SpecialAbility::backstab;
+        player.spell_points = 100;
+        player.maximum_spell_points = 100;
+        player.spells[2] = 1;
+        yipe::CombatEncounter encounter = fresh_encounter();
+        yipe::MsvcRandom random(1);
+        if (action == 0) {
+            static_cast<void>(yipe::resolve_attack_turn(player, encounter, random));
+        } else if (action == 1) {
+            static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
+        } else {
+            static_cast<void>(yipe::resolve_spell_turn(
+                player, encounter, 2,
+                action == 2 ? yipe::SpellPower::low : yipe::SpellPower::high, random));
+        }
+        check(encounter.monsters[0].health < 1 && encounter.monsters[1].health > 0
+                  && player.has_defeated_wormoid
+                  && yipe::map_movement_hint(player, 0x6d).empty(),
+              "attack, Backstab, and both spell powers record a Wormoid kill before group victory");
+    }
+    yipe::Player player;
+    player.special_ability = yipe::SpecialAbility::frighten;
+    yipe::CombatEncounter encounter = fresh_encounter();
+    encounter.monsters[2] = encounter.monsters[0];
+    encounter.monsters[0] = encounter.monsters[1];
+    yipe::MsvcRandom random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
+    check(encounter.monsters[2].health == 0 && !player.has_defeated_wormoid,
+          "frightening away a Wormoid does not count as defeating one");
+    encounter = fresh_encounter();
+    encounter.monsters[0].type_id = 40;
+    player.special_ability = yipe::SpecialAbility::backstab;
+    player.ability_points = 5;
+    static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
+    check(encounter.monsters[0].health < 1 && !player.has_defeated_wormoid,
+          "an Earth Giant kill is not substituted for the original Wormoid condition");
+    encounter = fresh_encounter();
+    encounter.monsters[1].attack_rating = 10000;
+    player.health = 1;
+    player.weapon_rank = 42;
+    player.strength = 100;
+    random = yipe::MsvcRandom(1);
+    const auto defeat = yipe::resolve_attack_turn(player, encounter, random);
+    check(defeat.outcome == yipe::CombatOutcome::defeat
+              && encounter.monsters[0].health < 1 && !player.has_defeated_wormoid,
+          "a fatal ordinary counterattack prevents recording the pending Wormoid kill");
 }
 
 void test_special_movement_actions() {
@@ -3122,6 +3303,8 @@ int main() {
     test_runtime_generated_maps();
     test_special_movement_actions();
     test_other_action();
+    test_map_entry_and_hints();
+    test_movement_hint_defeat_state();
     test_starting_shop();
     test_recovered_shop_transactions();
     test_recovered_casino_games();

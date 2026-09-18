@@ -220,6 +220,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.cave_coins_collected = save.extended_entries[27].value_065e != 0;
     player.snow_search_count = save.extended_entries[30].value_065e;
     player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
+    player.has_defeated_wormoid = save.extended_entries[34].value_0584 != 0;
 
     save.game.location.position.x = signed_u16(reader.u16());
     save.game.location.position.y = signed_u16(reader.u16());

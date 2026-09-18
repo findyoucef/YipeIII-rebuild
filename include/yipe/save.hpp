@@ -49,7 +49,8 @@ struct GameState {
 // placement indices; version 10 adds the saved surface-return region; version
 // 11 adds the original per-monster encounter-history flags; version 12 adds
 // death and Hell Gatekeeper state; version 13 adds Other-action treasure,
-// water, and snow-search state while retaining all earlier readers.
+// water, and snow-search state; version 14 adds the Wormoid-defeat hint flag
+// while retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

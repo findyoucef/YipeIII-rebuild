@@ -475,13 +475,71 @@ void enter_hell(Player& player, WorldLocation& location, bool through_secret_pas
     player.alternate_map_set = true;
 }
 
-void initialize_map_actions(Player& player, Map& map) {
+void initialize_map_actions(Player& player, Map& map, MapPosition entry) {
+    if (!map.contains(entry)) {
+        throw std::out_of_range("map entry is outside the 13x12 grid");
+    }
+    if (map.id() == 0x2d && player.strength >= 40) {
+        map.restore_tile({11, 9}, 0x5f);
+    } else if (map.id() == 0x75
+               && static_cast<std::int16_t>(player.gatekeeper_state) >= 1) {
+        map.restore_tile({12, 1}, 0x27);
+    } else if (map.id() == 3 && static_cast<std::int16_t>(player.stamps_found) >= 5) {
+        map.restore_tile({4, 7}, 0x46);
+    }
+    if (map.tile(entry) == 0x25) {
+        map.restore_tile(entry, 0x53);
+    }
     if (map.id() != 0) {
         player.healing_water_available = true;
     }
-    if (map.id() == 3 && player.stamps_found >= 5) {
-        map.restore_tile({4, 7}, 0x46);
+}
+
+std::string_view map_movement_hint(const Player& player, int map_id) {
+    switch (map_id) {
+    case 3:
+        return "The three stones surrounding you start to glow.  Perhaps there is some "
+               "'other' thing you are supposed to do here.";
+    case 0x12:
+        return "You notice something strange about the flowers and mountains around this area.";
+    case 0x2c:
+        return "You sense that this space seems different.  It seems like there was once a wall here.";
+    case 0x2d:
+        return "You notice that the wall next to you could be pushed open.  "
+               "Unfortunately you do not have enough strength to do so.";
+    case 0x39:
+        return "You notice a crack in the wall to the north of you.";
+    case 0x45:
+        if (!player.cave_coins_collected) {
+            return "You find a small pile of coins on the floor.  "
+                   "Hit the 'Other' button if you would like to take them.";
+        }
+        break;
+    case 0x48:
+        if (player.level <= 10) {
+            return "Suddenly you sense that you are not yet strong or powerful enough "
+                   "to survive in this dungeon.  Yet, you can try if you really want to.";
+        }
+        break;
+    case 0x4a:
+        if (player.inventory_values[11] == 0) {
+            return "You hear the faint cry of a young female.";
+        }
+        break;
+    case 0x57:
+        return "You notice six tally marks etched into the strangely shaped wall in front of you.";
+    case 0x5a:
+        return "A message on the wall says:  A group of stones holds the entrance.";
+    case 0x6d:
+        // The original tests kill-count index 34 (Wormoid), not the Earth Giant.
+        if (!player.has_defeated_wormoid) {
+            return "You feel very small standing in front of this giant monster.";
+        }
+        break;
+    default:
+        break;
     }
+    return {};
 }
 
 OtherActionResult perform_other_action(Player& player, Map& map,

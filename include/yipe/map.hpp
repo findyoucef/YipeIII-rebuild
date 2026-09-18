@@ -151,8 +151,12 @@ struct OtherActionResult {
     std::string_view message;
 };
 
-// Map-entry water refill and stamp-gated stone circle at 0x0040de80.
-void initialize_map_actions(Player& player, Map& map);
+// Map-entry terrain changes and water refill at 0x0040de80.
+void initialize_map_actions(Player& player, Map& map, MapPosition entry);
+
+// Map-specific hints at 0x004121c0, selected by movement action 3 after
+// handling water holes, trees, and the secret Hell tunnel separately.
+[[nodiscard]] std::string_view map_movement_hint(const Player& player, int map_id);
 
 // Reconstructs the tile-specific Other command at 0x00416440.
 [[nodiscard]] OtherActionResult perform_other_action(

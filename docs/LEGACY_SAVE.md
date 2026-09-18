@@ -83,7 +83,10 @@ cave coins, and entry 30 (`+0x69a`) to the snow-search stage. `+0x06c` remains i
 the offset-based import object: it is a transient redraw request, not a saved
 mountain unlock. Combat setup marks `+0x552[monster_type]` for each
 opponent, so entries 0–41 are imported as per-monster encounter history;
-entries 42–49 remain available in the offset-based import object. Other
+entries 42–49 remain available in the offset-based import object. Defeat counters
+at `+0x584` instead use `monster_type - 1`: index 34 supplies the zero/nonzero
+Wormoid-defeat condition used by map `0x6d`'s giant warning. The importer preserves
+that condition in `has_defeated_wormoid`. Other
 unresolved arrays likewise remain there so future reconstruction does not
 require reparsing the file.
 
@@ -117,9 +120,15 @@ history for monster type IDs 0–41. Version 12 appends the death count, local
 Hell Gatekeeper state, and secret-passage entry flag. Version 13 appends three
 one-byte flags for bridge treasure, healing water, and collected cave coins,
 followed by the 16-bit snow-search stage. Earlier versions default both
-availability flags to true and the coin/snow progress to zero. When importing version 9,
+availability flags to true and the coin/snow progress to zero. Version 14 appends
+one byte for `has_defeated_wormoid`. Versions 1–13 default it to false: their
+aggregate quest total and encounter flags cannot reconstruct the missing per-type
+defeat history, so the giant warning may appear again. This flag is not a full
+defeat-counter implementation; the 50 original values remain available in
+`LegacySave::extended_entries`, while the existing quest total remains an
+imported aggregate. When importing version 9,
 defeats now known to be reload-respawning migrate into the transient current-map
-state instead of becoming permanent. The loader accepts all thirteen versions,
+state instead of becoming permanent. The loader accepts all fourteen versions,
 derives missing return coordinates from the current region for older files,
 and migrates the first-encounter bit in versions 2–8 to the Giant Beetle's
 placement index 5. Writes use a temporary file and atomic replacement so a
