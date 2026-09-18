@@ -9,6 +9,8 @@
 
 namespace yipe {
 
+struct WorldLocation;
+
 struct KingConversation {
     int greeting_resource_id = 721;
     int message_resource_id = 731;
@@ -31,6 +33,21 @@ struct PrincessReward {
     int amount = 0;
     std::string message;
 };
+
+struct CombatDefeatResult {
+    int message_resource_id = 701;
+    std::string_view message;
+};
+
+// Reconstructs combat defeat at 0x00403cf0/0x00411a90/0x00444fd0: choose the
+// contextual advice, leave the player at one HP, count the death, and enter Hell.
+[[nodiscard]] CombatDefeatResult resolve_combat_defeat(
+    Player& player, WorldLocation& location, int monster_type,
+    MsvcRandom& random);
+
+// Reconstructs dialog 387 at 0x004133b0 and its payment branch at 0x0040e880.
+[[nodiscard]] int gatekeeper_recovery_fee(const Player& player);
+[[nodiscard]] int pay_gatekeeper_recovery(Player& player);
 
 // Reconstructs the four one-time rescue rewards at 0x00446e60 and
 // 0x004471d0-0x00447480. Rescue indexes come from each map's princess event.

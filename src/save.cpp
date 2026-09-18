@@ -31,7 +31,8 @@ constexpr std::uint16_t quest_game_format_version = 7;
 constexpr std::uint16_t princess_game_format_version = 8;
 constexpr std::uint16_t monster_game_format_version = 9;
 constexpr std::uint16_t surface_return_game_format_version = 10;
-constexpr std::uint16_t game_format_version = 11;
+constexpr std::uint16_t monster_history_game_format_version = 11;
+constexpr std::uint16_t game_format_version = 12;
 constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
@@ -244,6 +245,11 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     for (const bool encountered : game.player.encountered_monster_types) {
         append_u8(payload, encountered ? 1 : 0);
     }
+    append_i32(payload, game.player.death_count);
+    append_u16(payload, static_cast<std::uint16_t>(
+                            game.player.hell_gatekeeper_state));
+    append_u8(payload,
+              game.player.entered_hell_through_secret_passage ? 1 : 0);
     return payload;
 }
 
@@ -352,6 +358,7 @@ DecodedSave read_save(const std::filesystem::path& path) {
         && version != princess_game_format_version
         && version != monster_game_format_version
         && version != surface_return_game_format_version
+        && version != monster_history_game_format_version
         && version != game_format_version) {
         throw std::runtime_error("unsupported save version");
     }
@@ -525,10 +532,24 @@ GameState load_game(const std::filesystem::path& path) {
         game.player.surface_return_region_y =
             static_cast<std::int16_t>(game.location.region_y);
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= monster_history_game_format_version) {
         for (bool& encountered : game.player.encountered_monster_types) {
             encountered = reader.u8() != 0;
         }
+    }
+    if (save.version >= game_format_version) {
+        game.player.death_count = reader.i32();
+        const auto hell_gatekeeper_state = static_cast<std::int16_t>(reader.u16());
+        if (hell_gatekeeper_state < static_cast<std::int16_t>(
+                                        HellGatekeeperState::defeated)
+            || hell_gatekeeper_state > static_cast<std::int16_t>(
+                                         HellGatekeeperState::waiting)) {
+            throw std::runtime_error(
+                "save contains an invalid Hell Gatekeeper state");
+        }
+        game.player.hell_gatekeeper_state =
+            static_cast<HellGatekeeperState>(hell_gatekeeper_state);
+        game.player.entered_hell_through_secret_passage = reader.u8() != 0;
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

@@ -33,7 +33,7 @@ All offsets below are in-memory offsets in the original player object. They are 
 2. Thirteen 32-bit integers at `+0x008`, `+0x00c`, `+0x010`, `+0x014`, `+0x018`, `+0x024`, `+0x028`, `+0x01c`, `+0x020`, `+0x02c`, `+0x05c`, `+0x030`, and `+0x034`.
 3. A 32-bit validation value produced by `0x00445020`.
 4. Five 16-bit values at `+0x038` through `+0x040`.
-5. A 32-bit value at `+0x658`.
+5. The 32-bit death count at `+0x658`.
 6. A 16-bit value at `+0x07e`, a 32-bit value at `+0x070`, 16-bit values at `+0x07c` and `+0x65c`, then 32-bit values at `+0x074` and `+0x078`.
 7. Seven booleans serialized as 32-bit integers from `+0x06c`, `+0x060`, `+0x061`, `+0x062`, `+0x063`, `+0x064`, and `+0x64c`.
 8. 512 pairs of booleans serialized as 32-bit integers from arrays at `+0x152` and `+0x352`.
@@ -75,10 +75,13 @@ and the recovered extended item-status fields. The King-dialog trace also maps
 `+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
 the sum of the 50 `+0x584` values to the early equipment hint, and extended
 entries 2, 8, 9, and 18 to Gatekeeper, stamp, princess, and Mystery-reward
-state. Combat setup marks `+0x552[monster_type]` for each opponent, so entries
-0–41 are imported as per-monster encounter history; entries 42–49 remain
-available in the offset-based import object. Other unresolved arrays likewise
-remain there so future reconstruction does not require reparsing the file.
+state. Player offset `+0x658` stores the death count, extended entry 14 records
+entry through the secret Yipe Hell passage, and extended entry 19 stores the
+local Hell Gatekeeper state. Combat setup marks `+0x552[monster_type]` for each
+opponent, so entries 0–41 are imported as per-monster encounter history;
+entries 42–49 remain available in the offset-based import object. Other
+unresolved arrays likewise remain there so future reconstruction does not
+require reparsing the file.
 
 The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
@@ -106,13 +109,14 @@ appends the princess Mystery-reward counter recovered from offset `+0x682`.
 Version 9 appends the stable indices of every permanently defeated monster
 placement. Version 10 appends the signed region coordinates for the entrance
 saved by the original Return-to-Surface state. Version 11 appends encounter
-history for monster type IDs 0–41. When importing version 9, defeats now known
-to be reload-respawning migrate into the transient current-map state instead of
-becoming permanent. The loader accepts all eleven versions, derives missing
-return coordinates from the current region for older files, and migrates the
-first-encounter bit in versions 2–8 to the Giant Beetle's placement index 5.
-Writes use a temporary file and atomic replacement so a failed write does not
-destroy the previous save.
+history for monster type IDs 0–41. Version 12 appends the death count, local
+Hell Gatekeeper state, and secret-passage entry flag. When importing version 9,
+defeats now known to be reload-respawning migrate into the transient current-map
+state instead of becoming permanent. The loader accepts all twelve versions,
+derives missing return coordinates from the current region for older files,
+and migrates the first-encounter bit in versions 2–8 to the Giant Beetle's
+placement index 5. Writes use a temporary file and atomic replacement so a
+failed write does not destroy the previous save.
 
 ## Verification status
 

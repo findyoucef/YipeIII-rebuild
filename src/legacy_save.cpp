@@ -140,7 +140,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.helmet_rank = reader.u16();
     player.ring_rank = reader.u16();
     player.necklace_rank = reader.u16();
-    save.unknown_0658 = reader.i32();
+    player.death_count = reader.i32();
     save.unknown_007e = reader.u16();
     player.restoration_uses = reader.i32();
     save.unknown_007c = reader.u16();
@@ -206,10 +206,14 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.princesses_found = save.extended_entries[9].value_065e;
     player.has_tree_climbing_shoes = save.extended_entries[11].value_065e == 1;
     player.combat_style = signed_u16(save.extended_entries[15].value_065e);
+    player.entered_hell_through_secret_passage =
+        save.extended_entries[14].value_065e != 0;
     player.saved_random_encounter_threshold =
         save.extended_entries[16].value_065e;
     player.monster_repellent_steps = save.extended_entries[17].value_065e;
     player.princess_mystery_uses = save.extended_entries[18].value_065e;
+    player.hell_gatekeeper_state = static_cast<HellGatekeeperState>(
+        signed_u16(save.extended_entries[19].value_065e));
     player.pending_relocation = save.extended_entries[26].value_065e;
     player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
 

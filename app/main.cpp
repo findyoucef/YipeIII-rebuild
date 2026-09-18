@@ -38,6 +38,31 @@ constexpr int startup_height = 397;
 constexpr int tile_size = 32;
 constexpr int map_width = yipe::Map::width * tile_size;
 constexpr int map_height = yipe::Map::height * tile_size;
+constexpr yipe::MapPosition hell_gatekeeper_position{6, 0};
+
+constexpr std::array<std::string_view, 21> location_messages{
+    "Welcome to the town of Maynard.",
+    "A princess has blessed these waters.",
+    "Notice:     Anyone who can rescue all my daughters will be rewarded.      -The King",
+    "In a language only you seem to be able to understand:    Skill shop moved secretly north.",
+    "Welcome to Yipe Hell!                                          Gatekeeper ahead.",
+    "Only experienced adventurers should travel beyond this sign.",
+    "Beware:  Unstable floor ahead.",
+    "Monster breeding grounds.",
+    "I left everything behind the tree.  Make sure to know the co...  Ahhhhhhhh....",
+    "Beware:   This lake has been known to have strange and random currents that leave adventurers stranded for days.",
+    "Stone Cave",
+    "Zephyr Cave",
+    "Fire Cave",
+    "Welcome to the bizarre final cave!",
+    "Stay out of my lair!",
+    "From the top:   2, 3, 1, 3, 2",
+    "Turn back while you can!",
+    "I'll be in Hell...",
+    "Exit back to Yipe!",
+    "The sign says 'Yipe!'.",
+    "Princess Holding Cell:  West",
+};
 
 using Window = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
 using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
@@ -648,6 +673,15 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
         };
         copy_texture(renderer, textures.find(monster->bitmap_resource_id), nullptr,
                      &destination);
+    }
+    if (map.id() == 0x75
+        && game.player.hell_gatekeeper_state
+            == yipe::HellGatekeeperState::waiting
+        && game.map_visibility.contains(hell_gatekeeper_position)) {
+        const SDL_Rect destination{hell_gatekeeper_position.x * tile_size,
+                                   hell_gatekeeper_position.y * tile_size,
+                                   tile_size, tile_size};
+        copy_texture(renderer, textures.find(214), nullptr, &destination);
     }
     const yipe::PrincessEvent& princess = map.events().princess;
     if (princess.has_position()
@@ -2211,6 +2245,32 @@ std::optional<yipe::Map> load_world_map(const yipe::WorldLocation& location,
     return yipe::original_map(location.map_id);
 }
 
+std::string_view location_message(int value) {
+    if (value < 1 || value > static_cast<int>(location_messages.size())) {
+        throw std::logic_error("map event has an invalid location-message index");
+    }
+    return location_messages[static_cast<std::size_t>(value - 1)];
+}
+
+std::string gatekeeper_offer_message(const yipe::Player& player) {
+    constexpr std::string_view ordinary_offer =
+        "  I am the Gatekeeper.  You have been summoned here because your health "
+        "has run out.  From here, only I can send you back to your world.  For a "
+        "small fee of xx gold, I will send you back fully healed.";
+    constexpr std::string_view secret_offer =
+        "  I am the Gatekeeper.  I see that you have found a secret entrance to "
+        "find me!  From here, only I can send you back to your world.  For a small "
+        "fee of xx gold, I will send you back fully healed.";
+    std::string message(player.entered_hell_through_secret_passage
+                            ? secret_offer : ordinary_offer);
+    message.replace(message.find("xx"), 2,
+                    std::to_string(yipe::gatekeeper_recovery_fee(player)));
+    message += "\n\n   Or perhaps you are feeling strong enough to challenge me to a "
+               "battle.  If you defeat me, I shall forever leave and give you a "
+               "free passage back to town.";
+    return message;
+}
+
 void synchronize_player_location(yipe::GameState& game) {
     game.player.current_map_id = game.location.map_id;
     game.player.alternate_map_set = game.location.alternate_map_set;
@@ -2220,6 +2280,24 @@ void initialize_transient_monsters(yipe::GameState& game, const yipe::Map& map) 
     game.roaming_monster.reset();
     game.pursuing_monster =
         yipe::pursuing_monster_for_map(map, game.player.level);
+}
+
+void recover_from_combat_defeat(SDL_Window* window, yipe::GameState& game,
+                                yipe::Map& map, yipe::MsvcRandom& random,
+                                int monster_type) {
+    const yipe::CombatDefeatResult defeat = yipe::resolve_combat_defeat(
+        game.player, game.location, monster_type, random);
+    show_message(window, "Defeat", std::string(defeat.message));
+    const std::optional<yipe::Map> hell = load_world_map(game.location, random);
+    if (!hell) {
+        throw std::runtime_error("Yipe Hell map is unavailable");
+    }
+    map = *hell;
+    game.temporarily_defeated_monster_placements.clear();
+    initialize_transient_monsters(game, map);
+    apply_map_tile_changes(map, game);
+    yipe::initialize_map_visibility(
+        game.map_visibility, map, game.location.position);
 }
 
 bool apply_pending_relocation(yipe::GameState& game, yipe::Map& map,
@@ -2562,6 +2640,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     }
                 }
             }
+            const yipe::MapEvent& message = map.events().message;
+            if (message.has_position()
+                && message.position == game.location.position) {
+                show_message(window, "Location",
+                             std::string(location_message(message.value)));
+            }
             const yipe::PrincessEvent& princess = map.events().princess;
             if (princess.has_position()
                 && princess.position == game.location.position
@@ -2601,9 +2685,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                             game.map_visibility, map, game.location.position);
                     }
                 } else {
-                    show_message(window, "Defeat",
-                                 "Your adventure has ended. Load a saved game to try again.");
-                    return false;
+                    recover_from_combat_defeat(
+                        window, game, map, random, placement->type_id);
                 }
                 render_game(renderer, map, textures, game);
             }
@@ -2667,7 +2750,58 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                                  + std::string(conversation.footer));
                 break;
             }
-            case 0x16:
+            case 0x16: {
+                if (game.location.map_id == 0x75
+                    && game.player.hell_gatekeeper_state
+                        == yipe::HellGatekeeperState::waiting) {
+                    constexpr std::array buttons{
+                        SDL_MessageBoxButtonData{
+                            SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+                        SDL_MessageBoxButtonData{
+                            SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Pay"},
+                        SDL_MessageBoxButtonData{0, 2, "Fight"},
+                    };
+                    const int choice = show_choice(
+                        window, "Gatekeeper", gatekeeper_offer_message(game.player),
+                        buttons.data(), static_cast<int>(buttons.size()));
+                    if (choice == 1) {
+                        static_cast<void>(
+                            yipe::pay_gatekeeper_recovery(game.player));
+                        show_message(
+                            window, "Gatekeeper",
+                            "After paying the Gatekeeper the small fee, he somehow "
+                            "vanishes and leaves a path back to Yipe! before you.");
+                    } else if (choice == 2) {
+                        yipe::MonsterPlacement gatekeeper =
+                            transient_monster_placement(
+                                41, hell_gatekeeper_position);
+                        gatekeeper.encounter_size = 3;
+                        const EncounterResult encounter = run_monster_encounter(
+                            window, renderer, gatekeeper, game.player,
+                            game.location, random, map.environment(), audio,
+                            settings);
+                        if (encounter == EncounterResult::quit_requested) {
+                            save_current_game(
+                                window, save_path, game, random, false);
+                            return true;
+                        }
+                        if (encounter == EncounterResult::victory) {
+                            game.player.hell_gatekeeper_state =
+                                yipe::HellGatekeeperState::defeated;
+                        } else if (encounter == EncounterResult::defeat) {
+                            recover_from_combat_defeat(
+                                window, game, map, random, 41);
+                        }
+                    }
+                    suppress_roaming_update = true;
+                    break;
+                }
+                if (game.location.map_id == 0x75
+                    && game.player.hell_gatekeeper_state
+                        != yipe::HellGatekeeperState::defeated) {
+                    game.player.hell_gatekeeper_state =
+                        yipe::HellGatekeeperState::absent;
+                }
                 yipe::return_to_surface(game.location);
                 map = yipe::starting_map();
                 game.temporarily_defeated_monster_placements.clear();
@@ -2679,6 +2813,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     game.map_visibility, map, game.location.position);
                 audio.play(201, settings.sound_enabled);
                 break;
+            }
             case 0x17: {
                 audio.play(144, settings.sound_enabled);
                 const int damage = yipe::apply_fire_wall(game.player, random);
@@ -2707,11 +2842,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         if (game.roaming_monster
             && game.roaming_monster->position == game.location.position) {
+            const int monster_type = game.roaming_monster->type_id;
             const EncounterResult encounter = run_monster_encounter(
                 window, renderer,
                 transient_monster_placement(
-                    game.roaming_monster->type_id,
-                    game.roaming_monster->position),
+                    monster_type, game.roaming_monster->position),
                 game.player, game.location, random, map.environment(), audio,
                 settings);
             game.roaming_monster.reset();
@@ -2723,20 +2858,19 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 game.location = previous_location;
                 synchronize_player_location(game);
             } else if (encounter == EncounterResult::defeat) {
-                show_message(window, "Defeat",
-                             "Your adventure has ended. Load a saved game to try again.");
-                return false;
+                recover_from_combat_defeat(
+                    window, game, map, random, monster_type);
             }
             render_game(renderer, map, textures, game);
             continue;
         }
         if (game.pursuing_monster
             && game.pursuing_monster->position == game.location.position) {
+            const int monster_type = game.pursuing_monster->type_id;
             const EncounterResult encounter = run_monster_encounter(
                 window, renderer,
                 transient_monster_placement(
-                    game.pursuing_monster->type_id,
-                    game.pursuing_monster->position),
+                    monster_type, game.pursuing_monster->position),
                 game.player, game.location, random, map.environment(), audio,
                 settings);
             if (encounter == EncounterResult::quit_requested) {
@@ -2749,9 +2883,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 game.location = previous_location;
                 synchronize_player_location(game);
             } else {
-                show_message(window, "Defeat",
-                             "Your adventure has ended. Load a saved game to try again.");
-                return false;
+                recover_from_combat_defeat(
+                    window, game, map, random, monster_type);
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -2772,11 +2905,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 pursuing_position);
         if (roaming_update
             == yipe::RoamingMonsterUpdate::encountered_player) {
+            const int monster_type = game.roaming_monster->type_id;
             const EncounterResult encounter = run_monster_encounter(
                 window, renderer,
                 transient_monster_placement(
-                    game.roaming_monster->type_id,
-                    game.roaming_monster->position),
+                    monster_type, game.roaming_monster->position),
                 game.player, game.location, random, map.environment(), audio,
                 settings);
             game.roaming_monster.reset();
@@ -2785,10 +2918,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 return true;
             }
             if (encounter == EncounterResult::defeat) {
-                show_message(
-                    window, "Defeat",
-                    "Your adventure has ended. Load a saved game to try again.");
-                return false;
+                recover_from_combat_defeat(
+                    window, game, map, random, monster_type);
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -2804,11 +2935,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                    active_placements, game.roaming_monster,
                    game.map_visibility, random)
                 == yipe::RoamingMonsterMove::encountered_player) {
+            const int monster_type = game.pursuing_monster->type_id;
             const EncounterResult encounter = run_monster_encounter(
                 window, renderer,
                 transient_monster_placement(
-                    game.pursuing_monster->type_id,
-                    game.pursuing_monster->position),
+                    monster_type, game.pursuing_monster->position),
                 game.player, game.location, random, map.environment(), audio,
                 settings);
             if (encounter == EncounterResult::quit_requested) {
@@ -2818,10 +2949,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (encounter == EncounterResult::victory) {
                 game.pursuing_monster.reset();
             } else if (encounter == EncounterResult::defeat) {
-                show_message(
-                    window, "Defeat",
-                    "Your adventure has ended. Load a saved game to try again.");
-                return false;
+                recover_from_combat_defeat(
+                    window, game, map, random, monster_type);
             }
         }
         render_game(renderer, map, textures, game);

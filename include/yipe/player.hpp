@@ -24,6 +24,13 @@ enum class SpecialAbility : std::uint8_t {
     enrage = 4,
 };
 
+enum class HellGatekeeperState : std::int16_t {
+    absent = 0,
+    waiting = 1,
+    paid = -1,
+    defeated = -2,
+};
+
 enum class StatIncrease : std::uint8_t {
     none,
     strength,
@@ -92,6 +99,7 @@ public:
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
     int restoration_uses = 0;
+    int death_count = 0;
     int quest_score = 0;
     int quest_progress_total = 0;
     std::uint16_t gatekeeper_state = 0;
@@ -125,6 +133,8 @@ public:
     std::uint16_t saved_random_encounter_threshold = 85;
     std::uint16_t monster_repellent_steps = 0;
     std::uint16_t pending_relocation = 0;
+    bool entered_hell_through_secret_passage = false;
+    HellGatekeeperState hell_gatekeeper_state = HellGatekeeperState::absent;
 
 private:
     void initialize(CharacterType type);

@@ -82,11 +82,19 @@ The action dispatcher at `0x0040e880` establishes these special movement paths:
 | `0x11` | Special-ability training entrance |
 | `0x13`, `0x14` | Rainbow-key and underworld-key locked-door messages |
 | `0x15` | King's dynamic quest dialog, hints, and one-time rewards (resource 295) |
-| `0x16` | Return to the starting surface location |
+| `0x16` | Resolve the Yipe Hell Gatekeeper when present, then return to the starting surface location |
 | `0x17` | Two-roll, nonlethal fire-wall damage |
 
 The SDL dispatcher exposes the recovered entrance identities and implements the
 restoration, depth, surface-return, key-message, fire-wall, and King-dialog effects.
+It also displays the 20 placed location-message events using the exact 21-string
+resource range 651–671 (one recovered string is not placed by the static catalog).
+Combat defeat selects one of resources 701–720, increments the death count,
+leaves the player at one HP, and relocates to map `0x75` at `(6,10)`. Dialog 387
+offers the Gatekeeper's difficulty-based fee or a type-41 fight. Payment fully
+heals the player; victory permanently removes this Gatekeeper; either result
+opens the tile-`0x55` exit on the next attempt and returns to map `0x11` at
+`(4,5)`.
 The King selector preserves all 34 message/footer pairs, greeting time-of-day
 handling, quest flags, hint rolls, and gold/equipment/Lucky Rabbit Foot rewards.
 The 20 princess records retain position, one of three bitmap variants, and their
@@ -107,9 +115,9 @@ visibility refresh performed by `0x19`. Return-to-Surface items and spells use
 the entrance map and region saved by the `0x0e` descent path, then
 `0x0041e090` places the player immediately below the final `0x36`/`0x39`
 entrance on that map. Native format version 5 introduced persistence for changed
-door and linked-mechanism tiles; current version 11 retains it, the recovered
-King quest state, the princess Mystery counter, permanent monster defeats, and
-the saved surface-return region.
+door and linked-mechanism tiles; current version 12 retains it, the recovered
+King quest state, the princess Mystery counter, permanent monster defeats, the
+saved surface-return region, encounter history, and death/Hell recovery state.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -185,7 +193,7 @@ starts the recovered group setup when the player enters any tile in its
 one-tile or 2×2 footprint. It exposes
 target cycling, items, spells, trained special abilities, and fleeing for every
 group. A victory stores a non-respawning placement's stable index in native
-save version 11 so it remains removed after map changes and restart. A
+saves so it remains removed after map changes and restart. A
 respawning placement is hidden only on the current map instance and returns
 after a map reload, matching the `+0x36c` load-time bypass. Version 9 defeats
 with this flag migrate to transient state, while versions 2–8 migrate their

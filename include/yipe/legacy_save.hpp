@@ -34,7 +34,6 @@ struct LegacySave {
     bool validation_passed = false;
 
     std::int32_t unknown_005c = 0;
-    std::int32_t unknown_0658 = 0;
     std::uint16_t unknown_007e = 0;
     std::uint16_t unknown_007c = 0;
     std::int32_t unknown_0074 = 0;

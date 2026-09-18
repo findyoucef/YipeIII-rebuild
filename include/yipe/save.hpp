@@ -47,8 +47,8 @@ struct GameState {
 // spells; version 7 adds the recovered King quest state; version 8 adds the
 // princess mystery-reward counter; version 9 adds all defeated monster
 // placement indices; version 10 adds the saved surface-return region; version
-// 11 adds the original per-monster encounter-history flags while retaining all
-// earlier readers.
+// 11 adds the original per-monster encounter-history flags; version 12 adds
+// death and Hell Gatekeeper state while retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

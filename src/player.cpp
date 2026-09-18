@@ -32,6 +32,7 @@ void Player::initialize(CharacterType type) {
     equipment_upgrade_count = 0;
     loot_roll_penalty = 2;
     restoration_uses = 0;
+    death_count = 0;
     quest_score = 0;
     quest_progress_total = 0;
     gatekeeper_state = 0;
@@ -59,6 +60,8 @@ void Player::initialize(CharacterType type) {
     saved_random_encounter_threshold = 85;
     monster_repellent_steps = 0;
     pending_relocation = 0;
+    entered_hell_through_secret_passage = false;
+    hell_gatekeeper_state = HellGatekeeperState::absent;
 
     switch (type) {
     case CharacterType::warrior:

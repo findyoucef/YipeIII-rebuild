@@ -1,5 +1,7 @@
 #include "yipe/quest.hpp"
 
+#include "yipe/map.hpp"
+
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -93,6 +95,88 @@ constexpr std::array<std::string_view, 34> footers{
     "You have completed everything in Yipe! III",
     "I guess you'll have to wait for Yipe! IV...",
 };
+
+constexpr std::array<std::string_view, 20> defeat_messages{
+    "Your character has run out of health points!  In the future, you will want to 'Run' away from monsters when you notice your health points (HP) start to run out.",
+    "Your health has run out once again.  Make sure to purchase snacks in the Yipe! healing shop.  You may also have some items in your inventory that you could eat to regain your HP.",
+    "Try purchasing the basic armor items in Fred's Miscellaneous shop.  These armor items will help protect you from being killed by the monsters.",
+    "Maybe you should invest some money into increasing your strength and dexterity.  These skills will help you in combat.",
+    "The monsters wish there were more players like you they could feed upon.  Perhaps you should run from monsters that look too difficult.",
+    "Maybe you should go back to fighting little bunnies.",
+    "You have died many times.  You may want to start a brand new game so that your character can start off with a full amount of gold.",
+    "Make sure to go back to town and heal yourself before continuing to fight.",
+    "The townspeople are starting to wonder if you're really cut out for saving them.",
+    "I've seen bunnies with more combat skills than you!  Okay, maybe not that bad.  But you might want to consider running a little more often.",
+    "Just in case you forgot, the idea is to not be killed while in combat.  It's quite okay to 'Run' away if you are low on health points.",
+    "Hmm.  Are you feeling a little embarrassed about dying to this monster?  Hopefully nobody else is around to see!",
+    "The more armor you have, the less likely you will be hit by a monster.  Thus, before you continue fighting you should buy all the basic items you can in Fred's Miscellaneous shop.",
+    "It is very impressive that you have lasted this long in the world of Yipe! without a single death.  Don't let this first setback discourage you!",
+    "\n\nThe Gatekeeper laughs at your feeble attempts to destroy him.  You are still stuck here in Yipe! Hell.",
+    "Too bad there is not a high score category for deaths.  It looks like you're well on your way to achieving the all time high score in that category!",
+    "The gatekeeper is going to make a fortune from healing you each time you die.  Perhaps you could invest your money into healing snacks instead.",
+    "In order to start killing the more difficult monsters in the game you may want to consider raising your Dexterity and Strength.",
+    "In order to help prevent so many deaths, you may want to try purchasing a more expensive suit of armor.  Check the Armor Shop in the town of Yipe!",
+    "When your HP are running low during combat you could try casting a healing spell.  If you haven't learned one yet, visit Epiy in the town of Yipe!",
+};
+
+int defeat_message_index(const Player& player, int death_count,
+                         int monster_type, MsvcRandom& random) {
+    if (monster_type == 41) {
+        return 14;
+    }
+    if (death_count == 1) {
+        return player.level < 21 ? 0 : 13;
+    }
+    if (death_count == 2) {
+        return 1;
+    }
+    if (death_count == 3 && player.level == 1) {
+        return 7;
+    }
+    if ((death_count == 4 && player.armor_rank < 5)
+        || (death_count == 5 && player.armor_rank < 6)) {
+        return 18;
+    }
+    if (death_count > 5 && player.level < 3 && player.gold < 25) {
+        return 6;
+    }
+
+    const bool has_basic_armor = player.boots_rank > 0 && player.gloves_rank > 0
+        && player.helmet_rank > 0 && player.ring_rank > 0;
+    if (!has_basic_armor) {
+        return death_count < 7 ? 2 : 12;
+    }
+    if (death_count >= 4 && (player.dexterity <= 14 || player.strength <= 14)) {
+        return 3;
+    }
+    if (death_count >= 7 && player.level >= 31
+        && (player.dexterity <= 29 || player.strength <= 29)) {
+        return 17;
+    }
+    if (player.level >= 12 && monster_type <= 3) {
+        return 11;
+    }
+    if (death_count < 6 || player.level < 11) {
+        return 4;
+    }
+
+    switch (random.next() % 7) {
+    case 0:
+        return 5;
+    case 1:
+        return 8;
+    case 2:
+        return 9;
+    case 3:
+        return 15;
+    case 4:
+        return player.gatekeeper_state == 0 ? 16 : 10;
+    case 5:
+        return 19;
+    default:
+        return 10;
+    }
+}
 
 std::string reward_message(std::string_view text, int amount) {
     std::string result(text);
@@ -242,6 +326,52 @@ int select_message(Player& player, MsvcRandom& random) {
 }
 
 } // namespace
+
+CombatDefeatResult resolve_combat_defeat(Player& player,
+                                         WorldLocation& location,
+                                         int monster_type,
+                                         MsvcRandom& random) {
+    const int message_index = defeat_message_index(
+        player, player.death_count + 1, monster_type, random);
+    player.health = 1;
+    ++player.death_count;
+    player.entered_hell_through_secret_passage = false;
+    if (player.hell_gatekeeper_state == HellGatekeeperState::absent) {
+        player.hell_gatekeeper_state = HellGatekeeperState::waiting;
+    }
+
+    location.position = {6, 10};
+    location.region_x = -4;
+    location.region_y = -1;
+    location.map_layer = 0;
+    location.alternate_map_set = true;
+    location.map_id = 0x75;
+    player.current_map_id = location.map_id;
+    player.alternate_map_set = true;
+    return {701 + message_index,
+            defeat_messages[static_cast<std::size_t>(message_index)]};
+}
+
+int gatekeeper_recovery_fee(const Player& player) {
+    int fee = 0;
+    if (player.difficulty == 1) {
+        fee = std::min(player.gold / 9, 150);
+    } else if (player.difficulty == 2) {
+        fee = std::min(player.gold / 7, player.level + 260);
+    } else if (player.difficulty == 3) {
+        fee = std::min(player.gold / 5, player.level + 375);
+    }
+    fee = std::max(fee, 10);
+    return std::min(player.gold, fee);
+}
+
+int pay_gatekeeper_recovery(Player& player) {
+    const int fee = gatekeeper_recovery_fee(player);
+    player.gold -= fee;
+    player.health = player.maximum_health;
+    player.hell_gatekeeper_state = HellGatekeeperState::paid;
+    return fee;
+}
 
 PrincessReward rescue_princess(Player& player, std::size_t rescue_index,
                                PrincessGift gift, MsvcRandom& random) {

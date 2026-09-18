@@ -433,6 +433,9 @@ void test_game_save() {
     original.player.encountered_monster_types[36] = true;
     original.player.encountered_monster_types[38] = true;
     original.player.encountered_monster_types[40] = true;
+    original.player.death_count = 12;
+    original.player.hell_gatekeeper_state = yipe::HellGatekeeperState::paid;
+    original.player.entered_hell_through_secret_passage = true;
     original.location = {{2, 8}, 0, 1, 0, false, 0x0b};
     original.defeated_monster_placements = {5, 14, 38, 185};
     original.random_state = 0x12345678u;
@@ -443,17 +446,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 11 save restores progression and equipment");
+          "version 12 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 11 save restores combat settings and counters");
+          "version 12 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 11 save restores world location");
+          "version 12 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 11 save restores encounter and random state");
+          "version 12 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -461,17 +464,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 11 save restores ability and active status state");
+          "version 12 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 11 save restores special movement state");
+          "version 12 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 11 save restores persistent map tile changes");
+          "version 12 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 11 save restores learned spells");
+          "version 12 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -481,14 +484,31 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 11 save restores quest state");
+          "version 12 save restores quest state");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 11 save restores the surface-return anchor");
+          "version 12 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 11 save restores per-monster encounter history");
+          "version 12 save restores per-monster encounter history");
+    check(loaded.player.death_count == 12
+              && loaded.player.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::paid
+              && loaded.player.entered_hell_through_secret_passage,
+          "version 12 save restores death and Hell recovery state");
+
+    constexpr std::size_t death_extension_size = sizeof(std::int32_t)
+        + sizeof(std::uint16_t) + sizeof(std::uint8_t);
+    remove_save_extension(path, death_extension_size, 11);
+    const yipe::GameState loaded_version_11 = yipe::load_game(path);
+    check(loaded_version_11.player.encountered_monster_types
+              == original.player.encountered_monster_types
+              && loaded_version_11.player.death_count == 0
+              && loaded_version_11.player.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::absent
+              && !loaded_version_11.player.entered_hell_through_secret_passage,
+          "version 11 saves retain encounter history and default death state");
 
     remove_save_extension(
         path,
@@ -636,10 +656,12 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name) {
         case 8: value = 4; break;
         case 9: value = 11; break;
         case 11: value = 1; break;
+        case 14: value = 1; break;
         case 15: value = 3; break;
         case 16: value = 85; break;
         case 17: value = 22; break;
         case 18: value = 7; break;
+        case 19: value = 0xffff; break;
         case 26: value = 2; break;
         case 31: value = 1; break;
         default: break;
@@ -690,7 +712,10 @@ void test_legacy_save_import() {
     check(player.difficulty == 2 && player.restoration_uses == 3
               && player.combat_style == 3 && player.has_waterproof_shoe_spray
               && player.has_rainbow_key && player.has_underworld_key
-              && player.has_tree_climbing_shoes,
+              && player.has_tree_climbing_shoes && player.death_count == 2
+              && player.entered_hell_through_secret_passage
+              && player.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::paid,
           "legacy import maps recovered difficulty, movement, and combat state");
     check(player.inventory[0] == 5 && player.inventory[29] == 9
               && player.spells == imported.values_010c
@@ -2389,6 +2414,102 @@ void test_quest_progression_events() {
           "the finale transition can only occur once");
 }
 
+void test_death_and_hell_recovery() {
+    yipe::Player player;
+    player.health = 0;
+    player.entered_hell_through_secret_passage = true;
+    yipe::WorldLocation location{{2, 8}, 0, 1, 2, false, 0x5b};
+    yipe::MsvcRandom random(1);
+    const yipe::CombatDefeatResult first =
+        yipe::resolve_combat_defeat(player, location, 2, random);
+    check(first.message_resource_id == 701
+              && first.message.starts_with("Your character has run out")
+              && player.health == 1 && player.death_count == 1
+              && !player.entered_hell_through_secret_passage
+              && player.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::waiting,
+          "a first defeat selects its advice and initializes Hell recovery state");
+    check(location.position == yipe::MapPosition{6, 10}
+              && location.region_x == -4 && location.region_y == -1
+              && location.map_layer == 0 && location.alternate_map_set
+              && location.map_id == 0x75 && player.current_map_id == 0x75
+              && player.alternate_map_set,
+          "combat defeat relocates the player to the recovered Hell entrance");
+
+    const yipe::CombatDefeatResult second =
+        yipe::resolve_combat_defeat(player, location, 8, random);
+    check(second.message_resource_id == 702 && player.death_count == 2
+              && player.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::waiting,
+          "a second defeat selects its fixed advice without resetting the Gatekeeper");
+
+    yipe::Player experienced;
+    experienced.level = 21;
+    yipe::WorldLocation experienced_location;
+    yipe::MsvcRandom experienced_random(1);
+    const yipe::CombatDefeatResult experienced_first =
+        yipe::resolve_combat_defeat(
+            experienced, experienced_location, 20, experienced_random);
+    check(experienced_first.message_resource_id == 714
+              && experienced.death_count == 1,
+          "a high-level first defeat selects the recovered encouragement message");
+
+    yipe::Player gatekeeper_victim;
+    gatekeeper_victim.hell_gatekeeper_state =
+        yipe::HellGatekeeperState::waiting;
+    yipe::WorldLocation gatekeeper_location;
+    yipe::MsvcRandom gatekeeper_random(1);
+    const yipe::CombatDefeatResult gatekeeper_defeat =
+        yipe::resolve_combat_defeat(
+            gatekeeper_victim, gatekeeper_location, 41, gatekeeper_random);
+    check(gatekeeper_defeat.message_resource_id == 715
+              && gatekeeper_victim.death_count == 1
+              && gatekeeper_victim.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::waiting,
+          "a Gatekeeper defeat keeps the player trapped with its special message");
+
+    yipe::Player easy;
+    easy.difficulty = 1;
+    easy.gold = 900;
+    check(yipe::gatekeeper_recovery_fee(easy) == 100,
+          "easy Gatekeeper fee charges one ninth of available gold");
+    easy.gold = 2000;
+    check(yipe::gatekeeper_recovery_fee(easy) == 150,
+          "easy Gatekeeper fee applies its fixed cap");
+    yipe::Player normal;
+    normal.difficulty = 2;
+    normal.level = 10;
+    normal.gold = 700;
+    check(yipe::gatekeeper_recovery_fee(normal) == 100,
+          "normal Gatekeeper fee charges one seventh of available gold");
+    normal.gold = 7000;
+    check(yipe::gatekeeper_recovery_fee(normal) == 270,
+          "normal Gatekeeper fee uses the recovered level cap");
+    yipe::Player hard;
+    hard.difficulty = 3;
+    hard.level = 25;
+    hard.gold = 1000;
+    check(yipe::gatekeeper_recovery_fee(hard) == 200,
+          "hard Gatekeeper fee charges one fifth of available gold");
+    hard.gold = 10000;
+    check(yipe::gatekeeper_recovery_fee(hard) == 400,
+          "hard Gatekeeper fee uses the recovered level cap");
+    easy.gold = 50;
+    check(yipe::gatekeeper_recovery_fee(easy) == 10,
+          "Gatekeeper recovery enforces its ten-gold minimum");
+    easy.gold = 7;
+    check(yipe::gatekeeper_recovery_fee(easy) == 7,
+          "Gatekeeper recovery caps its fee to the player's available gold");
+
+    normal.health = 1;
+    normal.maximum_health = 83;
+    const int paid = yipe::pay_gatekeeper_recovery(normal);
+    check(paid == 270 && normal.gold == 6730 && normal.health == 83
+              && normal.hell_gatekeeper_state
+                  == yipe::HellGatekeeperState::paid,
+          "paying the Gatekeeper deducts the fee and fully heals the player");
+}
+
 void test_recovered_spells() {
     const auto& spells = yipe::spell_definitions();
     check(spells.size() == 12 && spells[0].name == "Return to Surface"
@@ -2753,6 +2874,7 @@ int main() {
     test_equipment_combat_ratings();
     test_king_quest_dialog();
     test_quest_progression_events();
+    test_death_and_hell_recovery();
     test_recovered_spells();
     test_first_playable_flow();
 
