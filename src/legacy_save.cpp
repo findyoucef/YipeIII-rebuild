@@ -184,11 +184,15 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     }
     player.quest_score = save.unknown_005c;
     player.has_lucky_rabbit_foot = save.unknown_0063;
-    for (LegacyExtendedEntry& entry : save.extended_entries) {
+    for (std::size_t index = 0; index < save.extended_entries.size(); ++index) {
+        LegacyExtendedEntry& entry = save.extended_entries[index];
         entry.value_065e = reader.u16();
         entry.value_0584 = reader.i32();
         entry.flag_0552 = reader.archive_bool();
-        player.quest_progress_total += entry.value_0584;
+        player.monster_defeats[index] = entry.value_0584;
+        player.quest_progress_total = static_cast<std::int32_t>(
+            static_cast<std::uint32_t>(player.quest_progress_total)
+            + static_cast<std::uint32_t>(entry.value_0584));
     }
     for (std::size_t index = 0;
          index < player.encountered_monster_types.size(); ++index) {

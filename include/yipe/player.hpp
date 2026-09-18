@@ -59,6 +59,7 @@ public:
     static constexpr std::size_t spell_count = 15;
     static constexpr std::size_t quest_flag_count = 30;
     static constexpr std::size_t monster_history_size = 42;
+    static constexpr std::size_t monster_defeat_table_size = 50;
 
     Player();
     explicit Player(CharacterType type);
@@ -73,6 +74,9 @@ public:
                                      bool alternate_map_set = false);
 
     [[nodiscard]] int maximum_stat() const;
+
+    // Original +0x584 counters use monster type minus one (0x00445000).
+    void record_monster_defeat(int type_id);
 
     std::string name;
     int dexterity = 0;
@@ -101,6 +105,7 @@ public:
     int restoration_uses = 0;
     int death_count = 0;
     int quest_score = 0;
+    // Includes the unattributed aggregate retained by older native saves.
     int quest_progress_total = 0;
     std::uint16_t gatekeeper_state = 0;
     std::uint16_t stamps_found = 0;
@@ -121,6 +126,8 @@ public:
     std::array<bool, quest_flag_count> quest_flags{};
     std::array<std::uint16_t, spell_count> spells{};
     std::array<bool, monster_history_size> encountered_monster_types{};
+    std::array<std::int32_t, monster_defeat_table_size> monster_defeats{};
+    bool monster_defeat_history_complete = true;
 
     bool alternate_map_set = false;
     bool has_bonus_healing_ring = false;
@@ -139,6 +146,7 @@ public:
     bool healing_water_available = true;
     bool cave_coins_collected = false;
     std::uint16_t snow_search_count = 0;
+    // Also retains version 14's predicate when the per-type counts are missing.
     bool has_defeated_wormoid = false;
 
 private:

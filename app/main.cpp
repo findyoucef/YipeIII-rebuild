@@ -1913,6 +1913,59 @@ std::string spell_failure_message(yipe::SpellCastStatus status) {
     return {};
 }
 
+std::string monster_defeat_page(const yipe::Player& player, int page) {
+    if (page < 1 || page > 5) {
+        throw std::out_of_range("monster statistics page is outside one through five");
+    }
+    std::uint32_t total = 0;
+    for (std::size_t index = 0; index < 41; ++index) {
+        total += static_cast<std::uint32_t>(player.monster_defeats[index]);
+    }
+    std::ostringstream message;
+    message << "Kills: " << static_cast<std::int32_t>(total)
+            << "  Deaths: " << player.death_count << "\n\n";
+    if (!player.monster_defeat_history_complete) {
+        message << "Older save: all kill counts shown start at the statistics upgrade.\n"
+                   "Earlier per-type counts are unavailable.\n\n";
+    }
+    for (int type = (page - 1) * 9 + 1; type <= std::min(page * 9, 41); ++type) {
+        const std::int32_t count = player.monster_defeats[static_cast<std::size_t>(type - 1)];
+        const auto monster = yipe::original_monster_definition(type);
+        if (!monster) {
+            throw std::logic_error("statistics monster is missing from the catalog");
+        }
+        // 0x0044cb20 reveals names after a positive kill count, not an encounter.
+        message << (count > 0 ? monster->name : "?????") << ": " << count << '\n';
+    }
+    message << "\nPage " << page << " of 5";
+    return message.str();
+}
+
+void show_monster_defeats(SDL_Window* window, const yipe::Player& player) {
+    int page = 1;
+    while (true) {
+        std::vector<SDL_MessageBoxButtonData> buttons{
+            {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"}};
+        if (page > 1) {
+            buttons.push_back({0, 1, "Previous"});
+        }
+        if (page < 5) {
+            buttons.push_back({SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2, "Next"});
+        } else {
+            buttons.front().flags |= SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+        }
+        const int choice = show_choice(window, "Monster Kills", monster_defeat_page(player, page),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            --page;
+        } else if (choice == 2) {
+            ++page;
+        } else {
+            return;
+        }
+    }
+}
+
 void show_player_status(SDL_Window* window, const yipe::Player& player) {
     const auto carried = std::count_if(
         player.inventory.begin(),
@@ -1929,7 +1982,15 @@ void show_player_status(SDL_Window* window, const yipe::Player& player) {
             << player.intelligence << "\nWeapon " << player.weapon_rank << "  Armor "
             << player.armor_rank << "\nCarried items " << carried << "/"
             << yipe::Player::carried_inventory_size;
-    show_message(window, "Player Status", message.str());
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{0, 1, "Kills"},
+    };
+    while (show_choice(window, "Player Status", message.str(), buttons.data(),
+                       static_cast<int>(buttons.size())) == 1) {
+        show_monster_defeats(window, player);
+    }
 }
 
 enum class EncounterResult { victory, fled, defeat, quit_requested };
@@ -2508,7 +2569,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         }
         if (event.key.keysym.sym == SDLK_t
             && (event.key.keysym.mod & KMOD_CTRL) != 0) {
-            show_player_status(window, game.player);
+            if (event.key.repeat == 0) {
+                show_player_status(window, game.player);
+            }
             render_game(renderer, map, textures, game);
             continue;
         }
@@ -3141,6 +3204,34 @@ int main(int argc, char* argv[]) {
             initialize_map_state(game, other_map);
             if (other_map.tile({12, 1}) != 0x27) {
                 throw std::runtime_error("quest progress did not open Hell's east boundary");
+            }
+            yipe::Player statistics_player;
+            statistics_player.encountered_monster_types[2] = true;
+            if (monster_defeat_page(statistics_player, 1).find("Giant Beetle") != std::string::npos) {
+                throw std::runtime_error("kill statistics exposed an undefeated monster name");
+            }
+            statistics_player.record_monster_defeat(2);
+            statistics_player.record_monster_defeat(41);
+            statistics_player.record_monster_defeat(50);
+            statistics_player.death_count = 7;
+            const auto first_kill_page = monster_defeat_page(statistics_player, 1);
+            const auto last_kill_page = monster_defeat_page(statistics_player, 5);
+            if (!first_kill_page.starts_with("Kills: 2  Deaths: 7")
+                || first_kill_page.find("Giant Beetle: 1") == std::string::npos
+                || last_kill_page.find("Gatekeeper: 1") == std::string::npos) {
+                throw std::runtime_error("kill statistics lost counts, pagination, or the 41-type total");
+            }
+            for (int page = 1; page <= 5; ++page) {
+                const auto text = monster_defeat_page(statistics_player, page);
+                if (!text.ends_with("Page " + std::to_string(page) + " of 5")
+                    || std::count(text.begin(), text.end(), ':') != (page == 5 ? 7 : 11)) {
+                    throw std::runtime_error("kill statistics page has an incorrect row count");
+                }
+            }
+            statistics_player.monster_defeat_history_complete = false;
+            if (monster_defeat_page(statistics_player, 3).find("Earlier per-type counts are unavailable")
+                == std::string::npos) {
+                throw std::runtime_error("kill statistics hid the older-save history limitation");
             }
             SDL_Event repeated_key{};
             repeated_key.type = SDL_KEYDOWN;

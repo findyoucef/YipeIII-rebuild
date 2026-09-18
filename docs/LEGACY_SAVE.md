@@ -85,9 +85,11 @@ mountain unlock. Combat setup marks `+0x552[monster_type]` for each
 opponent, so entries 0–41 are imported as per-monster encounter history;
 entries 42–49 remain available in the offset-based import object. Defeat counters
 at `+0x584` instead use `monster_type - 1`: index 34 supplies the zero/nonzero
-Wormoid-defeat condition used by map `0x6d`'s giant warning. The importer preserves
-that condition in `has_defeated_wormoid`. Other
-unresolved arrays likewise remain there so future reconstruction does not
+Wormoid-defeat condition used by map `0x6d`'s giant warning. All 50 counters,
+including the nine reserved entries, are imported into `Player::monster_defeats`
+with complete-history status. The aggregate retains the original 32-bit sum,
+and `has_defeated_wormoid` retains the hint condition. Other unresolved arrays
+likewise remain there so future reconstruction does not
 require reparsing the file.
 
 The original validation expression is evaluated and reported through
@@ -123,12 +125,19 @@ followed by the 16-bit snow-search stage. Earlier versions default both
 availability flags to true and the coin/snow progress to zero. Version 14 appends
 one byte for `has_defeated_wormoid`. Versions 1–13 default it to false: their
 aggregate quest total and encounter flags cannot reconstruct the missing per-type
-defeat history, so the giant warning may appear again. This flag is not a full
-defeat-counter implementation; the 50 original values remain available in
-`LegacySave::extended_entries`, while the existing quest total remains an
-imported aggregate. When importing version 9,
+defeat history, so the giant warning may appear again. Version 15 appends the
+50 signed 32-bit defeat counters and a one-byte history-completeness flag.
+New games and legacy imports have complete history. Native versions 1–14
+start with zero per-type counts and incomplete history: neither encounter flags
+nor defeated placements establish how many kills occurred. The existing quest
+aggregate and version-14 Wormoid predicate are retained, not assigned to invented
+per-type counts. Subsequent kills update both the per-type counters and the
+aggregate; the incompleteness flag survives resaving and is shown in the Kills
+view. The counters, aggregate, and hint predicate are maintained through
+`Player::record_monster_defeat`, without changing old payload offsets.
+When importing version 9,
 defeats now known to be reload-respawning migrate into the transient current-map
-state instead of becoming permanent. The loader accepts all fourteen versions,
+state instead of becoming permanent. The loader accepts all fifteen versions,
 derives missing return coordinates from the current region for older files,
 and migrates the first-encounter bit in versions 2–8 to the Giant Beetle's
 placement index 5. Writes use a temporary file and atomic replacement so a

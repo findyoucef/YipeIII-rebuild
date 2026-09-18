@@ -353,6 +353,8 @@ void test_native_save() {
     check(loaded.inventory == original.inventory, "native save restores inventory");
     check(loaded.has_bonus_healing_ring && loaded.monster_repellent_steps == 77,
           "native save preserves recovered item-effect state");
+    check(!loaded.monster_defeat_history_complete,
+          "player-only saves report missing defeat history");
     const yipe::GameState upgraded_from_v1 = yipe::load_game(path);
     check(upgraded_from_v1.player.name == original.name
               && upgraded_from_v1.location.map_id == 0x11
@@ -421,6 +423,10 @@ void test_game_save() {
     original.player.spells[11] = 1;
     original.player.quest_score = 1500;
     original.player.quest_progress_total = 73;
+    original.player.monster_defeats[0] = 10;
+    original.player.monster_defeats[34] = 3;
+    original.player.monster_defeats[40] = 20;
+    original.player.monster_defeats[49] = 40;
     original.player.gatekeeper_state = 2;
     original.player.stamps_found = 6;
     original.player.princesses_found = 14;
@@ -453,17 +459,17 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 14 save restores progression and equipment");
+          "version 15 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 14 save restores combat settings and counters");
+          "version 15 save restores combat settings and counters");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 14 save restores world location");
+          "version 15 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 14 save restores encounter and random state");
+          "version 15 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -471,17 +477,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 14 save restores ability and active status state");
+          "version 15 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 14 save restores special movement state");
+          "version 15 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 14 save restores persistent map tile changes");
+          "version 15 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 14 save restores learned spells");
+          "version 15 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -491,27 +497,41 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 14 save restores quest state");
+          "version 15 save restores quest state");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 14 save restores the surface-return anchor");
+          "version 15 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 14 save restores per-monster encounter history");
+          "version 15 save restores per-monster encounter history");
     check(loaded.player.death_count == 12
               && loaded.player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid
               && loaded.player.entered_hell_through_secret_passage,
-          "version 14 save restores death and Hell recovery state");
+          "version 15 save restores death and Hell recovery state");
     check(!loaded.player.bridge_treasure_available
               && !loaded.player.healing_water_available
               && loaded.player.cave_coins_collected
               && loaded.player.snow_search_count == 3
               && loaded.player.pending_relocation == 4,
-          "version 14 save restores Other action state and deferred travel");
+          "version 15 save restores Other action state and deferred travel");
     check(loaded.player.has_defeated_wormoid,
-          "version 14 saves preserve the Wormoid-defeat hint flag");
+          "version 15 saves preserve the Wormoid-defeat hint flag");
+    check(loaded.player.monster_defeats == original.player.monster_defeats
+              && loaded.player.monster_defeat_history_complete,
+          "version 15 preserves all 50 defeat counters, including reserved entries");
+
+    constexpr std::size_t defeat_extension_size =
+        yipe::Player::monster_defeat_table_size * sizeof(std::int32_t) + sizeof(std::uint8_t);
+    remove_save_extension(path, defeat_extension_size, 14);
+    yipe::GameState upgraded_version_14 = yipe::load_game(path);
+    check(!upgraded_version_14.player.monster_defeat_history_complete
+              && upgraded_version_14.player.monster_defeats
+                  == std::array<std::int32_t, 50>{}
+              && upgraded_version_14.player.quest_progress_total == 73
+              && upgraded_version_14.player.has_defeated_wormoid,
+          "version 14 retains the aggregate and Wormoid predicate without inventing counts");
 
     remove_save_extension(path, sizeof(std::uint8_t), 13);
     const yipe::GameState loaded_version_13 = yipe::load_game(path);
@@ -628,8 +648,32 @@ void test_game_save() {
           "version 2 game saves remain readable");
     check(loaded_version_2.player.ability_points == 5
               && loaded_version_2.player.maximum_ability_points == 5
-              && loaded_version_2.player.special_ability == yipe::SpecialAbility::none,
+              && loaded_version_2.player.special_ability == yipe::SpecialAbility::none
+              && !loaded_version_2.player.monster_defeat_history_complete,
           "version 2 saves receive default ability state");
+    upgraded_version_14.player.record_monster_defeat(2);
+    yipe::save_game_atomic(path, upgraded_version_14);
+    const yipe::GameState resumed_upgrade = yipe::load_game(path);
+    check(!resumed_upgrade.player.monster_defeat_history_complete
+              && resumed_upgrade.player.monster_defeats[1] == 1
+              && resumed_upgrade.player.quest_progress_total == 74
+              && resumed_upgrade.player.has_defeated_wormoid
+              && resumed_upgrade.player.monster_defeats[34] == 0,
+          "resaving an upgraded game keeps partial counts and the historical hint predicate");
+    original.player.monster_defeats[49] = std::numeric_limits<std::int32_t>::min();
+    yipe::save_game_atomic(path, original);
+    check(yipe::load_game(path).player.monster_defeats[49]
+              == std::numeric_limits<std::int32_t>::min(),
+          "native saves retain the signed bit pattern of a wrapped defeat counter");
+    remove_save_extension(path, 1, 15);
+    bool rejected_truncated_counts = false;
+    try {
+        static_cast<void>(yipe::load_game(path));
+    } catch (const std::runtime_error&) {
+        rejected_truncated_counts = true;
+    }
+    check(rejected_truncated_counts,
+          "version 15 rejects an incomplete extension even with a valid checksum");
     std::filesystem::remove(path);
 }
 
@@ -775,6 +819,12 @@ void test_legacy_save_import() {
           "legacy import maps recovered King quest state");
     check(player.has_defeated_wormoid && !player.encountered_monster_types[35],
           "legacy import reads Wormoid defeat index 34 independently of encounter flags");
+    check(player.monster_defeat_history_complete,
+          "legacy saves contain a complete defeat table");
+    for (std::size_t index = 0; index < player.monster_defeats.size(); ++index) {
+        check(player.monster_defeats[index] == static_cast<std::int32_t>(1000 + index),
+              "legacy import preserves defeat counter " + std::to_string(index));
+    }
     check(imported.flags_0152[7] && imported.flags_0352[8]
               && imported.values_010c[14] == 15
               && imported.flag_values[4].flag_0148
@@ -788,6 +838,13 @@ void test_legacy_save_import() {
     write_bytes(path, legacy_save_bytes("Legacy", 0));
     check(!yipe::load_legacy_save(path).game.player.has_defeated_wormoid,
           "other legacy defeat counters do not suppress the giant hint");
+    write_bytes(path, legacy_save_bytes("Legacy", std::numeric_limits<std::int32_t>::max()));
+    const auto wrapped_legacy = yipe::load_legacy_save(path);
+    check(wrapped_legacy.game.player.monster_defeats[34]
+                  == std::numeric_limits<std::int32_t>::max()
+              && wrapped_legacy.game.player.quest_progress_total == static_cast<std::int32_t>(
+                  51225u - 1034u + 0x7fffffffu),
+          "legacy defeat aggregation preserves signed 32-bit wrapping without overflow");
 
     std::vector<std::uint8_t> invalid_validation = bytes;
     write_u32(invalid_validation, 1 + 6 + 13 * sizeof(std::int32_t), 0);
@@ -1499,6 +1556,7 @@ void test_movement_hint_defeat_state() {
         }
         check(encounter.monsters[0].health < 1 && encounter.monsters[1].health > 0
                   && player.has_defeated_wormoid
+                  && player.monster_defeats[34] == 1 && player.quest_progress_total == 1
                   && yipe::map_movement_hint(player, 0x6d).empty(),
               "attack, Backstab, and both spell powers record a Wormoid kill before group victory");
     }
@@ -1509,7 +1567,8 @@ void test_movement_hint_defeat_state() {
     encounter.monsters[0] = encounter.monsters[1];
     yipe::MsvcRandom random(1);
     static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
-    check(encounter.monsters[2].health == 0 && !player.has_defeated_wormoid,
+    check(encounter.monsters[2].health == 0 && !player.has_defeated_wormoid
+              && player.quest_progress_total == 0,
           "frightening away a Wormoid does not count as defeating one");
     encounter = fresh_encounter();
     encounter.monsters[0].type_id = 40;
@@ -1526,8 +1585,152 @@ void test_movement_hint_defeat_state() {
     random = yipe::MsvcRandom(1);
     const auto defeat = yipe::resolve_attack_turn(player, encounter, random);
     check(defeat.outcome == yipe::CombatOutcome::defeat
-              && encounter.monsters[0].health < 1 && !player.has_defeated_wormoid,
+              && encounter.monsters[0].health < 1 && !player.has_defeated_wormoid
+              && player.quest_progress_total == 0,
           "a fatal ordinary counterattack prevents recording the pending Wormoid kill");
+}
+
+void test_monster_defeat_statistics() {
+    yipe::Player counts;
+    check(counts.monster_defeat_history_complete && counts.quest_progress_total == 0
+              && counts.monster_defeats == std::array<std::int32_t, 50>{},
+          "new players start with complete zero defeat statistics");
+    for (int type = 1; type <= 50; ++type) {
+        counts.record_monster_defeat(type);
+        check(counts.monster_defeats[static_cast<std::size_t>(type - 1)] == 1,
+              "defeat counts use type minus one for type " + std::to_string(type));
+    }
+    check(counts.quest_progress_total == 50 && counts.has_defeated_wormoid,
+          "every recorded defeat advances the aggregate used by the King");
+    for (int invalid : {0, -1, 51}) {
+        bool rejected = false;
+        try {
+            counts.record_monster_defeat(invalid);
+        } catch (const std::out_of_range&) {
+            rejected = true;
+        }
+        check(rejected && counts.quest_progress_total == 50,
+              "invalid monster types cannot mutate defeat statistics");
+    }
+    counts.monster_defeats[34] = std::numeric_limits<std::int32_t>::max();
+    counts.quest_progress_total = std::numeric_limits<std::int32_t>::max();
+    counts.record_monster_defeat(35);
+    check(counts.monster_defeats[34] == std::numeric_limits<std::int32_t>::min()
+              && counts.quest_progress_total == std::numeric_limits<std::int32_t>::min()
+              && counts.has_defeated_wormoid,
+          "defeat increments preserve the original signed 32-bit wrap");
+    counts.monster_defeats[34] = -1;
+    counts.record_monster_defeat(35);
+    check(counts.monster_defeats[34] == 0 && !counts.has_defeated_wormoid,
+          "the Wormoid hint continues to reflect the counter's zero/nonzero predicate");
+
+    const auto make_encounter = [](int primary) {
+        yipe::CombatEncounter encounter;
+        encounter.monsters[0] = {primary, "Primary", 175, 1, 1, 0, 1, 1, 0, false};
+        encounter.monsters[1] = {2, "Giant Beetle", 175, 1, 1, 0, 1, 1, 0, false};
+        encounter.monsters[2] = {35, "Wormoid", 208, 1, 1, 0, 1, 1, 0, false};
+        return encounter;
+    };
+    for (int boss : {40, 41}) {
+        for (bool frighten_last : {false, true}) {
+            yipe::Player player;
+            player.special_ability = yipe::SpecialAbility::backstab;
+            player.ability_points = 20;
+            player.gatekeeper_state = boss == 41 ? 1 : 0;
+            player.has_underworld_key = true;
+            yipe::CombatEncounter encounter = make_encounter(boss);
+            encounter.map_environment = 6;
+            yipe::MsvcRandom random(1);
+            static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
+            check(encounter.monsters[0].health < 1 && player.quest_progress_total == 0
+                      && player.monster_defeats[static_cast<std::size_t>(boss - 1)] == 0,
+                  "Earth Giant and Gatekeeper counts wait for the whole group");
+            static_cast<void>(yipe::resolve_special_ability_turn(player, encounter, random));
+            check(player.monster_defeats[1] == 1 && player.quest_progress_total == 1,
+                  "ordinary companion kills are counted immediately");
+            if (frighten_last) {
+                player.special_ability = yipe::SpecialAbility::frighten;
+            }
+            const auto victory = yipe::resolve_special_ability_turn(player, encounter, random);
+            check(victory.outcome == yipe::CombatOutcome::victory
+                      && player.monster_defeats[static_cast<std::size_t>(boss - 1)] == 1
+                      && player.monster_defeats[34] == (frighten_last ? 0 : 1)
+                      && player.quest_progress_total == (frighten_last ? 2 : 3)
+                      && player.gatekeeper_state == (boss == 40 ? 1 : 2)
+                      && player.stamps_found == (boss == 40 ? 1 : 0),
+                  "both final-kill and Frighten victories count the primary boss once and advance quests");
+        }
+    }
+    yipe::Player caster;
+    caster.spell_points = 100;
+    caster.spells[2] = 1;
+    yipe::CombatEncounter group = make_encounter(2);
+    group.monsters[2] = group.monsters[1];
+    yipe::MsvcRandom magic_random(1);
+    const auto spell = yipe::resolve_spell_turn(caster, group, 2,
+                                               yipe::SpellPower::high, magic_random);
+    check(spell.turn.outcome == yipe::CombatOutcome::victory
+              && caster.monster_defeats[1] == 3 && caster.quest_progress_total == 3,
+          "a group-damage spell records each defeated target exactly once");
+    bool rejected_second_victory = false;
+    try {
+        static_cast<void>(yipe::resolve_attack_turn(caster, group, magic_random));
+    } catch (const std::logic_error&) {
+        rejected_second_victory = true;
+    }
+    check(rejected_second_victory && caster.monster_defeats[1] == 3,
+          "an ended encounter cannot record its kills a second time");
+    for (int boss : {40, 41}) {
+        caster = yipe::Player{};
+        caster.spell_points = 100;
+        caster.spells[2] = 1;
+        group = make_encounter(boss);
+        magic_random = yipe::MsvcRandom(1);
+        const auto boss_spell = yipe::resolve_spell_turn(
+            caster, group, 2, yipe::SpellPower::high, magic_random);
+        check(boss_spell.turn.outcome == yipe::CombatOutcome::victory
+                  && caster.monster_defeats[static_cast<std::size_t>(boss - 1)] == 1
+                  && caster.monster_defeats[1] == 1 && caster.monster_defeats[34] == 1
+                  && caster.quest_progress_total == 3,
+              "a group spell counts a deferred boss once alongside its ordinary companions");
+    }
+    yipe::Player companion_player;
+    companion_player.special_ability = yipe::SpecialAbility::backstab;
+    companion_player.ability_points = 20;
+    group = make_encounter(2);
+    group.monsters[1].type_id = 40;
+    group.monsters[2].type_id = 41;
+    for (int turn = 0; turn < 3; ++turn) {
+        static_cast<void>(yipe::resolve_special_ability_turn(companion_player, group, magic_random));
+    }
+    check(companion_player.monster_defeats[39] == 0
+              && companion_player.monster_defeats[40] == 0
+              && companion_player.quest_progress_total == 1,
+          "special types 40 and 41 count only when they are the primary boss");
+
+    yipe::Player survivor;
+    survivor.special_ability = yipe::SpecialAbility::backstab;
+    yipe::CombatEncounter partial = make_encounter(2);
+    yipe::MsvcRandom random(1);
+    static_cast<void>(yipe::resolve_special_ability_turn(survivor, partial, random));
+    const auto fled = yipe::try_flee(survivor, partial, random);
+    check(fled.escaped && survivor.monster_defeats[1] == 1
+              && survivor.quest_progress_total == 1,
+          "fleeing keeps processed kills without counting surviving opponents");
+
+    yipe::Player king_player;
+    king_player.quest_flags.fill(true);
+    king_player.stamps_found = 1;
+    for (int kill = 0; kill < 50; ++kill) {
+        king_player.record_monster_defeat(2);
+    }
+    yipe::MsvcRandom king_random(5);
+    check(yipe::talk_to_king(king_player, king_random, 12).message_resource_id != 756,
+          "fifty defeats do not cross the King's equipment-hint threshold");
+    king_player.record_monster_defeat(2);
+    king_random = yipe::MsvcRandom(5);
+    check(yipe::talk_to_king(king_player, king_random, 12).message_resource_id == 756,
+          "new gameplay defeats now unlock the King's hint above fifty kills");
 }
 
 void test_special_movement_actions() {
@@ -3305,6 +3508,7 @@ int main() {
     test_other_action();
     test_map_entry_and_hints();
     test_movement_hint_defeat_state();
+    test_monster_defeat_statistics();
     test_starting_shop();
     test_recovered_shop_transactions();
     test_recovered_casino_games();

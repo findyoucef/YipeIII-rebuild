@@ -50,7 +50,8 @@ struct GameState {
 // 11 adds the original per-monster encounter-history flags; version 12 adds
 // death and Hell Gatekeeper state; version 13 adds Other-action treasure,
 // water, and snow-search state; version 14 adds the Wormoid-defeat hint flag
-// while retaining all earlier readers.
+// and version 15 adds all 50 defeat counters and their history-completeness
+// flag while retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

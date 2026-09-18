@@ -98,6 +98,19 @@ void Player::initialize(CharacterType type) {
     maximum_ability_points = ability_points;
 }
 
+void Player::record_monster_defeat(int type_id) {
+    if (type_id < 1 || type_id > static_cast<int>(monster_defeats.size())) {
+        throw std::out_of_range("monster type is outside the defeat table");
+    }
+    auto& count = monster_defeats[static_cast<std::size_t>(type_id - 1)];
+    count = static_cast<std::int32_t>(static_cast<std::uint32_t>(count) + 1u);
+    quest_progress_total = static_cast<std::int32_t>(
+        static_cast<std::uint32_t>(quest_progress_total) + 1u);
+    if (type_id == 35) {
+        has_defeated_wormoid = count != 0;
+    }
+}
+
 bool Player::adjust_health(int delta) {
     health += delta;
     health = std::min(health, maximum_health);

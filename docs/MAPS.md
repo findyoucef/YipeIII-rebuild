@@ -220,8 +220,50 @@ The pushable-wall text itself has no strength condition: the entry patch changes
 its movement action, so a strong player activates the linked wall instead of
 seeing that hint. These initialization patches do not add persistent tile-change
 records; linked mechanisms continue to use their existing persistence path.
-Earlier entry eligibility checks and the map-`0x15` helper at `0x00412f30`
-remain separate follow-up work, not completed entry coverage.
+The earlier entry checks in `0x0040de80` are registration checks, not additional
+gameplay prerequisites. They cover descending from maps `0x0d` and `4` (action
+`0x0e`), deeper entry from maps `0x42` and `0x2a` (action `0x10`), and descending
+from map `0x15` through `0x00412f30`. The helpers call the original application's
+registration/profile routines, with a registration dialog on failure. This
+checkpoint only identifies those checks: it does not alter the original,
+reproduce registration, or change the rebuild's existing content access.
+Registration policy remains an explicit open difference, not a missing strength,
+stamp, key, or princess gate.
+
+## Defeat statistics
+
+The original player has 50 signed 32-bit counters at `+0x584`, indexed by monster
+type minus one. Combat writes are distinct from encounter-history flags:
+
+| Event | Counter behavior |
+| --- | --- |
+| Process a defeated target other than type 40/41 (`0x00405040`) | Increment that target's counter immediately |
+| Finish an Earth Giant or Gatekeeper primary group (`0x00405210`) | Increment the primary type's counter once, after all opponents are gone |
+| Frighten removes the third opponent (`0x00406fe0`) | Do not count the removed opponent; a resulting group victory still counts the primary boss |
+| Flee after processing a kill | Retain that kill, without counting surviving opponents |
+| Fatal ordinary counterattack | Return before processing the pending target kill |
+
+Attacks, Backstab, and damaging spells share the defeated-target path. Ordinary
+and Frighten-ending victories now share completion handling, including the
+previously omitted stamp/global-Gatekeeper updates after a final Frighten.
+Counter increments and aggregate sums preserve the original 32-bit wrapping
+without C++ signed-overflow behavior. `quest_progress_total` advances with each
+recorded kill, retaining any unattributed aggregate loaded from an older native
+save; the King's greater-than-50 equipment hint is now reachable through new
+combat progress. The Wormoid hint predicate stays synchronized with index 34,
+while retaining the historical version-14 flag when counts are unavailable.
+
+Ctrl+T's Kills view adapts `0x0044ca90`/`0x0044cb20`/`0x0044cdc0`: five pages of
+nine rows, with five rows on the last page, display the 41 known monster types
+and the death count. The dialog's total sums only indices 0–40; the King's
+aggregate sums all 50. Reserved entries 41–49 survive import and native saves
+but are not displayed. Names are revealed only for positive counts, not merely
+encountered monsters. This contradicts help string 806; the implemented rule
+follows the dialog's machine code. Previous/Next navigation does not wrap, and
+opening status ignores repeated keydown events. Older native saves visibly
+mark the displayed counters as partial; new games and legacy imports have the
+complete table. High scores and the remaining statistics panels are separate
+follow-up work.
 
 ## Monster catalogs
 

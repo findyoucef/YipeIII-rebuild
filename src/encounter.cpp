@@ -711,6 +711,29 @@ CombatTurn resolve_counterattacks(Player& player, const CombatEncounter& encount
     return result;
 }
 
+void finish_encounter_victory(Player& player, CombatEncounter& encounter,
+                              MsvcRandom& random, CombatTurn& result) {
+    const int primary_type = encounter.monsters[0].type_id;
+    if (primary_type == 40 || primary_type == 41) {
+        player.record_monster_defeat(primary_type);
+    }
+    result.outcome = CombatOutcome::victory;
+    result.reward = encounter.pending_reward;
+    result.reward.equipment_upgrade = finish_encounter_rewards(player, encounter, random);
+    result.level_up = try_level_up(player, random);
+    if (primary_type >= 35 && primary_type != 41
+        && primary_type == encounter.map_environment + 34) {
+        ++player.stamps_found;
+    }
+    if (primary_type == 40 && encounter.map_environment == 6) {
+        player.gatekeeper_state = 1;
+    } else if (primary_type == 41 && player.gatekeeper_state == 1
+               && player.has_underworld_key) {
+        player.gatekeeper_state = 2;
+    }
+    clear_combat_status(player);
+}
+
 void finish_defeated_target(Player& player, CombatEncounter& encounter,
                             int selected_slot, MsvcRandom& random,
                             CombatTurn& result) {
@@ -719,27 +742,11 @@ void finish_defeated_target(Player& player, CombatEncounter& encounter,
         player, target, encounter.monsters[0].type_id, selected_slot, random);
     encounter.pending_reward.experience += reward.experience;
     encounter.pending_reward.gold += reward.gold;
-    if (target.type_id == 35) {
-        player.has_defeated_wormoid = true;
+    if (target.type_id != 40 && target.type_id != 41) {
+        player.record_monster_defeat(target.type_id);
     }
     if (!has_living_monster(encounter)) {
-        const int primary_type = encounter.monsters[0].type_id;
-        result.outcome = CombatOutcome::victory;
-        result.reward = encounter.pending_reward;
-        result.reward.equipment_upgrade =
-            finish_encounter_rewards(player, encounter, random);
-        result.level_up = try_level_up(player, random);
-        if (primary_type >= 35 && primary_type != 41
-            && primary_type == encounter.map_environment + 34) {
-            ++player.stamps_found;
-        }
-        if (primary_type == 40 && encounter.map_environment == 6) {
-            player.gatekeeper_state = 1;
-        } else if (primary_type == 41 && player.gatekeeper_state == 1
-                   && player.has_underworld_key) {
-            player.gatekeeper_state = 2;
-        }
-        clear_combat_status(player);
+        finish_encounter_victory(player, encounter, random, result);
     } else {
         encounter.selected_target = first_living_monster(encounter);
     }
@@ -1173,12 +1180,7 @@ CombatTurn resolve_special_ability_turn(Player& player, CombatEncounter& encount
             if (has_living_monster(encounter)) {
                 encounter.selected_target = first_living_monster(encounter);
             } else {
-                result.outcome = CombatOutcome::victory;
-                result.reward = encounter.pending_reward;
-                result.reward.equipment_upgrade =
-                    finish_encounter_rewards(player, encounter, random);
-                result.level_up = try_level_up(player, random);
-                clear_combat_status(player);
+                finish_encounter_victory(player, encounter, random, result);
             }
         }
         break;
