@@ -1,5 +1,8 @@
 #include "yipe/auxiliary_data.hpp"
 
+#include "yipe/player.hpp"
+
+#include <algorithm>
 #include <cstddef>
 #include <fstream>
 #include <iterator>
@@ -94,6 +97,70 @@ private:
 };
 
 } // namespace
+
+HighScores default_high_scores() {
+    HighScores scores;
+    for (HighScoreEntry& entry : scores) {
+        entry.name = "----";
+    }
+    return scores;
+}
+
+std::size_t high_score_group_offset(int difficulty) {
+    // The original uses a signed short and falls back to the easy group.
+    switch (static_cast<std::int16_t>(difficulty)) {
+    case 2: return 15;
+    case 3: return 30;
+    default: return 0;
+    }
+}
+
+bool update_high_scores(HighScores& scores, const Player& player, bool completed_game) {
+    const HighScores previous = scores;
+    const std::size_t group = high_score_group_offset(player.difficulty);
+    if (completed_game) {
+        const auto first = scores.begin() + static_cast<std::ptrdiff_t>(group + 12);
+        const auto last = first + 3;
+        const auto same_name = std::find_if(first, last, [&player](const HighScoreEntry& entry) {
+            return entry.name == player.name;
+        });
+        if (same_name == last) {
+            const auto empty = std::find_if(first, last, [](const HighScoreEntry& entry) {
+                return entry.name == "----";
+            });
+            if (empty != last) {
+                empty->name = player.name;
+            }
+        }
+    }
+    const int princesses = static_cast<int>(std::count_if(
+        player.inventory_values.begin(), player.inventory_values.end(),
+        [](std::uint16_t value) { return static_cast<std::int16_t>(value) > 0; }));
+    const std::array values{player.quest_progress_total, princesses, player.gold, player.level};
+    for (std::size_t category = 0; category < values.size(); ++category) {
+        const std::size_t first = group + category * 3;
+        std::size_t rank = 3;
+        for (std::size_t index = 0; index < 3; ++index) {
+            if (scores[first + index].name == player.name) {
+                rank = index;
+            }
+        }
+        const int value = values[category];
+        if (rank == 3) {
+            rank = 2;
+        }
+        if (value < scores[first + rank].value) {
+            continue;
+        }
+        // New and existing names move ahead of equal scores.
+        while (rank > 0 && scores[first + rank - 1].value <= value) {
+            scores[first + rank] = scores[first + rank - 1];
+            --rank;
+        }
+        scores[first + rank] = {player.name, value};
+    }
+    return scores != previous;
+}
 
 OriginalAuxiliaryData load_original_auxiliary_data(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);

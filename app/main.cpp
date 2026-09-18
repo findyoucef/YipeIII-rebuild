@@ -1,4 +1,5 @@
 #include "yipe/audio.hpp"
+#include "yipe/auxiliary_data.hpp"
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
@@ -69,7 +70,7 @@ using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
 using Texture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>;
 using Cursor = std::unique_ptr<SDL_Cursor, decltype(&SDL_FreeCursor)>;
 
-enum class StartupChoice { new_game, load_game, settings, quit };
+enum class StartupChoice { new_game, load_game, settings, high_scores, quit };
 
 struct RuntimeAssets {
     std::filesystem::path bitmaps;
@@ -340,6 +341,9 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
             }
             if (event.key.keysym.sym == SDLK_s) {
                 return StartupChoice::settings;
+            }
+            if (event.key.keysym.sym == SDLK_h && event.key.repeat == 0) {
+                return StartupChoice::high_scores;
             }
             if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
                 return StartupChoice::quit;
@@ -1966,7 +1970,59 @@ void show_monster_defeats(SDL_Window* window, const yipe::Player& player) {
     }
 }
 
-void show_player_status(SDL_Window* window, const yipe::Player& player) {
+void record_player_high_scores(const std::filesystem::path& path, yipe::HighScores& scores,
+                               const yipe::Player& player) {
+    yipe::HighScores updated = scores;
+    if (yipe::update_high_scores(updated, player, player.gatekeeper_state == 3)) {
+        yipe::save_high_scores_atomic(path, updated);
+        scores = std::move(updated);
+    }
+}
+
+std::string high_score_page(const yipe::HighScores& scores, int difficulty) {
+    constexpr std::array<std::string_view, 3> modes{"Easy", "Medium", "Hard"};
+    constexpr std::array<std::string_view, 5> categories{
+        "Most Kills", "Most Princesses", "Most Cash at One Time", "Highest Level",
+        "First 3 Players to Complete Game",
+    };
+    const std::size_t group = yipe::high_score_group_offset(difficulty);
+    std::ostringstream message;
+    message << modes[group / 15] << " Mode\n";
+    for (std::size_t category = 0; category < categories.size(); ++category) {
+        message << '\n' << categories[category] << '\n';
+        for (std::size_t rank = 0; rank < 3; ++rank) {
+            const auto& entry = scores[group + category * 3 + rank];
+            message << rank + 1 << ". " << entry.name;
+            if (category < 4) {
+                message << " - " << entry.value;
+            }
+            message << '\n';
+        }
+    }
+    return message.str();
+}
+
+void show_high_scores(SDL_Window* window, const yipe::HighScores& scores, int difficulty = 2) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{0, 1, "Easy"},
+        SDL_MessageBoxButtonData{0, 2, "Medium"},
+        SDL_MessageBoxButtonData{0, 3, "Hard"},
+    };
+    while (true) {
+        const int choice = show_choice(window, "High Scores", high_score_page(scores, difficulty),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        if (choice < 1 || choice > 3) {
+            return;
+        }
+        difficulty = choice;
+    }
+}
+
+void show_player_status(SDL_Window* window, const yipe::Player& player,
+                        const std::filesystem::path& high_scores_path,
+                        yipe::HighScores& high_scores) {
     const auto carried = std::count_if(
         player.inventory.begin(),
         player.inventory.begin()
@@ -1986,10 +2042,19 @@ void show_player_status(SDL_Window* window, const yipe::Player& player) {
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
                                      | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
         SDL_MessageBoxButtonData{0, 1, "Kills"},
+        SDL_MessageBoxButtonData{0, 2, "High Scores"},
     };
-    while (show_choice(window, "Player Status", message.str(), buttons.data(),
-                       static_cast<int>(buttons.size())) == 1) {
-        show_monster_defeats(window, player);
+    while (true) {
+        const int choice = show_choice(window, "Player Status", message.str(), buttons.data(),
+                                       static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            show_monster_defeats(window, player);
+        } else if (choice == 2) {
+            record_player_high_scores(high_scores_path, high_scores, player);
+            show_high_scores(window, high_scores, player.difficulty);
+        } else {
+            return;
+        }
     }
 }
 
@@ -2505,6 +2570,7 @@ bool confirm_quit(SDL_Window* window, const std::filesystem::path& save_path,
 bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures,
               yipe::GameState game, const std::filesystem::path& save_path,
               const std::filesystem::path& settings_path,
+              const std::filesystem::path& high_scores_path, yipe::HighScores& high_scores,
               yipe::GameSettings& settings, AudioPlayer& audio) {
     prepare_game_view(window, renderer);
     yipe::MsvcRandom random(game.random_state);
@@ -2525,6 +2591,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
     }
     const bool completed_saved_finale = map.id() == 0x11
         && yipe::complete_gatekeeper_finale(game.player);
+    if (game.player.gatekeeper_state == 3) {
+        record_player_high_scores(high_scores_path, high_scores, game.player);
+    }
     render_game(renderer, map, textures, game);
     if (completed_saved_finale) {
         audio.play(129, settings.sound_enabled);
@@ -2532,6 +2601,17 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                      "You've rescued all the princesses!!\n\n"
                      "You are the hero of the entire world!!");
     }
+
+    const auto fight_monster = [&](const yipe::MonsterPlacement& placement) {
+        const int previous_level = game.player.level;
+        const EncounterResult result = run_monster_encounter(
+            window, renderer, placement, game.player, game.location, random,
+            map.environment(), audio, settings);
+        if (result == EncounterResult::victory && game.player.level > previous_level) {
+            record_player_high_scores(high_scores_path, high_scores, game.player);
+        }
+        return result;
+    };
 
     while (true) {
         SDL_Event event{};
@@ -2570,7 +2650,16 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         if (event.key.keysym.sym == SDLK_t
             && (event.key.keysym.mod & KMOD_CTRL) != 0) {
             if (event.key.repeat == 0) {
-                show_player_status(window, game.player);
+                show_player_status(window, game.player, high_scores_path, high_scores);
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_h
+            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+            if (event.key.repeat == 0) {
+                record_player_high_scores(high_scores_path, high_scores, game.player);
+                show_high_scores(window, high_scores, game.player.difficulty);
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -2703,6 +2792,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 game.map_visibility, map, game.location.position);
             render_game(renderer, map, textures, game);
             if (completed_finale) {
+                record_player_high_scores(high_scores_path, high_scores, game.player);
                 audio.play(129, settings.sound_enabled);
                 show_message(window, "Victory",
                              "You've rescued all the princesses!!\n\n"
@@ -2751,9 +2841,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             if (const std::optional<yipe::MonsterPlacement> placement =
                     monster_encounter_at(game)) {
                 encounter_resolved = true;
-                const EncounterResult encounter = run_monster_encounter(
-                    window, renderer, *placement, game.player, game.location, random,
-                    map.environment(), audio, settings);
+                const EncounterResult encounter = fight_monster(*placement);
                 if (encounter == EncounterResult::quit_requested) {
                     save_current_game(window, save_path, game, random, false);
                     return true;
@@ -2871,10 +2959,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                             transient_monster_placement(
                                 41, hell_gatekeeper_position);
                         gatekeeper.encounter_size = 3;
-                        const EncounterResult encounter = run_monster_encounter(
-                            window, renderer, gatekeeper, game.player,
-                            game.location, random, map.environment(), audio,
-                            settings);
+                        const EncounterResult encounter = fight_monster(gatekeeper);
                         if (encounter == EncounterResult::quit_requested) {
                             save_current_game(
                                 window, save_path, game, random, false);
@@ -2938,12 +3023,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         if (game.roaming_monster
             && game.roaming_monster->position == game.location.position) {
             const int monster_type = game.roaming_monster->type_id;
-            const EncounterResult encounter = run_monster_encounter(
-                window, renderer,
+            const EncounterResult encounter = fight_monster(
                 transient_monster_placement(
-                    monster_type, game.roaming_monster->position),
-                game.player, game.location, random, map.environment(), audio,
-                settings);
+                    monster_type, game.roaming_monster->position));
             game.roaming_monster.reset();
             if (encounter == EncounterResult::quit_requested) {
                 save_current_game(window, save_path, game, random, false);
@@ -2962,12 +3044,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         if (game.pursuing_monster
             && game.pursuing_monster->position == game.location.position) {
             const int monster_type = game.pursuing_monster->type_id;
-            const EncounterResult encounter = run_monster_encounter(
-                window, renderer,
+            const EncounterResult encounter = fight_monster(
                 transient_monster_placement(
-                    monster_type, game.pursuing_monster->position),
-                game.player, game.location, random, map.environment(), audio,
-                settings);
+                    monster_type, game.pursuing_monster->position));
             if (encounter == EncounterResult::quit_requested) {
                 save_current_game(window, save_path, game, random, false);
                 return true;
@@ -3001,12 +3080,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
         if (roaming_update
             == yipe::RoamingMonsterUpdate::encountered_player) {
             const int monster_type = game.roaming_monster->type_id;
-            const EncounterResult encounter = run_monster_encounter(
-                window, renderer,
+            const EncounterResult encounter = fight_monster(
                 transient_monster_placement(
-                    monster_type, game.roaming_monster->position),
-                game.player, game.location, random, map.environment(), audio,
-                settings);
+                    monster_type, game.roaming_monster->position));
             game.roaming_monster.reset();
             if (encounter == EncounterResult::quit_requested) {
                 save_current_game(window, save_path, game, random, false);
@@ -3031,12 +3107,9 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                    game.map_visibility, random)
                 == yipe::RoamingMonsterMove::encountered_player) {
             const int monster_type = game.pursuing_monster->type_id;
-            const EncounterResult encounter = run_monster_encounter(
-                window, renderer,
+            const EncounterResult encounter = fight_monster(
                 transient_monster_placement(
-                    monster_type, game.pursuing_monster->position),
-                game.player, game.location, random, map.environment(), audio,
-                settings);
+                    monster_type, game.pursuing_monster->position));
             if (encounter == EncounterResult::quit_requested) {
                 save_current_game(window, save_path, game, random, false);
                 return true;
@@ -3064,6 +3137,8 @@ int main(int argc, char* argv[]) {
         const std::filesystem::path save_path = preference_directory / "save.y3r";
         const std::filesystem::path settings_path =
             preference_directory / "settings.y3r";
+        const std::filesystem::path high_scores_path =
+            preference_directory / "highscores.y3r";
         yipe::GameSettings settings;
         std::string settings_warning;
         if (std::filesystem::exists(settings_path)) {
@@ -3233,6 +3308,92 @@ int main(int argc, char* argv[]) {
                 == std::string::npos) {
                 throw std::runtime_error("kill statistics hid the older-save history limitation");
             }
+            yipe::HighScores score_table = yipe::default_high_scores();
+            for (std::size_t index = 0; index < score_table.size(); ++index) {
+                score_table[index] = {"Player" + std::to_string(index),
+                                      static_cast<std::int32_t>(100 + index)};
+            }
+            constexpr std::array<std::string_view, 3> score_modes{"Easy", "Medium", "Hard"};
+            for (int difficulty = 1; difficulty <= 3; ++difficulty) {
+                const auto text = high_score_page(score_table, difficulty);
+                const std::size_t first = static_cast<std::size_t>((difficulty - 1) * 15);
+                std::ostringstream expected;
+                expected << score_modes[static_cast<std::size_t>(difficulty - 1)]
+                         << " Mode\n";
+                constexpr std::array<std::string_view, 5> headings{
+                    "Most Kills", "Most Princesses", "Most Cash at One Time", "Highest Level",
+                    "First 3 Players to Complete Game",
+                };
+                for (std::size_t category = 0; category < headings.size(); ++category) {
+                    expected << '\n' << headings[category] << '\n';
+                    for (std::size_t rank = 0; rank < 3; ++rank) {
+                        const auto index = first + category * 3 + rank;
+                        expected << rank + 1 << ". Player" << index;
+                        if (category < 4) {
+                            expected << " - " << 100 + index;
+                        }
+                        expected << '\n';
+                    }
+                }
+                if (text != expected.str()) {
+                    throw std::runtime_error("high scores lost difficulty, category, rank, or value order");
+                }
+            }
+            if (high_score_page(score_table, -1) != high_score_page(score_table, 1)) {
+                throw std::runtime_error("high scores did not fall back to Easy mode");
+            }
+            const auto smoke_scores_path = std::filesystem::temp_directory_path()
+                / "yipe3-smoke-high-scores.y3r";
+            score_table = yipe::default_high_scores();
+            statistics_player.gold = 50;
+            record_player_high_scores(smoke_scores_path, score_table, statistics_player);
+            if (yipe::load_high_scores(smoke_scores_path) != score_table
+                || score_table[15].value != 3 || score_table[21].value != 50
+                || score_table[27].name != "----") {
+                throw std::runtime_error("score submission did not persist the current player values");
+            }
+            const auto saved_scores = score_table;
+            record_player_high_scores(smoke_scores_path / "invalid.y3r", score_table, statistics_player);
+            statistics_player.gold = 60;
+            bool rejected_score_write = false;
+            try {
+                record_player_high_scores(smoke_scores_path / "invalid.y3r", score_table, statistics_player);
+            } catch (const std::runtime_error&) {
+                rejected_score_write = true;
+            }
+            if (!rejected_score_write || score_table != saved_scores
+                || yipe::load_high_scores(smoke_scores_path) != saved_scores) {
+                throw std::runtime_error("failed score submission published or overwrote unpersisted values");
+            }
+            statistics_player.gatekeeper_state = 3;
+            record_player_high_scores(smoke_scores_path, score_table, statistics_player);
+            if (score_table[21].value != 60 || score_table[27].name != statistics_player.name
+                || yipe::load_high_scores(smoke_scores_path) != score_table) {
+                throw std::runtime_error("score submission lost the completed game or same-name improvement");
+            }
+            std::filesystem::remove(smoke_scores_path);
+            prepare_startup_view(window.get(), renderer.get());
+            SDL_Event score_key{};
+            score_key.type = SDL_KEYDOWN;
+            score_key.key.keysym.sym = SDLK_h;
+            score_key.key.repeat = 1;
+            SDL_PushEvent(&score_key);
+            SDL_Event quit_key = score_key;
+            quit_key.key.keysym.sym = SDLK_q;
+            quit_key.key.repeat = 0;
+            SDL_PushEvent(&quit_key);
+            if (run_startup_menu(renderer.get(), menu.get(), copyright.get()) != StartupChoice::quit) {
+                throw std::runtime_error("startup high scores accepted a repeated keydown");
+            }
+            score_key.key.repeat = 0;
+            SDL_PushEvent(&score_key);
+            SDL_PushEvent(&quit_key);
+            if (run_startup_menu(renderer.get(), menu.get(), copyright.get())
+                != StartupChoice::high_scores) {
+                throw std::runtime_error("startup high scores did not accept H");
+            }
+            SDL_FlushEvent(SDL_KEYDOWN);
+            prepare_game_view(window.get(), renderer.get());
             SDL_Event repeated_key{};
             repeated_key.type = SDL_KEYDOWN;
             repeated_key.key.repeat = 1;
@@ -3273,6 +3434,8 @@ int main(int argc, char* argv[]) {
         if (!settings_warning.empty()) {
             show_message(window.get(), "Settings Warning", settings_warning);
         }
+        yipe::HighScores high_scores = std::filesystem::exists(high_scores_path)
+            ? yipe::load_high_scores(high_scores_path) : yipe::default_high_scores();
         while (true) {
             prepare_startup_view(window.get(), renderer.get());
             audio.play(152, settings.sound_enabled);
@@ -3286,7 +3449,8 @@ int main(int argc, char* argv[]) {
                 game.player = yipe::Player(*type);
                 game.random_state = static_cast<std::uint32_t>(std::time(nullptr));
                 if (run_game(window.get(), renderer.get(), game_textures, game,
-                             save_path, settings_path, settings, audio)) {
+                             save_path, settings_path, high_scores_path, high_scores,
+                             settings, audio)) {
                     return 0;
                 }
                 break;
@@ -3295,7 +3459,7 @@ int main(int argc, char* argv[]) {
                 try {
                     if (run_game(window.get(), renderer.get(), game_textures,
                                  yipe::load_game(save_path), save_path, settings_path,
-                                 settings, audio)) {
+                                 high_scores_path, high_scores, settings, audio)) {
                         return 0;
                     }
                 } catch (const std::exception& error) {
@@ -3304,6 +3468,9 @@ int main(int argc, char* argv[]) {
                 break;
             case StartupChoice::settings:
                 show_settings(window.get(), settings, settings_path, audio);
+                break;
+            case StartupChoice::high_scores:
+                show_high_scores(window.get(), high_scores);
                 break;
             case StartupChoice::quit:
                 return 0;

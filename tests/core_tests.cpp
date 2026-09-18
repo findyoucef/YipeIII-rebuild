@@ -378,6 +378,26 @@ void test_native_save() {
     check(failed_write && yipe::load_player(path).name == "Replacement",
           "failed save leaves the previous valid file usable");
 
+    std::vector<std::uint8_t> valid;
+    {
+        std::ifstream input(path, std::ios::binary);
+        valid.assign(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>());
+    }
+    for (const std::uint16_t version : {0, 16, 65535}) {
+        auto unsupported = valid;
+        unsupported[4] = static_cast<std::uint8_t>(version);
+        unsupported[5] = static_cast<std::uint8_t>(version >> 8u);
+        write_bytes(path, unsupported);
+        bool rejected_version = false;
+        try {
+            static_cast<void>(yipe::load_game(path));
+        } catch (const std::runtime_error&) {
+            rejected_version = true;
+        }
+        check(rejected_version, "native game saves still reject versions outside 1 through 15");
+    }
+    write_bytes(path, valid);
+
     {
         std::fstream corrupt(path, std::ios::binary | std::ios::in | std::ios::out);
         corrupt.seekp(-1, std::ios::end);
@@ -920,6 +940,262 @@ void test_original_auxiliary_data() {
     }
     check(rejected, "original auxiliary reader rejects truncation");
     std::filesystem::remove(temporary);
+}
+
+void test_high_scores() {
+    const yipe::HighScores defaults = yipe::default_high_scores();
+    check(std::all_of(defaults.begin(), defaults.end(), [](const yipe::HighScoreEntry& entry) {
+              return entry.name == "----" && entry.value == 0;
+          }), "all 45 high scores start with the recovered placeholder and zero value");
+
+    yipe::Player player;
+    player.name = "Hero";
+    player.record_monster_defeat(2);
+    player.record_monster_defeat(41);
+    player.record_monster_defeat(50);
+    player.inventory_values[0] = 1;
+    player.inventory_values[29] = 0x7fff;
+    player.inventory_values[1] = 0x8000;
+    player.inventory_values[2] = 0xffff;
+    player.princesses_found = 20;
+    player.gold = 789;
+    player.level = 7;
+    constexpr std::array<std::pair<int, std::size_t>, 9> groups{{
+        {1, 0}, {2, 15}, {3, 30}, {0, 0}, {-1, 0}, {4, 0},
+        {65538, 15}, {65539, 30}, {-65534, 15},
+    }};
+    for (const auto [difficulty, group] : groups) {
+        player.difficulty = difficulty;
+        auto scores = defaults;
+        check(yipe::high_score_group_offset(difficulty) == group,
+              "high-score difficulty uses signed-short groups and the Easy fallback");
+        check(yipe::update_high_scores(scores, player, true),
+              "a new player's scores and completion change the table");
+        auto expected = defaults;
+        expected[group] = {"Hero", 3};
+        expected[group + 3] = {"Hero", 2};
+        expected[group + 6] = {"Hero", 789};
+        expected[group + 9] = {"Hero", 7};
+        expected[group + 12] = {"Hero", 0};
+        check(scores == expected,
+              "scores use all 50 kills, signed positive rescue slots, cash, level, and names only");
+    }
+    player.difficulty = 1;
+    player.monster_defeat_history_complete = false;
+    player.quest_progress_total = 103;
+    player.inventory_values.fill(1);
+    auto scores = defaults;
+    static_cast<void>(yipe::update_high_scores(scores, player));
+    check(scores[0].value == 103 && scores[3].value == 30,
+          "scores retain historical native-save kills and count all 30 rescue slots");
+
+    scores = defaults;
+    player = yipe::Player{};
+    player.difficulty = 1;
+    player.gold = 0;
+    player.level = 0;
+    static_cast<void>(yipe::update_high_scores(scores, player));
+    for (std::size_t category = 0; category < 4; ++category) {
+        check(scores[category * 3] == yipe::HighScoreEntry{player.name, 0},
+              "zero scores qualify and move ahead of empty zero rows");
+    }
+    check(!yipe::update_high_scores(scores, player), "identical first-place scores are unchanged");
+
+    scores = defaults;
+    for (std::size_t category = 0; category < 4; ++category) {
+        scores[category * 3] = {"A", 30};
+        scores[category * 3 + 1] = {"B", 20};
+        scores[category * 3 + 2] = {"C", 10};
+    }
+    player.name = "D";
+    player.gold = 9;
+    const auto before_rejection = scores;
+    check(!yipe::update_high_scores(scores, player) && scores == before_rejection,
+          "a new name below third place leaves the table unchanged");
+    player.gold = 10;
+    check(yipe::update_high_scores(scores, player)
+              && scores[6] == yipe::HighScoreEntry{"A", 30}
+              && scores[7] == yipe::HighScoreEntry{"B", 20}
+              && scores[8] == yipe::HighScoreEntry{"D", 10},
+          "a new third-place tie replaces the previous third-place name");
+    player.gold = 20;
+    check(yipe::update_high_scores(scores, player)
+              && scores[7] == yipe::HighScoreEntry{"D", 20}
+              && scores[8] == yipe::HighScoreEntry{"B", 20},
+          "same-name improvement moves ahead of a tied preceding row");
+    player.gold = 30;
+    check(yipe::update_high_scores(scores, player)
+              && scores[6] == yipe::HighScoreEntry{"D", 30}
+              && scores[7] == yipe::HighScoreEntry{"A", 30},
+          "same-name improvement can reach first place without duplicating the name");
+    player.gold = 40;
+    check(yipe::update_high_scores(scores, player) && scores[6].value == 40,
+          "first-place same-name improvement reports a change for native persistence");
+    const auto before_regression = scores;
+    player.gold = 25;
+    check(!yipe::update_high_scores(scores, player) && scores == before_regression,
+          "a lower score never replaces or reinserts the existing name");
+    player.name = "d";
+    player.gold = 40;
+    check(yipe::update_high_scores(scores, player)
+              && scores[6] == yipe::HighScoreEntry{"d", 40}
+              && scores[7] == yipe::HighScoreEntry{"D", 40}
+              && scores[8] == yipe::HighScoreEntry{"A", 30},
+          "case-sensitive new names move ahead of ties and evict the third row");
+    player.name = "D";
+    check(yipe::update_high_scores(scores, player)
+              && scores[6] == yipe::HighScoreEntry{"D", 40}
+              && scores[7] == yipe::HighScoreEntry{"d", 40}
+              && std::count_if(scores.begin() + 6, scores.begin() + 9,
+                     [](const yipe::HighScoreEntry& entry) { return entry.name == "D"; }) == 1,
+          "equal same-name scores move ahead of ties without adding another record");
+    check(!yipe::update_high_scores(scores, player), "an unchanged table does not request a write");
+    scores[6] = {"Duplicate", 30};
+    scores[7] = {"Other", 20};
+    scores[8] = {"Duplicate", 10};
+    player.name = "Duplicate";
+    player.gold = 25;
+    static_cast<void>(yipe::update_high_scores(scores, player));
+    check(scores[6] == yipe::HighScoreEntry{"Duplicate", 30}
+              && scores[7] == yipe::HighScoreEntry{"Duplicate", 25}
+              && scores[8] == yipe::HighScoreEntry{"Other", 20},
+          "imported duplicate names preserve the original last-match update rule");
+
+    scores = defaults;
+    scores[12].value = 7;
+    scores[13].value = 8;
+    scores[14].value = 9;
+    player.name = "First";
+    static_cast<void>(yipe::update_high_scores(scores, player));
+    check(scores[12].name == "----", "ordinary submissions do not record game completion");
+    check(yipe::update_high_scores(scores, player, true)
+              && scores[12] == yipe::HighScoreEntry{"First", 7},
+          "completion-only changes report a write without modifying numeric values");
+    check(!yipe::update_high_scores(scores, player, true) && scores[13].name == "----",
+          "the same finisher cannot occupy two completion slots");
+    player.name = "first";
+    static_cast<void>(yipe::update_high_scores(scores, player, true));
+    player.name = "Third";
+    static_cast<void>(yipe::update_high_scores(scores, player, true));
+    player.name = "Fourth";
+    player.gold = 999;
+    static_cast<void>(yipe::update_high_scores(scores, player, true));
+    check(scores[12] == yipe::HighScoreEntry{"First", 7}
+              && scores[13] == yipe::HighScoreEntry{"first", 8}
+              && scores[14] == yipe::HighScoreEntry{"Third", 9},
+          "the first three case-sensitive finishers keep arrival order and are never evicted");
+}
+
+void test_high_score_save() {
+    const std::filesystem::path path =
+        std::filesystem::temp_directory_path() / "yipe3-high-score-test.y3r";
+    auto scores = yipe::default_high_scores();
+    for (std::size_t index = 0; index < scores.size(); ++index) {
+        scores[index] = {"Name" + std::to_string(index),
+                         static_cast<std::int32_t>(index) - 20};
+    }
+    scores[0] = {"", std::numeric_limits<std::int32_t>::min()};
+    scores[1] = {std::string("A\0B", 3), std::numeric_limits<std::int32_t>::max()};
+    scores[44].name.assign(65535, 'x');
+    yipe::save_high_scores_atomic(path, scores);
+    check(yipe::load_high_scores(path) == scores,
+          "native high scores round-trip all groups, signed values, and byte-length names");
+    std::vector<std::uint8_t> expected{'Y', '3', 'H', 'S', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    for (const auto& entry : scores) {
+        append_u16(expected, static_cast<std::uint16_t>(entry.name.size()));
+        expected.insert(expected.end(), entry.name.begin(), entry.name.end());
+        append_i32(expected, entry.value);
+    }
+    write_u32(expected, 6, static_cast<std::uint32_t>(expected.size() - 14));
+    write_u32(expected, 10, test_crc32(expected, 14));
+    {
+        std::ifstream input(path, std::ios::binary);
+        const std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
+                                               std::istreambuf_iterator<char>()};
+        check(bytes == expected, "high-score version 1 has the documented framing and 45-record payload");
+    }
+    scores = yipe::load_original_auxiliary_data(
+        std::filesystem::path(YIPE_TEST_EVIDENCE_DIR) / "Yipe3-2026-09-15.dat").high_scores;
+    yipe::save_high_scores_atomic(path, scores);
+    check(yipe::load_high_scores(path) == scores,
+          "atomic replacement preserves every imported original auxiliary score entry");
+    auto invalid = scores;
+    invalid[44].name.assign(65536, 'x');
+    bool failed_write = false;
+    try {
+        yipe::save_high_scores_atomic(path, invalid);
+    } catch (const std::runtime_error&) {
+        failed_write = true;
+    }
+    check(failed_write && yipe::load_high_scores(path) == scores
+              && !std::filesystem::exists(path.string() + ".tmp"),
+          "an oversized score name leaves the previous file intact without a temporary file");
+    std::vector<std::uint8_t> valid;
+    {
+        std::ifstream input(path, std::ios::binary);
+        valid.assign(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>());
+    }
+    const auto rejects = [&](const std::vector<std::uint8_t>& bytes, const std::string& description) {
+        write_bytes(path, bytes);
+        bool rejected = false;
+        try {
+            static_cast<void>(yipe::load_high_scores(path));
+        } catch (const std::runtime_error&) {
+            rejected = true;
+        }
+        check(rejected, description);
+    };
+    auto corrupt = valid;
+    corrupt[0] = 'X';
+    rejects(corrupt, "high scores reject an incorrect magic");
+    for (const std::uint16_t version : {0, 2, 65535}) {
+        corrupt = valid;
+        corrupt[4] = static_cast<std::uint8_t>(version);
+        corrupt[5] = static_cast<std::uint8_t>(version >> 8u);
+        rejects(corrupt, "high scores reject unsupported versions");
+    }
+    corrupt = valid;
+    corrupt.back() ^= 1;
+    rejects(corrupt, "high scores reject checksum corruption");
+    corrupt = valid;
+    corrupt[6] ^= 1;
+    rejects(corrupt, "high scores reject an incorrect payload size");
+    corrupt.resize(13);
+    rejects(corrupt, "high scores reject a truncated header");
+    corrupt = valid;
+    corrupt.pop_back();
+    rejects(corrupt, "high scores reject a truncated file");
+    write_u32(corrupt, 6, static_cast<std::uint32_t>(corrupt.size() - 14));
+    write_u32(corrupt, 10, test_crc32(corrupt, 14));
+    rejects(corrupt, "high scores reject an incomplete record even with valid framing");
+    corrupt = valid;
+    corrupt.push_back(0);
+    rejects(corrupt, "high scores reject appended file data");
+    write_u32(corrupt, 6, static_cast<std::uint32_t>(corrupt.size() - 14));
+    write_u32(corrupt, 10, test_crc32(corrupt, 14));
+    rejects(corrupt, "high scores reject trailing payload data even with valid framing");
+    corrupt = valid;
+    corrupt[14] = 0xff;
+    corrupt[15] = 0xff;
+    write_u32(corrupt, 10, test_crc32(corrupt, 14));
+    rejects(corrupt, "high scores reject a name length exceeding the payload");
+    write_bytes(path, valid);
+    bool rejected_game = false;
+    try {
+        static_cast<void>(yipe::load_game(path));
+    } catch (const std::runtime_error&) {
+        rejected_game = true;
+    }
+    check(rejected_game, "a high-score file cannot be mistaken for a game save");
+    yipe::save_player_atomic(path, yipe::Player{});
+    bool rejected_scores = false;
+    try {
+        static_cast<void>(yipe::load_high_scores(path));
+    } catch (const std::runtime_error&) {
+        rejected_scores = true;
+    }
+    check(rejected_scores, "a game save cannot be mistaken for high scores");
+    std::filesystem::remove(path);
 }
 
 void test_settings_and_audio_catalog() {
@@ -3500,6 +3776,8 @@ int main() {
     test_game_save();
     test_legacy_save_import();
     test_original_auxiliary_data();
+    test_high_scores();
+    test_high_score_save();
     test_settings_and_audio_catalog();
     test_starting_map();
     test_static_map_catalog_and_edges();

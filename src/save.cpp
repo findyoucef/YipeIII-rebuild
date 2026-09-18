@@ -1,5 +1,6 @@
 #include "yipe/save.hpp"
 
+#include "yipe/auxiliary_data.hpp"
 #include "yipe/encounter.hpp"
 
 #include <algorithm>
@@ -21,9 +22,10 @@ namespace yipe {
 namespace {
 
 constexpr std::array<std::uint8_t, 4> magic = {'Y', '3', 'R', 'S'};
+constexpr std::array<std::uint8_t, 4> high_scores_magic = {'Y', '3', 'H', 'S'};
+constexpr std::uint16_t high_scores_format_version = 1;
 constexpr std::uint16_t player_format_version = 1;
 constexpr std::uint16_t progression_game_format_version = 2;
-constexpr std::uint16_t ability_game_format_version = 3;
 constexpr std::uint16_t movement_game_format_version = 4;
 constexpr std::uint16_t map_changes_game_format_version = 5;
 constexpr std::uint16_t spells_game_format_version = 6;
@@ -128,14 +130,17 @@ private:
     std::size_t position_ = 0;
 };
 
-std::vector<std::uint8_t> encode_player_payload(const Player& player) {
-    if (player.name.size() > std::numeric_limits<std::uint16_t>::max()) {
-        throw std::runtime_error("player name is too long to save");
+void append_string(std::vector<std::uint8_t>& payload, const std::string& name) {
+    if (name.size() > std::numeric_limits<std::uint16_t>::max()) {
+        throw std::runtime_error("name is too long to save");
     }
+    append_u16(payload, static_cast<std::uint16_t>(name.size()));
+    payload.insert(payload.end(), name.begin(), name.end());
+}
 
+std::vector<std::uint8_t> encode_player_payload(const Player& player) {
     std::vector<std::uint8_t> payload;
-    append_u16(payload, static_cast<std::uint16_t>(player.name.size()));
-    payload.insert(payload.end(), player.name.begin(), player.name.end());
+    append_string(payload, player.name);
     append_i32(payload, player.dexterity);
     append_i32(payload, player.intelligence);
     append_i32(payload, player.strength);
@@ -318,12 +323,13 @@ void replace_file(const std::filesystem::path& temporary,
 }
 
 void save_payload_atomic(const std::filesystem::path& path, std::uint16_t version,
-                         const std::vector<std::uint8_t>& payload) {
+                         const std::vector<std::uint8_t>& payload,
+                         const std::array<std::uint8_t, 4>& file_magic = magic) {
     if (payload.size() > std::numeric_limits<std::uint32_t>::max()) {
         throw std::runtime_error("save payload is too large");
     }
 
-    std::vector<std::uint8_t> file(magic.begin(), magic.end());
+    std::vector<std::uint8_t> file(file_magic.begin(), file_magic.end());
     append_u16(file, version);
     append_u32(file, static_cast<std::uint32_t>(payload.size()));
     append_u32(file, crc32(payload));
@@ -345,14 +351,15 @@ struct DecodedSave {
     std::vector<std::uint8_t> payload;
 };
 
-DecodedSave read_save(const std::filesystem::path& path) {
+DecodedSave read_save(const std::filesystem::path& path,
+                      const std::array<std::uint8_t, 4>& file_magic = magic) {
     std::ifstream input(path, std::ios::binary);
     if (!input) {
         throw std::runtime_error("could not open save file");
     }
     const std::vector<std::uint8_t> file{std::istreambuf_iterator<char>(input),
                                          std::istreambuf_iterator<char>()};
-    if (file.size() < 14 || !std::equal(magic.begin(), magic.end(), file.begin())) {
+    if (file.size() < 14 || !std::equal(file_magic.begin(), file_magic.end(), file.begin())) {
         throw std::runtime_error("not a Yipe III rebuild save file");
     }
 
@@ -361,22 +368,6 @@ DecodedSave read_save(const std::filesystem::path& path) {
         static_cast<void>(header.u8());
     }
     const std::uint16_t version = header.u16();
-    if (version != player_format_version && version != progression_game_format_version
-        && version != ability_game_format_version
-        && version != movement_game_format_version
-        && version != map_changes_game_format_version
-        && version != spells_game_format_version
-        && version != quest_game_format_version
-        && version != princess_game_format_version
-        && version != monster_game_format_version
-        && version != surface_return_game_format_version
-        && version != monster_history_game_format_version
-        && version != death_game_format_version
-        && version != other_action_game_format_version
-        && version != wormoid_hint_game_format_version
-        && version != game_format_version) {
-        throw std::runtime_error("unsupported save version");
-    }
     const std::uint32_t payload_size = header.u32();
     const std::uint32_t expected_crc = header.u32();
     if (payload_size != file.size() - 14) {
@@ -406,6 +397,9 @@ void save_game_atomic(const std::filesystem::path& path, const GameState& game) 
 
 GameState load_game(const std::filesystem::path& path) {
     DecodedSave save = read_save(path);
+    if (save.version < player_format_version || save.version > game_format_version) {
+        throw std::runtime_error("unsupported save version");
+    }
     Reader reader(save.payload);
     GameState game;
     game.player = decode_player_payload(reader);
@@ -586,6 +580,32 @@ GameState load_game(const std::filesystem::path& path) {
         throw std::runtime_error("save payload contains unexpected trailing data");
     }
     return game;
+}
+
+void save_high_scores_atomic(const std::filesystem::path& path, const HighScores& scores) {
+    std::vector<std::uint8_t> payload;
+    for (const HighScoreEntry& entry : scores) {
+        append_string(payload, entry.name);
+        append_i32(payload, entry.value);
+    }
+    save_payload_atomic(path, high_scores_format_version, payload, high_scores_magic);
+}
+
+HighScores load_high_scores(const std::filesystem::path& path) {
+    const DecodedSave save = read_save(path, high_scores_magic);
+    if (save.version != high_scores_format_version) {
+        throw std::runtime_error("unsupported high-score version");
+    }
+    Reader reader(save.payload);
+    HighScores scores;
+    for (HighScoreEntry& entry : scores) {
+        entry.name = reader.string();
+        entry.value = reader.i32();
+    }
+    if (!reader.finished()) {
+        throw std::runtime_error("high-score payload contains unexpected trailing data");
+    }
+    return scores;
 }
 
 } // namespace yipe
