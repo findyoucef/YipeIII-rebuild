@@ -69,7 +69,7 @@ The write branch stores zero instead when the prior validation flag is false. Th
 and every serialized field not yet understood. The known mapping includes the
 player name, primary stats, HP/SP/AP, level, weapon and armor ranks, five minor
 equipment ranks, XP, transformed gold, world coordinates, computed map ID,
-difficulty, combat style, restoration count, tree/key movement state, inventory,
+difficulty, combat style, learned special ability, restoration count, tree/key movement state, inventory,
 and the recovered extended item-status fields. The King-dialog trace also maps
 `+0x05c` to its quest score/value, `+0x063` to the Lucky Rabbit Foot, the 30
 `+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
@@ -96,6 +96,47 @@ The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
 which stores the result as player state rather than rejecting the document.
 The importer never writes `.yp3` files.
+
+## Special statistics fields
+
+Dialog 395, opened by the Stats dialog's Special button at `0x0044c3e0`,
+displays the following existing player fields. Its initialization at
+`0x0044d2d0` and control bindings at `0x0044d1f0` establish the mapping:
+
+| Player offset | Display | Rebuild state |
+| --- | --- | --- |
+| `+0x66e` | Rare Stamps Collected, formatted as a signed 16-bit integer | `stamps_found` |
+| `+0x0d0[0..29]` | Princesses Rescued, count of positive signed 16-bit slots | `rescued_princess_count()` over `inventory_values` |
+| `+0x080`, `+0x082` | Rainbow Key, Underworld Key | `has_rainbow_key`, `has_underworld_key` |
+| `+0x065` | Ring of Bonus Healing | `has_bonus_healing_ring` |
+| `+0x674` | Tree Climbing Tools | `has_tree_climbing_shoes` |
+| `+0x064` | Waterproof Shoe Spray | `has_waterproof_shoe_spray` |
+| `+0x063` | King's Lucky Rabbit Foot | `has_lucky_rabbit_foot` |
+| `+0x074` | Current Ability: None, Backstab, Frighten, Invisibility, or Enrage | `special_ability` |
+
+Resource strings 133-134, 171-174, and 451-454 supply the names. The key and
+special-item lists retain this order, hide unowned items, and display None
+when empty. SDL adapts the two-column dialog to a read-only message box reached
+through Ctrl+T, Special; closing it returns to player status. It does not
+change quest counters, write saves, or submit high scores. Native save version
+15 already stores all the required state, so this panel adds no save fields.
+
+Legacy field `+0x074` now maps supported ability IDs 0-4 into
+`Player::special_ability`, while its offset-based copy remains available as
+`unknown_0074`. Unknown IDs are rejected explicitly rather than silently
+losing the learned ability or narrowing an invalid value to a different ID.
+This maps the learned ability only; the neighboring raw `+0x078` field and
+active-effect restoration remain outside this panel checkpoint.
+
+The panel uses the rebuild's existing normalized possession booleans. The
+original displays keys and tree tools only for a raw short equal to 1, while
+its other three item flags use a nonzero byte. Tree tools already preserve
+the equality rule on legacy import; the existing key importer normalizes any
+nonzero value to true. Exact display parity for noncanonical legacy key values
+is therefore not claimed, and this checkpoint does not change key import or
+movement access behavior. The native loader rejects unknown ability IDs;
+the display also reports an invalid ability explicitly rather than inventing
+a name. Original-runtime presentation comparisons remain pending.
 
 ## Rebuild-native saves
 

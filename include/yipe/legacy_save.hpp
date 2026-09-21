@@ -36,7 +36,7 @@ struct LegacySave {
     std::int32_t unknown_005c = 0;
     std::uint16_t unknown_007e = 0;
     std::uint16_t unknown_007c = 0;
-    std::int32_t unknown_0074 = 0;
+    std::int32_t unknown_0074 = 0; // Raw learned ability; also mapped into game.player.
     std::int32_t unknown_0078 = 0;
     bool unknown_006c = false;
     bool unknown_0060 = false;

@@ -474,10 +474,7 @@ PrincessReward rescue_princess(Player& player, std::size_t rescue_index,
 }
 
 bool complete_gatekeeper_finale(Player& player) {
-    const auto rescued = std::count_if(
-        player.inventory_values.begin(), player.inventory_values.end(),
-        [](std::uint16_t value) { return value > 0; });
-    if (player.gatekeeper_state != 2 || rescued != 20) {
+    if (player.gatekeeper_state != 2 || player.rescued_princess_count() != 20) {
         return false;
     }
     player.gatekeeper_state = 3;

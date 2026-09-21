@@ -75,6 +75,9 @@ public:
 
     [[nodiscard]] int maximum_stat() const;
 
+    // Counts positive signed rescue slots, not the separate quest counter (0x00446c10).
+    [[nodiscard]] int rescued_princess_count() const;
+
     // Original +0x584 counters use monster type minus one (0x00445000).
     void record_monster_defeat(int type_id);
 

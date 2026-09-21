@@ -69,6 +69,9 @@ and never evict an earlier finisher once all three slots are full.
 The rebuild uses `quest_progress_total` for the 50-counter total, including
 historical aggregate progress retained by older native saves with incomplete
 per-type history. The Kills display's 41-type total remains distinct.
+Princess totals use `Player::rescued_princess_count`, shared with Special
+statistics and the finale's exactly-20-rescues condition. No saved counter is
+rewritten when reading these totals.
 
 The SDL application submits the player when opening high scores during play,
 immediately after returning from a victorious combat that increased the level

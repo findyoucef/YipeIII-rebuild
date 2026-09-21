@@ -133,10 +133,8 @@ bool update_high_scores(HighScores& scores, const Player& player, bool completed
             }
         }
     }
-    const int princesses = static_cast<int>(std::count_if(
-        player.inventory_values.begin(), player.inventory_values.end(),
-        [](std::uint16_t value) { return static_cast<std::int16_t>(value) > 0; }));
-    const std::array values{player.quest_progress_total, princesses, player.gold, player.level};
+    const std::array values{player.quest_progress_total, player.rescued_princess_count(),
+                            player.gold, player.level};
     for (std::size_t category = 0; category < values.size(); ++category) {
         const std::size_t first = group + category * 3;
         std::size_t rank = 3;

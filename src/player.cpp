@@ -127,6 +127,12 @@ int Player::maximum_stat() const {
     return 30;
 }
 
+int Player::rescued_princess_count() const {
+    return static_cast<int>(std::count_if(
+        inventory_values.begin(), inventory_values.end(),
+        [](std::uint16_t value) { return static_cast<std::int16_t>(value) > 0; }));
+}
+
 std::optional<int> experience_required_for_next_level(int level) {
     constexpr std::array thresholds{
         0, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000,

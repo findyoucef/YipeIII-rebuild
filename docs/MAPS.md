@@ -103,7 +103,12 @@ princess on later map loads. Dialog 394 offers Gold, Experience, Kiss, and Myste
 the core preserves all formulas, healing/stat/item outcomes, two-roll Mystery
 selection, its high-threshold Rainbow Key override, and the serialized counter at
 player offset `+0x682`. Returning to map `0x11` after the keyed Gatekeeper victory
-with all 20 rescue values runs the reconstructed ending-state transition.
+with exactly 20 positive signed rescue values across all 30 slots runs the
+reconstructed ending-state transition (`0x0040e2d0` / `0x00446c10`). The shared
+`Player::rescued_princess_count` supplies this count, Special statistics, and
+high scores. Zero and negative signed slot values do not count, and more than
+20 does not satisfy the original equality check. The King's `princesses_found`
+quest counter remains separate.
 
 The core also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
 The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles

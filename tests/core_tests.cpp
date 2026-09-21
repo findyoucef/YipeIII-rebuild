@@ -130,6 +130,27 @@ void test_player_defaults() {
           "wizard starts with five ability points");
 }
 
+void test_princess_statistics() {
+    yipe::Player player;
+    check(player.rescued_princess_count() == 0, "a fresh player has no rescued princesses");
+    player.princesses_found = 20;
+    player.inventory.fill(1);
+    player.quest_flags.fill(true);
+    check(player.rescued_princess_count() == 0,
+          "rescue statistics do not use the quest counter, carried items, or conversation flags");
+    for (std::size_t slot = 0; slot < player.inventory_values.size(); ++slot) {
+        for (const std::uint16_t value : std::array<std::uint16_t, 6>{0, 1, 2, 0x7fff, 0x8000, 0xffff}) {
+            player.inventory_values.fill(0);
+            player.inventory_values[slot] = value;
+            check(player.rescued_princess_count() == (value > 0 && value < 0x8000 ? 1 : 0),
+                  "every rescue slot uses the recovered positive signed-short comparison");
+        }
+    }
+    player.inventory_values.fill(1);
+    check(player.rescued_princess_count() == 30,
+          "rescue statistics count all 30 slots without clamping to the 20 placed princesses");
+}
+
 void test_health_change() {
     yipe::Player player;
     check(player.adjust_health(20), "positive health remains alive");
@@ -456,7 +477,9 @@ void test_game_save() {
     original.player.surface_return_region_x = -4;
     original.player.surface_return_region_y = 2;
     original.player.quest_flags[8] = true;
+    original.player.inventory_values[0] = 0x8000;
     original.player.inventory_values[13] = 9;
+    original.player.inventory_values[29] = 0xffff;
     original.player.encountered_monster_types[36] = true;
     original.player.encountered_monster_types[38] = true;
     original.player.encountered_monster_types[40] = true;
@@ -518,6 +541,9 @@ void test_game_save() {
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
           "version 15 save restores quest state");
+    check(loaded.player.inventory_values == original.player.inventory_values
+              && loaded.player.rescued_princess_count() == 1,
+          "native saves preserve signed rescue-slot statistics independently of the quest counter");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
@@ -698,7 +724,8 @@ void test_game_save() {
 }
 
 std::vector<std::uint8_t> legacy_save_bytes(const std::string& name,
-                                          std::int32_t wormoid_defeats = 1034) {
+                                          std::int32_t wormoid_defeats = 1034,
+                                          std::int32_t ability = 2) {
     std::vector<std::uint8_t> bytes;
     if (name.size() < 0xff) {
         bytes.push_back(static_cast<std::uint8_t>(name.size()));
@@ -721,7 +748,7 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name,
     append_i32(bytes, 3);
     append_u16(bytes, 1);
     append_u16(bytes, 2);
-    append_i32(bytes, 44);
+    append_i32(bytes, ability);
     append_i32(bytes, 55);
 
     for (const bool value : std::array{false, true, true, false, true, true, true}) {
@@ -837,6 +864,10 @@ void test_legacy_save_import() {
               && player.encountered_monster_types[36]
               && player.encountered_monster_types[38],
           "legacy import maps recovered King quest state");
+    check(player.rescued_princess_count() == 30,
+          "legacy rescue statistics count the imported slots, not the separate quest counter");
+    check(player.special_ability == yipe::SpecialAbility::frighten && imported.unknown_0074 == 2,
+          "legacy imports map the learned ability while retaining the raw field");
     check(player.has_defeated_wormoid && !player.encountered_monster_types[35],
           "legacy import reads Wormoid defeat index 34 independently of encounter flags");
     check(player.monster_defeat_history_complete,
@@ -854,6 +885,30 @@ void test_legacy_save_import() {
               && imported.extended_entries[4].flag_0552
               && imported.trailing_healing_flag,
           "legacy import retains unresolved serialized fields");
+
+    const std::filesystem::path native_path =
+        std::filesystem::temp_directory_path() / "yipe3-legacy-ability-test.y3r";
+    for (int ability = 0; ability <= 4; ++ability) {
+        write_bytes(path, legacy_save_bytes("Legacy", 1034, ability));
+        const auto learned = yipe::load_legacy_save(path);
+        check(static_cast<int>(learned.game.player.special_ability) == ability
+                  && learned.unknown_0074 == ability,
+              "legacy imports restore each supported learned ability");
+        yipe::save_game_atomic(native_path, learned.game);
+        check(yipe::load_game(native_path).player.special_ability == learned.game.player.special_ability,
+              "the imported learned ability survives conversion to native saves");
+    }
+    std::filesystem::remove(native_path);
+    for (const int ability : {-1, 5, 256}) {
+        write_bytes(path, legacy_save_bytes("Legacy", 1034, ability));
+        bool rejected_ability = false;
+        try {
+            static_cast<void>(yipe::load_legacy_save(path));
+        } catch (const std::runtime_error&) {
+            rejected_ability = true;
+        }
+        check(rejected_ability, "legacy imports reject unsupported ability IDs without narrowing them");
+    }
 
     write_bytes(path, legacy_save_bytes("Legacy", 0));
     check(!yipe::load_legacy_save(path).game.player.has_defeated_wormoid,
@@ -3332,6 +3387,25 @@ void test_quest_progression_events() {
           "returning with all 20 rescue slots completes the Gatekeeper finale");
     check(!yipe::complete_gatekeeper_finale(finale),
           "the finale transition can only occur once");
+
+    finale.gatekeeper_state = 2;
+    finale.inventory_values[20] = 0xffff;
+    finale.inventory_values[29] = 0x8000;
+    check(finale.rescued_princess_count() == 19
+              && !yipe::complete_gatekeeper_finale(finale) && finale.gatekeeper_state == 2,
+          "negative signed rescue slots cannot falsely complete the finale");
+    finale.inventory_values[20] = 0x7fff;
+    check(finale.rescued_princess_count() == 20
+              && yipe::complete_gatekeeper_finale(finale) && finale.gatekeeper_state == 3,
+          "a negative reserved slot cannot block a valid 20-princess finale");
+    finale.gatekeeper_state = 2;
+    finale.inventory_values[29] = 1;
+    check(!yipe::complete_gatekeeper_finale(finale) && finale.gatekeeper_state == 2,
+          "the finale requires exactly 20 positive rescue slots, not at least 20");
+    finale.inventory_values[29] = 0;
+    finale.gatekeeper_state = 1;
+    check(!yipe::complete_gatekeeper_finale(finale) && finale.gatekeeper_state == 1,
+          "the complete rescue count does not bypass Gatekeeper progression");
 }
 
 void test_death_and_hell_recovery() {
@@ -3766,6 +3840,7 @@ void test_first_playable_flow() {
 int main() {
     test_random();
     test_player_defaults();
+    test_princess_statistics();
     test_health_change();
     test_level_progression();
     test_healing_item();

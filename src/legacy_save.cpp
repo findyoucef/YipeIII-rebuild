@@ -146,6 +146,11 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     save.unknown_007c = reader.u16();
     player.difficulty = signed_u16(reader.u16());
     save.unknown_0074 = reader.i32();
+    if (save.unknown_0074 < static_cast<int>(SpecialAbility::none)
+        || save.unknown_0074 > static_cast<int>(SpecialAbility::enrage)) {
+        throw std::runtime_error("legacy .yp3 contains an unsupported special ability");
+    }
+    player.special_ability = static_cast<SpecialAbility>(save.unknown_0074);
     save.unknown_0078 = reader.i32();
 
     save.unknown_006c = reader.archive_bool();

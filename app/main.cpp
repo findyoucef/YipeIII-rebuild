@@ -2020,6 +2020,51 @@ void show_high_scores(SDL_Window* window, const yipe::HighScores& scores, int di
     }
 }
 
+std::string special_statistics_page(const yipe::Player& player) {
+    std::string_view ability;
+    switch (player.special_ability) {
+    case yipe::SpecialAbility::none: ability = "None"; break;
+    case yipe::SpecialAbility::backstab: ability = "Backstab"; break;
+    case yipe::SpecialAbility::frighten: ability = "Frighten"; break;
+    case yipe::SpecialAbility::invisibility: ability = "Invisibility"; break;
+    case yipe::SpecialAbility::enrage: ability = "Enrage"; break;
+    default: throw std::invalid_argument("statistics contain an unknown special ability");
+    }
+
+    std::ostringstream message;
+    message << "Rare Stamps Collected: " << static_cast<std::int16_t>(player.stamps_found)
+            << "\nPrincesses Rescued: " << player.rescued_princess_count() << "\n\nKeys:";
+    if (player.has_rainbow_key) {
+        message << "\nRainbow Key";
+    }
+    if (player.has_underworld_key) {
+        message << "\nUnderworld Key";
+    }
+    if (!player.has_rainbow_key && !player.has_underworld_key) {
+        message << "\nNone";
+    }
+
+    message << "\n\nSpecial Items:";
+    if (player.has_bonus_healing_ring) {
+        message << "\nRing of Bonus Healing";
+    }
+    if (player.has_tree_climbing_shoes) {
+        message << "\nTree Climbing Tools";
+    }
+    if (player.has_waterproof_shoe_spray) {
+        message << "\nWaterproof Shoe Spray";
+    }
+    if (player.has_lucky_rabbit_foot) {
+        message << "\nKing's Lucky Rabbit Foot";
+    }
+    if (!player.has_bonus_healing_ring && !player.has_tree_climbing_shoes
+        && !player.has_waterproof_shoe_spray && !player.has_lucky_rabbit_foot) {
+        message << "\nNone";
+    }
+    message << "\n\nCurrent Ability: " << ability;
+    return message.str();
+}
+
 void show_player_status(SDL_Window* window, const yipe::Player& player,
                         const std::filesystem::path& high_scores_path,
                         yipe::HighScores& high_scores) {
@@ -2043,6 +2088,7 @@ void show_player_status(SDL_Window* window, const yipe::Player& player,
                                      | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
         SDL_MessageBoxButtonData{0, 1, "Kills"},
         SDL_MessageBoxButtonData{0, 2, "High Scores"},
+        SDL_MessageBoxButtonData{0, 3, "Special"},
     };
     while (true) {
         const int choice = show_choice(window, "Player Status", message.str(), buttons.data(),
@@ -2052,6 +2098,8 @@ void show_player_status(SDL_Window* window, const yipe::Player& player,
         } else if (choice == 2) {
             record_player_high_scores(high_scores_path, high_scores, player);
             show_high_scores(window, high_scores, player.difficulty);
+        } else if (choice == 3) {
+            show_message(window, "Special Statistics", special_statistics_page(player));
         } else {
             return;
         }
@@ -3279,6 +3327,85 @@ int main(int argc, char* argv[]) {
             initialize_map_state(game, other_map);
             if (other_map.tile({12, 1}) != 0x27) {
                 throw std::runtime_error("quest progress did not open Hell's east boundary");
+            }
+            yipe::GameState special_game;
+            auto& special_player = special_game.player;
+            if (special_statistics_page(special_player)
+                != "Rare Stamps Collected: 0\nPrincesses Rescued: 0\n\nKeys:\nNone"
+                   "\n\nSpecial Items:\nNone\n\nCurrent Ability: None") {
+                throw std::runtime_error("special statistics lost the empty-state labels");
+            }
+            special_player.stamps_found = 6;
+            special_player.princesses_found = 20;
+            special_player.inventory_values[0] = 1;
+            special_player.inventory_values[29] = 0x7fff;
+            special_player.inventory_values[1] = 0x8000;
+            special_player.inventory_values[2] = 0xffff;
+            constexpr std::array<std::string_view, 6> special_names{
+                "Rainbow Key", "Underworld Key", "Ring of Bonus Healing",
+                "Tree Climbing Tools", "Waterproof Shoe Spray", "King's Lucky Rabbit Foot",
+            };
+            constexpr std::array<std::string_view, 5> ability_names{
+                "None", "Backstab", "Frighten", "Invisibility", "Enrage",
+            };
+            for (unsigned mask = 0; mask < 64; ++mask) {
+                special_player.has_rainbow_key = (mask & 1u) != 0;
+                special_player.has_underworld_key = (mask & 2u) != 0;
+                special_player.has_bonus_healing_ring = (mask & 4u) != 0;
+                special_player.has_tree_climbing_shoes = (mask & 8u) != 0;
+                special_player.has_waterproof_shoe_spray = (mask & 16u) != 0;
+                special_player.has_lucky_rabbit_foot = (mask & 32u) != 0;
+                std::ostringstream expected;
+                expected << "Rare Stamps Collected: 6\nPrincesses Rescued: 2\n\nKeys:";
+                for (unsigned index = 0; index < special_names.size(); ++index) {
+                    if (index == 2) {
+                        if ((mask & 3u) == 0) {
+                            expected << "\nNone";
+                        }
+                        expected << "\n\nSpecial Items:";
+                    }
+                    if ((mask & (1u << index)) != 0) {
+                        expected << '\n' << special_names[index];
+                    }
+                }
+                if ((mask & 60u) == 0) {
+                    expected << "\nNone";
+                }
+                expected << "\n\nCurrent Ability: ";
+                for (std::size_t ability = 0; ability < ability_names.size(); ++ability) {
+                    special_player.special_ability = static_cast<yipe::SpecialAbility>(ability);
+                    if (special_statistics_page(special_player)
+                        != expected.str() + std::string(ability_names[ability])) {
+                        throw std::runtime_error("special statistics lost an item, ability, count, or display order");
+                    }
+                }
+            }
+            for (const std::uint16_t stamps : std::array<std::uint16_t, 3>{0x7fff, 0x8000, 0xffff}) {
+                special_player.stamps_found = stamps;
+                const int signed_stamps = stamps < 0x8000 ? stamps : static_cast<int>(stamps) - 65536;
+                if (!special_statistics_page(special_player).starts_with(
+                        "Rare Stamps Collected: " + std::to_string(signed_stamps) + '\n')) {
+                    throw std::runtime_error("special statistics lost the signed stamp count");
+                }
+            }
+            const auto special_save_path = std::filesystem::temp_directory_path()
+                / "yipe3-smoke-special-statistics.y3r";
+            yipe::save_game_atomic(special_save_path, special_game);
+            const auto saved_special_page = special_statistics_page(special_player);
+            if (special_statistics_page(yipe::load_game(special_save_path).player)
+                != saved_special_page) {
+                throw std::runtime_error("special statistics changed after saving and resuming");
+            }
+            std::filesystem::remove(special_save_path);
+            special_player.special_ability = static_cast<yipe::SpecialAbility>(255);
+            bool rejected_ability = false;
+            try {
+                static_cast<void>(special_statistics_page(special_player));
+            } catch (const std::invalid_argument&) {
+                rejected_ability = true;
+            }
+            if (!rejected_ability) {
+                throw std::runtime_error("special statistics silently accepted an unknown ability");
             }
             yipe::Player statistics_player;
             statistics_player.encountered_monster_types[2] = true;
