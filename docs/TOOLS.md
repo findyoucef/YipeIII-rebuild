@@ -51,6 +51,20 @@ application smoke test uses SDL's dummy video and audio drivers, decodes every
 dispatched embedded effect, checks all packaged equipment names, and verifies
 that every packaged monster WAV is present and decodable.
 
+## Recover the original manual
+
+Recover the 28 original Help and Info pages, preserving each title and body:
+
+```bash
+python3 tools/extract_help.py \
+  --strings /Users/baouchiy/Downloads/YipeIII-analysis/resources/strings.jsonl \
+  --output app/generated/original_help.hpp
+```
+
+The generated header is checked in; ordinary builds do not need the analysis
+directory. SDL smoke checks every formatted page for word preservation and
+line length, page bounds, and startup F1/repeat handling.
+
 ## Recover static map tables
 
 ```bash

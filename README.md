@@ -34,6 +34,15 @@ Accessory names come from the original resource strings. The panel is read-only;
 native saves remain version 15. Original-runtime and visible-dialog comparison
 remain pending.
 
+F1 opens Help at startup or during exploration. It includes current controls,
+the configured keys, original attribution, and all 28 pages of the original
+2003 manual. The manual retains historical text and interface descriptions;
+the opening Help page describes this rebuild's controls. Character creation's
+Help button opens the original New Character Creation page. The manual has
+Previous, Next, Start, and End controls; Enter or Escape closes it. Ctrl+E opens
+Equipment directly, Ctrl+I opens Items, Ctrl+C opens Spells, and Ctrl+S saves.
+These fixed shortcuts take priority over exploration movement bindings.
+
 High Scores is available from startup H, exploration Ctrl+H, or the player-status High Scores button. Easy, Medium, and Hard each have three records for kills, princesses, cash held at one time, level, and the first three finishers. Opening it during play submits the current player; startup only displays existing records. Scores also submit immediately after a combat level-up, at the finale, and when resuming a completed game. A separate checksummed `highscores.y3r` in the same per-user directory preserves every table change, including same-name improvements and completion-only updates. A damaged score file is reported rather than silently reset. See [high-score rules and persistence](docs/AUXILIARY_DATA.md).
 
 Load Game resumes the native `save.y3r` stored in SDL's per-user application-data directory. Version 15 saves preserve progression, equipment, learned spells, quest and princess-reward state, ability and special-movement state, changed map tiles, world position and surface-return anchor, permanent monster defeats, per-monster encounter history and defeat counts, death count, Hell entry, Gatekeeper recovery state, Other-action treasure/water/snow state, the Wormoid-defeat hint flag, and random-generator state; repeatable encounters remain cleared only until the map is reloaded. The loader still accepts game versions 2–14 and the earlier player-only version 1 format. Older native saves retain their aggregate progress and any Wormoid flag but lack per-type kill counts: the Kills view labels those counts as starting at the statistics upgrade. Versions before 14 may show the giant warning again. Sound and the 13 recovered key bindings are stored separately in checksummed `settings.y3r`. Invalid settings are reported and reset with sound off. The core also provides strict, import-only readers for legacy `.yp3` saves and original `Yipe3.dat` auxiliary data; real `.yp3` compatibility remains unverified until an original save sample is available. SDL2 remains absent from the core target so gameplay, settings, and resource-mapping tests stay independent of rendering and playback.
@@ -42,6 +51,7 @@ The original's asynchronous one-sound-at-a-time behavior is adapted to SDL's que
 
 ## Evidence and status
 
+- [Feature and menu coverage](docs/FEATURE_COVERAGE.md)
 - [Decisions](docs/DECISIONS.md)
 - [Evidence ledger](docs/EVIDENCE.md)
 - [Open questions and differences](docs/UNKNOWNS.md)

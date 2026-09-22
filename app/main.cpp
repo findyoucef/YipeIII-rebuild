@@ -10,6 +10,7 @@
 #include "yipe/settings.hpp"
 #include "yipe/shop.hpp"
 #include "yipe/spell.hpp"
+#include "generated/original_help.hpp"
 
 #include <SDL.h>
 
@@ -70,7 +71,7 @@ using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
 using Texture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>;
 using Cursor = std::unique_ptr<SDL_Cursor, decltype(&SDL_FreeCursor)>;
 
-enum class StartupChoice { new_game, load_game, settings, high_scores, quit };
+enum class StartupChoice { new_game, load_game, settings, high_scores, help, quit };
 
 struct RuntimeAssets {
     std::filesystem::path bitmaps;
@@ -348,6 +349,9 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
             if (event.key.keysym.sym == SDLK_h && event.key.repeat == 0) {
                 return StartupChoice::high_scores;
             }
+            if (event.key.keysym.sym == SDLK_F1 && event.key.repeat == 0) {
+                return StartupChoice::help;
+            }
             if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
                 return StartupChoice::quit;
             }
@@ -581,6 +585,7 @@ TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
 }
 
 void prepare_game_view(SDL_Window* window, SDL_Renderer* renderer) {
+    SDL_SetWindowTitle(window, "Yipe! III - F1 Help | F5 Save | F10 Settings");
     SDL_SetWindowSize(window, map_width * 2, map_height * 2);
     if (SDL_RenderSetLogicalSize(renderer, map_width, map_height) != 0) {
         throw std::runtime_error(std::string("could not set map render size: ") + SDL_GetError());
@@ -588,6 +593,7 @@ void prepare_game_view(SDL_Window* window, SDL_Renderer* renderer) {
 }
 
 void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
+    SDL_SetWindowTitle(window, "Yipe! III - F1 Help | S Settings | H High Scores");
     SDL_SetWindowSize(window, startup_width * 2, startup_height * 2);
     if (SDL_RenderSetLogicalSize(renderer, startup_width, startup_height) != 0) {
         throw std::runtime_error(std::string("could not set startup render size: ")
@@ -725,6 +731,63 @@ int show_choice(SDL_Window* window, const char* title, const std::string& messag
     return selected;
 }
 
+std::string original_help_page(std::size_t page) {
+    const auto& [title, body] = yipe::original_help_pages.at(page);
+    std::ostringstream text;
+    text << "Original 2003 Manual - " << page + 1 << "/"
+         << yipe::original_help_pages.size() << "\n" << title << "\n\n";
+    // Native message boxes do not consistently wrap long paragraphs. Keep the
+    // original words and paragraph breaks while limiting each line to 72 columns.
+    std::istringstream paragraphs{std::string(body)};
+    std::string paragraph;
+    while (std::getline(paragraphs, paragraph)) {
+        std::istringstream words(paragraph);
+        std::string word;
+        std::size_t column = 0;
+        while (words >> word) {
+            if (column != 0) {
+                if (column + 1 + word.size() > 72) {
+                    text << '\n';
+                    column = 0;
+                } else {
+                    text << ' ';
+                    ++column;
+                }
+            }
+            text << word;
+            column += word.size();
+        }
+        text << '\n';
+    }
+    return text.str();
+}
+
+void show_original_help(SDL_Window* window, std::size_t page = 0) {
+    while (true) {
+        std::vector<SDL_MessageBoxButtonData> buttons{
+            {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                 | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Done"},
+        };
+        if (page > 0) {
+            buttons.push_back({0, 1, "Previous"});
+            buttons.push_back({0, 3, "Start"});
+        }
+        if (page + 1 < yipe::original_help_pages.size()) {
+            buttons.push_back({0, 2, "Next"});
+            buttons.push_back({0, 4, "End"});
+        }
+        const int choice = show_choice(window, "Help and Info", original_help_page(page),
+                                       buttons.data(), static_cast<int>(buttons.size()));
+        switch (choice) {
+        case 1: --page; break;
+        case 2: ++page; break;
+        case 3: page = 0; break;
+        case 4: page = yipe::original_help_pages.size() - 1; break;
+        default: return;
+        }
+    }
+}
+
 void show_princess(SDL_Window* window, yipe::Player& player,
                    const yipe::PrincessEvent& princess, yipe::MsvcRandom& random) {
     constexpr std::array buttons{
@@ -831,16 +894,22 @@ std::optional<yipe::CharacterType> choose_character(SDL_Window* window) {
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Warrior"},
         SDL_MessageBoxButtonData{0, 2, "Rogue"},
         SDL_MessageBoxButtonData{0, 3, "Wizard"},
+        SDL_MessageBoxButtonData{0, 4, "Help"},
     };
-    const int choice = show_choice(
-        window, "Create Character",
-        "Choose a character class.\n\nWarrior: strong melee fighter\n"
-        "Rogue: agile adventurer\nWizard: intelligent spellcaster",
-        buttons.data(), static_cast<int>(buttons.size()));
-    if (choice < 1 || choice > 3) {
-        return std::nullopt;
+    while (true) {
+        const int choice = show_choice(
+            window, "Create Character",
+            "Choose a character class.\n\nWarrior: strong melee fighter\n"
+            "Rogue: agile adventurer\nWizard: intelligent spellcaster",
+            buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 4) {
+            show_original_help(window, 3);
+        } else if (choice >= 1 && choice <= 3) {
+            return static_cast<yipe::CharacterType>(choice);
+        } else {
+            return std::nullopt;
+        }
     }
-    return static_cast<yipe::CharacterType>(choice);
 }
 
 std::filesystem::path default_preference_directory() {
@@ -1244,6 +1313,51 @@ std::string settings_summary(const yipe::GameSettings& settings) {
                 << yipe::key_binding_name(settings.keys[index]);
     }
     return summary.str();
+}
+
+void show_help(SDL_Window* window, const yipe::GameSettings& settings) {
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Done"},
+        SDL_MessageBoxButtonData{0, 1, "Original Manual"},
+        SDL_MessageBoxButtonData{0, 2, "Current Keys"},
+        SDL_MessageBoxButtonData{0, 3, "About"},
+    };
+    while (true) {
+        const int choice = show_choice(window, "Yipe! III Help",
+            "Rebuild Controls\n\n"
+            "Startup: N New Game, L Load, S Settings, H High Scores.\n"
+            "F1 opens this help at startup or while exploring.\n\n"
+            "Explore with your configured movement keys or WASD.\n"
+            "Walk onto a monster to fight; enter buildings to visit shops.\n"
+            "Ctrl+I: Inventory    Ctrl+C: Cast Spell\n"
+            "Ctrl+T: Player Status    Ctrl+E: Equipment\n"
+            "Ctrl+H: High Scores    Ctrl+O: Other (inspect/use this tile)\n"
+            "F5 or Ctrl+S: Save    F10: Settings\n"
+            "Q or Escape: Quit, with a save choice.\n\n"
+            "In combat, use the configured action keys or mouse buttons.\n"
+            "Arrow keys and Tab cycle targets.\n"
+            "Current Keys lists your movement and combat bindings.\n\n"
+            "Original Manual preserves the 2003 help, including historical\n"
+            "registration information. Its interface descriptions differ\n"
+            "from this rebuild; use the controls above to play.",
+            buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) {
+            show_original_help(window);
+        } else if (choice == 2) {
+            show_message(window, "Current Keys", settings_summary(settings));
+        } else if (choice == 3) {
+            show_message(window, "About Yipe! III",
+                "Original game: Yipe! III, Version 1.16\n"
+                "Copyright (C) 2002-03, Kevin Kinell\n\n"
+                "This application is a source reconstruction of the supplied\n"
+                "game, with an adapted macOS interface.\n\n"
+                "Original contact information (2003):\n"
+                "YipeSFT@aol.com\nwww.yipesoftware.com");
+        } else {
+            return;
+        }
+    }
 }
 
 void show_settings(SDL_Window* window, yipe::GameSettings& settings,
@@ -2747,8 +2861,18 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_F5) {
-            save_current_game(window, save_path, game, random, true);
+        if (event.key.keysym.sym == SDLK_F1) {
+            if (event.key.repeat == 0) {
+                show_help(window, settings);
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_F5
+            || (event.key.keysym.sym == SDLK_s && (event.key.keysym.mod & KMOD_CTRL) != 0)) {
+            if (event.key.repeat == 0) {
+                save_current_game(window, save_path, game, random, true);
+            }
             render_game(renderer, map, textures, game);
             continue;
         }
@@ -2761,6 +2885,22 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             && (event.key.keysym.mod & KMOD_CTRL) != 0) {
             if (event.key.repeat == 0) {
                 show_player_status(window, game.player, high_scores_path, high_scores);
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if ((event.key.keysym.mod & KMOD_CTRL) != 0
+            && (event.key.keysym.sym == SDLK_e || event.key.keysym.sym == SDLK_i
+                || event.key.keysym.sym == SDLK_c)) {
+            if (event.key.repeat == 0) {
+                if (event.key.keysym.sym == SDLK_e) {
+                    show_message(window, "Equipment Statistics",
+                                 equipment_statistics_page(game.player));
+                } else if (event.key.keysym.sym == SDLK_i) {
+                    use_exploration_item(window, game, map, random, audio, settings);
+                } else {
+                    cast_exploration_spell(window, game, map, random, audio, settings);
+                }
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -3637,7 +3777,64 @@ int main(int argc, char* argv[]) {
                 throw std::runtime_error("score submission lost the completed game or same-name improvement");
             }
             std::filesystem::remove(smoke_scores_path);
+            if (yipe::original_help_pages.front().first != "Background"
+                || yipe::original_help_pages.back().first != "Distribution"
+                || yipe::original_help_pages.at(3).first != "New Character Creation") {
+                throw std::runtime_error("original help lost its endpoints or character-help destination");
+            }
+            for (std::size_t page = 0; page < yipe::original_help_pages.size(); ++page) {
+                const std::string formatted = original_help_page(page);
+                std::istringstream lines(formatted);
+                std::string line;
+                while (std::getline(lines, line)) {
+                    if (line.size() > 72) {
+                        throw std::runtime_error("original help contains an unwrapped line");
+                    }
+                }
+                const auto body_start = formatted.find("\n\n") + 2;
+                std::istringstream actual_words(formatted.substr(body_start));
+                std::istringstream original_words{
+                    std::string(yipe::original_help_pages[page].second)};
+                std::string actual_word;
+                std::string original_word;
+                while (original_words >> original_word) {
+                    if (!(actual_words >> actual_word) || actual_word != original_word) {
+                        throw std::runtime_error("help formatting altered the original manual text");
+                    }
+                }
+                if (actual_words >> actual_word) {
+                    throw std::runtime_error("help formatting added words to the original manual");
+                }
+            }
+            bool rejected_help_page = false;
+            try {
+                static_cast<void>(original_help_page(28));
+            } catch (const std::out_of_range&) {
+                rejected_help_page = true;
+            }
+            if (!rejected_help_page) {
+                throw std::runtime_error("help accepted a page past the original final page");
+            }
             prepare_startup_view(window.get(), renderer.get());
+            SDL_Event help_key{};
+            help_key.type = SDL_KEYDOWN;
+            help_key.key.keysym.sym = SDLK_F1;
+            help_key.key.repeat = 1;
+            SDL_PushEvent(&help_key);
+            SDL_Event help_quit{};
+            help_quit.type = SDL_KEYDOWN;
+            help_quit.key.keysym.sym = SDLK_q;
+            SDL_PushEvent(&help_quit);
+            if (run_startup_menu(renderer.get(), menu.get(), copyright.get()) != StartupChoice::quit) {
+                throw std::runtime_error("startup help accepted a repeated keydown");
+            }
+            help_key.key.repeat = 0;
+            SDL_PushEvent(&help_key);
+            SDL_PushEvent(&help_quit);
+            if (run_startup_menu(renderer.get(), menu.get(), copyright.get()) != StartupChoice::help) {
+                throw std::runtime_error("startup help did not accept F1");
+            }
+            SDL_FlushEvent(SDL_KEYDOWN);
             SDL_Event score_key{};
             score_key.type = SDL_KEYDOWN;
             score_key.key.keysym.sym = SDLK_h;
@@ -3736,6 +3933,9 @@ int main(int argc, char* argv[]) {
                 break;
             case StartupChoice::high_scores:
                 show_high_scores(window.get(), high_scores);
+                break;
+            case StartupChoice::help:
+                show_help(window.get(), settings);
                 break;
             case StartupChoice::quit:
                 return 0;
