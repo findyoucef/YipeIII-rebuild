@@ -69,7 +69,7 @@ The write branch stores zero instead when the prior validation flag is false. Th
 and every serialized field not yet understood. The known mapping includes the
 player name, primary stats, HP/SP/AP, level, weapon and armor ranks, five minor
 equipment ranks, XP, transformed gold, world coordinates, computed map ID,
-difficulty, combat style, learned special ability, restoration count, tree/key movement state, inventory,
+difficulty, level-up stat bias, learned special ability, restoration count, tree/key movement state, inventory,
 and the recovered extended item-status fields. The King-dialog trace also maps
 `+0x05c` to its quest score/value, `+0x063` to the Lucky Rabbit Foot, the 30
 `+0x0d0` values and `+0x12a` flags to quest hints and one-time conversations,
@@ -91,6 +91,16 @@ with complete-history status. The aggregate retains the original 32-bit sum,
 and `has_defeated_wormoid` retains the hint condition. Other unresolved arrays
 likewise remain there so future reconstruction does not
 require reparsing the file.
+
+The chosen character portrait at `+0x0cc` is item-ID array entry 28 and is
+imported through `Player::inventory[28]`. Extended entry 15 at `+0x67c` is the
+level-up stat bias (`Player::combat_style`); it is separate from the selected
+Combat/Quickness/Magic/Random specialty at `+0x6cc`, which controls spell costs
+and some combat behavior. The 1.1.6.0 serializer does not write `+0x6cc`, so
+an original `.yp3` file cannot establish the selected specialty. The importer
+retains the default Combat specialty as an explicit inference. Native saves
+from rebuild version 16 onward store specialty separately; versions 2–15 infer
+it from the old rebuild class value.
 
 The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,

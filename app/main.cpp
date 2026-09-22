@@ -379,7 +379,6 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
 
 struct GameTextures {
     std::vector<std::pair<int, Texture>> bitmaps;
-    Texture warrior;
 
     [[nodiscard]] SDL_Texture* find(int resource_id) const {
         for (const auto& [id, texture] : bitmaps) {
@@ -397,7 +396,7 @@ GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::p
                                       143, 144, 145, 146, 147, 153, 377, 391, 392, 393,
                                       418, 460};
     std::vector<std::pair<int, Texture>> bitmaps;
-    bitmaps.reserve(resource_ids.size() + 41);
+    bitmaps.reserve(resource_ids.size() + 41 + 12);
     for (const int id : resource_ids) {
         bitmaps.emplace_back(
             id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp")));
@@ -406,7 +405,11 @@ GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::p
         bitmaps.emplace_back(
             id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp"), true));
     }
-    return {std::move(bitmaps), load_bitmap(renderer, assets / "406-1033.bmp", true)};
+    for (int id = 406; id <= 417; ++id) {
+        bitmaps.emplace_back(
+            id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp"), true));
+    }
+    return {std::move(bitmaps)};
 }
 
 struct TileGraphic {
@@ -709,7 +712,9 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
     const SDL_Rect player_destination{game.location.position.x * tile_size,
                                       game.location.position.y * tile_size,
                                       tile_size, tile_size};
-    copy_texture(renderer, textures.warrior.get(), nullptr, &player_destination);
+    const int portrait = game.player.inventory[28];
+    copy_texture(renderer, textures.find(405 + (portrait >= 1 && portrait <= 12 ? portrait : 1)),
+                 nullptr, &player_destination);
     SDL_RenderPresent(renderer);
 }
 
@@ -812,15 +817,16 @@ void show_princess(SDL_Window* window, yipe::Player& player,
 }
 
 std::optional<std::string> request_text(SDL_Window* window, const char* title,
-                                        const std::string& prompt) {
-    show_message(window, title, prompt + "\n\nType the code, then press Enter. "
+                                        const std::string& prompt,
+                                        const char* field = "code") {
+    show_message(window, title, prompt + "\n\nType the " + field + ", then press Enter. "
                                          "Press Escape to cancel. Your typing will appear "
                                          "in the game window's title bar.");
     const std::string original_title = SDL_GetWindowTitle(window);
     std::string input;
     const auto update_title = [&] {
         SDL_SetWindowTitle(window,
-                           (std::string(title) + " code: " + input).c_str());
+                           (std::string(title) + " " + field + ": " + input).c_str());
     };
     const auto finish = [&] {
         SDL_StopTextInput();
@@ -861,7 +867,18 @@ std::optional<std::string> request_text(SDL_Window* window, const char* title,
             return std::nullopt;
         }
         if (event.key.keysym.sym == SDLK_BACKSPACE && !input.empty()) {
+            const bool multibyte =
+                (static_cast<unsigned char>(input.back()) & 0xc0u) == 0x80u;
             input.pop_back();
+            if (multibyte) {
+                while (!input.empty()
+                       && (static_cast<unsigned char>(input.back()) & 0xc0u) == 0x80u) {
+                    input.pop_back();
+                }
+                if (!input.empty()) {
+                    input.pop_back();
+                }
+            }
             update_title();
         }
     }
@@ -888,27 +905,177 @@ void show_secret_tree(SDL_Window* window, yipe::Player& player) {
     }
 }
 
-std::optional<yipe::CharacterType> choose_character(SDL_Window* window) {
+std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* renderer,
+                                            const GameTextures& textures) {
+    show_message(window, "Choose Portrait",
+                 "Click a portrait or press 1-8, then Enter. S switches the first four "
+                 "portraits to Silly Mode. Escape returns to character setup.");
+    const std::string original_title = SDL_GetWindowTitle(window);
+    int selected = 0;
+    bool silly = false;
+    const auto portrait_id = [&](int index) {
+        return silly && index < 4 ? 414 + index : 406 + index;
+    };
+    const auto draw = [&] {
+        SDL_SetWindowTitle(window,
+                           ("Choose Portrait " + std::to_string(selected + 1) + "/8 ("
+                            + (silly ? "Silly" : "Normal") + ") - S toggles, Enter accepts").c_str());
+        SDL_SetRenderDrawColor(renderer, 18, 24, 35, 255);
+        SDL_RenderClear(renderer);
+        for (int index = 0; index < 8; ++index) {
+            const SDL_Rect border{10 + index % 4 * 70, 82 + index / 4 * 90, 58, 58};
+            SDL_SetRenderDrawColor(renderer, index == selected ? 255 : 90,
+                                   index == selected ? 213 : 106,
+                                   index == selected ? 100 : 128, 255);
+            SDL_RenderFillRect(renderer, &border);
+            const SDL_Rect image{border.x + 5, border.y + 5, 48, 48};
+            copy_texture(renderer, textures.find(portrait_id(index)), nullptr, &image);
+        }
+        SDL_RenderPresent(renderer);
+    };
+    const auto finish = [&] { SDL_SetWindowTitle(window, original_title.c_str()); };
+    draw();
+    while (true) {
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            finish();
+            throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT) {
+            SDL_PushEvent(&event);
+            finish();
+            return std::nullopt;
+        }
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
+            draw();
+        }
+        if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
+            float x = 0.0F;
+            float y = 0.0F;
+            SDL_RenderWindowToLogical(renderer, event.button.x, event.button.y, &x, &y);
+            for (int index = 0; index < 8; ++index) {
+                const float left = static_cast<float>(10 + index % 4 * 70);
+                const float top = static_cast<float>(82 + index / 4 * 90);
+                if (x >= left && x < left + 58 && y >= top && y < top + 58) {
+                    finish();
+                    return static_cast<std::uint16_t>(portrait_id(index) - 405);
+                }
+            }
+        }
+        if (event.type != SDL_KEYDOWN || event.key.repeat != 0) {
+            continue;
+        }
+        const SDL_Keycode key = event.key.keysym.sym;
+        if (key >= SDLK_1 && key <= SDLK_8) {
+            selected = static_cast<int>(key - SDLK_1);
+            draw();
+        } else if (key == SDLK_s) {
+            silly = !silly;
+            draw();
+        } else if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
+            finish();
+            return static_cast<std::uint16_t>(portrait_id(selected) - 405);
+        } else if (key == SDLK_ESCAPE) {
+            finish();
+            return std::nullopt;
+        }
+    }
+}
+
+std::optional<yipe::Player> choose_character(SDL_Window* window, SDL_Renderer* renderer,
+                                             const GameTextures& textures,
+                                             yipe::MsvcRandom& random) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
-        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Warrior"},
-        SDL_MessageBoxButtonData{0, 2, "Rogue"},
-        SDL_MessageBoxButtonData{0, 3, "Wizard"},
-        SDL_MessageBoxButtonData{0, 4, "Help"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Combat"},
+        SDL_MessageBoxButtonData{0, 2, "Quickness"},
+        SDL_MessageBoxButtonData{0, 3, "Magic"},
+        SDL_MessageBoxButtonData{0, 4, "Random"},
+        SDL_MessageBoxButtonData{0, 5, "Help"},
     };
     while (true) {
         const int choice = show_choice(
             window, "Create Character",
-            "Choose a character class.\n\nWarrior: strong melee fighter\n"
-            "Rogue: agile adventurer\nWizard: intelligent spellcaster",
+            "Choose starting attributes. Random can be rerolled before starting.",
             buttons.data(), static_cast<int>(buttons.size()));
-        if (choice == 4) {
+        if (choice == 5) {
             show_original_help(window, 3);
-        } else if (choice >= 1 && choice <= 3) {
-            return static_cast<yipe::CharacterType>(choice);
-        } else {
+            continue;
+        }
+        if (choice < 1 || choice > 4) {
             return std::nullopt;
         }
+        yipe::Player player(choice == 4 ? yipe::CharacterType::warrior
+                            : static_cast<yipe::CharacterType>(choice));
+        if (choice == 4) {
+            player.reroll_random_character(random);
+        }
+        bool use_stats = false;
+        while (!use_stats) {
+            const std::string summary =
+                "Strength " + std::to_string(player.strength)
+                + "   Dexterity " + std::to_string(player.dexterity)
+                + "   Intelligence " + std::to_string(player.intelligence)
+                + "\nHP " + std::to_string(player.health)
+                + "   SP " + std::to_string(player.spell_points)
+                + "   AP " + std::to_string(player.ability_points);
+            constexpr std::array preset_buttons{
+                SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Use Stats"},
+                SDL_MessageBoxButtonData{0, 0, "Change Type"},
+                SDL_MessageBoxButtonData{0, 3, "Help"},
+            };
+            constexpr std::array random_buttons{
+                SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Use Stats"},
+                SDL_MessageBoxButtonData{0, 2, "Reroll"},
+                SDL_MessageBoxButtonData{0, 0, "Change Type"},
+                SDL_MessageBoxButtonData{0, 3, "Help"},
+            };
+            const int stat_choice = choice == 4
+                ? show_choice(window, "Character Attributes", summary,
+                              random_buttons.data(), static_cast<int>(random_buttons.size()))
+                : show_choice(window, "Character Attributes", summary,
+                              preset_buttons.data(), static_cast<int>(preset_buttons.size()));
+            if (stat_choice == 2 && choice == 4) {
+                player.reroll_random_character(random);
+            } else if (stat_choice == 3) {
+                show_original_help(window, 3);
+            } else if (stat_choice == 1) {
+                use_stats = true;
+            } else {
+                break;
+            }
+        }
+        if (!use_stats) {
+            continue;
+        }
+        const auto name = request_text(window, "Character Name",
+                                       "Enter your character's name. Leave it blank to use Yipie.",
+                                       "name");
+        if (!name) {
+            continue;
+        }
+        if (!name->empty()) {
+            player.name = *name;
+        }
+        constexpr std::array difficulty_buttons{
+            SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+            SDL_MessageBoxButtonData{0, 1, "Easy"},
+            SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2, "Medium"},
+            SDL_MessageBoxButtonData{0, 3, "Hard"},
+        };
+        const int difficulty = show_choice(
+            window, "Difficulty", "Choose Easy, Medium, or Hard.",
+            difficulty_buttons.data(), static_cast<int>(difficulty_buttons.size()));
+        if (difficulty < 1 || difficulty > 3) {
+            continue;
+        }
+        player.difficulty = difficulty;
+        const auto portrait = choose_portrait(window, renderer, textures);
+        if (!portrait) {
+            continue;
+        }
+        player.inventory[28] = *portrait;
+        return player;
     }
 }
 
@@ -3903,13 +4070,16 @@ int main(int argc, char* argv[]) {
             audio.play(152, settings.sound_enabled);
             switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
             case StartupChoice::new_game: {
-                const std::optional<yipe::CharacterType> type = choose_character(window.get());
-                if (!type) {
+                yipe::MsvcRandom creation_random(
+                    static_cast<std::uint32_t>(std::time(nullptr)));
+                const std::optional<yipe::Player> player = choose_character(
+                    window.get(), renderer.get(), game_textures, creation_random);
+                if (!player) {
                     break;
                 }
                 yipe::GameState game;
-                game.player = yipe::Player(*type);
-                game.random_state = static_cast<std::uint32_t>(std::time(nullptr));
+                game.player = *player;
+                game.random_state = creation_random.state();
                 if (run_game(window.get(), renderer.get(), game_textures, game,
                              save_path, settings_path, high_scores_path, high_scores,
                              settings, audio)) {

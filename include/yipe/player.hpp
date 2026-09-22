@@ -64,6 +64,9 @@ public:
     Player();
     explicit Player(CharacterType type);
 
+    // Original random specialty at 0x004461f0 / stat roll 0x00446380.
+    void reroll_random_character(MsvcRandom& random);
+
     // Returns true while the player remains alive. Original address: 0x00444a00.
     bool adjust_health(int delta);
 
@@ -102,7 +105,10 @@ public:
     std::uint16_t ring_rank = 0;
     std::uint16_t necklace_rank = 0;
     int difficulty = 2;
-    int combat_style = 2;
+    // +0x67c: level-up stat bias, separate from the chosen specialty.
+    int combat_style = 0;
+    // +0x6cc: 0 Quickness, 1 Magic, 2 Random, 3 Combat.
+    int specialty = 3;
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
     int restoration_uses = 0;

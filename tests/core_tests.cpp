@@ -104,8 +104,9 @@ void test_player_defaults() {
     check(player.strength == 16 && player.dexterity == 13 && player.intelligence == 10,
           "warrior default stats");
     check(player.health == 13 && player.maximum_health == 13, "warrior default health");
-    check(player.spell_points == 0 && player.maximum_spell_points == 0,
-          "initial spell points are reset");
+    check(player.spell_points == 10 && player.maximum_spell_points == 10
+              && player.specialty == 3 && player.combat_style == 0,
+          "Combat preset starts with its recovered SP and separate specialty");
     check(player.ability_points == 5 && player.maximum_ability_points == 5,
           "warrior starts with five ability points");
     check(player.inventory[0] == 1, "new player owns item 1");
@@ -118,6 +119,9 @@ void test_player_defaults() {
           "rogue default stats");
     check(rogue.health == 13 && rogue.maximum_health == 13,
           "rogue default health");
+    check(rogue.spell_points == 12 && rogue.maximum_spell_points == 12
+              && rogue.specialty == 0 && rogue.combat_style == 0,
+          "Quickness preset uses recovered SP and specialty");
     check(rogue.ability_points == 6 && rogue.maximum_ability_points == 6,
           "rogue starts with six ability points");
 
@@ -126,8 +130,30 @@ void test_player_defaults() {
           "wizard default stats");
     check(wizard.health == 10 && wizard.maximum_health == 10,
           "wizard default health");
+    check(wizard.spell_points == 18 && wizard.maximum_spell_points == 18
+              && wizard.specialty == 1 && wizard.combat_style == 0,
+          "Magic preset uses recovered SP and specialty");
     check(wizard.ability_points == 5 && wizard.maximum_ability_points == 5,
           "wizard starts with five ability points");
+}
+
+void test_random_character_creation() {
+    yipe::Player player;
+    yipe::MsvcRandom random(1);
+    player.reroll_random_character(random);
+    check(player.specialty == 2 && player.combat_style == 0
+              && player.dexterity == 13 && player.strength == 13
+              && player.intelligence == 12 && player.health == 12
+              && player.spell_points == 13 && player.ability_points == 5
+              && player.maximum_health == 12 && player.maximum_spell_points == 13
+              && player.maximum_ability_points == 5 && random.state() == 10044473u,
+          "random setup follows the recovered roll order and stat bounds");
+    player.reroll_random_character(random);
+    check(player.dexterity == 13 && player.strength == 13
+              && player.intelligence == 11 && player.health == 12
+              && player.spell_points == 14 && player.ability_points == 5
+              && random.state() == 2652862833u,
+          "reroll consumes the next original RNG sequence without resetting it");
 }
 
 void test_princess_statistics() {
@@ -188,12 +214,13 @@ void test_level_progression() {
               && warrior_level.health_increase == 6
               && warrior.health == 19 && warrior.maximum_health == 19
               && warrior_level.spell_point_increase == 6
-              && warrior.spell_points == 6 && warrior.maximum_spell_points == 6
+              && warrior.spell_points == 16 && warrior.maximum_spell_points == 16
               && warrior.restoration_uses == 1
               && warrior_level.stat_increase == yipe::StatIncrease::none,
           "ordinary level growth applies gains and restores one restoration use");
 
     yipe::Player milestone(yipe::CharacterType::wizard);
+    milestone.combat_style = 1;
     milestone.level = 4;
     milestone.experience = 1501;
     yipe::MsvcRandom milestone_random(1);
@@ -202,7 +229,7 @@ void test_level_progression() {
     check(milestone.level == 5
               && milestone_level.stat_increase == yipe::StatIncrease::intelligence
               && milestone.intelligence == 17,
-          "milestone levels force the archetype's preferred stat increase");
+          "milestone levels use the separate saved stat bias");
 
     yipe::Player high_level;
     high_level.level = 41;
@@ -446,6 +473,8 @@ void test_game_save() {
     original.player.gloves_rank = 1;
     original.player.difficulty = 3;
     original.player.combat_style = 1;
+    original.player.specialty = 0;
+    original.player.inventory[28] = 12;
     original.player.equipment_upgrade_count = 2;
     original.player.loot_roll_penalty = 7;
     original.player.ability_points = 2;
@@ -502,17 +531,18 @@ void test_game_save() {
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 15 save restores progression and equipment");
+          "version 16 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
+              && loaded.player.specialty == 0 && loaded.player.inventory[28] == 12
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 15 save restores combat settings and counters");
+          "version 16 save restores specialty, portrait, and stat bias independently");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 15 save restores world location");
+          "version 16 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 15 save restores encounter and random state");
+          "version 16 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -520,17 +550,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 15 save restores ability and active status state");
+          "version 16 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 15 save restores special movement state");
+          "version 16 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 15 save restores persistent map tile changes");
+          "version 16 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 15 save restores learned spells");
+          "version 16 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -540,36 +570,61 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 15 save restores quest state");
+          "version 16 save restores quest state");
     check(loaded.player.inventory_values == original.player.inventory_values
               && loaded.player.rescued_princess_count() == 1,
           "native saves preserve signed rescue-slot statistics independently of the quest counter");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 15 save restores the surface-return anchor");
+          "version 16 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 15 save restores per-monster encounter history");
+          "version 16 save restores per-monster encounter history");
     check(loaded.player.death_count == 12
               && loaded.player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid
               && loaded.player.entered_hell_through_secret_passage,
-          "version 15 save restores death and Hell recovery state");
+          "version 16 save restores death and Hell recovery state");
     check(!loaded.player.bridge_treasure_available
               && !loaded.player.healing_water_available
               && loaded.player.cave_coins_collected
               && loaded.player.snow_search_count == 3
               && loaded.player.pending_relocation == 4,
-          "version 15 save restores Other action state and deferred travel");
+          "version 16 save restores Other action state and deferred travel");
     check(loaded.player.has_defeated_wormoid,
-          "version 15 saves preserve the Wormoid-defeat hint flag");
+          "version 16 saves preserve the Wormoid-defeat hint flag");
     check(loaded.player.monster_defeats == original.player.monster_defeats
               && loaded.player.monster_defeat_history_complete,
-          "version 15 preserves all 50 defeat counters, including reserved entries");
+          "version 16 preserves all 50 defeat counters, including reserved entries");
+
+    {
+        std::ifstream input(path, std::ios::binary);
+        std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
+                                        std::istreambuf_iterator<char>()};
+        write_u32(bytes, bytes.size() - sizeof(std::int32_t), 4);
+        write_u32(bytes, 10, test_crc32(bytes, 14));
+        write_bytes(path, bytes);
+        bool rejected_specialty = false;
+        try {
+            static_cast<void>(yipe::load_game(path));
+        } catch (const std::runtime_error&) {
+            rejected_specialty = true;
+        }
+        check(rejected_specialty, "version 16 rejects an invalid saved specialty");
+        yipe::save_game_atomic(path, original);
+    }
 
     constexpr std::size_t defeat_extension_size =
         yipe::Player::monster_defeat_table_size * sizeof(std::int32_t) + sizeof(std::uint8_t);
+    remove_save_extension(path, sizeof(std::int32_t), 15);
+    const yipe::GameState loaded_version_15 = yipe::load_game(path);
+    check(loaded_version_15.player.specialty == 1
+              && loaded_version_15.player.combat_style == 1
+              && loaded_version_15.player.inventory[28] == 12
+              && loaded_version_15.player.monster_defeats == original.player.monster_defeats,
+          "version 15 infers its former class while preserving portrait and defeat counts");
+
     remove_save_extension(path, defeat_extension_size, 14);
     yipe::GameState upgraded_version_14 = yipe::load_game(path);
     check(!upgraded_version_14.player.monster_defeat_history_complete
@@ -2287,6 +2342,7 @@ void test_recovered_shop_transactions() {
           "heal shop does not charge a full-health player");
 
     yipe::Player magic_customer;
+    magic_customer.spell_points = 0;
     magic_customer.maximum_spell_points = 100;
     magic_customer.gold = 50;
     yipe::MsvcRandom magic_random(1);
@@ -3527,12 +3583,15 @@ void test_recovered_spells() {
     const yipe::Player wizard(yipe::CharacterType::wizard);
     const yipe::Player warrior(yipe::CharacterType::warrior);
     const yipe::Player rogue(yipe::CharacterType::rogue);
+    yipe::Player random_specialty;
+    random_specialty.specialty = 2;
     check(yipe::spell_point_cost(wizard, 1, yipe::SpellPower::low) == 6
-              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::low) == 10
+              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::low) == 8
               && yipe::spell_point_cost(rogue, 1, yipe::SpellPower::low) == 8
-              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::high) == 20
-              && yipe::spell_point_cost(warrior, 5, yipe::SpellPower::high) == 38,
-          "spell costs preserve class differences and selective high-power doubling");
+              && yipe::spell_point_cost(random_specialty, 1, yipe::SpellPower::low) == 10
+              && yipe::spell_point_cost(warrior, 1, yipe::SpellPower::high) == 16
+              && yipe::spell_point_cost(warrior, 5, yipe::SpellPower::high) == 33,
+          "spell costs follow the original specialty table and selective doubling");
 
     yipe::Player surface_caster;
     surface_caster.spell_points = 10;
@@ -3571,7 +3630,7 @@ void test_recovered_spells() {
         healer, outdoors, 1, yipe::SpellPower::low, heal_random);
     check(small_heal.status == yipe::SpellCastStatus::cast
               && small_heal.healing == 14 && healer.health == 15
-              && healer.spell_points == 90,
+              && healer.spell_points == 92,
           "Small Heal uses the recovered seeded formula and spell-point cost");
 
     yipe::Player repellent_caster;
@@ -3589,7 +3648,7 @@ void test_recovered_spells() {
               && repellent_caster.random_encounter_threshold == 125
               && repellent_caster.saved_random_encounter_threshold == 85
               && repellent_caster.monster_repellent_steps == 46
-              && repellent_caster.spell_points == 72,
+              && repellent_caster.spell_points == 76,
           "Stinky Smell applies the recovered capped duration and status fields");
 
     yipe::Player full_healer;
@@ -3602,7 +3661,7 @@ void test_recovered_spells() {
     const yipe::ExplorationSpellResult full_heal = yipe::cast_exploration_spell(
         full_healer, outdoors, 5, yipe::SpellPower::high, full_heal_random);
     check(full_heal.healing == 99 && full_healer.health == 100
-              && full_healer.spell_points == 62,
+              && full_healer.spell_points == 67,
           "Full Heal restores all health without a high-power surcharge");
 
     yipe::Player town_caster;
@@ -3638,7 +3697,7 @@ void test_recovered_spells() {
         super_healer, outdoors, 9, yipe::SpellPower::low, super_heal_random);
     check(super_heal.healing == 26 && super_healer.health == 27
               && super_healer.ability_points == 3
-              && super_healer.spell_points == 40,
+              && super_healer.spell_points == 45,
           "Super Heal restores seeded health and one AP at low power");
 
     const auto single_target = [] {
@@ -3688,7 +3747,7 @@ void test_recovered_spells() {
               && attack_group.monsters[0].health == 88
               && attack_group.monsters[1].health == 89
               && attack_group.monsters[2].health == 88
-              && group_attacker.spell_points == 72,
+              && group_attacker.spell_points == 76,
           "high-power attack spells target all opponents in recovered slot order");
 
     yipe::Player restricted_caster;
@@ -3704,14 +3763,14 @@ void test_recovered_spells() {
         restricted_caster, restricted_target, 0, yipe::SpellPower::low,
         restricted_random);
     restricted_caster.spells[1] = 1;
-    restricted_caster.spell_points = 9;
+    restricted_caster.spell_points = 7;
     const yipe::ExplorationSpellResult too_expensive = yipe::cast_exploration_spell(
         restricted_caster, outdoors, 1, yipe::SpellPower::low, restricted_random);
     check(wrong_exploration_context.status == yipe::SpellCastStatus::wrong_context
               && wrong_combat_context.status == yipe::SpellCastStatus::wrong_context
               && too_expensive.status
                   == yipe::SpellCastStatus::insufficient_spell_points
-              && restricted_caster.spell_points == 9,
+              && restricted_caster.spell_points == 7,
           "spell context and SP failures leave player resources unchanged");
 
     yipe::Player suction_caster;
@@ -3753,7 +3812,7 @@ void test_recovered_spells() {
     check(shuffle.status == yipe::SpellCastStatus::cast
               && group.monsters[0].health == 46 && group.monsters[1].health == 47
               && group.monsters[2].health == 27
-              && shuffle_caster.spell_points == 86,
+              && shuffle_caster.spell_points == 88,
           "HP Shuffle circulates seeded health portions across three monsters");
 
     yipe::Player rabbit_caster;
@@ -3777,7 +3836,7 @@ void test_recovered_spells() {
               && rabbit_group.monsters[1].special_rating == 5
               && rabbit_group.monsters[1].attack_rating == 5
               && rabbit_group.monsters[1].defense_rating == 5
-              && rabbit_caster.spell_points == 64,
+              && rabbit_caster.spell_points == 67,
           "Rabbit Replacement transforms the last opponent while preserving health and rank");
 }
 
@@ -3851,6 +3910,7 @@ void test_first_playable_flow() {
 int main() {
     test_random();
     test_player_defaults();
+    test_random_character_creation();
     test_princess_statistics();
     test_health_change();
     test_level_progression();

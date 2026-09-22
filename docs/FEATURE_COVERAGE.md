@@ -13,7 +13,7 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 
 | Original action | Command ID | Current behavior / remaining work |
 | --- | --- | --- |
-| File / New | 57600 | Startup N creates a character. In-game Ctrl+N and the full character-creation flow remain unresolved. |
+| File / New | 57600 | Startup N offers four stat choices, random reroll, name, difficulty, and portrait selection. In-game Ctrl+N, the original intro toggle, and native-dialog comparison remain unresolved. |
 | File / Open | 57601 | Startup L resumes the single native save. File chooser, in-game opening, and UI legacy import remain unresolved. Ctrl+O is currently adapted to Other. |
 | File / Save | 57603 | Implemented through F5 and Ctrl+S, using atomic native persistence. |
 | File / Save As | 57604 | Unresolved; currently one per-user native save slot. |
@@ -53,7 +53,7 @@ bindings, and repeated shortcut keydowns are ignored.
 
 | Feature | Current evidence and gaps |
 | --- | --- |
-| Startup and character creation | Startup art and three class choices implemented. Original name entry, random/reroll creation, subsequent setup choices, class art, and in-game new-game flow need an explicit audit. |
+| Startup and character creation | Four recovered stat presets, seeded random reroll, name entry, three difficulties, eight normal/four silly portraits, and saved specialty/portrait are implemented. Original intro toggle, in-game New, and original-runtime/dialog comparisons remain open. |
 | Player defaults, stats, level growth | Core implementation and deterministic cases; class/difficulty/runtime reference comparisons remain open. |
 | Inventory | Ten consumables, 13 carried slots, stat/healing effects, and relocation implemented. Other serialized slots and invalid-item cleanup remain U004. |
 | Maps and movement | 112 static and three generated maps, transitions, visibility, movement hazards/gates, and entry patches implemented. Exhaustive event/route and original map comparisons remain open. |
@@ -65,7 +65,7 @@ bindings, and repeated shortcut keydowns are ignored.
 | Special locations and recovery | Secret tree, Other tile actions, location messages/hints, death/Hell/Gatekeeper recovery implemented. Remaining map event types and complete progression need audit. |
 | Statistics and high scores | Kills, Special, Equipment, AC/WC, and 45 high scores implemented. Main portrait/presentation and high-score code remain unresolved. |
 | Help and attribution | All original manual content recovered; current controls and original text are separated. Visible native-dialog and original-navigation comparisons remain open. Historical manual claims are not treated as current implementation evidence. |
-| Native persistence | Player/world versions 1–15, settings, and high scores supported. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |
+| Native persistence | Player/world versions 1–16, settings, and high scores supported. Version 16 separates specialty from stat bias; older native versions infer the former class. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |
 | Original-file import | Strict import-only `.yp3`/`Yipe3.dat` readers with synthetic/captured auxiliary fixtures. Real player-save samples and user-facing import remain open. |
 | Input/audio/presentation | Configured movement/combat keys, recovered audio, SDL combat picker, and native dialogs implemented. Mouse exploration, modifier bindings, shortcut conflicts, focus/repeat/scaling/timing and long-session comparisons remain open. |
 | Reproducible release | Development CMake/CTest build works. Clean release build, packaged macOS app, independent-directory launch, complete playthrough, and final artifact/limitations documentation remain P9. |

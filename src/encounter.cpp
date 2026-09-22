@@ -357,7 +357,7 @@ int calculate_player_damage(const Player& player, const Monster& monster,
     if (player.difficulty == 1) {
         ++damage;
     }
-    if (player.combat_style == 2 && player.level < 10 && monster.type_id > 2
+    if (player.specialty == 2 && player.level < 10 && monster.type_id > 2
         && roll(random, 100) > 65) {
         ++damage;
     }

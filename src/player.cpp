@@ -4,9 +4,24 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <stdexcept>
 
 namespace yipe {
+
+namespace {
+
+int random_starting_stat(MsvcRandom& random) {
+    std::array<int, 8> dice{3, 3, 3};
+    for (std::size_t index = 3; index < dice.size(); ++index) {
+        dice[index] = random.next() % 3 + 2;
+    }
+    std::sort(dice.begin(), dice.end(), std::greater<>{});
+    return dice[0] + dice[1] + dice[2] + random.next() % 3
+        + (random.next() % 100 > 90 ? 1 : 0);
+}
+
+} // namespace
 
 Player::Player() {
     initialize(CharacterType::warrior);
@@ -29,6 +44,7 @@ void Player::initialize(CharacterType type) {
     ring_rank = 0;
     necklace_rank = 0;
     difficulty = 2;
+    combat_style = 0;
     equipment_upgrade_count = 0;
     loot_roll_penalty = 2;
     restoration_uses = 0;
@@ -65,34 +81,48 @@ void Player::initialize(CharacterType type) {
 
     switch (type) {
     case CharacterType::warrior:
-        combat_style = 2;
+        specialty = 3;
         strength = 16;
         dexterity = 13;
         intelligence = 10;
         health = 13;
-        spell_points = 0;
+        spell_points = 10;
         ability_points = 5;
         break;
     case CharacterType::rogue:
-        combat_style = 3;
+        specialty = 0;
         strength = 11;
         dexterity = 15;
         intelligence = 12;
         health = 13;
-        spell_points = 0;
+        spell_points = 12;
         ability_points = 6;
         break;
     case CharacterType::wizard:
-        combat_style = 1;
+        specialty = 1;
         strength = 11;
         dexterity = 12;
         intelligence = 16;
         health = 10;
-        spell_points = 0;
+        spell_points = 18;
         ability_points = 5;
         break;
     }
 
+    maximum_health = health;
+    maximum_spell_points = spell_points;
+    maximum_ability_points = ability_points;
+}
+
+void Player::reroll_random_character(MsvcRandom& random) {
+    specialty = 2;
+    dexterity = std::max(10, random_starting_stat(random));
+    strength = std::max(10, random_starting_stat(random));
+    intelligence = std::max(10, random_starting_stat(random));
+    const int total = dexterity + strength + intelligence;
+    health = (total < 34 ? 14 : total < 40 ? 12 : 10) + random.next() % 2;
+    spell_points = health + 1 + random.next() % 2;
+    ability_points = 4 + random.next() % 2;
     maximum_health = health;
     maximum_spell_points = spell_points;
     maximum_ability_points = ability_points;

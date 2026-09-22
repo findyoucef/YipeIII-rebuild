@@ -83,7 +83,7 @@ Ctrl+H and the player-status button are adapted access paths, not new key bindin
 
 ## Native high-score persistence
 
-`highscores.y3r` is separate from player `save.y3r` (still version 15) and
+`highscores.y3r` is separate from player `save.y3r` (now version 16) and
 `settings.y3r`. The core can save the legacy reader's `high_scores` array
 directly; the application does not automatically import or overwrite an
 original `Yipe3.dat`. Original `.yp3` files also remain import-only.

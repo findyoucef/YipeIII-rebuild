@@ -85,8 +85,8 @@ int spell_point_cost(const Player& player, std::size_t spell, SpellPower power) 
     if (spell >= spells.size()) {
         throw std::out_of_range("spell index is out of range");
     }
-    const std::size_t cost_index = player.combat_style == 1 ? 0
-        : player.combat_style == 2 ? 1 : 2;
+    const std::size_t cost_index = player.specialty == 1 ? 0
+        : player.specialty == 2 ? 1 : 2;
     int cost = spells[spell].class_costs[cost_index];
     if (power == SpellPower::high && spells[spell].high_power_costs_double) {
         cost *= 2;

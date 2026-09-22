@@ -37,7 +37,8 @@ constexpr std::uint16_t monster_history_game_format_version = 11;
 constexpr std::uint16_t death_game_format_version = 12;
 constexpr std::uint16_t other_action_game_format_version = 13;
 constexpr std::uint16_t wormoid_hint_game_format_version = 14;
-constexpr std::uint16_t game_format_version = 15;
+constexpr std::uint16_t defeat_statistics_game_format_version = 15;
+constexpr std::uint16_t game_format_version = 16;
 constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
@@ -165,6 +166,9 @@ std::vector<std::uint8_t> encode_player_payload(const Player& player) {
 }
 
 std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
+    if (game.player.specialty < 0 || game.player.specialty > 3) {
+        throw std::runtime_error("invalid character specialty in save state");
+    }
     std::vector<std::uint8_t> payload = encode_player_payload(game.player);
     append_i32(payload, game.player.experience);
     append_i32(payload, game.player.gold);
@@ -267,6 +271,7 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
         append_i32(payload, count);
     }
     append_u8(payload, game.player.monster_defeat_history_complete ? 1 : 0);
+    append_i32(payload, game.player.specialty);
     return payload;
 }
 
@@ -422,6 +427,11 @@ GameState load_game(const std::filesystem::path& path) {
     game.player.necklace_rank = reader.u16();
     game.player.difficulty = reader.i32();
     game.player.combat_style = reader.i32();
+    // Older native saves used this field for class selection as well as stat bias.
+    if (save.version < game_format_version) {
+        game.player.specialty = game.player.combat_style == 1 ? 1
+            : game.player.combat_style == 3 ? 0 : 3;
+    }
     game.player.equipment_upgrade_count = reader.i32();
     game.player.loot_roll_penalty = reader.i32();
     game.location.position.x = reader.i32();
@@ -570,11 +580,17 @@ GameState load_game(const std::filesystem::path& path) {
     if (save.version >= wormoid_hint_game_format_version) {
         game.player.has_defeated_wormoid = reader.u8() != 0;
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= defeat_statistics_game_format_version) {
         for (std::int32_t& count : game.player.monster_defeats) {
             count = reader.i32();
         }
         game.player.monster_defeat_history_complete = reader.u8() != 0;
+    }
+    if (save.version >= game_format_version) {
+        game.player.specialty = reader.i32();
+        if (game.player.specialty < 0 || game.player.specialty > 3) {
+            throw std::runtime_error("save contains an invalid character specialty");
+        }
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");
