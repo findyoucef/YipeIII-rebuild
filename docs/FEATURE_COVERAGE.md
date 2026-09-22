@@ -13,7 +13,7 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 
 | Original action | Command ID | Current behavior / remaining work |
 | --- | --- | --- |
-| File / New | 57600 | Startup N and in-game Ctrl+N offer four stat choices, random reroll, name, difficulty, and portrait selection. Switching from play asks whether to save; the new game's first save opens Save As. The original intro toggle and native-dialog comparison remain unresolved. |
+| File / New | 57600 | Startup N and in-game Ctrl+N offer four stat choices, random reroll, name, difficulty, portrait selection, and the optional original King introduction. Switching from play asks whether to save; the new game's first save opens Save As. Native-dialog/original-runtime comparison remains open. |
 | File / Open | 57601 | Startup L and in-game Ctrl+O use the macOS file chooser for native `.y3r` saves or import-only original `.yp3` files. In-game Open validates the selected world before leaving current play, prevents saving over the target, and offers a save choice for different files. Real original-save compatibility and dialog comparison remain open. |
 | File / Save | 57603 | F5 and Ctrl+S use atomic native persistence. The first save of a new game asks for a `.y3r` path. |
 | File / Save As | 57604 | Ctrl+Shift+S opens the macOS native save chooser. Subsequent saves use the selected `.y3r` path; original `.yp3` files cannot be overwritten. Native-menu and original-runtime comparison remain open. |
@@ -53,7 +53,7 @@ bindings, and repeated shortcut keydowns are ignored.
 
 | Feature | Current evidence and gaps |
 | --- | --- |
-| Startup and character creation | Four recovered stat presets, seeded random reroll, name entry, three difficulties, eight normal/four silly portraits, and saved specialty/portrait are implemented. In-game New routes to setup after a save choice. Original intro toggle and original-runtime/dialog comparisons remain open. |
+| Startup and character creation | Four recovered stat presets, seeded random reroll, name entry, three difficulties, eight normal/four silly portraits, saved specialty/portrait, and an optional original-text King introduction are implemented. In-game New routes to setup after a save choice. The startup N shortcut no longer leaks into character-name input. Original-runtime/dialog comparisons remain open. |
 | Player defaults, stats, level growth | Core implementation and deterministic cases; class/difficulty/runtime reference comparisons remain open. |
 | Inventory | Ten consumables, 13 carried slots, stat/healing effects, and relocation implemented. Other serialized slots and invalid-item cleanup remain U004. |
 | Maps and movement | 112 static and three generated maps, transitions, visibility, movement hazards/gates, and entry patches implemented. A core route verifies the strength/linked/rainbow-key path from map `0x2d` to princess slot 13 on `0x2e`. The princess pockets on maps `0x4a` and `0x85` remain reachability questions (U022); exhaustive routes, ordinary SDL play, and original map comparisons remain open. |

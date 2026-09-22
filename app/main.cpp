@@ -854,6 +854,7 @@ std::optional<std::string> request_text(SDL_Window* window, const char* title,
     };
 
     update_title();
+    SDL_FlushEvent(SDL_TEXTINPUT);
     SDL_StartTextInput();
     while (true) {
         SDL_Event event{};
@@ -1095,6 +1096,31 @@ std::optional<yipe::Player> choose_character(SDL_Window* window, SDL_Renderer* r
             continue;
         }
         player.inventory[28] = *portrait;
+        constexpr std::array intro_buttons{
+            SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT
+                                         | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+                                     0, "Start Game"},
+            SDL_MessageBoxButtonData{0, 1, "Show Intro"},
+        };
+        if (show_choice(window, "Show Intro",
+                        "Read the King's introduction before starting?",
+                        intro_buttons.data(), static_cast<int>(intro_buttons.size())) == 1) {
+            show_message(
+                window, "The King",
+                "Hello " + player.name + ".\n\n"
+                    "The city of Yipe! needs you once again!\n\n"
+                    "My collection of six rare stamps has been stolen!  I know that you "
+                    "are a brave and loyal adventurer.  Therefore I am giving this very "
+                    "important mission to you.\n\n"
+                    "Please search the world and return my stamps to me.  Oh... I almost "
+                    "forgot to mention something else.  All of my daughters are missing.  "
+                    "I have no idea where they have gone.\n\n"
+                    "I will highly reward you for returning both my stamp collection and "
+                    "all of my daughters.  (I don't really remember exactly how many "
+                    "princesses I have.)\n\n"
+                    "Take this simple weapon and armor and begin your exploring.  Be sure "
+                    "to stop by my castle from time to time to check in with me.");
+        }
         return player;
     }
 }
