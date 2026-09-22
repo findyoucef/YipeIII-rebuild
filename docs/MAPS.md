@@ -239,6 +239,24 @@ Key, the player can pass door `(11,4)` and reach princess rescue slot 13 at
 `(7,1)`. The route test uses ordinary movement and map actions. It does not
 establish how the player acquires the prerequisites, survives encounters, or
 experiences the route in the SDL interface.
+
+### Princess-pocket reachability audit
+
+The static route scan still flags two princess placements. These are open
+reachability questions, not confirmed soft locks:
+
+| Map | Established entry | Unexplained separation |
+| --- | --- | --- |
+| `0x4a` | Map `0x44` crosses its south edge at `x=9` into the main chamber; the `0x72` depth event also returns at `(11,10)` there | Rescue slot 11 is at `(2,1)` in the upper-left pocket. The overlay at `(4,9)` exposes only that wall cell and does not connect to the pocket through the adjacent `0x25`/`0x0d` cells. No west/east edge or lower neighboring map provides an established entry. |
+| `0x85` | Map `0x7f` crosses its south edge at `x=8` into the main chamber | Rescue slot 20 is at `(1,9)` behind the `0x24` wall at `(5,8)`/`(5,9)` and `0x0d` at `(5,10)`. The wrapped southern neighbor `0x67` has no passable north edge; `(2,11)` on `0x85` is the Hell-exit action `0x55`, not an ordinary edge crossing. |
+
+The original map-specific helper `0x004124c0` names two cells in `0x85`,
+including `(5,8)`, but the only recovered direct call is from tile rendering
+with argument `1`, which returns before its mutation branch. This does not yet
+establish a normal-play trigger. Further original-runtime or control-flow
+evidence is needed before changing either map or claiming all 20 princesses are
+reachable.
+
 The earlier entry checks in `0x0040de80` are registration checks, not additional
 gameplay prerequisites. They cover descending from maps `0x0d` and `4` (action
 `0x0e`), deeper entry from maps `0x42` and `0x2a` (action `0x10`), and descending

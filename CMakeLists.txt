@@ -80,6 +80,14 @@ foreach(YIPE_AUDIO_FILE IN LISTS YIPE_MONSTER_AUDIO)
                    "${YIPE_RUNTIME_ASSET_DIR}/MonsterSounds/${YIPE_AUDIO_NAME}" COPYONLY)
 endforeach()
 
+install(TARGETS yipe3 RUNTIME DESTINATION .)
+install(DIRECTORY "${YIPE_RUNTIME_ASSET_DIR}/" DESTINATION assets)
+
+set(CPACK_PACKAGE_NAME "YipeIII-rebuild")
+set(CPACK_GENERATOR TGZ)
+set(CPACK_PACKAGE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/packages")
+include(CPack)
+
 enable_testing()
 add_executable(yipe_core_tests tests/core_tests.cpp)
 target_link_libraries(yipe_core_tests PRIVATE yipe_core)

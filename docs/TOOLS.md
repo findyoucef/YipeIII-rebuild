@@ -28,6 +28,13 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ```
 
+`cpack --config build/CPackConfig.cmake -G TGZ` writes an installable archive to
+`build/packages/`. It contains the executable and the copied runtime assets.
+On the recorded macOS host, the unpacked executable passed `--smoke-test` from
+a temporary directory outside the checkout with SDL's dummy video and audio
+drivers. The archive still depends on the Homebrew SDL2 dynamic library;
+portable macOS packaging and a clean release build remain P9 work.
+
 ## Prepare embedded resources
 
 ```bash
