@@ -232,6 +232,13 @@ The pushable-wall text itself has no strength condition: the entry patch changes
 its movement action, so a strong player activates the linked wall instead of
 seeing that hint. These initialization patches do not add persistent tile-change
 records; linked mechanisms continue to use their existing persistence path.
+An integrated core route starts on map `0x2d` at `(10,9)` with strength 40. The
+patched `(11,9)` switch opens edge `(12,9)`, which leads east to map `0x2e` at
+`(1,9)`. Its `(11,10)` switch opens the inner wall at `(8,3)`; with the Rainbow
+Key, the player can pass door `(11,4)` and reach princess rescue slot 13 at
+`(7,1)`. The route test uses ordinary movement and map actions. It does not
+establish how the player acquires the prerequisites, survives encounters, or
+experiences the route in the SDL interface.
 The earlier entry checks in `0x0040de80` are registration checks, not additional
 gameplay prerequisites. They cover descending from maps `0x0d` and `4` (action
 `0x0e`), deeper entry from maps `0x42` and `0x2a` (action `0x10`), and descending

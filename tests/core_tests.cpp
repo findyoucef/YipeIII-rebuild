@@ -3928,6 +3928,80 @@ void test_first_playable_flow() {
     std::filesystem::remove(path);
 }
 
+void test_linked_princess_route() {
+    std::optional<yipe::Map> entrance_map = yipe::original_map(0x2d);
+    std::optional<yipe::Map> princess_map = yipe::original_map(0x2e);
+    check(entrance_map.has_value() && princess_map.has_value(),
+          "linked-princess route maps are available");
+    if (!entrance_map || !princess_map) {
+        return;
+    }
+
+    yipe::Player player;
+    player.strength = 40;
+    yipe::WorldLocation location{{10, 9}, 0, 2, 1, false, 0x2d};
+    yipe::initialize_map_actions(player, *entrance_map, location.position);
+    const yipe::MovementResult switch_step =
+        yipe::try_move(*entrance_map, location.position, 1, 0);
+    check(switch_step.original_code == 0x1a && entrance_map->toggle_linked_tiles()
+              && entrance_map->tile({12, 9}) == 0x53,
+          "strength-40 switch opens map 0x2d's east boundary");
+    const yipe::MovementResult crossing =
+        yipe::try_move(*entrance_map, location.position, 1, 0);
+    const bool crossed = crossing.original_code == 2
+        && yipe::cross_map_edge(location);
+    check(crossed && location.map_id == 0x2e
+              && location.position == yipe::MapPosition{1, 9},
+          "map 0x2d's opened east exit enters map 0x2e");
+    if (location.map_id != 0x2e || location.position != yipe::MapPosition{1, 9}) {
+        return;
+    }
+    yipe::initialize_map_actions(player, *princess_map, location.position);
+
+    constexpr std::array<yipe::MapPosition, 10> to_switch{{
+        {2, 8}, {3, 7}, {4, 6}, {5, 5}, {6, 5},
+        {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 10},
+    }};
+    for (const yipe::MapPosition next : to_switch) {
+        const yipe::MovementResult movement = yipe::try_move(
+            *princess_map, location.position, next.x - location.position.x,
+            next.y - location.position.y);
+        if (!movement.position_changed || location.position != next) {
+            check(false, "the linked-princess route reaches its switch");
+            return;
+        }
+    }
+    check(princess_map->tile({8, 3}) == 0x25
+              && princess_map->toggle_linked_tiles()
+              && princess_map->tile({8, 3}) == 0x53,
+          "the switch opens the wall to the princess chamber");
+
+    yipe::MovementState equipped;
+    equipped.has_rainbow_key = true;
+    constexpr std::array<yipe::MapPosition, 11> to_princess{{
+        {10, 9}, {9, 8}, {8, 7}, {9, 6}, {10, 5}, {11, 4},
+        {10, 3}, {9, 2}, {8, 3}, {7, 2}, {7, 1},
+    }};
+    bool opened_door = false;
+    for (const yipe::MapPosition next : to_princess) {
+        const yipe::MapPosition previous = location.position;
+        const yipe::MovementResult movement = yipe::try_move(
+            *princess_map, location.position, next.x - previous.x,
+            next.y - previous.y, equipped);
+        if (!movement.position_changed || location.position != next) {
+            check(false, "the linked-princess route reaches the princess tile");
+            return;
+        }
+        if (movement.original_code == 0x12) {
+            princess_map->open_door(previous, location.position);
+            opened_door = true;
+        }
+    }
+    check(opened_door && location.position == princess_map->events().princess.position
+              && princess_map->events().princess.rescue_index == 13,
+          "linked wall and rainbow key make princess 13 reachable by ordinary movement");
+}
+
 } // namespace
 
 int main() {
@@ -3972,6 +4046,7 @@ int main() {
     test_death_and_hell_recovery();
     test_recovered_spells();
     test_first_playable_flow();
+    test_linked_princess_route();
 
     if (failures != 0) {
         std::cerr << failures << " test(s) failed\n";
