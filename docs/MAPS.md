@@ -52,8 +52,10 @@ region-coordinate wrapping and the additional layer and alternate-map offsets.
 The SDL application follows these exits and can render every static table. Its
 headless smoke test renders all 112 maps, exercising the recovered tile-to-bitmap
 switch and every required terrain sheet. The same loader and smoke test now
-render the three runtime-generated maps. Dynamic monster-overlay tiles remain
-separate follow-up work.
+render the three runtime-generated maps. All six extracted event-record fields
+have a movement or interaction path. The ten overlay records allow movement
+through their underlying `0x0d` tile, but the overlay is not yet drawn and the
+original's post-combat overlay relocation remains follow-up work.
 
 ## Starting area
 
@@ -89,6 +91,8 @@ The SDL dispatcher exposes the recovered entrance identities and implements the
 restoration, depth, surface-return, key-message, fire-wall, and King-dialog effects.
 It also displays the 20 placed location-message events using the exact 21-string
 resource range 651–671 (one recovered string is not placed by the static catalog).
+Ctrl+R rereads a placed message when the player is standing on its tile; it
+does nothing away from a sign. The accelerator is present in menu resource 128.
 Combat defeat selects one of resources 701–720, increments the death count,
 leaves the player at one HP, and relocates to map `0x75` at `(6,10)`. Dialog 387
 offers the Gatekeeper's difficulty-based fee or a type-41 fight. Payment fully
@@ -120,7 +124,7 @@ visibility refresh performed by `0x19`. Return-to-Surface items and spells use
 the entrance map and region saved by the `0x0e` descent path, then
 `0x0041e090` places the player immediately below the final `0x36`/`0x39`
 entrance on that map. Native format version 5 introduced persistence for changed
-door and linked-mechanism tiles; current version 13 retains it, the recovered
+door and linked-mechanism tiles; current version 16 retains it, the recovered
 King quest state, the princess Mystery counter, permanent monster defeats, the
 saved surface-return region, encounter history, death/Hell recovery state, and
 Other-action treasure/water/snow state.

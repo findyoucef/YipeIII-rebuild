@@ -20,7 +20,7 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 | File / Print | 57607 | Unresolved; determine whether this MFC menu entry has meaningful game behavior. |
 | File / Print Preview | 57609 | Unresolved; determine whether the original supplies game-specific output. |
 | File / Print Setup | 57606 | Unresolved Windows printing-framework behavior. |
-| File / Recent File | 57616 | Unresolved; current Load resumes one native file. |
+| File / Recent File | 57616 | Unresolved; Open uses a file chooser, with no recent-file list. |
 | File / Exit | 57665 | Adapted to Q/Escape with save choice; window close saves and exits. |
 | Edit / Undo | 57643 | Unresolved; distinguish framework defaults from gameplay handlers. |
 | Edit / Cut | 57635 | Unresolved; distinguish text-edit controls from gameplay handlers. |
@@ -30,7 +30,7 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 | View / Items | 32779 | Ctrl+I or the configured Use Item key opens carried consumables. |
 | View / Cast Spell | 32780 | Ctrl+C or the configured Cast key opens the spell picker. |
 | View / Equipment | 32783 | Ctrl+E or Ctrl+T → Equipment; all seven slots and per-item ratings. |
-| View / Read Sign | 32776 | Signs display on arrival. Explicit Ctrl+R rereading and exact original handler behavior remain unresolved. |
+| View / Read Sign | 32776 | Signs display on arrival. Ctrl+R rereads the current tile's extracted sign text; the original handler and visible presentation still need runtime comparison. |
 | View / High Scores | 32771 | Startup H, Ctrl+H, and the status dialog; all 45 records and native persistence. |
 | View / High Score Code | 32785 | Unresolved; retain separately from the implemented local score tables. |
 | View / Serial Number | 32781 | Unresolved registration/profile policy (U013). |
@@ -62,7 +62,7 @@ bindings, and repeated shortcut keydowns are ignored.
 | Healing, magic, abilities | Services/training, 12 spells and four abilities implemented. Legacy active-effect import and original-runtime comparisons remain open. |
 | Casino | Slots, dot racing, and darts implemented with recovered rules. Original UI/timing comparison remains open. |
 | King, princesses, stamps | King selector/rewards, all 20 princesses, six stamp bosses, shared signed rescue count, and finale logic implemented. Normal-play reachability/completion remains unverified. |
-| Special locations and recovery | Secret tree, Other tile actions, location messages/hints, death/Hell/Gatekeeper recovery implemented. Remaining map event types and complete progression need audit. |
+| Special locations and recovery | Secret tree, Other tile actions, location messages/hints, sign rereading, and death/Hell/Gatekeeper recovery implemented. Dynamic overlay rendering and complete progression need audit. |
 | Statistics and high scores | Kills, Special, Equipment, AC/WC, and 45 high scores implemented. Main portrait/presentation and high-score code remain unresolved. |
 | Help and attribution | All original manual content recovered; current controls and original text are separated. Visible native-dialog and original-navigation comparisons remain open. Historical manual claims are not treated as current implementation evidence. |
 | Native persistence | Player/world versions 1–16, settings, and high scores supported. Version 16 separates specialty from stat bias; older native versions infer the former class. New/Open/Save As use selected paths on macOS. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |

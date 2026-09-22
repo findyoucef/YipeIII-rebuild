@@ -22,7 +22,7 @@ Other inspects the current tile, drinks from water holes, collects hidden bridge
 
 All eleven map-specific movement hints now follow their recovered conditions. Map entry enables the strength-40 wall mechanism, opens Hell's east boundary after the global Gatekeeper quest advances, and clears an occupied `0x25` wall tile without changing its neighbors. These entry patches are recomputed on map load.
 
-Ctrl+T opens player status; its Kills button shows five pages of monster defeat counts and the death count. Names remain hidden until a positive kill count, as in the original dialog. Ordinary kills are counted even when you later flee; Earth Giant and Gatekeeper count only after their entire group is defeated. These counts also advance the King's equipment hint.
+Ctrl+R rereads the sign at the player's current tile. Ctrl+T opens player status; its Kills button shows five pages of monster defeat counts and the death count. Names remain hidden until a positive kill count, as in the original dialog. Ordinary kills are counted even when you later flee; Earth Giant and Gatekeeper count only after their entire group is defeated. These counts also advance the King's equipment hint.
 
 The player-status Special button shows collected stamps, rescued princesses, both keys, the four special items, and the current learned ability. Missing keys or special items display None. The rescue total counts positive signed values in all 30 rescue slots, as do high scores and the finale; it is distinct from the King's separate princess quest counter. This read-only panel uses existing save state and does not submit high scores or change progression.
 

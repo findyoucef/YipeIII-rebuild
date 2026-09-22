@@ -3236,6 +3236,18 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
+        if (event.key.keysym.sym == SDLK_r
+            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+            if (event.key.repeat == 0) {
+                const yipe::MapEvent& sign = map.events().message;
+                if (sign.has_position() && sign.position == game.location.position) {
+                    show_message(window, "Location",
+                                 std::string(location_message(sign.value)));
+                }
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
         if (event.key.keysym.sym == SDLK_o
             && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT))
                 == (KMOD_CTRL | KMOD_SHIFT)) {
