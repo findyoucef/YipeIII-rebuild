@@ -29,11 +29,19 @@ ctest --test-dir build --output-on-failure
 ```
 
 `cpack --config build/CPackConfig.cmake -G TGZ` writes an installable archive to
-`build/packages/`. It contains the executable and the copied runtime assets.
-On the recorded macOS host, the unpacked executable passed `--smoke-test` from
-a temporary directory outside the checkout with SDL's dummy video and audio
-drivers. The archive still depends on the Homebrew SDL2 dynamic library;
-portable macOS packaging and a clean release build remain P9 work.
+`build/packages/`. On macOS it contains `Yipe III.app`, documentation, and the
+package verifier. CMake's BundleUtilities copies non-system dependencies into
+the application and rewrites their load paths; the install script then signs
+nested libraries and the bundle ad hoc and verifies the result. The build-tree
+app still uses development dependencies; the installed/packaged app includes SDL2.
+
+Run `python3 tools/verify_mac_package.py build/packages/YipeIII-rebuild-0.1.0-Darwin.tar.gz`
+to extract the archive outside the checkout, reject external dependencies and
+symlinks, verify signatures and required content, and run headless smoke from an
+empty working directory. The loader trace must show the bundled SDL2 and no
+Homebrew libraries. Python 3.9+ and Apple's command-line tools are required for
+this optional verifier. Full progression, interactive launch on other machines,
+and Developer ID signing/notarization remain open.
 
 ## Prepare embedded resources
 

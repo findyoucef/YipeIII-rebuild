@@ -38,6 +38,14 @@ target_link_libraries(yipe3 PRIVATE yipe_core SDL2::SDL2)
 if(APPLE)
     enable_language(OBJCXX)
     set(CMAKE_OBJCXX_STANDARD 20)
+    set_target_properties(yipe3 PROPERTIES
+        MACOSX_BUNDLE TRUE
+        OUTPUT_NAME "Yipe III"
+        MACOSX_BUNDLE_BUNDLE_NAME "Yipe III Rebuild"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.yipe3rebuild.game"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    )
     target_sources(yipe3 PRIVATE app/file_dialog_mac.mm)
     target_link_libraries(yipe3 PRIVATE "-framework AppKit"
                                         "-framework UniformTypeIdentifiers")
@@ -80,8 +88,30 @@ foreach(YIPE_AUDIO_FILE IN LISTS YIPE_MONSTER_AUDIO)
                    "${YIPE_RUNTIME_ASSET_DIR}/MonsterSounds/${YIPE_AUDIO_NAME}" COPYONLY)
 endforeach()
 
-install(TARGETS yipe3 RUNTIME DESTINATION .)
-install(DIRECTORY "${YIPE_RUNTIME_ASSET_DIR}/" DESTINATION assets)
+if(APPLE)
+    # SDL_GetBasePath resolves an application's Contents/Resources directory.
+    file(GLOB_RECURSE YIPE_BUNDLE_ASSETS "${YIPE_RUNTIME_ASSET_DIR}/*")
+    foreach(YIPE_ASSET IN LISTS YIPE_BUNDLE_ASSETS)
+        file(RELATIVE_PATH YIPE_ASSET_RELATIVE "${YIPE_RUNTIME_ASSET_DIR}" "${YIPE_ASSET}")
+        get_filename_component(YIPE_ASSET_SUBDIRECTORY "${YIPE_ASSET_RELATIVE}" DIRECTORY)
+        set_source_files_properties("${YIPE_ASSET}" PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources/assets/${YIPE_ASSET_SUBDIRECTORY}")
+    endforeach()
+    target_sources(yipe3 PRIVATE ${YIPE_BUNDLE_ASSETS})
+    set_source_files_properties(assets/licenses/SDL2-LICENSE.txt PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources)
+    target_sources(yipe3 PRIVATE assets/licenses/SDL2-LICENSE.txt)
+    install(TARGETS yipe3 BUNDLE DESTINATION .)
+    install(SCRIPT cmake/InstallMacBundle.cmake)
+else()
+    install(TARGETS yipe3 RUNTIME DESTINATION .)
+    install(DIRECTORY "${YIPE_RUNTIME_ASSET_DIR}/" DESTINATION assets)
+endif()
+install(FILES README.md DESTINATION .)
+install(DIRECTORY docs/ DESTINATION docs FILES_MATCHING PATTERN "*.md")
+if(APPLE)
+    install(PROGRAMS tools/verify_mac_package.py DESTINATION tools)
+endif()
 
 set(CPACK_PACKAGE_NAME "YipeIII-rebuild")
 set(CPACK_GENERATOR TGZ)

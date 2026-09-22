@@ -13,14 +13,35 @@ file chooser also requires Apple's Objective-C++ toolchain and AppKit.
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
-./build/yipe3
+open "build/Yipe III.app"
 ```
 
-To make an installable archive of the current build, run
-`cpack --config build/CPackConfig.cmake -G TGZ`. The archive appears in
-`build/packages/` and contains `yipe3` beside its `assets` directory. It can be
-unpacked and run from another directory on the same macOS setup. This is a
-development package; SDL2 is still required at the linked library path.
+On non-macOS builds the executable remains `./build/yipe3`. macOS builds create
+`Yipe III.app`; the executable inside is `Contents/MacOS/Yipe III`.
+
+To make an installable macOS archive, run:
+
+```bash
+cpack --config build/CPackConfig.cmake -G TGZ
+python3 tools/verify_mac_package.py build/packages/YipeIII-rebuild-0.1.0-Darwin.tar.gz
+```
+
+The archive contains `Yipe III.app`, this README, and the documentation. Extract
+it and open the app, or move it to Applications. Packaging embeds SDL2 and its
+license, includes the runtime assets under `Contents/Resources/assets`, fixes
+library paths, and applies an ad-hoc signature. Homebrew is needed to build with
+the recorded dependencies, but the packaged app does not load Homebrew libraries.
+The app directly in the build directory still uses the development SDL2 library;
+`cmake --install build --prefix "$PWD/build/install"` also creates a bundled copy.
+
+The verifier requires Python 3.9+ and Apple's command-line tools. It extracts the
+archive to a temporary directory, checks dependencies and signatures, and runs
+headless smoke with a loader trace from an empty working directory. This remains
+a development release: interactive use on other machines, full progression,
+Developer ID signing, and notarization have not been verified. The package uses
+the build machine's selected architecture and macOS deployment target. The
+current recorded package is arm64 with a macOS 26.0 minimum; older macOS
+versions and Intel Macs have not been tested.
 
 The `yipe3` executable renders the 288×397 startup view at 2× scale. Click New Game, Load Game, or Quit, or use N, L, S for Settings, H for High Scores, Q, and Escape. New Game offers Combat, Quickness, Magic, and Random attributes; Random can be rerolled. Enter a name, choose Easy/Medium/Hard, and click one of eight portraits (S toggles four Silly Mode variants). You can read the King's original introduction before entering map `0x11` at `(5,5)`. The recovered movement defaults use the arrow keys for cardinal movement and numeric-keypad 1/3/7/9 for diagonals; WASD remains an adapted convenience alias. Use I for inventory, C to cast an exploration spell, Ctrl+Shift+O for Other, Ctrl+N for a new game, Ctrl+O to choose a saved game, Ctrl+T for player status, Ctrl+H for high scores, F5 or Ctrl+S to save, Ctrl+Shift+S for Save As, and F10 for settings. New/Open during play ask whether to save current progress before leaving; a new game prompts for a .y3r location on its first save. Shop, service, training, and casino entrances invoke their recovered transactions. Surface edges and recovered depth entrances load their corresponding static maps; restoration, locked-door, surface-return, location-message, and fire-wall tiles dispatch their original effects. Enter any undefeated monster tile to fight its recovered one-to-three-opponent group. The combat view accepts the five configured action keys directly, retains mouse buttons for every action, and cycles targets with the arrow keys or Tab. Defeat relocates the player to map `0x75` at one HP; paying or defeating the Gatekeeper opens the exit on the next attempt. Q or Escape offers Save and Quit outside combat.
 
@@ -35,7 +56,7 @@ The player-status Special button shows collected stamps, rescued princesses, bot
 The Equipment button shows the weapon, body armor, helmet, gloves, ring, boots,
 and amulet with each item's armor class (AC) and weapon class (WC). Player status
 shows the combined combat AC/WC, including special-tier bonuses. Both shops and
-Equipment use the supplied `assets/Yipe3Items.txt` beside the executable, with
+Equipment use the supplied `assets/Yipe3Items.txt` in the runtime resources, with
 the recovered embedded names as fallback if the file is missing or invalid.
 Accessory names come from the original resource strings. The panel is read-only;
 native saves now use version 16. Original-runtime and visible-dialog comparison
