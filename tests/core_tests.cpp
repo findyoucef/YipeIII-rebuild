@@ -3181,6 +3181,17 @@ void test_equipment_combat_ratings() {
     player.special_ability_duration = 20;
     check(yipe::player_attack_equipment_rating(player) == 17,
           "Invisibility remains separate from the deterministic equipment rating");
+
+    player = yipe::Player{};
+    player.gloves_rank = 0xffff;
+    player.helmet_rank = 0x8000;
+    player.ring_rank = 0x7fff;
+    check(yipe::player_attack_equipment_rating(player) == 2
+              && yipe::player_defense_equipment_rating(player) == 0,
+          "equipment totals sign-extend accessory shorts as in the original helpers");
+    player.gloves_rank = 6;
+    check(yipe::player_attack_equipment_rating(player) == 3,
+          "combat preserves its greater-than-three glove rule beyond the named tiers");
 }
 
 void test_king_quest_dialog() {

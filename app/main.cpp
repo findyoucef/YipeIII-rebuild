@@ -76,6 +76,7 @@ struct RuntimeAssets {
     std::filesystem::path bitmaps;
     std::filesystem::path audio;
     std::filesystem::path monster_sounds;
+    std::filesystem::path item_names;
 };
 
 class SdlSession {
@@ -276,6 +277,7 @@ RuntimeAssets runtime_assets(const char* executable) {
                 beside_executable,
                 beside_executable / "audio",
                 beside_executable / "MonsterSounds",
+                beside_executable / "Yipe3Items.txt",
             };
         }
     }
@@ -286,6 +288,7 @@ RuntimeAssets runtime_assets(const char* executable) {
             embedded / "bitmaps",
             embedded / "audio",
             "assets/original/MonsterSounds",
+            "assets/original/Yipe3Items.txt",
         };
     }
     throw std::runtime_error(std::string("could not locate runtime assets for ") + executable);
@@ -1349,7 +1352,8 @@ void show_freds_shop(SDL_Window* window, yipe::Player& player) {
 }
 
 std::string equipment_name(yipe::EquipmentKind kind, int rank) {
-    static const yipe::ItemNames names = yipe::embedded_item_names();
+    static const yipe::ItemNames names =
+        yipe::load_item_names(runtime_assets("Yipe! III").item_names);
     if (rank < 1) {
         return "None";
     }
@@ -2065,6 +2069,60 @@ std::string special_statistics_page(const yipe::Player& player) {
     return message.str();
 }
 
+// Dialog 284, initialized by 0x004187c0. The row ratings are display values;
+// notably gloves grant WC only at ranks 4/5 here, while combat checks rank > 3.
+std::string equipment_statistics_page(const yipe::Player& player) {
+    constexpr std::array<std::string_view, 7> helmets{
+        "Yipe! Baseball Hat", "Shower Cap", "Sombrero", "Miner's Helmet",
+        "Raiders Hard Hat", "Horned Wooden Helmet", "Double Horned Helmet",
+    };
+    constexpr std::array<std::string_view, 5> gloves{
+        "Wet Mittens", "Kitchen Gloves", "Working Gloves", "Leather Gloves",
+        "Magical Spiked Gloves",
+    };
+    constexpr std::array<std::string_view, 5> rings{
+        "Cheap Ring", "Aluminum Ring", "Platinum Ring", "Glowing Ring", "Protection Ring",
+    };
+    constexpr std::array<std::string_view, 6> boots{
+        "Sandals", "Leather Boots", "Steel Toe Boots", "Strong Hiking Boots",
+        "Combat Boots", "Speedy Boots",
+    };
+    constexpr std::array<std::string_view, 6> amulets{
+        "Plain Necklace", "Gold Medallion", "Protection Chain", "Glowing Amulet",
+        "Fire Amulet", "Eye-Piercing Amulet",
+    };
+    const int helmet = static_cast<std::int16_t>(player.helmet_rank);
+    const int glove = static_cast<std::int16_t>(player.gloves_rank);
+    const int ring = static_cast<std::int16_t>(player.ring_rank);
+    const int boot = static_cast<std::int16_t>(player.boots_rank);
+    const int amulet = static_cast<std::int16_t>(player.necklace_rank);
+    std::ostringstream message;
+    message << "Current Items Equipped\nAC = Armor Class; WC = Weapon Class\n\n"
+            << "Weapon: " << equipment_name(yipe::EquipmentKind::weapon, player.weapon_rank)
+            << "  (AC 0, WC " << player.weapon_rank << ")\n"
+            << "Body Armor: " << equipment_name(yipe::EquipmentKind::armor, player.armor_rank)
+            << "  (AC " << player.armor_rank << ", WC 0)";
+    const auto append_accessory = [&](std::string_view label, int rank,
+                                      const auto& names, int ac, int wc) {
+        message << '\n' << label << ": ";
+        if (rank < 1) {
+            message << "None";
+        } else if (static_cast<std::size_t>(rank) <= names.size()) {
+            message << names[static_cast<std::size_t>(rank - 1)];
+        } else {
+            message << "Rank " << rank;
+        }
+        message << "  (AC " << ac << ", WC " << wc << ')';
+    };
+    append_accessory("Helmet", helmet, helmets, helmet,
+                     helmet == 5 ? 1 : helmet == 6 ? 2 : helmet == 7 ? 4 : 0);
+    append_accessory("Gloves", glove, gloves, glove, glove == 4 || glove == 5 ? 1 : 0);
+    append_accessory("Ring", ring, rings, ring == 5 ? 6 : ring, 0);
+    append_accessory("Boots", boot, boots, boot == 6 ? 7 : boot, 0);
+    append_accessory("Amulet", amulet, amulets, amulet, amulet == 5 ? 1 : amulet == 6 ? 2 : 0);
+    return message.str();
+}
+
 void show_player_status(SDL_Window* window, const yipe::Player& player,
                         const std::filesystem::path& high_scores_path,
                         yipe::HighScores& high_scores) {
@@ -2080,8 +2138,9 @@ void show_player_status(SDL_Window* window, const yipe::Player& player,
             << player.maximum_spell_points << "  AP " << player.ability_points << "/"
             << player.maximum_ability_points << "\nStrength " << player.strength
             << "  Dexterity " << player.dexterity << "  Intelligence "
-            << player.intelligence << "\nWeapon " << player.weapon_rank << "  Armor "
-            << player.armor_rank << "\nCarried items " << carried << "/"
+            << player.intelligence << "\nWC " << yipe::player_attack_equipment_rating(player)
+            << "  AC " << yipe::player_defense_equipment_rating(player)
+            << "\nCarried items " << carried << "/"
             << yipe::Player::carried_inventory_size;
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
@@ -2089,6 +2148,7 @@ void show_player_status(SDL_Window* window, const yipe::Player& player,
         SDL_MessageBoxButtonData{0, 1, "Kills"},
         SDL_MessageBoxButtonData{0, 2, "High Scores"},
         SDL_MessageBoxButtonData{0, 3, "Special"},
+        SDL_MessageBoxButtonData{0, 4, "Equipment"},
     };
     while (true) {
         const int choice = show_choice(window, "Player Status", message.str(), buttons.data(),
@@ -2100,6 +2160,8 @@ void show_player_status(SDL_Window* window, const yipe::Player& player,
             show_high_scores(window, high_scores, player.difficulty);
         } else if (choice == 3) {
             show_message(window, "Special Statistics", special_statistics_page(player));
+        } else if (choice == 4) {
+            show_message(window, "Equipment Statistics", equipment_statistics_page(player));
         } else {
             return;
         }
@@ -3327,6 +3389,82 @@ int main(int argc, char* argv[]) {
             initialize_map_state(game, other_map);
             if (other_map.tile({12, 1}) != 0x27) {
                 throw std::runtime_error("quest progress did not open Hell's east boundary");
+            }
+            const auto packaged_names = yipe::load_item_names(assets.item_names);
+            if (packaged_names.used_embedded_fallback) {
+                throw std::runtime_error("the supplied equipment-name file is missing or invalid");
+            }
+            for (std::size_t index = 0; index < packaged_names.weapons.size(); ++index) {
+                if (equipment_name(yipe::EquipmentKind::weapon, static_cast<int>(index + 1))
+                    != packaged_names.weapons[index]) {
+                    throw std::runtime_error("weapon displays did not use the packaged item names");
+                }
+            }
+            for (std::size_t index = 0; index < packaged_names.armor.size(); ++index) {
+                if (equipment_name(yipe::EquipmentKind::armor, static_cast<int>(index + 1))
+                    != packaged_names.armor[index]) {
+                    throw std::runtime_error("armor displays did not use the packaged item names");
+                }
+            }
+            yipe::Player equipment_player;
+            if (equipment_statistics_page(equipment_player)
+                != "Current Items Equipped\nAC = Armor Class; WC = Weapon Class\n\n"
+                   "Weapon: Small Dagger  (AC 0, WC 2)\n"
+                   "Body Armor: Robe  (AC 2, WC 0)\n"
+                   "Helmet: Yipe! Baseball Hat  (AC 1, WC 0)\n"
+                   "Gloves: None  (AC 0, WC 0)\n"
+                   "Ring: None  (AC 0, WC 0)\n"
+                   "Boots: None  (AC 0, WC 0)\n"
+                   "Amulet: None  (AC 0, WC 0)") {
+                throw std::runtime_error("equipment statistics lost the starting gear or empty slots");
+            }
+            equipment_player.weapon_rank = 38;
+            equipment_player.armor_rank = 30;
+            equipment_player.helmet_rank = 7;
+            equipment_player.gloves_rank = 5;
+            equipment_player.ring_rank = 5;
+            equipment_player.boots_rank = 6;
+            equipment_player.necklace_rank = 6;
+            const auto highest_equipment_page = equipment_statistics_page(equipment_player);
+            if (highest_equipment_page
+                != "Current Items Equipped\nAC = Armor Class; WC = Weapon Class\n\n"
+                   "Weapon: Almighty Longsword  (AC 0, WC 38)\n"
+                   "Body Armor: Dragonscale Armor  (AC 30, WC 0)\n"
+                   "Helmet: Double Horned Helmet  (AC 7, WC 4)\n"
+                   "Gloves: Magical Spiked Gloves  (AC 5, WC 1)\n"
+                   "Ring: Protection Ring  (AC 6, WC 0)\n"
+                   "Boots: Speedy Boots  (AC 7, WC 0)\n"
+                   "Amulet: Eye-Piercing Amulet  (AC 6, WC 2)"
+                || yipe::player_attack_equipment_rating(equipment_player) != 45
+                || yipe::player_defense_equipment_rating(equipment_player) != 61) {
+                throw std::runtime_error("equipment statistics lost the special-tier names or bonuses");
+            }
+            equipment_player.helmet_rank = 5;
+            equipment_player.gloves_rank = 4;
+            equipment_player.necklace_rank = 5;
+            const auto middle_equipment_page = equipment_statistics_page(equipment_player);
+            if (middle_equipment_page.find("Helmet: Raiders Hard Hat  (AC 5, WC 1)")
+                    == std::string::npos
+                || middle_equipment_page.find("Gloves: Leather Gloves  (AC 4, WC 1)")
+                    == std::string::npos
+                || middle_equipment_page.find("Amulet: Fire Amulet  (AC 5, WC 1)")
+                    == std::string::npos) {
+                throw std::runtime_error("equipment statistics lost the intermediate attack bonuses");
+            }
+            equipment_player.helmet_rank = 6;
+            equipment_player.gloves_rank = 6;
+            equipment_player.ring_rank = 0xffff;
+            equipment_player.boots_rank = 0x8000;
+            const auto unusual_equipment_page = equipment_statistics_page(equipment_player);
+            if (unusual_equipment_page.find("Helmet: Horned Wooden Helmet  (AC 6, WC 2)")
+                    == std::string::npos
+                || unusual_equipment_page.find("Gloves: Rank 6  (AC 6, WC 0)")
+                    == std::string::npos
+                || unusual_equipment_page.find("Ring: None  (AC -1, WC 0)")
+                    == std::string::npos
+                || unusual_equipment_page.find("Boots: None  (AC -32768, WC 0)")
+                    == std::string::npos) {
+                throw std::runtime_error("equipment statistics lost signed ranks or the display-only glove rule");
             }
             yipe::GameState special_game;
             auto& special_player = special_game.player;

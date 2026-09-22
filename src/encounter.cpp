@@ -25,7 +25,7 @@ int player_attack_equipment_rating(const Player& player) {
     } else if (player.helmet_rank == 7) {
         value += 4;
     }
-    if (player.gloves_rank > 3) {
+    if (static_cast<std::int16_t>(player.gloves_rank) > 3) {
         ++value;
     }
     if (player.necklace_rank == 5) {
@@ -37,8 +37,11 @@ int player_attack_equipment_rating(const Player& player) {
 }
 
 int player_defense_equipment_rating(const Player& player) {
-    int value = player.armor_rank + player.boots_rank + player.gloves_rank
-        + player.helmet_rank + player.ring_rank + player.necklace_rank;
+    int value = player.armor_rank + static_cast<std::int16_t>(player.boots_rank)
+        + static_cast<std::int16_t>(player.gloves_rank)
+        + static_cast<std::int16_t>(player.helmet_rank)
+        + static_cast<std::int16_t>(player.ring_rank)
+        + static_cast<std::int16_t>(player.necklace_rank);
     if (player.ring_rank == 5) {
         ++value;
     }
