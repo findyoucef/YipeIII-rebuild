@@ -54,8 +54,11 @@ headless smoke test renders all 112 maps, exercising the recovered tile-to-bitma
 switch and every required terrain sheet. The same loader and smoke test now
 render the three runtime-generated maps. All six extracted event-record fields
 have a movement or interaction path. The ten overlay records allow movement
-through their underlying `0x0d` tile, but the overlay is not yet drawn and the
-original's post-combat overlay relocation remains follow-up work.
+through their underlying `0x0d` tile and draw the original transparent `0x71`
+sprite from bitmap 153. On environment-5 maps, victory while standing on a
+`0x0c`/`0x0d` cell moves the overlay to that cell for the current map instance.
+Reloading the map restores the extracted position. The original trigger timing
+and visible layering still need runtime comparison.
 
 ## Starting area
 

@@ -62,7 +62,7 @@ bindings, and repeated shortcut keydowns are ignored.
 | Healing, magic, abilities | Services/training, 12 spells and four abilities implemented. Legacy active-effect import and original-runtime comparisons remain open. |
 | Casino | Slots, dot racing, and darts implemented with recovered rules. Original UI/timing comparison remains open. |
 | King, princesses, stamps | King selector/rewards, all 20 princesses, six stamp bosses, shared signed rescue count, and finale logic implemented. Normal-play reachability/completion remains unverified. |
-| Special locations and recovery | Secret tree, Other tile actions, location messages/hints, sign rereading, and death/Hell/Gatekeeper recovery implemented. Dynamic overlay rendering and complete progression need audit. |
+| Special locations and recovery | Secret tree, Other tile actions, location messages/hints, sign rereading, overlay drawing/relocation, and death/Hell/Gatekeeper recovery implemented. Overlay runtime timing and complete progression need audit. |
 | Statistics and high scores | Kills, Special, Equipment, AC/WC, and 45 high scores implemented. Main portrait/presentation and high-score code remain unresolved. |
 | Help and attribution | All original manual content recovered; current controls and original text are separated. Visible native-dialog and original-navigation comparisons remain open. Historical manual claims are not treated as current implementation evidence. |
 | Native persistence | Player/world versions 1–16, settings, and high scores supported. Version 16 separates specialty from stat bias; older native versions infer the former class. New/Open/Save As use selected paths on macOS. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |

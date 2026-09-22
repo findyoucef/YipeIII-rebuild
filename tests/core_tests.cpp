@@ -2164,11 +2164,34 @@ void test_special_movement_actions() {
                   && event_map->tile({6, 1}) == 34 && event_map->tile({5, 8}) == 40,
               "linked-tile action swaps and restores both configured tiles");
 
+        event_map->relocate_overlay_after_combat({2, 1});
+        check(event_map->events().overlay.position == yipe::MapPosition{2, 2},
+              "combat does not move an overlay outside environment five");
+
         event_map->restore_tile({6, 1}, 40);
         event_map->restore_tile({5, 8}, 34);
         check(event_map->toggle_linked_tiles() && event_map->tile({6, 1}) == 34
                   && event_map->tile({5, 8}) == 40,
               "linked-tile action recognizes and restores persisted swapped tiles");
+    }
+
+    std::optional<yipe::Map> moving_overlay = yipe::original_map(0x2c);
+    check(moving_overlay.has_value(), "environment-five overlay fixture is available");
+    if (moving_overlay) {
+        moving_overlay->relocate_overlay_after_combat({5, 5});
+        check(moving_overlay->events().overlay.position == yipe::MapPosition{6, 4},
+              "combat on ordinary terrain leaves the overlay in place");
+        moving_overlay->relocate_overlay_after_combat({6, 5});
+        yipe::MapPosition old_overlay{6, 3};
+        yipe::MapPosition new_overlay{5, 5};
+        check(moving_overlay->events().overlay.position == yipe::MapPosition{6, 5}
+                  && !yipe::try_move(*moving_overlay, old_overlay, 0, 1).position_changed
+                  && yipe::try_move(*moving_overlay, new_overlay, 1, 0).original_code
+                      == 0x18,
+              "combat on a cave obstacle moves the passable overlay to that tile");
+        check(yipe::original_map(0x2c)->events().overlay.position
+                  == yipe::MapPosition{6, 4},
+              "loading the map again restores its original overlay position");
     }
 
     const std::optional<yipe::Map> teleporter_map = yipe::original_map(0x54);

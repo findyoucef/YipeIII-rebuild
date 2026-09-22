@@ -408,7 +408,8 @@ GameTextures load_game_textures(SDL_Renderer* renderer, const std::filesystem::p
     bitmaps.reserve(resource_ids.size() + 41 + 12);
     for (const int id : resource_ids) {
         bitmaps.emplace_back(
-            id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp")));
+            id, load_bitmap(renderer, assets / (std::to_string(id) + "-1033.bmp"),
+                            id == 153));
     }
     for (int id = 174; id <= 214; ++id) {
         bitmaps.emplace_back(
@@ -591,6 +592,8 @@ TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
         return graphic(460, 0, 32);
     case 0x68:
         return graphic(460, 32, 32);
+    case 0x71:
+        return graphic(153, 32, 0);
     default:
         return graphic(153, 32, 32);
     }
@@ -717,6 +720,14 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
                                    tile_size, tile_size};
         copy_texture(renderer, textures.find(390 + princess.portrait_variant), nullptr,
                      &destination);
+    }
+    const yipe::MapEvent& overlay = map.events().overlay;
+    if (overlay.value > 0 && overlay.has_position()
+        && game.map_visibility.contains(overlay.position)) {
+        const TileGraphic graphic = tile_graphic(0x71, textures);
+        const SDL_Rect destination{overlay.position.x * tile_size,
+                                   overlay.position.y * tile_size, tile_size, tile_size};
+        copy_texture(renderer, graphic.texture, &graphic.source, &destination);
     }
     const SDL_Rect player_destination{game.location.position.x * tile_size,
                                       game.location.position.y * tile_size,
@@ -3087,6 +3098,9 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         const EncounterResult result = run_monster_encounter(
             window, renderer, placement, game.player, game.location, random,
             map.environment(), audio, settings);
+        if (result == EncounterResult::victory) {
+            map.relocate_overlay_after_combat(game.location.position);
+        }
         if (result == EncounterResult::victory && game.player.level > previous_level) {
             record_player_high_scores(high_scores_path, high_scores, game.player);
         }
@@ -3804,6 +3818,11 @@ int main(int argc, char* argv[]) {
                     initialize_map_state(game, *map);
                     yipe::initialize_map_visibility(
                         game.map_visibility, *map, game.location.position);
+                    if (map->events().overlay.has_position()) {
+                        yipe::reveal_map_from(
+                            game.map_visibility, *map,
+                            map->events().overlay.position);
+                    }
                     render_game(renderer.get(), *map, game_textures, game);
                 }
             }

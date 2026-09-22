@@ -79,6 +79,7 @@ public:
     [[nodiscard]] int depth_action_at(MapPosition position) const;
     void restore_tile(MapPosition position, std::uint16_t tile);
     void open_door(MapPosition previous, MapPosition current);
+    void relocate_overlay_after_combat(MapPosition position);
     [[nodiscard]] bool toggle_linked_tiles();
     [[nodiscard]] std::optional<MapPosition> linked_destination() const;
 

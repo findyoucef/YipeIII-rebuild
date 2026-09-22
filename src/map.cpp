@@ -224,6 +224,13 @@ void Map::open_door(MapPosition previous, MapPosition current) {
     set_tile(current, tile(previous));
 }
 
+void Map::relocate_overlay_after_combat(MapPosition position) {
+    if (environment_ == 5 && events_.overlay.value > 0 && contains(position)
+        && (tile(position) == 0x0c || tile(position) == 0x0d)) {
+        events_.overlay.position = position;
+    }
+}
+
 bool Map::toggle_linked_tiles() {
     const MapEvent& first = events_.linked[0];
     const MapEvent& second = events_.linked[1];
