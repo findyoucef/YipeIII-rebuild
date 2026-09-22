@@ -97,6 +97,10 @@ target_compile_definitions(yipe_core_tests PRIVATE
 )
 add_test(NAME yipe_core_tests COMMAND yipe_core_tests)
 add_test(NAME yipe_app_smoke COMMAND yipe3 --smoke-test)
-set_tests_properties(yipe_app_smoke PROPERTIES
+add_executable(yipe_app_shortcut_tests tests/app_shortcut_tests.cpp)
+target_link_libraries(yipe_app_shortcut_tests PRIVATE yipe_core SDL2::SDL2)
+add_test(NAME yipe_app_shortcut_tests COMMAND yipe_app_shortcut_tests)
+set_tests_properties(yipe_app_smoke yipe_app_shortcut_tests PROPERTIES
     ENVIRONMENT "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy"
+    TIMEOUT 30
 )

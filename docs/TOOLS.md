@@ -58,6 +58,13 @@ application smoke test uses SDL's dummy video and audio drivers, decodes every
 dispatched embedded effect, checks all packaged equipment names, and verifies
 that every packaged monster WAV is present and decodable.
 
+The shortcut regression target includes the application translation unit to test
+its existing event loop without changing production visibility. It substitutes
+only native dialog calls and the preference directory, runs SDL with dummy
+drivers, and writes saves under a fresh temporary directory. Its 115 cases
+cover Control/Shift sides, lock keys, repeats, Save As cancellation, and actual
+save destinations/content. This verifies routing, not native panel rendering.
+
 ## Recover the original manual
 
 Recover the 28 original Help and Info pages, preserving each title and body:

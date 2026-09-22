@@ -3221,7 +3221,8 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         }
         if (event.key.keysym.sym == SDLK_F5
             || (event.key.keysym.sym == SDLK_s
-                && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT)) == KMOD_CTRL)) {
+                && (event.key.keysym.mod & KMOD_CTRL) != 0
+                && (event.key.keysym.mod & KMOD_SHIFT) == 0)) {
             if (event.key.repeat == 0) {
                 static_cast<void>(save_current_game(
                     window, save_path, game, random, true));
@@ -3230,8 +3231,8 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             continue;
         }
         if (event.key.keysym.sym == SDLK_s
-            && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT))
-                == (KMOD_CTRL | KMOD_SHIFT)) {
+            && (event.key.keysym.mod & KMOD_CTRL) != 0
+            && (event.key.keysym.mod & KMOD_SHIFT) != 0) {
             if (event.key.repeat == 0) {
                 save_current_game_as(window, save_path, game, random);
             }
@@ -3289,8 +3290,8 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             continue;
         }
         if (event.key.keysym.sym == SDLK_o
-            && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT))
-                == (KMOD_CTRL | KMOD_SHIFT)) {
+            && (event.key.keysym.mod & KMOD_CTRL) != 0
+            && (event.key.keysym.mod & KMOD_SHIFT) != 0) {
             if (event.key.repeat == 0) {
                 const yipe::OtherActionResult result = use_other_action(game, map, random);
                 audio.play(result.sound_id, settings.sound_enabled);
