@@ -147,7 +147,7 @@ an improvement. Failed purchases do not deduct gold.
 
 ## Other action
 
-The tile switch at `0x00416440` is exposed through Ctrl+O in exploration, without
+The tile switch at `0x00416440` is exposed through Ctrl+Shift+O in exploration, without
 changing the 13 recovered key bindings. It does not advance roaming or pursuing
 monsters. Resource IDs and random-call order are preserved; SDL message boxes
 adapt the original message area. Water, stone-circle, mountain, and coin-pile
@@ -184,7 +184,7 @@ subsequent map initialization refills it just as ordinary map entry does.
 The action-3 movement branch at `0x0040e880` handles water holes, climbable
 trees (including the existing secret-tree puzzle), and the Hell tunnel before
 selecting a map-specific hint through `0x004121c0`. SDL retains this precedence
-and appends the Ctrl+O control to the three hints that suggest using Other.
+and appends the Ctrl+Shift+O control to the three hints that suggest using Other.
 
 | Map | String resource | Hint / condition |
 | --- | --- | --- |

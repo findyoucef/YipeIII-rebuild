@@ -3,6 +3,7 @@
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
 #include "yipe/item_names.hpp"
+#include "yipe/legacy_save.hpp"
 #include "yipe/map.hpp"
 #include "yipe/random.hpp"
 #include "yipe/quest.hpp"
@@ -11,11 +12,13 @@
 #include "yipe/shop.hpp"
 #include "yipe/spell.hpp"
 #include "generated/original_help.hpp"
+#include "file_dialog.hpp"
 
 #include <SDL.h>
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <ctime>
 #include <cstdint>
 #include <cstring>
@@ -72,6 +75,12 @@ using Texture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>;
 using Cursor = std::unique_ptr<SDL_Cursor, decltype(&SDL_FreeCursor)>;
 
 enum class StartupChoice { new_game, load_game, settings, high_scores, help, quit };
+
+struct GameExit {
+    StartupChoice choice;
+    std::optional<yipe::GameState> opened_game = std::nullopt;
+    std::filesystem::path opened_save_path{};
+};
 
 struct RuntimeAssets {
     std::filesystem::path bitmaps;
@@ -1499,8 +1508,10 @@ void show_help(SDL_Window* window, const yipe::GameSettings& settings) {
             "Walk onto a monster to fight; enter buildings to visit shops.\n"
             "Ctrl+I: Inventory    Ctrl+C: Cast Spell\n"
             "Ctrl+T: Player Status    Ctrl+E: Equipment\n"
-            "Ctrl+H: High Scores    Ctrl+O: Other (inspect/use this tile)\n"
-            "F5 or Ctrl+S: Save    F10: Settings\n"
+            "Ctrl+H: High Scores    Ctrl+N: New Game\n"
+            "Ctrl+O: Open saved game    Ctrl+Shift+O: Other\n"
+            "F5 or Ctrl+S: Save    Ctrl+Shift+S: Save As\n"
+            "F10: Settings; first save of a new game asks for a file.\n"
             "Q or Escape: Quit, with a save choice.\n\n"
             "In combat, use the configured action keys or mouse buttons.\n"
             "Arrow keys and Tab cycle targets.\n"
@@ -2931,38 +2942,116 @@ yipe::OtherActionResult use_other_action(yipe::GameState& game, yipe::Map& map,
     return result;
 }
 
-void save_current_game(SDL_Window* window, const std::filesystem::path& path,
+bool save_current_game(SDL_Window* window, std::filesystem::path& path,
                        yipe::GameState& game, const yipe::MsvcRandom& random,
-                       bool show_confirmation) {
+                       bool show_confirmation,
+                       const std::filesystem::path& excluded_path = {}) {
+    std::filesystem::path destination = path;
+    if (destination.empty()) {
+        const auto selected = yipe_app::choose_save_game_file(
+            default_preference_directory() / "save.y3r");
+        if (!selected) {
+            return false;
+        }
+        destination = *selected;
+    }
+    std::string extension = destination.extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   [](unsigned char character) {
+                       return static_cast<char>(std::tolower(character));
+                   });
+    if (extension != ".y3r") {
+        show_message(window, "Save Game Failed",
+                     "Choose a .y3r file. Original .yp3 saves are import-only.");
+        return false;
+    }
+    std::error_code error;
+    if (!excluded_path.empty()
+        && (destination.lexically_normal() == excluded_path.lexically_normal()
+            || std::filesystem::equivalent(destination, excluded_path, error))) {
+        show_message(window, "Choose Another Save File",
+                     "That file is the game you are opening. Save the current game elsewhere.");
+        return false;
+    }
     game.random_state = random.state();
     synchronize_player_location(game);
-    yipe::save_game_atomic(path, game);
+    yipe::save_game_atomic(destination, game);
+    path = std::move(destination);
     if (show_confirmation) {
         show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
     }
+    return true;
 }
 
-bool confirm_quit(SDL_Window* window, const std::filesystem::path& save_path,
-                  yipe::GameState& game, const yipe::MsvcRandom& random) {
+std::optional<GameExit> choose_game_to_open(
+    const std::filesystem::path& initial_directory) {
+    const auto selected = yipe_app::choose_open_game_file(initial_directory);
+    if (!selected) {
+        return std::nullopt;
+    }
+    std::string extension = selected->extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   [](unsigned char character) {
+                       return static_cast<char>(std::tolower(character));
+                   });
+    const bool legacy = extension == ".yp3";
+    yipe::GameState game = legacy
+        ? yipe::load_legacy_save(*selected).game : yipe::load_game(*selected);
+    yipe::MsvcRandom check_random(game.random_state);
+    const auto check_map = load_world_map(game.location, check_random);
+    if (!check_map || !check_map->contains(game.location.position)) {
+        throw std::runtime_error("save contains an unsupported world location");
+    }
+    std::filesystem::path native_path = *selected;
+    if (legacy) {
+        const auto suggested = initial_directory / (selected->stem().string() + ".y3r");
+        const auto converted = yipe_app::choose_save_game_file(suggested);
+        if (!converted) {
+            return std::nullopt;
+        }
+        native_path = *converted;
+    }
+    return GameExit{StartupChoice::load_game, std::move(game), std::move(native_path)};
+}
+
+void save_current_game_as(SDL_Window* window, std::filesystem::path& path,
+                          yipe::GameState& game, const yipe::MsvcRandom& random) {
+    const auto selected = yipe_app::choose_save_game_file(
+        path.empty() ? default_preference_directory() / "save.y3r" : path);
+    if (!selected) {
+        return;
+    }
+    std::filesystem::path new_path = *selected;
+    if (save_current_game(window, new_path, game, random, true)) {
+        path = std::move(new_path);
+    }
+}
+
+bool confirm_leave_game(SDL_Window* window, const char* title, const char* message,
+                        std::filesystem::path& save_path,
+                        yipe::GameState& game, const yipe::MsvcRandom& random,
+                        const std::filesystem::path& excluded_path = {}) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
-        SDL_MessageBoxButtonData{0, 1, "Quit Without Saving"},
+        SDL_MessageBoxButtonData{0, 1, "Leave Without Saving"},
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2,
-                                 "Save and Quit"},
+                                 "Save and Leave"},
     };
-    const int choice = show_choice(window, "Quit Game", "Do you want to save before quitting?",
+    const int choice = show_choice(window, title, message,
                                    buttons.data(), static_cast<int>(buttons.size()));
     if (choice == 2) {
-        save_current_game(window, save_path, game, random, false);
+        return save_current_game(window, save_path, game, random, false, excluded_path);
     }
-    return choice == 1 || choice == 2;
+    return choice == 1;
 }
 
-bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& textures,
-              yipe::GameState game, const std::filesystem::path& save_path,
-              const std::filesystem::path& settings_path,
-              const std::filesystem::path& high_scores_path, yipe::HighScores& high_scores,
-              yipe::GameSettings& settings, AudioPlayer& audio) {
+GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
+                  const GameTextures& textures, yipe::GameState game,
+                  std::filesystem::path& save_path,
+                  const std::filesystem::path& settings_path,
+                  const std::filesystem::path& high_scores_path,
+                  yipe::HighScores& high_scores, yipe::GameSettings& settings,
+                  AudioPlayer& audio) {
     prepare_game_view(window, renderer);
     yipe::MsvcRandom random(game.random_state);
     const std::optional<yipe::Map> restored_map = load_world_map(game.location, random);
@@ -3010,8 +3099,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
         }
         if (event.type == SDL_QUIT) {
-            save_current_game(window, save_path, game, random, false);
-            return true;
+            if (save_current_game(window, save_path, game, random, false)) {
+                return {StartupChoice::quit};
+            }
+            render_game(renderer, map, textures, game);
+            continue;
         }
         if (event.type == SDL_WINDOWEVENT
             && (event.window.event == SDL_WINDOWEVENT_EXPOSED
@@ -3022,8 +3114,60 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             continue;
         }
         if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
-            if (confirm_quit(window, save_path, game, random)) {
-                return true;
+            if (confirm_leave_game(window, "Quit Game",
+                                   "Do you want to save before quitting?",
+                                   save_path, game, random)) {
+                return {StartupChoice::quit};
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if ((event.key.keysym.mod & KMOD_CTRL) != 0
+            && (event.key.keysym.sym == SDLK_n
+                || (event.key.keysym.sym == SDLK_o
+                    && (event.key.keysym.mod & KMOD_SHIFT) == 0))) {
+            if (event.key.repeat == 0) {
+                const bool opening = event.key.keysym.sym == SDLK_o;
+                if (opening) {
+                    try {
+                        auto opened = choose_game_to_open(
+                            default_preference_directory());
+                        if (opened) {
+                            std::error_code error;
+                            const bool same_path = !save_path.empty()
+                                && std::filesystem::equivalent(
+                                    save_path, opened->opened_save_path, error);
+                            if (same_path) {
+                                constexpr std::array buttons{
+                                    SDL_MessageBoxButtonData{
+                                        SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+                                        SDL_MessageBoxButtonData{
+                                            SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1,
+                                            "Open Selected Game"},
+                                };
+                                if (show_choice(
+                                        window, "Reopen Game",
+                                        "Discard unsaved changes and reopen this save?",
+                                        buttons.data(), static_cast<int>(buttons.size())) == 1) {
+                                    return std::move(*opened);
+                                }
+                            } else if (confirm_leave_game(
+                                           window, "Open Game",
+                                           "Open the selected game? Save current progress first?",
+                                           save_path, game, random,
+                                           opened->opened_save_path)) {
+                                return std::move(*opened);
+                            }
+                        }
+                    } catch (const std::exception& error) {
+                        show_message(window, "Open Game Failed", error.what());
+                    }
+                } else if (confirm_leave_game(
+                               window, "New Game",
+                               "Start a new game? Save current progress first?",
+                               save_path, game, random)) {
+                    return {StartupChoice::new_game};
+                }
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -3036,9 +3180,20 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             continue;
         }
         if (event.key.keysym.sym == SDLK_F5
-            || (event.key.keysym.sym == SDLK_s && (event.key.keysym.mod & KMOD_CTRL) != 0)) {
+            || (event.key.keysym.sym == SDLK_s
+                && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT)) == KMOD_CTRL)) {
             if (event.key.repeat == 0) {
-                save_current_game(window, save_path, game, random, true);
+                static_cast<void>(save_current_game(
+                    window, save_path, game, random, true));
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (event.key.keysym.sym == SDLK_s
+            && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT))
+                == (KMOD_CTRL | KMOD_SHIFT)) {
+            if (event.key.repeat == 0) {
+                save_current_game_as(window, save_path, game, random);
             }
             render_game(renderer, map, textures, game);
             continue;
@@ -3082,7 +3237,8 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
             continue;
         }
         if (event.key.keysym.sym == SDLK_o
-            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+            && (event.key.keysym.mod & (KMOD_CTRL | KMOD_SHIFT))
+                == (KMOD_CTRL | KMOD_SHIFT)) {
             if (event.key.repeat == 0) {
                 const yipe::OtherActionResult result = use_other_action(game, map, random);
                 audio.play(result.sound_id, settings.sound_enabled);
@@ -3219,12 +3375,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 const std::uint16_t tile = map.tile(game.location.position);
                 if (tile == 0x26) {
                     show_message(window, "Water Hole",
-                                 "You are standing on a water hole. Press Ctrl+O (Other) to drink.");
+                                 "You are standing on a water hole. Press Ctrl+Shift+O (Other) to drink.");
                 } else if (tile == 0x42) {
                     show_message(
                         window, "Underworld Tunnel",
                         "You find a special tunnel leading down into the depths of the "
-                        "underworld. Press Ctrl+O (Other) to travel to Yipe Hell.");
+                        "underworld. Press Ctrl+Shift+O (Other) to travel to Yipe Hell.");
                 } else if (tile == 0x56 || tile == 0x57) {
                     show_message(window, "Tree",
                                  "You climb over the tree using your special shoes.");
@@ -3236,7 +3392,7 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     std::string hint(yipe::map_movement_hint(game.player, map.id()));
                     if (!hint.empty()) {
                         if (map.id() == 3 || map.id() == 0x12 || map.id() == 0x45) {
-                            hint += "\n\nPress Ctrl+O (Other) to investigate.";
+                            hint += "\n\nPress Ctrl+Shift+O (Other) to investigate.";
                         }
                         show_message(window, "Location", hint);
                     }
@@ -3260,8 +3416,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 encounter_resolved = true;
                 const EncounterResult encounter = fight_monster(*placement);
                 if (encounter == EncounterResult::quit_requested) {
-                    save_current_game(window, save_path, game, random, false);
-                    return true;
+                    if (save_current_game(window, save_path, game, random, false)) {
+                        return {StartupChoice::quit};
+                    }
+                    render_game(renderer, map, textures, game);
+                    continue;
                 }
                 if (encounter == EncounterResult::victory) {
                     auto& defeated = placement->respawns_after_map_reload
@@ -3378,9 +3537,12 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                         gatekeeper.encounter_size = 3;
                         const EncounterResult encounter = fight_monster(gatekeeper);
                         if (encounter == EncounterResult::quit_requested) {
-                            save_current_game(
-                                window, save_path, game, random, false);
-                            return true;
+                            if (save_current_game(
+                                    window, save_path, game, random, false)) {
+                                return {StartupChoice::quit};
+                            }
+                            render_game(renderer, map, textures, game);
+                            continue;
                         }
                         if (encounter == EncounterResult::victory) {
                             game.player.hell_gatekeeper_state =
@@ -3445,8 +3607,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     monster_type, game.roaming_monster->position));
             game.roaming_monster.reset();
             if (encounter == EncounterResult::quit_requested) {
-                save_current_game(window, save_path, game, random, false);
-                return true;
+                if (save_current_game(window, save_path, game, random, false)) {
+                    return {StartupChoice::quit};
+                }
+                render_game(renderer, map, textures, game);
+                continue;
             }
             if (encounter == EncounterResult::fled) {
                 game.location = previous_location;
@@ -3465,8 +3630,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 transient_monster_placement(
                     monster_type, game.pursuing_monster->position));
             if (encounter == EncounterResult::quit_requested) {
-                save_current_game(window, save_path, game, random, false);
-                return true;
+                if (save_current_game(window, save_path, game, random, false)) {
+                    return {StartupChoice::quit};
+                }
+                render_game(renderer, map, textures, game);
+                continue;
             }
             if (encounter == EncounterResult::victory) {
                 game.pursuing_monster.reset();
@@ -3502,8 +3670,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                     monster_type, game.roaming_monster->position));
             game.roaming_monster.reset();
             if (encounter == EncounterResult::quit_requested) {
-                save_current_game(window, save_path, game, random, false);
-                return true;
+                if (save_current_game(window, save_path, game, random, false)) {
+                    return {StartupChoice::quit};
+                }
+                render_game(renderer, map, textures, game);
+                continue;
             }
             if (encounter == EncounterResult::defeat) {
                 recover_from_combat_defeat(
@@ -3528,8 +3699,11 @@ bool run_game(SDL_Window* window, SDL_Renderer* renderer, const GameTextures& te
                 transient_monster_placement(
                     monster_type, game.pursuing_monster->position));
             if (encounter == EncounterResult::quit_requested) {
-                save_current_game(window, save_path, game, random, false);
-                return true;
+                if (save_current_game(window, save_path, game, random, false)) {
+                    return {StartupChoice::quit};
+                }
+                render_game(renderer, map, textures, game);
+                continue;
             }
             if (encounter == EncounterResult::victory) {
                 game.pursuing_monster.reset();
@@ -3551,7 +3725,6 @@ int main(int argc, char* argv[]) {
         const RuntimeAssets assets = runtime_assets(argv[0]);
         const std::filesystem::path preference_directory =
             default_preference_directory();
-        const std::filesystem::path save_path = preference_directory / "save.y3r";
         const std::filesystem::path settings_path =
             preference_directory / "settings.y3r";
         const std::filesystem::path high_scores_path =
@@ -4065,11 +4238,19 @@ int main(int argc, char* argv[]) {
         }
         yipe::HighScores high_scores = std::filesystem::exists(high_scores_path)
             ? yipe::load_high_scores(high_scores_path) : yipe::default_high_scores();
+        std::filesystem::path active_save_path;
+        std::optional<GameExit> pending_exit;
         while (true) {
             prepare_startup_view(window.get(), renderer.get());
             audio.play(152, settings.sound_enabled);
-            switch (run_startup_menu(renderer.get(), menu.get(), copyright.get())) {
+            std::optional<GameExit> pending = std::move(pending_exit);
+            pending_exit.reset();
+            const StartupChoice choice = pending
+                ? pending->choice
+                : run_startup_menu(renderer.get(), menu.get(), copyright.get());
+            switch (choice) {
             case StartupChoice::new_game: {
+                active_save_path.clear();
                 yipe::MsvcRandom creation_random(
                     static_cast<std::uint32_t>(std::time(nullptr)));
                 const std::optional<yipe::Player> player = choose_character(
@@ -4080,20 +4261,33 @@ int main(int argc, char* argv[]) {
                 yipe::GameState game;
                 game.player = *player;
                 game.random_state = creation_random.state();
-                if (run_game(window.get(), renderer.get(), game_textures, game,
-                             save_path, settings_path, high_scores_path, high_scores,
-                             settings, audio)) {
+                GameExit exit = run_game(
+                    window.get(), renderer.get(), game_textures, game,
+                    active_save_path, settings_path, high_scores_path, high_scores,
+                    settings, audio);
+                if (exit.choice == StartupChoice::quit) {
                     return 0;
                 }
+                pending_exit = std::move(exit);
                 break;
             }
             case StartupChoice::load_game:
                 try {
-                    if (run_game(window.get(), renderer.get(), game_textures,
-                                 yipe::load_game(save_path), save_path, settings_path,
-                                 high_scores_path, high_scores, settings, audio)) {
+                    auto opened = pending && pending->opened_game
+                        ? std::move(pending)
+                        : choose_game_to_open(preference_directory);
+                    if (!opened) {
+                        break;
+                    }
+                    active_save_path = opened->opened_save_path;
+                    GameExit exit = run_game(
+                        window.get(), renderer.get(), game_textures,
+                        std::move(*opened->opened_game), active_save_path, settings_path,
+                        high_scores_path, high_scores, settings, audio);
+                    if (exit.choice == StartupChoice::quit) {
                         return 0;
                     }
+                    pending_exit = std::move(exit);
                 } catch (const std::exception& error) {
                     show_message(window.get(), "Load Game Failed", error.what());
                 }

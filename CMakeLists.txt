@@ -35,6 +35,15 @@ target_compile_options(yipe_core PRIVATE
 
 add_executable(yipe3 app/main.cpp)
 target_link_libraries(yipe3 PRIVATE yipe_core SDL2::SDL2)
+if(APPLE)
+    enable_language(OBJCXX)
+    set(CMAKE_OBJCXX_STANDARD 20)
+    target_sources(yipe3 PRIVATE app/file_dialog_mac.mm)
+    target_link_libraries(yipe3 PRIVATE "-framework AppKit"
+                                        "-framework UniformTypeIdentifiers")
+else()
+    target_sources(yipe3 PRIVATE app/file_dialog_fallback.cpp)
+endif()
 target_compile_options(yipe3 PRIVATE
     $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall;-Wextra;-Wpedantic;-Wconversion>
 )

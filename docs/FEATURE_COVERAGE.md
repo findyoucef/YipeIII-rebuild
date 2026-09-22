@@ -13,10 +13,10 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 
 | Original action | Command ID | Current behavior / remaining work |
 | --- | --- | --- |
-| File / New | 57600 | Startup N offers four stat choices, random reroll, name, difficulty, and portrait selection. In-game Ctrl+N, the original intro toggle, and native-dialog comparison remain unresolved. |
-| File / Open | 57601 | Startup L resumes the single native save. File chooser, in-game opening, and UI legacy import remain unresolved. Ctrl+O is currently adapted to Other. |
-| File / Save | 57603 | Implemented through F5 and Ctrl+S, using atomic native persistence. |
-| File / Save As | 57604 | Unresolved; currently one per-user native save slot. |
+| File / New | 57600 | Startup N and in-game Ctrl+N offer four stat choices, random reroll, name, difficulty, and portrait selection. Switching from play asks whether to save; the new game's first save opens Save As. The original intro toggle and native-dialog comparison remain unresolved. |
+| File / Open | 57601 | Startup L and in-game Ctrl+O use the macOS file chooser for native `.y3r` saves or import-only original `.yp3` files. In-game Open validates the selected world before leaving current play, prevents saving over the target, and offers a save choice for different files. Real original-save compatibility and dialog comparison remain open. |
+| File / Save | 57603 | F5 and Ctrl+S use atomic native persistence. The first save of a new game asks for a `.y3r` path. |
+| File / Save As | 57604 | Ctrl+Shift+S opens the macOS native save chooser. Subsequent saves use the selected `.y3r` path; original `.yp3` files cannot be overwritten. Native-menu and original-runtime comparison remain open. |
 | File / Print | 57607 | Unresolved; determine whether this MFC menu entry has meaningful game behavior. |
 | File / Print Preview | 57609 | Unresolved; determine whether the original supplies game-specific output. |
 | File / Print Setup | 57606 | Unresolved Windows printing-framework behavior. |
@@ -53,7 +53,7 @@ bindings, and repeated shortcut keydowns are ignored.
 
 | Feature | Current evidence and gaps |
 | --- | --- |
-| Startup and character creation | Four recovered stat presets, seeded random reroll, name entry, three difficulties, eight normal/four silly portraits, and saved specialty/portrait are implemented. Original intro toggle, in-game New, and original-runtime/dialog comparisons remain open. |
+| Startup and character creation | Four recovered stat presets, seeded random reroll, name entry, three difficulties, eight normal/four silly portraits, and saved specialty/portrait are implemented. In-game New routes to setup after a save choice. Original intro toggle and original-runtime/dialog comparisons remain open. |
 | Player defaults, stats, level growth | Core implementation and deterministic cases; class/difficulty/runtime reference comparisons remain open. |
 | Inventory | Ten consumables, 13 carried slots, stat/healing effects, and relocation implemented. Other serialized slots and invalid-item cleanup remain U004. |
 | Maps and movement | 112 static and three generated maps, transitions, visibility, movement hazards/gates, and entry patches implemented. Exhaustive event/route and original map comparisons remain open. |
@@ -65,9 +65,9 @@ bindings, and repeated shortcut keydowns are ignored.
 | Special locations and recovery | Secret tree, Other tile actions, location messages/hints, death/Hell/Gatekeeper recovery implemented. Remaining map event types and complete progression need audit. |
 | Statistics and high scores | Kills, Special, Equipment, AC/WC, and 45 high scores implemented. Main portrait/presentation and high-score code remain unresolved. |
 | Help and attribution | All original manual content recovered; current controls and original text are separated. Visible native-dialog and original-navigation comparisons remain open. Historical manual claims are not treated as current implementation evidence. |
-| Native persistence | Player/world versions 1–16, settings, and high scores supported. Version 16 separates specialty from stat bias; older native versions infer the former class. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |
-| Original-file import | Strict import-only `.yp3`/`Yipe3.dat` readers with synthetic/captured auxiliary fixtures. Real player-save samples and user-facing import remain open. |
-| Input/audio/presentation | Configured movement/combat keys, recovered audio, SDL combat picker, and native dialogs implemented. Mouse exploration, modifier bindings, shortcut conflicts, focus/repeat/scaling/timing and long-session comparisons remain open. |
+| Native persistence | Player/world versions 1–16, settings, and high scores supported. Version 16 separates specialty from stat bias; older native versions infer the former class. New/Open/Save As use selected paths on macOS. Failure/restart coverage and early/middle/late/completion checkpoint verification remain open. |
+| Original-file import | Strict import-only `.yp3`/`Yipe3.dat` readers with synthetic/captured auxiliary fixtures. File/Open now exposes `.yp3` import and requires a separate native save path; real original player-save samples and runtime compatibility remain open. |
+| Input/audio/presentation | Configured movement/combat keys, recovered audio, SDL combat picker, and native dialogs implemented. Ctrl+N/O restore the original New/Open accelerators; adapted Other is Ctrl+Shift+O. Mouse exploration, modifier bindings, shortcut conflicts, focus/repeat/scaling/timing and long-session comparisons remain open. |
 | Reproducible release | Development CMake/CTest build works. Clean release build, packaged macOS app, independent-directory launch, complete playthrough, and final artifact/limitations documentation remain P9. |
 
 Use this inventory to select missing functionality, then update its row and the

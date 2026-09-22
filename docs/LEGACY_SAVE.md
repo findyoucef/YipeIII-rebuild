@@ -106,6 +106,10 @@ The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
 which stores the result as player state rather than rejecting the document.
 The importer never writes `.yp3` files.
+On macOS, File/Open can now select a `.yp3` through the native file chooser.
+The application asks for a separate `.y3r` path for future saves before
+entering play. This exposes the strict importer but does not establish
+compatibility with a real original save; that still needs an R08 sample.
 
 ## Special statistics fields
 
