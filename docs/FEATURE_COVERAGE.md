@@ -13,10 +13,10 @@ access to dialogs and shortcuts; it does not yet reproduce a native menu bar.
 
 | Original action | Command ID | Current behavior / remaining work |
 | --- | --- | --- |
-| File / New | 57600 | Startup N and in-game Ctrl+N offer four stat choices, random reroll, name, difficulty, portrait selection, and the optional original King introduction. Switching from play asks whether to save; the new game's first save opens Save As. Native-dialog/original-runtime comparison remains open. |
-| File / Open | 57601 | Startup L and in-game Ctrl+O use the macOS file chooser for native `.y3r` saves or import-only original `.yp3` files. In-game Open validates the selected world before leaving current play, prevents saving over the target, and offers a save choice for different files. Real original-save compatibility and dialog comparison remain open. |
+| File / New | 57600 | Startup N and in-game Ctrl+N offer four stat choices, random reroll, name, difficulty, portrait selection, and the optional original King introduction. Switching from play asks whether to save; the new game's first save opens Save As. A macOS desktop run confirmed in-game cancel and first-save panel/file creation; original-runtime comparison remains open. |
+| File / Open | 57601 | Startup L and in-game Ctrl+O use the macOS file chooser for native `.y3r` saves or import-only original `.yp3` files. In-game Open validates the selected world before leaving current play, prevents saving over the target, and offers a save choice for different files. A macOS desktop run confirmed cancel and same-file reopen confirmation; real original-save compatibility and other dialog paths remain open. |
 | File / Save | 57603 | F5 and Ctrl+S use atomic native persistence. The first save of a new game asks for a `.y3r` path. |
-| File / Save As | 57604 | Ctrl+Shift+S opens the macOS native save chooser. Subsequent saves use the selected `.y3r` path; original `.yp3` files cannot be overwritten. Native-menu and original-runtime comparison remain open. |
+| File / Save As | 57604 | Ctrl+Shift+S is wired to the macOS native save chooser. Subsequent saves use the selected `.y3r` path; original `.yp3` files cannot be overwritten. The shortcut still needs a focused desktop check; native-menu and original-runtime comparison remain open. |
 | File / Print | 57607 | Unresolved; determine whether this MFC menu entry has meaningful game behavior. |
 | File / Print Preview | 57609 | Unresolved; determine whether the original supplies game-specific output. |
 | File / Print Setup | 57606 | Unresolved Windows printing-framework behavior. |
