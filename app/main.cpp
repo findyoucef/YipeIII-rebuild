@@ -2736,6 +2736,15 @@ void record_player_high_scores(const std::filesystem::path& path, yipe::HighScor
     }
 }
 
+void submit_high_scores(SDL_Window* window, const std::filesystem::path& path,
+                        yipe::HighScores& scores, const yipe::Player& player) {
+    try {
+        record_player_high_scores(path, scores, player);
+    } catch (const std::exception& error) {
+        show_message(window, "High Scores Save Failed", error.what());
+    }
+}
+
 std::string high_score_page(const yipe::HighScores& scores, int difficulty) {
     constexpr std::array<std::string_view, 3> modes{"Easy", "Medium", "Hard"};
     constexpr std::array<std::string_view, 5> categories{
@@ -3041,7 +3050,7 @@ void show_player_status(SDL_Window* window, SDL_Renderer* renderer,
         if (choice == 1) {
             show_monster_defeats(window, player);
         } else if (choice == 2) {
-            record_player_high_scores(high_scores_path, high_scores, player);
+            submit_high_scores(window, high_scores_path, high_scores, player);
             show_high_scores(window, high_scores, player.difficulty, &player);
         } else if (choice == 3) {
             show_message(window, "Special Statistics", special_statistics_page(player));
@@ -3544,42 +3553,47 @@ bool save_current_game(SDL_Window* window, std::filesystem::path& path,
                        yipe::GameState& game, const yipe::MsvcRandom& random,
                        bool show_confirmation,
                        const std::filesystem::path& excluded_path = {}) {
-    std::filesystem::path destination = path;
-    if (destination.empty()) {
-        const auto selected = yipe_app::choose_save_game_file(
-            default_preference_directory() / "save.y3r");
-        if (!selected) {
+    try {
+        std::filesystem::path destination = path;
+        if (destination.empty()) {
+            const auto selected = yipe_app::choose_save_game_file(
+                default_preference_directory() / "save.y3r");
+            if (!selected) {
+                return false;
+            }
+            destination = *selected;
+        }
+        std::string extension = destination.extension().string();
+        std::transform(extension.begin(), extension.end(), extension.begin(),
+                       [](unsigned char character) {
+                           return static_cast<char>(std::tolower(character));
+                       });
+        if (extension != ".y3r") {
+            show_message(window, "Save Game Failed",
+                         "Choose a .y3r file. Original .yp3 saves are import-only.");
             return false;
         }
-        destination = *selected;
-    }
-    std::string extension = destination.extension().string();
-    std::transform(extension.begin(), extension.end(), extension.begin(),
-                   [](unsigned char character) {
-                       return static_cast<char>(std::tolower(character));
-                   });
-    if (extension != ".y3r") {
-        show_message(window, "Save Game Failed",
-                     "Choose a .y3r file. Original .yp3 saves are import-only.");
+        std::error_code error;
+        if (!excluded_path.empty()
+            && (destination.lexically_normal() == excluded_path.lexically_normal()
+                || std::filesystem::equivalent(destination, excluded_path, error))) {
+            show_message(window, "Choose Another Save File",
+                         "That file is the game you are opening. Save the current game elsewhere.");
+            return false;
+        }
+        game.random_state = random.state();
+        synchronize_player_location(game);
+        yipe::save_game_atomic(destination, game);
+        path = std::move(destination);
+        yipe_app::remember_game_file(path);
+        if (show_confirmation) {
+            show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
+        }
+        return true;
+    } catch (const std::exception& error) {
+        show_message(window, "Save Game Failed", error.what());
         return false;
     }
-    std::error_code error;
-    if (!excluded_path.empty()
-        && (destination.lexically_normal() == excluded_path.lexically_normal()
-            || std::filesystem::equivalent(destination, excluded_path, error))) {
-        show_message(window, "Choose Another Save File",
-                     "That file is the game you are opening. Save the current game elsewhere.");
-        return false;
-    }
-    game.random_state = random.state();
-    synchronize_player_location(game);
-    yipe::save_game_atomic(destination, game);
-    path = std::move(destination);
-    yipe_app::remember_game_file(path);
-    if (show_confirmation) {
-        show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
-    }
-    return true;
 }
 
 std::optional<GameExit> choose_game_to_open(
@@ -3645,14 +3659,18 @@ std::optional<GameExit> choose_recent_game_to_open(
 
 void save_current_game_as(SDL_Window* window, std::filesystem::path& path,
                           yipe::GameState& game, const yipe::MsvcRandom& random) {
-    const auto selected = yipe_app::choose_save_game_file(
-        path.empty() ? default_preference_directory() / "save.y3r" : path);
-    if (!selected) {
-        return;
-    }
-    std::filesystem::path new_path = *selected;
-    if (save_current_game(window, new_path, game, random, true)) {
-        path = std::move(new_path);
+    try {
+        const auto selected = yipe_app::choose_save_game_file(
+            path.empty() ? default_preference_directory() / "save.y3r" : path);
+        if (!selected) {
+            return;
+        }
+        std::filesystem::path new_path = *selected;
+        if (save_current_game(window, new_path, game, random, true)) {
+            path = std::move(new_path);
+        }
+    } catch (const std::exception& error) {
+        show_message(window, "Save Game Failed", error.what());
     }
 }
 
@@ -3713,7 +3731,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
     const bool completed_saved_finale = map.id() == 0x11
         && yipe::complete_gatekeeper_finale(game.player);
     if (game.player.gatekeeper_state == 3) {
-        record_player_high_scores(high_scores_path, high_scores, game.player);
+        submit_high_scores(window, high_scores_path, high_scores, game.player);
     }
     render_game(renderer, map, textures, game);
     if (completed_saved_finale) {
@@ -3732,7 +3750,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             map.relocate_overlay_after_combat(game.location.position);
         }
         if (result == EncounterResult::victory && game.player.level > previous_level) {
-            record_player_high_scores(high_scores_path, high_scores, game.player);
+            submit_high_scores(window, high_scores_path, high_scores, game.player);
         }
         return result;
     };
@@ -4016,7 +4034,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         if (keysym.sym == SDLK_h
             && (keysym.mod & KMOD_CTRL) != 0) {
             if (event.key.repeat == 0) {
-                record_player_high_scores(high_scores_path, high_scores, game.player);
+                submit_high_scores(window, high_scores_path, high_scores, game.player);
                 show_high_scores(window, high_scores, game.player.difficulty, &game.player);
             }
             render_game(renderer, map, textures, game);
@@ -4145,7 +4163,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                 game.map_visibility, map, game.location.position);
             render_game(renderer, map, textures, game);
             if (completed_finale) {
-                record_player_high_scores(high_scores_path, high_scores, game.player);
+                submit_high_scores(window, high_scores_path, high_scores, game.player);
                 audio.play(129, settings.sound_enabled);
                 show_message(window, "Victory",
                              "You've rescued all the princesses!!\n\n"

@@ -5,33 +5,36 @@ save/import framing and version migration, save/open/quit control flow, input
 dispatch, timer pauses, map events, and combat/shop/quest changes. This is a code
 review with automated checks, not an original-game playtesting result.
 
-## Finding
+## Resolved findings
 
-**[P1] Save-write failures can discard the active session —
-`app/main.cpp:3576`.** `save_current_game` calls `save_game_atomic` without
-catching I/O failures. F5/Ctrl+S, Save As, window close, and Save and Leave in
-the Quit/New flows likewise lack a local catch. If the chosen directory is
-removed or the temporary file cannot be written, the exception unwinds
-`run_game`. A newly created game's outer handler exits with code 1; a loaded
-game's handler reports Load Game Failed and returns to startup, losing the
-unsaved in-memory session.
+**Save-write failures discarded the active session.** An I/O exception from
+`save_current_game` previously unwound `run_game`. The application either exited
+or returned to startup, losing unsaved progress. Save and Save As now display
+Save Game Failed and retain the live game. Save and Leave and window close stay
+in the game when saving fails. A save destination is adopted only after its
+file has been written; failed writes are not added to recent files.
 
-A temporary diagnostic compiled against the existing application test harness
-called Save, Save As, and Save and Leave with a missing parent directory. All
-three let `could not open temporary save file` escape. No save was created,
-and no existing player file was modified. The code's outer exception handlers
-establish the session-loss consequence; no desktop session was used for this
-diagnostic.
+Regression tests drive the production event loop through failed F5, Ctrl+S,
+Save As, Quit/New/Open with Save and Leave, window close, and a first save. Each
+case produces a real temporary-file write failure, continues movement, and
+successfully saves to a different destination. Tests compare the original file
+byte for byte and check player state, RNG, recent files, and paused exploration
+time. Direct missing-directory checks also verify that failed Save As and first
+save do not adopt the unwritten destination.
 
-The localized repair is to catch save errors at the shared save boundary, show
-Save Game Failed, and return false so callers retain the active game and its
-previous destination. Add event-loop coverage for failed Save/Save As/quit/New
-and a successful retry. This review does not modify game behavior.
+**High-score write failures interrupted gameplay.** Score submission from
+statistics, Ctrl+H, level-up, completion, and completed-game resume now shares
+an error handler that displays High Scores Save Failed and continues play.
+The existing persistence helper commits the in-memory table only after the
+file write succeeds. An event-loop regression verifies unchanged in-memory
+and persisted scores, continued movement and saving, paused exploration time,
+and a successful later score submission.
 
 ## Validation
 
 A separate clean arm64/macOS 26.0 Release build completed without compiler
-warnings. All seven CTest checks passed in 51.47 seconds. The extracted CPack
+warnings. All seven CTest checks passed in 45.98 seconds, including 665 application
+cases and the write-failure regressions above. The extracted CPack
 archive passed verification of 137 assets, bundled SDL2 and relative library
 paths, ad-hoc signatures, and headless startup outside the source directory.
 The GitHub workflow passes `actionlint` and runs the same build, test, package,
@@ -39,8 +42,10 @@ and verification steps.
 
 Clang's static analyzer completed without diagnostics for all 18 distinct
 non-generated production translation units, including the two macOS adapters.
-The save-error finding comes from control-flow review and the focused diagnostic;
-a clean analyzer result does not cover application exception recovery.
+The changed application source was analyzed again after the repairs with no
+diagnostics.
+The findings came from control-flow review and focused I/O diagnostics; a clean
+analyzer result does not cover application exception recovery.
 
 The [first hosted CI attempt](https://github.com/findyoucef/YipeIII-rebuild/actions/runs/36786718551)
 was rejected before any checkout or build step: GitHub reported, "The job was

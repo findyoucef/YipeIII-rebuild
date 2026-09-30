@@ -58,7 +58,8 @@ test results are retained even when a later step fails. Pushes to `main`, pull
 requests, and manual dispatch run the same checks with read-only permissions.
 
 The current target is arm64/macOS 26.0. See the [code review](docs/CODE_REVIEW.md)
-for a confirmed save-error handling issue. The large local progression traces,
+for the resolved save and high-score error handling bugs and their regression
+coverage. The large local progression traces,
 runtime captures, and analysis outputs referenced by historical evidence records
 are retained locally and are not required to build or run this CI workflow.
 

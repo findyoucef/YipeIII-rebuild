@@ -279,6 +279,7 @@ CombatEncounter observe_route_encounter(const MonsterPlacement& placement, Playe
 namespace {
 std::filesystem::path test_directory;
 std::optional<std::filesystem::path> selected_save;
+std::deque<std::optional<std::filesystem::path>> save_choices;
 std::optional<std::filesystem::path> selected_open;
 std::vector<std::filesystem::path> recent_files;
 std::vector<std::filesystem::path> remembered_files;
@@ -304,6 +305,10 @@ char* SDL_GetPrefPath(const char*, const char*) {
 }
 
 int SDL_ShowSimpleMessageBox(Uint32, const char* title, const char* text, SDL_Window*) {
+    if (scripted_clock && (std::string_view(title) == "Save Game Failed"
+            || std::string_view(title) == "High Scores Save Failed")) {
+        scripted_now += 100000;
+    }
     if (scripted_clock && delay_status_dialog
         && std::string_view(title) == "Player Status Details") scripted_now += 100000;
     if (route_combat) {
@@ -432,6 +437,11 @@ std::optional<std::filesystem::path> choose_open_game_file(
 std::optional<std::filesystem::path> choose_save_game_file(
     const std::filesystem::path&) {
     ++save_dialogs;
+    if (!save_choices.empty()) {
+        auto selected = save_choices.front();
+        save_choices.pop_front();
+        return selected;
+    }
     return selected_save;
 }
 }
@@ -961,6 +971,118 @@ int main(int argc, char* argv[]) {
             return yipe::load_game(path);
         };
         scripted_clock = true;
+        // A failed write must keep the live game, its old file, and its save
+        // destination until a later Save As succeeds. A directory at .tmp
+        // causes a real I/O failure without relying on permission bits.
+        const auto recovery_open_target = test_directory / "recovery-open-target.y3r";
+        yipe::save_game_atomic(recovery_open_target, yipe::GameState{});
+        yipe::GameState recovery_start;
+        recovery_start.player.name = "SaveRecovery";
+        recovery_start.player.health = 7;
+        recovery_start.player.monster_repellent_steps = 5;
+        recovery_start.player.random_encounter_threshold = 125;
+        recovery_start.random_state = 71;
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        push_key(SDLK_DOWN);
+        const auto recovery_baseline = run_script(recovery_start, "save-recovery-baseline");
+        for (std::string_view action : {"save", "ctrl-save", "save-as", "quit", "new", "open", "close", "first-save"}) {
+            const auto original = test_directory / ("failed-" + std::string(action) + ".y3r");
+            const auto alternate = test_directory / ("retry-" + std::string(action) + ".y3r");
+            auto game = recovery_start;
+            yipe::save_game_atomic(original, game);
+            std::ifstream before(original, std::ios::binary);
+            const std::string original_bytes{std::istreambuf_iterator<char>(before), {}};
+            require(std::filesystem::create_directory(original.string() + ".tmp"),
+                    "could not block the temporary save destination");
+            auto path = action == "first-save" ? std::filesystem::path{} : original;
+            save_choices = action == "save-as" || action == "first-save"
+                ? std::deque<std::optional<std::filesystem::path>>{original, alternate}
+                : std::deque<std::optional<std::filesystem::path>>{alternate};
+            selected_open = recovery_open_target;
+            save_dialogs = open_dialogs = 0;
+            remembered_files.clear();
+            messages.clear();
+            message_texts.clear();
+            dialog_choices.clear();
+            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+            if (action == "quit" || action == "new" || action == "open") {
+                dialog_choices.push_back({action == "quit" ? "Quit Game"
+                    : action == "new" ? "New Game" : "Open Game", 2, ""});
+            }
+            if (action == "save-as") push_key(SDLK_s, false, KMOD_CTRL | KMOD_SHIFT);
+            else if (action == "ctrl-save") push_key(SDLK_s, false, KMOD_CTRL);
+            else if (action == "quit") push_key(SDLK_q);
+            else if (action == "new") push_key(SDLK_n, false, KMOD_CTRL);
+            else if (action == "open") push_key(SDLK_o, false, KMOD_CTRL);
+            else if (action == "close") {
+                SDL_Event close{};
+                close.type = SDL_QUIT;
+                require(SDL_PushEvent(&close) == 1, "could not queue window close");
+            } else push_key(SDLK_F5);
+            push_key(SDLK_DOWN);
+            push_key(SDLK_s, false, KMOD_CTRL | KMOD_SHIFT);
+            push_key(SDLK_q);
+            dialog_choices.push_back({"Quit Game", 1, ""});
+            const auto result = run_game(window.get(), renderer.get(), textures, game, path,
+                test_directory / "settings.y3r", test_directory / "highscores.y3r",
+                scores, settings, audio);
+            std::ifstream after(original, std::ios::binary);
+            const std::string remaining_bytes{std::istreambuf_iterator<char>(after), {}};
+            const auto resumed = yipe::load_game(alternate);
+            require(result.choice == StartupChoice::quit && path == alternate
+                        && dialog_choices.empty() && save_choices.empty()
+                        && remembered_files == std::vector<std::filesystem::path>{alternate}
+                        && original_bytes == remaining_bytes
+                        && messages == std::vector<std::string>{"Save Game Failed", "Game Saved"}
+                        && message_texts.front().find("temporary save file") != std::string::npos
+                        && resumed.player.name == game.player.name
+                        && resumed.player.health == game.player.health
+                        && resumed.player.inventory == game.player.inventory
+                        && resumed.player.monster_repellent_steps == 5
+                        && resumed.random_state == recovery_baseline.random_state
+                        && resumed.location.position == yipe::MapPosition{5, 6},
+                    ("failed " + std::string(action)
+                        + " discarded live progress, changed the old file, or blocked retry").c_str());
+            std::filesystem::remove(original.string() + ".tmp");
+            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+            ++cases;
+        }
+        {
+            const auto score_path = test_directory / "failed-highscores.y3r";
+            auto recovery_scores = yipe::default_high_scores();
+            const auto previous_scores = recovery_scores;
+            yipe::save_high_scores_atomic(score_path, recovery_scores);
+            require(std::filesystem::create_directory(score_path.string() + ".tmp"),
+                    "could not block the temporary high-score destination");
+            auto game = recovery_start;
+            game.player.gold = 600;
+            auto path = test_directory / "after-score-failure.y3r";
+            messages.clear();
+            message_texts.clear();
+            dialog_choices = {{"High Scores", 0, ""}, {"Quit Game", 1, ""}};
+            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+            push_key(SDLK_h, false, KMOD_CTRL);
+            push_key(SDLK_DOWN);
+            push_key(SDLK_F5);
+            push_key(SDLK_q);
+            const auto result = run_game(window.get(), renderer.get(), textures, game, path,
+                test_directory / "settings.y3r", score_path, recovery_scores, settings, audio);
+            const auto resumed = yipe::load_game(path);
+            require(result.choice == StartupChoice::quit && dialog_choices.empty()
+                        && messages == std::vector<std::string>{"High Scores Save Failed", "Game Saved"}
+                        && recovery_scores == previous_scores
+                        && yipe::load_high_scores(score_path) == previous_scores
+                        && resumed.player.gold == 600 && resumed.player.health == 7
+                        && resumed.player.monster_repellent_steps == 5
+                        && resumed.random_state == recovery_baseline.random_state
+                        && resumed.location.position == yipe::MapPosition{5, 6},
+                    "high-score write failure discarded gameplay or changed persisted scores");
+            submit_high_scores(window.get(), score_path, recovery_scores, resumed.player);
+            require(recovery_scores != previous_scores
+                        && yipe::load_high_scores(score_path) == recovery_scores,
+                    "high-score submission could not retry after a write failure");
+            ++cases;
+        }
         {
             yipe::GameState game;
             const auto map = *yipe::original_map(game.location.map_id);
@@ -1283,17 +1405,31 @@ int main(int argc, char* argv[]) {
             // Failed/canceled native writes must never be added to the list.
             remembered_files.clear();
             auto invalid_destination = test_directory / "absent" / "save.y3r";
-            bool failed = false;
-            try {
-                static_cast<void>(save_current_game(window.get(), invalid_destination, game,
-                                                    yipe::MsvcRandom(71), false));
-            } catch (const std::exception&) { failed = true; }
-            require(failed && remembered_files.empty(), "failed save entered recent history");
+            messages.clear();
+            require(!save_current_game(window.get(), invalid_destination, game,
+                                      yipe::MsvcRandom(71), false)
+                        && remembered_files.empty()
+                        && messages == std::vector<std::string>{"Save Game Failed"},
+                    "failed save escaped recovery or entered recent history");
             selected_save.reset();
             std::filesystem::path unsaved;
             require(!save_current_game(window.get(), unsaved, game, yipe::MsvcRandom(71), false)
                         && remembered_files.empty(), "canceled save entered recent history");
             ++cases;
+            selected_save = invalid_destination;
+            messages.clear();
+            auto active = target;
+            save_current_game_as(window.get(), active, game, yipe::MsvcRandom(71));
+            require(active == target && remembered_files.empty()
+                        && messages == std::vector<std::string>{"Save Game Failed"},
+                    "failed Save As replaced the previous save destination");
+            messages.clear();
+            require(!save_current_game(window.get(), unsaved, game, yipe::MsvcRandom(71), false)
+                        && unsaved.empty() && remembered_files.empty()
+                        && messages == std::vector<std::string>{"Save Game Failed"},
+                    "failed first save adopted an unwritten destination");
+            selected_save.reset();
+            cases += 2;
 
             // An imported recent file still selects a separate native output.
             recent_files = {std::filesystem::path(YIPE_TEST_EVIDENCE_DIR)
