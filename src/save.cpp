@@ -38,7 +38,11 @@ constexpr std::uint16_t death_game_format_version = 12;
 constexpr std::uint16_t other_action_game_format_version = 13;
 constexpr std::uint16_t wormoid_hint_game_format_version = 14;
 constexpr std::uint16_t defeat_statistics_game_format_version = 15;
-constexpr std::uint16_t game_format_version = 16;
+constexpr std::uint16_t specialty_game_format_version = 16;
+constexpr std::uint16_t silly_mode_game_format_version = 17;
+constexpr std::uint16_t chest_game_format_version = 18;
+constexpr std::uint16_t shop_game_format_version = 19;
+constexpr std::uint16_t game_format_version = 20;
 constexpr std::uint16_t legacy_giant_beetle_placement_index = 5;
 
 void append_u8(std::vector<std::uint8_t>& output, std::uint8_t value) {
@@ -272,6 +276,16 @@ std::vector<std::uint8_t> encode_game_payload(const GameState& game) {
     }
     append_u8(payload, game.player.monster_defeat_history_complete ? 1 : 0);
     append_i32(payload, game.player.specialty);
+    append_u8(payload, game.player.silly_mode ? 1 : 0);
+    for (const auto flags : game.player.opened_chests) {
+        if (flags > 15) throw std::runtime_error("invalid opened-chest flags in save state");
+        append_u8(payload, flags);
+    }
+    if (game.player.miscellaneous_shop_stage > 4) {
+        throw std::runtime_error("invalid miscellaneous-shop stage in save state");
+    }
+    append_u16(payload, game.player.miscellaneous_shop_stage);
+    append_u16(payload, game.player.value_06a4);
     return payload;
 }
 
@@ -428,7 +442,7 @@ GameState load_game(const std::filesystem::path& path) {
     game.player.difficulty = reader.i32();
     game.player.combat_style = reader.i32();
     // Older native saves used this field for class selection as well as stat bias.
-    if (save.version < game_format_version) {
+    if (save.version < specialty_game_format_version) {
         game.player.specialty = game.player.combat_style == 1 ? 1
             : game.player.combat_style == 3 ? 0 : 3;
     }
@@ -586,11 +600,33 @@ GameState load_game(const std::filesystem::path& path) {
         }
         game.player.monster_defeat_history_complete = reader.u8() != 0;
     }
-    if (save.version >= game_format_version) {
+    if (save.version >= specialty_game_format_version) {
         game.player.specialty = reader.i32();
         if (game.player.specialty < 0 || game.player.specialty > 3) {
             throw std::runtime_error("save contains an invalid character specialty");
         }
+    }
+    if (save.version >= silly_mode_game_format_version) {
+        const std::uint8_t silly_mode = reader.u8();
+        if (silly_mode > 1) {
+            throw std::runtime_error("save contains an invalid Silly Mode flag");
+        }
+        game.player.silly_mode = silly_mode != 0;
+    }
+    if (save.version >= chest_game_format_version) {
+        for (auto& flags : game.player.opened_chests) {
+            flags = reader.u8();
+            if (flags > 15) throw std::runtime_error("save contains invalid opened-chest flags");
+        }
+    }
+    if (save.version >= shop_game_format_version) {
+        game.player.miscellaneous_shop_stage = reader.u16();
+        if (game.player.miscellaneous_shop_stage > 4) {
+            throw std::runtime_error("save contains an invalid miscellaneous-shop stage");
+        }
+    }
+    if (save.version >= game_format_version) {
+        game.player.value_06a4 = reader.u16();
     }
     if (!reader.finished()) {
         throw std::runtime_error("save payload contains unexpected trailing data");

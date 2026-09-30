@@ -51,7 +51,10 @@ struct GameState {
 // death and Hell Gatekeeper state; version 13 adds Other-action treasure,
 // water, and snow-search state; version 14 adds the Wormoid-defeat hint flag
 // and version 15 adds all 50 defeat counters and their history-completeness
-// flag while retaining all earlier readers.
+// flag; versions 16/17 add specialty/Silly Mode, and version 18 adds the four
+// opened-chest bits for each original map 1..128. Version 19 adds miscellaneous
+// shop progression; version 20 retains original +0x6a4 for the High Score Code
+// suffix, retaining all earlier readers.
 void save_game_atomic(const std::filesystem::path& path, const GameState& game);
 [[nodiscard]] GameState load_game(const std::filesystem::path& path);
 

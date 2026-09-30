@@ -54,6 +54,8 @@ void Player::initialize(CharacterType type) {
     gatekeeper_state = 0;
     stamps_found = 0;
     princesses_found = 0;
+    miscellaneous_shop_stage = 0;
+    value_06a4 = 0;
     has_lucky_rabbit_foot = false;
     has_waterproof_shoe_spray = false;
     has_rainbow_key = false;
@@ -68,7 +70,8 @@ void Player::initialize(CharacterType type) {
     encountered_monster_types.fill(false);
     alternate_map_set = false;
     current_map_id = 0x11;
-    stat_cap_mode = 0;
+    stat_cap_mode = 2;
+    opened_chests.fill(0);
     surface_return_map_id = 0;
     surface_return_region_x = 0;
     surface_return_region_y = 0;

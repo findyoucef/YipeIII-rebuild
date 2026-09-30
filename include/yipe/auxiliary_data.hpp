@@ -22,6 +22,10 @@ using HighScores = std::array<HighScoreEntry, 45>;
 [[nodiscard]] HighScores default_high_scores();
 [[nodiscard]] std::size_t high_score_group_offset(int difficulty);
 
+// Original 0x0041c630: encodes all 50 recorded defeat counters, excluding
+// the unattributed aggregate in older native saves. Does not consume RNG.
+[[nodiscard]] std::string high_score_code(const Player& player);
+
 // Four top-three categories and the first three finishers per difficulty,
 // recovered from 0x00414540. Returns whether any record actually changed.
 [[nodiscard]] bool update_high_scores(HighScores& scores, const Player& player,

@@ -30,6 +30,28 @@ constexpr std::array<std::string_view, ItemNames::weapon_count> weapon_fallback 
     "Frost Sword", "Yipe! Deathblade", "Manynard Power Sword", "Almighty Longsword",
 };
 
+// String resources 1251-1280 and 1201-1238, loaded by 0x00417d90.
+constexpr std::array<std::string_view, ItemNames::armor_count> silly_armor = {
+    "T-Shirt", "T-Shirt with Pocket", "Tank Top", "Pillow Case", "Collared Shirt",
+    "Potato Sack", "Red Turtle Neck", "Sleeveless Sweater", "Soccer Jersey",
+    "Hooded Sweatshirt", "Swimsuit", "Muscle Shirt", "Toga Sheet", "Electric Blanket",
+    "Rain Jacket", "Life Preserver", "Apron", "Hunt Coat", "Batman Cape", "Wedding Dress",
+    "Camouflage Jacket", "Police Uniform", "Suit and Tie", "Birthday Suit",
+    "Spaghetti Plate", "Scuba Gear", "Army Uniform", "King's Yipe! Armor",
+    "Quizilog Magic Armor", "Magic Yipe! Armor",
+};
+
+constexpr std::array<std::string_view, ItemNames::weapon_count> silly_weapons = {
+    "Hands", "Thumbtack", "Nail Clippers", "Pencap", "Toothbrush", "Big Pillow",
+    "Mousepad", "Drumstick", "Scissors (Dull)", "Scissors (Sharp)", "Pencil Sharpener",
+    "Frying Pan", "Fish Net", "Car Antenna", "Egg Beater", "Dog Leash", "Dustpan",
+    "Cookie Jar", "Phonecord Whip", "Ping-Pong Paddle", "Rubber Hose", "Broken Flower Pot",
+    "Universal TV Remote", "Pool Cue", "Rusty Horseshoe", "Curtain Rod",
+    "Electric Toothbrush", "Cattle Prod", "Pepper Spray", "Gardening Hoe", "Cordless Drill",
+    "Insect Spray", "Five-Iron", "Monkey Wrench", "Stun Gun", "Zulu Spear", "Lawn Mower",
+    "Bottle Rockets",
+};
+
 void trim(std::string& value) {
     const auto not_space = [](unsigned char character) { return !std::isspace(character); };
     value.erase(value.begin(), std::find_if(value.begin(), value.end(), not_space));
@@ -38,14 +60,14 @@ void trim(std::string& value) {
 
 } // namespace
 
-ItemNames embedded_item_names() {
+ItemNames embedded_item_names(bool silly_mode) {
     ItemNames result;
     result.used_embedded_fallback = true;
     for (std::size_t index = 0; index < result.armor.size(); ++index) {
-        result.armor[index] = armor_fallback[index];
+        result.armor[index] = silly_mode ? silly_armor[index] : armor_fallback[index];
     }
     for (std::size_t index = 0; index < result.weapons.size(); ++index) {
-        result.weapons[index] = weapon_fallback[index];
+        result.weapons[index] = silly_mode ? silly_weapons[index] : weapon_fallback[index];
     }
     return result;
 }

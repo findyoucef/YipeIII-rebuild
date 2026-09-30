@@ -151,10 +151,22 @@ enum class EquipmentUpgrade {
     necklace,
 };
 
+struct LootReward {
+    EquipmentUpgrade equipment_upgrade = EquipmentUpgrade::none;
+    std::uint16_t item_id = 0;
+    bool inventory_full = false;
+    bool waterproof_shoe_spray = false;
+};
+
+// 0x00445c20: chest_kind 0 is combat loot; 1..4 identify the chest slots.
+[[nodiscard]] LootReward roll_treasure(
+    Player& player, int drop_threshold, int chest_kind, MsvcRandom& random);
+
 struct CombatReward {
     int experience = 0;
     int gold = 0;
     EquipmentUpgrade equipment_upgrade = EquipmentUpgrade::none;
+    bool underworld_key = false;
 };
 
 struct CombatEncounter {

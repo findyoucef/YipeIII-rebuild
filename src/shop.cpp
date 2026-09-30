@@ -7,20 +7,97 @@
 
 namespace yipe {
 
-const std::array<ShopStockItem, 11>& freds_miscellaneous_stock() {
-    static constexpr std::array<ShopStockItem, 11> stock{{
-        {"French Fries", 75, ShopItemKind::consumable, 1, 0},
-        {"Juicy Cheeseburger", 250, ShopItemKind::consumable, 2, 0},
-        {"Strength Potion", 1000, ShopItemKind::consumable, 6, 0},
-        {"Intelligence Potion", 1000, ShopItemKind::consumable, 8, 0},
-        {"Potion of HP Increase", 2000, ShopItemKind::consumable, 9, 0},
-        {"Potion of SP Increase", 2500, ShopItemKind::consumable, 10, 0},
-        {"Return to Surface Potion", 250, ShopItemKind::consumable, 5, 0},
-        {"Wet Mittens", 50, ShopItemKind::equipment, 2, 1},
-        {"Cheap Ring", 100, ShopItemKind::equipment, 3, 1},
-        {"Sandals", 50, ShopItemKind::equipment, 4, 1},
-        {"Plain Necklace", 75, ShopItemKind::equipment, 7, 1},
-    }};
+bool enter_miscellaneous_shop(Player& player) {
+    const bool price_increase = player.miscellaneous_shop_stage == 0
+        && static_cast<std::int64_t>(player.strength) + player.dexterity + player.intelligence
+            > 60 - static_cast<std::int64_t>(player.difficulty);
+    if (price_increase) player.miscellaneous_shop_stage = 1;
+    if (player.miscellaneous_shop_stage == 1 && player.level > 25) {
+        player.miscellaneous_shop_stage = 2;
+    }
+    return price_increase;
+}
+
+std::array<ShopStockItem, 11> miscellaneous_shop_stock(const Player& player, int map_id) {
+    std::array<ShopStockItem, 11> stock;
+    switch (map_id) {
+    case 0x11:
+        stock = {{
+            {"French Fries", 75, ShopItemKind::consumable, 1, 0},
+            {"Juicy Cheeseburger", 250, ShopItemKind::consumable, 2, 0},
+            {"Strength Potion", 1000, ShopItemKind::consumable, 6, 0},
+            {"Intelligence Potion", 1000, ShopItemKind::consumable, 8, 0},
+            {"Potion of HP Increase", 2000, ShopItemKind::consumable, 9, 0},
+            {"Potion of SP Increase", 2500, ShopItemKind::consumable, 10, 0},
+            {"Return to Surface Potion", 250, ShopItemKind::consumable, 5, 0},
+            {"Wet Mittens", 50, ShopItemKind::equipment, 2, 1},
+            {"Cheap Ring", 100, ShopItemKind::equipment, 3, 1},
+            {"Sandals", 50, ShopItemKind::equipment, 4, 1},
+            {"Plain Necklace", 75, ShopItemKind::equipment, 7, 1},
+        }};
+        break;
+    case 0x1b:
+        stock = {{
+            {"French Fries", 80, ShopItemKind::consumable, 1, 0},
+            {"Juicy Cheeseburger", 275, ShopItemKind::consumable, 2, 0},
+            {"Intelligence Potion", 1000, ShopItemKind::consumable, 8, 0},
+            {"Dexterity Potion", 900, ShopItemKind::consumable, 7, 0},
+            {"Potion of HP Increase", 2100, ShopItemKind::consumable, 9, 0},
+            {"Stink Potion", 1200, ShopItemKind::consumable, 4, 0},
+            {"Return to Surface Potion", 200, ShopItemKind::consumable, 5, 0},
+            {"Working Gloves", 1500, ShopItemKind::equipment, 2, 3},
+            {"Platinum Ring", 3000, ShopItemKind::equipment, 3, 3},
+            {"Strong Hiking Boots", 2500, ShopItemKind::equipment, 4, 4},
+            {"Gold Medallion", 500, ShopItemKind::equipment, 7, 2},
+        }};
+        break;
+    case 0x08:
+        stock = {{
+            {"French Fries", 75, ShopItemKind::consumable, 1, 0},
+            {"Juicy Cheeseburger", 245, ShopItemKind::consumable, 2, 0},
+            {"Intelligence Potion", 800, ShopItemKind::consumable, 8, 0},
+            {"Potion of HP Increase", 1900, ShopItemKind::consumable, 9, 0},
+            {"Potion of SP Increase", 2750, ShopItemKind::consumable, 10, 0},
+            {"Potion of SP Healing", 2000, ShopItemKind::consumable, 3, 0},
+            {"Return to Surface Potion", 300, ShopItemKind::consumable, 5, 0},
+            {"Double Horned Helmet", 10000, ShopItemKind::equipment, 1, 7},
+            {"Leather Gloves", 2500, ShopItemKind::equipment, 2, 4},
+            {"Protection Ring", 6000, ShopItemKind::equipment, 3, 5},
+            {"Speedy Boots", 8000, ShopItemKind::equipment, 4, 6},
+        }};
+        break;
+    default:
+        stock = {{
+            {"French Fries", 70, ShopItemKind::consumable, 1, 0},
+            {"Juicy Cheeseburger", 240, ShopItemKind::consumable, 2, 0},
+            {"Strength Potion", 900, ShopItemKind::consumable, 6, 0},
+            {"Dexterity Potion", 1000, ShopItemKind::consumable, 7, 0},
+            {"Potion of SP Increase", 2600, ShopItemKind::consumable, 10, 0},
+            {"Stink Potion", 1000, ShopItemKind::consumable, 4, 0},
+            {"Return to Surface Potion", 350, ShopItemKind::consumable, 5, 0},
+            {"Shower Cap", 500, ShopItemKind::equipment, 1, 2},
+            {"Wet Mittens", 25, ShopItemKind::equipment, 2, 1},
+            {"Aluminum Ring", 1000, ShopItemKind::equipment, 3, 2},
+            {"Fire Amulet", 5000, ShopItemKind::equipment, 7, 5},
+        }};
+        if (player.miscellaneous_shop_stage == 3
+            || (player.miscellaneous_shop_stage == 2 && !player.has_rainbow_key)) {
+            // Stage 3 lasts until the dialog closes. The original keeps the
+            // purchase mapped to the key, even if the stock list is rebuilt.
+            if (player.miscellaneous_shop_stage == 2) stock[8].name = "Rainbow Key";
+            stock[8].type = 8;
+            stock[8].tier = 5;
+            stock[8].price = (player.difficulty + 6) * 500;
+        }
+        break;
+    }
+    if (player.miscellaneous_shop_stage > 0) {
+        for (auto& item : stock) {
+            if (item.kind == ShopItemKind::consumable && item.type >= 6 && item.type <= 8) {
+                item.price += 1500;
+            }
+        }
+    }
     return stock;
 }
 
@@ -59,6 +136,12 @@ PurchaseResult purchase_shop_item(Player& player, const ShopStockItem& item) {
     case 7:
         equipped = &player.necklace_rank;
         break;
+    case 8:
+        if (player.has_rainbow_key) return {PurchaseStatus::already_equipped};
+        player.has_rainbow_key = true;
+        player.miscellaneous_shop_stage = 3;
+        player.gold -= item.price;
+        return {PurchaseStatus::purchased};
     default:
         throw std::logic_error("unsupported shop equipment type");
     }

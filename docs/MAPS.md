@@ -1,5 +1,13 @@
 # Map recovery
 
+**Progression status (E062-E064):** the catalog now includes all 145 chest placements,
+and gameplay awards the waterproof spray, tree-climbing shoes, and Underworld
+Key. All four miscellaneous shops are usable, including Outback's Rainbow Key
+offer. D8 sets new-character growth to 50; E064 earns strength 40 through funded
+potion purchases before traversing the linked-wall route. See
+[PROGRESSION_AUDIT.md](PROGRESSION_AUDIT.md) before interpreting gated movement
+tests as complete progression evidence.
+
 The original `CMap` object is constructed at `0x0041cac0` and loaded at
 `0x0041cb30`. Each map is 13 tiles wide and 12 tiles high. Its 156 signed
 16-bit tile values begin at object offset `+0x04` and use column-major indexing:
@@ -29,20 +37,52 @@ Regenerate it from a current Ghidra C export:
   --cpp-output src/generated/original_maps.cpp
 ```
 
-The version-4 catalog also extracts the compact event records initialized at
+The version-5 catalog also extracts the compact event records initialized at
 `0x0041ec40`: 20 location messages, 10 overlay triggers, 20 princesses, 26 depth
 portals, eight first linked records, six second linked records, 21 fixed
 map-authored pursuers, and one level-dependent pursuer. The extractor validates
 those totals and every coordinate. It requires every loader to produce all 156
 tile values and stops on an incomplete table. Map IDs `0x76` through `0x78` are
 generated at runtime by `0x0041e0f0` instead of appearing in the static
-dispatcher, so they are outside this catalog. The core reconstructs their
+dispatcher, so their tile grids are outside this catalog. Their authored chest
+slots are included. The core reconstructs their
 underlying generator at `0x0043fd80`: it creates four to six random rooms,
 connects them in order to the west and east anchors and current entry tile,
 then applies the original diagonal cleanup and fixed boundary writes. Seeded
 tests fix both the resulting tile hashes and random-call counts, including the
-original boundary overwrite that can cut a short seeded corridor. The generated
+original boundary overwrite that can cut a short seeded corridor. E077 restores
+the original room minimum-Y clamp to 9: omitting it caused an inverted room and
+a stack overwrite for RNG 2566201570. All tiles and post-generation RNG match
+the original executable across 130 grids; the crashing seed is a core regression. The generated
 C++ copy lets the core load static tables without a JSON dependency at runtime.
+
+E082 verifies regeneration on native Open: the original `0x0041cb30` dispatcher
+unconditionally rebuilds generated grids using the entry position and current
+RNG. Twenty-four complete map-entry grids/RNG match the rebuild. Six earned
+generated-map saves reopen with identical serialized state except the expected
+RNG advance, including saves at (11,1). Map 120 at (1,1), saved with RNG
+1822273529, reopens at RNG 1240901252; saving, quitting and opening that instance
+again yields 929248883. A restarted input-only continuation follows the new
+corridor and reaches map 121 alive. Generated terrain and transient map-instance
+state are not added to the native format. See [restart evidence](../evidence/persistence-parity/README.md).
+
+The initializer's direct coordinate writes define four independent chest slots
+at `CMap +0x310`: 143 placements on 74 static maps and two on generated `0x78`.
+The extractor validates all 290 coordinate writes and preserves empty slots.
+Chest bitmap 153 uses its first transparent 32x32 cell and respects visibility.
+Initialization removes previously collected chests and those on fire `0x24`.
+Unopened chests exclude roaming-monster spawning and movement.
+
+Movement collects a chest on arrival when no encounter replaces that action.
+With zero-based slot `s`, rewards use four RNG draws in this order:
+`XP = rand()%level + rand()%12 + s + 13 + difficulty*2`, then
+`gold = XP + 25 + rand()%(s+30) + s*10 - rand()%8 + difficulty`.
+Loot thresholds are `[99,78,70,-1]` for kinds 1-4. Shared combat/chest loot
+preserves forced upgrades, equipment score increments, capped-equipment
+fallback, and consumable selection. A full carried inventory still consumes
+the chest and grants XP/gold. Map `0x63`, slot 1 at `(9,1)`, always awards
+waterproof spray before random loot. The two generated-map slots are 2 at
+`(3,5)` and 3 at `(10,10)`; fire suppression does not mark them collected.
 
 Surface-map transitions use player offsets `+0x46` and `+0x48` as wrapped region
 coordinates. `0x00444b50` moves a player arriving at an outer border back to the
@@ -57,8 +97,10 @@ have a movement or interaction path. The ten overlay records allow movement
 through their underlying `0x0d` tile and draw the original transparent `0x71`
 sprite from bitmap 153. On environment-5 maps, victory while standing on a
 `0x0c`/`0x0d` cell moves the overlay to that cell for the current map instance.
-Reloading the map restores the extracted position. The original trigger timing
-and visible layering still need runtime comparison.
+A map transition restores the extracted position. Reopening a save on a
+platform rail relocates the platform under the saved rider as an explicit
+rebuild adaptation. The original trigger timing and visible layering still
+need runtime comparison. Timed movement is described below.
 
 ## Starting area
 
@@ -119,7 +161,12 @@ quest counter remains separate.
 
 The core also preserves the waterproof shoe spray, tree-climbing shoes, and key flags.
 The spray opens stream tiles `0x58`/`0x59`, while the shoes open tree tiles
-`0x56`/`0x57`. Generated event records
+`0x56`/`0x57`. Quizilog (map `0x08`) awards the shoes once when all four authored
+monster groups are defeated and either weapon or miscellaneous shop is visited.
+Before that, both entrances show the town's plea. The type-41 victory awards the
+Underworld Key once before advancing Gatekeeper state 1 to 2; an early victory
+grants the key but leaves quest state 0. This first-key reward and matching stamp
+boss rewards skip ordinary equipment loot. Generated event records
 now drive hidden overlays (`0x18`), ordinary-tile depth portals, door replacement
 (`0x12`), linked-tile swaps (`0x1a`), and teleport destinations (`0x1b`). The
 adapted renderer always redraws the complete map, covering the original
@@ -127,10 +174,10 @@ visibility refresh performed by `0x19`. Return-to-Surface items and spells use
 the entrance map and region saved by the `0x0e` descent path, then
 `0x0041e090` places the player immediately below the final `0x36`/`0x39`
 entrance on that map. Native format version 5 introduced persistence for changed
-door and linked-mechanism tiles; current version 16 retains it, the recovered
+door and linked-mechanism tiles; current version 19 retains it, the recovered
 King quest state, the princess Mystery counter, permanent monster defeats, the
 saved surface-return region, encounter history, death/Hell recovery state, and
-Other-action treasure/water/snow state.
+Other-action treasure/water/snow state, the opened-chest bits, and shop progression.
 
 The secret-tree puzzle is a separate branch inside ordinary movement result
 `3`, not result `0x15`. Entering tile `0x56` or `0x57` first shows the tree-climb
@@ -142,15 +189,44 @@ nothing, and the ring flag prevents the puzzle from reopening. The SDL build
 accepts the same case-sensitive code through an adapted title-bar text-entry
 prompt; core tests cover failure, success, and repeated attempts.
 
-The central tile with ID `1` returns action code `8`. The action dispatcher at
-`0x0040e880` opens miscellaneous-shop dialog resource 213. Because the current
-map ID is `0x11`, `0x004402b0` selects the title resource “Fred's Miscellaneous
-Shop,” stock builder `0x00440e50`, and the map-specific price slice in
-`0x00441010`. The SDL build displays all 11 recovered stock rows and prices when
-the player enters that tile. Its purchase path follows `0x00441250`: seven
-consumables use the first free slot among the 13 carried-item slots, while the
-four equipment rows update their matching slot only when the purchased tier is
-an improvement. Failed purchases do not deduct gold.
+### Miscellaneous shops (E063)
+
+Tile `1` returns action `8`; the original opens dialog 213. The four placed
+entrances select distinct 11-row catalogs through `0x004402b0`:
+
+| Map / entrance | Title | Stock builder | Notable stock |
+| --- | --- | --- | --- |
+| `0x11` / `(6,6)` | Fred's Miscellaneous Shop | `0x00440e50` | Strength/intelligence potions, basic accessories |
+| `0x1b` / `(4,6)` | Maynard Supplies Shop | `0x004408f0` | Dexterity/intelligence potions, Stink Potion, tier-3 gloves/ring, tier-4 boots |
+| `0x08` / `(5,8)` | Quizilog Random Items Shop | `0x00440ab0` | SP healing, tier-7 helmet, tier-4 gloves, tier-5 ring, tier-6 boots |
+| `0x0c` / `(8,3)` | Outback Shop (default branch) | `0x00440c70` | Strength/dexterity potions, Stink Potion, Fire Amulet, conditional Rainbow Key |
+
+All 44 names, prices, item IDs, and accessory tiers match the stock builders,
+price table `0x00441010`, and resource strings. Consumable rows use the first
+free slot among the 13 carried slots. Accessories equip only an improvement,
+even when inventory is full. Exact gold suffices; failed purchases do not
+deduct gold. Stink Potion is item 4, the existing repellent; Potion of SP
+Healing is item 3. Quizilog's monster-clear check and shoe reward occur before
+the shop opens or its price milestone advances.
+
+The original player `+0x686` stores a persistent shop stage. On entering any
+miscellaneous shop, stage 0 becomes 1 when `STR + DEX + INT > 60 - difficulty`
+(`+0x65c`), with the one-time shortage notice (string 183). All seven stock
+rows selling stat potions then cost 1500 more. Stage 1 becomes 2 at level 26;
+both transitions can occur on the same visit. Neither reverses after stats
+fall. At stage 2 without the Rainbow Key, Outback replaces its ninth row
+(25-gold Wet Mittens) with the key for `(difficulty + 6) * 500` gold.
+
+Buying the key sets its existing flag and stage 3, without consuming inventory
+space. Further attempts during that dialog cannot charge for another key.
+Leaving advances stage 3 to 4, and subsequent visits restore the mittens row
+while retaining higher potion prices. A key obtained through Mystery also
+prevents the offer. The original stage-3 rebuilt-list quirk is retained: its
+label is mittens while the price/purchase still refers to the key; ordinary
+UI flow keeps the initial key list until closing, then advances to stage 4.
+Native version 19 and legacy import retain this stage. Automated acquisition
+cases supply funds/late-game level; they do not establish a balanced route to
+level 26 or original-runtime UI parity.
 
 ## Other action
 
@@ -232,40 +308,73 @@ The pushable-wall text itself has no strength condition: the entry patch changes
 its movement action, so a strong player activates the linked wall instead of
 seeing that hint. These initialization patches do not add persistent tile-change
 records; linked mechanisms continue to use their existing persistence path.
-An integrated core route starts on map `0x2d` at `(10,9)` with strength 40. The
-patched `(11,9)` switch opens edge `(12,9)`, which leads east to map `0x2e` at
+An integrated core route grows a fresh Combat character from strength 16 to 40
+with 24 purchased potions and 30,000 supplied gold, including the shop price
+increase (E064). Strength 39 leaves the mechanism disabled. At strength 40,
+the route starts on map `0x2d` at `(10,9)`. The patched `(11,9)` switch opens
+edge `(12,9)`, which leads east to map `0x2e` at
 `(1,9)`. Its `(11,10)` switch opens the inner wall at `(8,3)`; with the Rainbow
 Key, the player can pass door `(11,4)` and reach princess rescue slot 13 at
-`(7,1)`. The route test uses ordinary movement and map actions. It does not
-establish how the player acquires the prerequisites, survives encounters, or
-experiences the route in the SDL interface.
+`(7,1)` and record the rescue. The route uses ordinary movement and map actions;
+the threshold remains 40. Gold, entry location, and Rainbow Key are supplied.
+It does not establish normal income, key acquisition, encounter survival, a
+connected journey from town, or SDL presentation of this route.
 
-### Princess-pocket reachability audit
+### Timed princess routes (E059)
 
-The static route scan still flags two princess placements. These are open
-reachability questions, not confirmed soft locks:
+The missing WM_TIMER callback at `0x00412f90` resolves the two static
+reachability questions. It invokes platform movement at `0x00411ec0` every
+third tick and the mutating `0x004124c0(this, 0)` path every fourth tick. The
+initial delay is 500 ms and subsequent delays are 512 ms, with the phase
+resetting after tick 76. See the [recovered callback evidence](../evidence/corrected-analysis/map-timer/README.md).
 
-| Map | Established entry | Unexplained separation |
+| Map | Route from the ordinary entry | Rescue and return |
 | --- | --- | --- |
-| `0x4a` | Map `0x44` crosses its south edge at `x=9` into the main chamber; the `0x72` depth event also returns at `(11,10)` there | Rescue slot 11 is at `(2,1)` in the upper-left pocket. The overlay at `(4,9)` exposes only that wall cell and does not connect to the pocket through the adjacent `0x25`/`0x0d` cells. No west/east edge or lower neighboring map provides an established entry. |
-| `0x85` | Map `0x7f` crosses its south edge at `x=8` into the main chamber | Rescue slot 20 is at `(1,9)` behind the `0x24` wall at `(5,8)`/`(5,9)` and `0x0d` at `(5,10)`. The wrapped southern neighbor `0x67` has no passable north edge; `(2,11)` on `0x85` is the Hell-exit action `0x55`, not an ordinary edge crossing. |
+| `0x4a` | Cross south from `0x44` at `x=9`, arrive at `(9,1)`, walk via `(8,2),(7,3),(6,4),(5,5),(5,6),(5,7),(5,8)` and board at `(4,9)` | Wait for the random platform to reach `(3,3)`. Step to `(2,3),(1,3)`, pass the Rainbow Key door at `(1,2)`, then `(1,1),(2,1)` to rescue slot 11. Return to `(3,3)`, ride to `(4,5)`, and step east to the main chamber. |
+| `0x85` | Cross south from `0x7f` at `x=8`, arrive at `(8,1)`, walk via `(7,2),(6,3)` down to `(6,8)` | Once both hazard cells are revealed, `(5,8)` and `(8,5)` alternate fire `0x24` and floor `0x27`. Wait for an opening, walk west to `(2,8)` then `(1,9)` to rescue slot 20. Return to `(4,8)`, wait for the next opening, and cross east to `(6,8)`. |
 
-The original map-specific helper `0x004124c0` names two cells in `0x85`,
-including `(5,8)`, but the only recovered direct call is from tile rendering
-with argument `1`, which returns before its mutation branch. This does not yet
-establish a normal-play trigger. Further original-runtime or control-flow
-evidence is needed before changing either map or claiming all 20 princesses are
-reachable.
+Platforms move only while visible, remain on the authored `0x0c`/`0x0d`
+rails, and avoid a roaming monster. Direction 5 consumes exactly two random
+values per update; it may remain still. Carrying advances existing roaming
+and pursuing monsters, without spawning a new encounter. The same hazard
+callback implements all 14 authored pairs, including spike and collapsing
+floor phases, nonlethal damage, and removal of affected roaming monsters.
+
+Core tests and the production SDL event loop follow both routes through
+adjacent movement, rescue, return, and native saves. A platform save is
+reopened while riding before continuing; the only persistent terrain change
+in its SDL route is the opened key door. Fire openings and platform movement
+never enter the permanent tile-change list. Fire damage on a closing wall,
+hazard visibility gates, repellent expiry, SP/AP restoration, and the
+map-5 timed opening also have automated coverage.
+
+The tests supply the Rainbow Key and suppress random encounters. SDL uses
+dummy drivers, substituted dialogs, and a controlled clock. They prove the
+implemented route and persistence, not prerequisite acquisition, encounter
+survival, visible timing, or original-runtime completion of these routes.
+E084 separately retains four connected production-created completion routes
+on the corrected combat build. They earn both keys and the other movement
+prerequisites, cross the authored boats, switches and timed barriers through
+ordinary inputs, survive encounters or recover normally, and reach the finale.
+See [the fresh completion record](../evidence/corrected-completion/README.md)
+for commands and independent replay checks. These automated runs still do not
+establish original GUI timing or completion parity.
+The original and native saves do not preserve platform direction/position
+or timer phase; restoring support under a saved rider is adapted behavior.
+Modal UI pauses exploration without catch-up ticks. The original's tick-13
+high-score submission is not reproduced here; existing submission points
+remain. Static terrain was not edited. U022 remains open only for these
+runtime/progression comparisons, not for a missing passage.
 
 The earlier entry checks in `0x0040de80` are registration checks, not additional
 gameplay prerequisites. They cover descending from maps `0x0d` and `4` (action
 `0x0e`), deeper entry from maps `0x42` and `0x2a` (action `0x10`), and descending
 from map `0x15` through `0x00412f30`. The helpers call the original application's
 registration/profile routines, with a registration dialog on failure. This
-checkpoint only identifies those checks: it does not alter the original,
-reproduce registration, or change the rebuild's existing content access.
-Registration policy remains an explicit open difference, not a missing strength,
-stamp, key, or princess gate.
+E042 finding only identifies those checks. D8/E064 now explicitly chooses the
+recovered mode-2 stat/loot limits for new characters and legacy imports, without
+altering the original or implementing registration. Original profile UI remains
+open under U013; it is not a missing strength, stamp, key, or princess gate.
 
 ## Defeat statistics
 

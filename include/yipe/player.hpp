@@ -109,6 +109,7 @@ public:
     int combat_style = 0;
     // +0x6cc: 0 Quickness, 1 Magic, 2 Random, 3 Combat.
     int specialty = 3;
+    bool silly_mode = false;
     int equipment_upgrade_count = 0;
     int loot_roll_penalty = 2;
     int restoration_uses = 0;
@@ -120,6 +121,10 @@ public:
     std::uint16_t stamps_found = 0;
     std::uint16_t princesses_found = 0;
     std::uint16_t princess_mystery_uses = 0;
+    // +0x686: 0 initial, 1 higher prices, 2 key offered, 3 bought, 4 shop exited.
+    std::uint16_t miscellaneous_shop_stage = 0;
+    // Original +0x6a4: only value 5 adds a High Score Code suffix; other meaning unknown.
+    std::uint16_t value_06a4 = 0;
     bool has_lucky_rabbit_foot = false;
     bool has_waterproof_shoe_spray = false;
     bool has_rainbow_key = false;
@@ -133,6 +138,8 @@ public:
     std::array<std::uint16_t, inventory_size> inventory{};
     std::array<std::uint16_t, inventory_size> inventory_values{};
     std::array<bool, quest_flag_count> quest_flags{};
+    // Original +0x152 table: four one-time chest flags for each map 1..128.
+    std::array<std::uint8_t, 128> opened_chests{};
     std::array<std::uint16_t, spell_count> spells{};
     std::array<bool, monster_history_size> encountered_monster_types{};
     std::array<std::int32_t, monster_defeat_table_size> monster_defeats{};
@@ -141,13 +148,14 @@ public:
     bool alternate_map_set = false;
     bool has_bonus_healing_ring = false;
     int current_map_id = 0x11;
-    int stat_cap_mode = 0;
+    // D8: new characters use the supplied-content limits; native saves retain theirs.
+    int stat_cap_mode = 2;
     std::int16_t surface_return_map_id = 0;
     std::int16_t surface_return_region_x = 0;
     std::int16_t surface_return_region_y = 0;
     std::uint16_t random_encounter_threshold = 85;
     std::uint16_t saved_random_encounter_threshold = 85;
-    std::uint16_t monster_repellent_steps = 0;
+    std::uint16_t monster_repellent_steps = 0; // Historical name; counts exploration timer ticks.
     std::uint16_t pending_relocation = 0;
     bool entered_hell_through_secret_passage = false;
     HellGatekeeperState hell_gatekeeper_state = HellGatekeeperState::absent;

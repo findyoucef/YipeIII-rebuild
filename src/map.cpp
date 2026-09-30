@@ -167,6 +167,10 @@ bool Map::contains(MapPosition position) const {
     return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
 }
 
+void Map::remove_chest(std::size_t slot) {
+    events_.chests.at(slot) = {-1, -1};
+}
+
 bool MapVisibility::contains(MapPosition position) const {
     return position.x >= 0 && position.x < Map::width
         && position.y >= 0 && position.y < Map::height
@@ -231,6 +235,52 @@ void Map::relocate_overlay_after_combat(MapPosition position) {
     }
 }
 
+void Map::restore_overlay_for_saved_position(MapPosition position) {
+    // Native saves retain the rider's position, not transient map instances.
+    if (events_.overlay.value > 0 && contains(position)
+        && (tile(position) == 0x0c || tile(position) == 0x0d)) {
+        events_.overlay.position = position;
+    }
+}
+
+bool Map::advance_overlay(
+    const MapVisibility& visibility, MapPosition& player_position,
+    MsvcRandom& random, std::optional<MapPosition> roaming_position) {
+    MapEvent& overlay = events_.overlay;
+    if (overlay.value < 1 || !visibility.contains(overlay.position)) {
+        return false;
+    }
+    MapPosition delta{};
+    switch (overlay.value) {
+    case 1: delta.y = -1; break;
+    case 2: delta.x = 1; break;
+    case 3: delta.y = 1; break;
+    case 4: delta.x = -1; break;
+    case 5:
+        delta.x = random.next() % 3;
+        delta.y = random.next() % 3;
+        if (delta.x == 2) delta.x = -1;
+        if (delta.y == 2) delta.y = -1;
+        break;
+    default:
+        return false;
+    }
+    const MapPosition target{overlay.position.x + delta.x, overlay.position.y + delta.y};
+    if (contains(target) && (tile(target) == 0x0c || tile(target) == 0x0d)
+        && roaming_position != target) {
+        const bool carrying = player_position == overlay.position;
+        overlay.position = target;
+        if (carrying) {
+            player_position = target;
+        }
+        return carrying;
+    }
+    if (overlay.value <= 4) {
+        overlay.value = (overlay.value + 1) % 4 + 1;
+    }
+    return false;
+}
+
 bool Map::toggle_linked_tiles() {
     const MapEvent& first = events_.linked[0];
     const MapEvent& second = events_.linked[1];
@@ -283,7 +333,7 @@ Map generate_original_map(int id, MapPosition entry, MsvcRandom& random) {
     for (int index = 1; index < generated_room_count; ++index) {
         const int y_span = random.next() % (6 - size_penalty) + 1;
         const int x_span = random.next() % (5 - size_penalty) + 1;
-        const int minimum_y = random.next() % (10 - y_span) + 3;
+        const int minimum_y = std::min(random.next() % (10 - y_span) + 3, 9);
         const int minimum_x = random.next() % (11 - x_span) + 1;
         const GeneratedRoom room{
             minimum_x,
@@ -367,7 +417,9 @@ Map generate_original_map(int id, MapPosition entry, MsvcRandom& random) {
         }
     }
 
-    return Map(id, 7, std::move(tiles));
+    MapEvents events;
+    events.chests = original_chests_for_map(id);
+    return Map(id, 7, std::move(tiles), events);
 }
 
 bool cross_map_edge(WorldLocation& location) {
@@ -485,6 +537,16 @@ void enter_hell(Player& player, WorldLocation& location, bool through_secret_pas
 void initialize_map_actions(Player& player, Map& map, MapPosition entry) {
     if (!map.contains(entry)) {
         throw std::out_of_range("map entry is outside the 13x12 grid");
+    }
+    for (std::size_t slot = 0; slot < map.events().chests.size(); ++slot) {
+        const auto position = map.events().chests[slot];
+        if (!map.contains(position)) continue;
+        if (map.tile(position) == 0x24
+            || (map.id() >= 1 && map.id() <= 128
+                && (player.opened_chests[static_cast<std::size_t>(map.id() - 1)]
+                    & (1u << slot)) != 0)) {
+            map.remove_chest(slot);
+        }
     }
     if (map.id() == 0x2d && player.strength >= 40) {
         map.restore_tile({11, 9}, 0x5f);
@@ -858,8 +920,10 @@ bool use_restoration_tile(Player& player) {
 }
 
 int apply_fire_wall(Player& player, MsvcRandom& random) {
-    const int damage = random.next() % std::max(player.difficulty, 1) + 2
-                       + random.next() % std::max(player.level, 1);
+    const int difficulty_roll = random.next();
+    const int level_roll = random.next();
+    const int damage = difficulty_roll % std::max(player.difficulty, 1) + 2
+                       + level_roll % std::max(player.level, 1);
     if (!player.adjust_health(-damage)) {
         player.health = 1;
     }

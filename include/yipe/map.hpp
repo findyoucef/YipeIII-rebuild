@@ -60,7 +60,10 @@ struct MapEvents {
     std::array<MapEvent, 2> linked;
     PrincessEvent princess;
     PursuingMonsterEvent pursuer;
+    std::array<MapPosition, 4> chests{{{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}}};
 };
+
+struct MapVisibility;
 
 class Map {
 public:
@@ -79,7 +82,13 @@ public:
     [[nodiscard]] int depth_action_at(MapPosition position) const;
     void restore_tile(MapPosition position, std::uint16_t tile);
     void open_door(MapPosition previous, MapPosition current);
+    void remove_chest(std::size_t slot);
     void relocate_overlay_after_combat(MapPosition position);
+    void restore_overlay_for_saved_position(MapPosition position);
+    // Returns whether the moving platform carried the player.
+    [[nodiscard]] bool advance_overlay(
+        const MapVisibility& visibility, MapPosition& player_position,
+        MsvcRandom& random, std::optional<MapPosition> roaming_position = std::nullopt);
     [[nodiscard]] bool toggle_linked_tiles();
     [[nodiscard]] std::optional<MapPosition> linked_destination() const;
 
@@ -109,6 +118,7 @@ void reveal_map_from(MapVisibility& visibility, const Map& map,
 
 [[nodiscard]] Map starting_map();
 [[nodiscard]] std::optional<Map> original_map(int id);
+[[nodiscard]] std::array<MapPosition, 4> original_chests_for_map(int id);
 // Maps 0x76-0x78 are generated from the current entry position rather than a
 // static table. Reconstructs 0x0043fd80 and preserves its random-call order.
 [[nodiscard]] Map generate_original_map(int id, MapPosition entry,

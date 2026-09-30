@@ -2,6 +2,7 @@
 #include "yipe/auxiliary_data.hpp"
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
+#include "yipe/exploration.hpp"
 #include "yipe/item_names.hpp"
 #include "yipe/legacy_save.hpp"
 #include "yipe/map.hpp"
@@ -100,6 +101,7 @@ void test_random() {
 
 void test_player_defaults() {
     const yipe::Player player;
+    check(!player.silly_mode, "new players default to Normal Mode");
     check(player.name == "Yipie", "default player name");
     check(player.strength == 16 && player.dexterity == 13 && player.intelligence == 10,
           "warrior default stats");
@@ -135,6 +137,10 @@ void test_player_defaults() {
           "Magic preset uses recovered SP and specialty");
     check(wizard.ability_points == 5 && wizard.maximum_ability_points == 5,
           "wizard starts with five ability points");
+    for (const auto* preset : {&player, &rogue, &wizard}) {
+        check(preset->stat_cap_mode == 2 && preset->maximum_stat() == 50,
+              "every new preset uses the rebuild's supplied-content stat limit");
+    }
 }
 
 void test_random_character_creation() {
@@ -146,13 +152,14 @@ void test_random_character_creation() {
               && player.intelligence == 12 && player.health == 12
               && player.spell_points == 13 && player.ability_points == 5
               && player.maximum_health == 12 && player.maximum_spell_points == 13
-              && player.maximum_ability_points == 5 && random.state() == 10044473u,
+              && player.maximum_ability_points == 5 && random.state() == 10044473u
+              && player.stat_cap_mode == 2 && player.maximum_stat() == 50,
           "random setup follows the recovered roll order and stat bounds");
     player.reroll_random_character(random);
     check(player.dexterity == 13 && player.strength == 13
               && player.intelligence == 11 && player.health == 12
               && player.spell_points == 14 && player.ability_points == 5
-              && random.state() == 2652862833u,
+              && random.state() == 2652862833u && player.stat_cap_mode == 2,
           "reroll consumes the next original RNG sequence without resetting it");
 }
 
@@ -298,7 +305,7 @@ void test_stat_and_maximum_items() {
     check(player.use_inventory_item(1, random, false).consumed && player.strength == 17,
           "strength item increments strength");
 
-    player.strength = 30;
+    player.strength = player.maximum_stat();
     player.inventory[1] = 6;
     check(!player.use_inventory_item(1, random, false).consumed && player.inventory[1] == 6,
           "stat item is retained at cap");
@@ -309,6 +316,62 @@ void test_stat_and_maximum_items() {
     check(maximum.amount == 4, "maximum-health item uses rand modulo 3 plus 2");
     check(player.maximum_health == old_maximum + 4 && player.health == old_maximum + 4,
           "maximum-health item raises current and maximum equally");
+}
+
+void test_stat_caps() {
+    struct StatCase {
+        int yipe::Player::* field;
+        std::uint16_t item;
+        int combat_style;
+        yipe::StatIncrease increase;
+    };
+    constexpr std::array stats{
+        StatCase{&yipe::Player::strength, 6, 0, yipe::StatIncrease::strength},
+        StatCase{&yipe::Player::dexterity, 7, 3, yipe::StatIncrease::dexterity},
+        StatCase{&yipe::Player::intelligence, 8, 1, yipe::StatIncrease::intelligence},
+    };
+    for (int mode = 0; mode <= 2; ++mode) {
+        const int cap = 30 + mode * 10;
+        for (const auto& stat : stats) {
+            for (int value : {cap - 1, cap, cap + 1}) {
+                yipe::Player player;
+                player.stat_cap_mode = mode;
+                player.*stat.field = value;
+                player.inventory[1] = stat.item;
+                yipe::MsvcRandom random(1);
+                const auto used = player.use_inventory_item(1, random, false);
+                check(player.maximum_stat() == cap && used.consumed == (value < cap)
+                          && player.*stat.field == std::max(value, cap)
+                          && player.inventory[1] == (value < cap ? 0 : stat.item)
+                          && random.state() == 1,
+                      "stat potions respect each saved cap and retain items at/above it");
+
+                player.*stat.field = value;
+                player.level = 4;
+                player.experience = 1501;
+                player.combat_style = stat.combat_style;
+                const auto growth = yipe::try_level_up(player, random);
+                check(growth.leveled_up && player.level == 5
+                          && growth.stat_increase == (value < cap ? stat.increase
+                                                                 : yipe::StatIncrease::none)
+                          && player.*stat.field == std::max(value, cap),
+                      "milestone growth respects each saved cap without reducing higher stats");
+            }
+        }
+
+        const int weapon_cap = mode == 2 ? 29 : 23;
+        for (int rank : {22, 23, 28, 29}) {
+            yipe::Player player;
+            player.stat_cap_mode = mode;
+            player.weapon_rank = rank;
+            yipe::MsvcRandom random(15); // Rolls 87/101 and weapon choice 1/11.
+            const auto loot = yipe::roll_treasure(player, -1, 0, random);
+            check(player.weapon_rank == rank + (rank < weapon_cap ? 1 : 0)
+                      && loot.equipment_upgrade == (rank < weapon_cap
+                          ? yipe::EquipmentUpgrade::weapon : yipe::EquipmentUpgrade::none),
+                  "random weapon loot preserves mode 0/1's rank 23 and mode 2's rank 29 limits");
+        }
+    }
 }
 
 void test_relocation_item() {
@@ -379,6 +442,15 @@ void test_item_names() {
     check(missing.used_embedded_fallback, "missing item file uses embedded names");
     check(missing.weapons[36] == "Manynard Power Sword",
           "fallback preserves embedded resource spelling");
+
+    const auto silly = yipe::embedded_item_names(true);
+    check(silly.weapons.front() == "Hands" && silly.weapons[1] == "Thumbtack"
+              && silly.weapons[22] == "Universal TV Remote"
+              && silly.weapons.back() == "Bottle Rockets",
+          "Silly Mode weapon names preserve resource 1201-1238 ordering");
+    check(silly.armor.front() == "T-Shirt" && silly.armor[1] == "T-Shirt with Pocket"
+              && silly.armor[23] == "Birthday Suit" && silly.armor.back() == "Magic Yipe! Armor",
+          "Silly Mode armor names preserve resource 1251-1280 ordering");
 }
 
 void test_native_save() {
@@ -408,6 +480,18 @@ void test_native_save() {
               && upgraded_from_v1.location.map_id == 0x11
               && upgraded_from_v1.defeated_monster_placements.empty(),
           "version 1 player save loads with default world state");
+
+    for (int mode = 0; mode <= 2; ++mode) {
+        original.stat_cap_mode = mode;
+        yipe::save_player_atomic(path, original);
+        const auto older = yipe::load_game(path);
+        check(older.player.stat_cap_mode == mode && older.player.maximum_stat() == 30 + mode * 10,
+              "version 1 saves retain their stored stat/loot mode despite the new-player default");
+        yipe::save_game_atomic(path, older);
+        const auto current = yipe::load_player(path);
+        check(current.stat_cap_mode == mode && current.maximum_stat() == 30 + mode * 10,
+              "current native saves retain every mode after version 1 migration");
+    }
 
     yipe::Player replacement(yipe::CharacterType::rogue);
     replacement.name = "Replacement";
@@ -474,6 +558,7 @@ void test_game_save() {
     original.player.difficulty = 3;
     original.player.combat_style = 1;
     original.player.specialty = 0;
+    original.player.silly_mode = true;
     original.player.inventory[28] = 12;
     original.player.equipment_upgrade_count = 2;
     original.player.loot_roll_penalty = 7;
@@ -501,6 +586,9 @@ void test_game_save() {
     original.player.stamps_found = 6;
     original.player.princesses_found = 14;
     original.player.princess_mystery_uses = 7;
+    original.player.miscellaneous_shop_stage = 4;
+    original.player.value_06a4 = 5;
+    original.player.opened_chests[7] = 9;
     original.player.has_lucky_rabbit_foot = true;
     original.player.surface_return_map_id = 0x21;
     original.player.surface_return_region_x = -4;
@@ -528,21 +616,27 @@ void test_game_save() {
 
     yipe::save_game_atomic(path, original);
     const yipe::GameState loaded = yipe::load_game(path);
+    check(loaded.player.value_06a4 == 5
+              && yipe::high_score_code(loaded.player) == yipe::high_score_code(original.player),
+          "version 20 preserves the original High Score Code suffix field");
+    check(loaded.player.miscellaneous_shop_stage == 4,
+          "version 19 preserves miscellaneous-shop progression");
     check(loaded.player.name == original.player.name && loaded.player.experience == 41
               && loaded.player.gold == 43 && loaded.player.weapon_rank == 3
               && loaded.player.gloves_rank == 1,
-          "version 16 save restores progression and equipment");
+          "version 17 save restores progression and equipment");
     check(loaded.player.difficulty == 3 && loaded.player.combat_style == 1
               && loaded.player.specialty == 0 && loaded.player.inventory[28] == 12
               && loaded.player.equipment_upgrade_count == 2
               && loaded.player.loot_roll_penalty == 7,
-          "version 16 save restores specialty, portrait, and stat bias independently");
+          "version 17 save restores specialty, portrait, and stat bias independently");
+    check(loaded.player.silly_mode, "version 17 saves preserve Silly Mode");
     check(loaded.location.position == yipe::MapPosition{2, 8}
               && loaded.location.region_y == 1 && loaded.location.map_id == 0x0b,
-          "version 16 save restores world location");
+          "version 17 save restores world location");
     check(loaded.defeated_monster_placements == original.defeated_monster_placements
               && loaded.random_state == 0x12345678u,
-          "version 16 save restores encounter and random state");
+          "version 17 save restores encounter and random state");
     check(loaded.player.ability_points == 2
               && loaded.player.maximum_ability_points == 5
               && loaded.player.special_ability == yipe::SpecialAbility::enrage
@@ -550,17 +644,17 @@ void test_game_save() {
               && loaded.player.enrage_base_dexterity == 13
               && loaded.player.enrage_base_intelligence == 10
               && loaded.player.enrage_base_strength == 16,
-          "version 16 save restores ability and active status state");
+          "version 17 save restores ability and active status state");
     check(loaded.player.restoration_uses == 3
               && loaded.player.has_waterproof_shoe_spray
               && loaded.player.has_rainbow_key
               && loaded.player.has_underworld_key
               && loaded.player.has_tree_climbing_shoes,
-          "version 16 save restores special movement state");
+          "version 17 save restores special movement state");
     check(loaded.map_tile_changes == original.map_tile_changes,
-          "version 16 save restores persistent map tile changes");
+          "version 17 save restores persistent map tile changes");
     check(loaded.player.spells == original.player.spells,
-          "version 16 save restores learned spells");
+          "version 17 save restores learned spells");
     check(loaded.player.quest_score == 1500
               && loaded.player.quest_progress_total == 73
               && loaded.player.gatekeeper_state == 2
@@ -570,39 +664,39 @@ void test_game_save() {
               && loaded.player.has_lucky_rabbit_foot
               && loaded.player.quest_flags[8]
               && loaded.player.inventory_values[13] == 9,
-          "version 16 save restores quest state");
+          "version 17 save restores quest state");
     check(loaded.player.inventory_values == original.player.inventory_values
               && loaded.player.rescued_princess_count() == 1,
           "native saves preserve signed rescue-slot statistics independently of the quest counter");
     check(loaded.player.surface_return_map_id == 0x21
               && loaded.player.surface_return_region_x == -4
               && loaded.player.surface_return_region_y == 2,
-          "version 16 save restores the surface-return anchor");
+          "version 17 save restores the surface-return anchor");
     check(loaded.player.encountered_monster_types
               == original.player.encountered_monster_types,
-          "version 16 save restores per-monster encounter history");
+          "version 17 save restores per-monster encounter history");
     check(loaded.player.death_count == 12
               && loaded.player.hell_gatekeeper_state
                   == yipe::HellGatekeeperState::paid
               && loaded.player.entered_hell_through_secret_passage,
-          "version 16 save restores death and Hell recovery state");
+          "version 17 save restores death and Hell recovery state");
     check(!loaded.player.bridge_treasure_available
               && !loaded.player.healing_water_available
               && loaded.player.cave_coins_collected
               && loaded.player.snow_search_count == 3
               && loaded.player.pending_relocation == 4,
-          "version 16 save restores Other action state and deferred travel");
+          "version 17 save restores Other action state and deferred travel");
     check(loaded.player.has_defeated_wormoid,
-          "version 16 saves preserve the Wormoid-defeat hint flag");
+          "version 17 saves preserve the Wormoid-defeat hint flag");
     check(loaded.player.monster_defeats == original.player.monster_defeats
               && loaded.player.monster_defeat_history_complete,
-          "version 16 preserves all 50 defeat counters, including reserved entries");
+          "version 17 preserves all 50 defeat counters, including reserved entries");
 
     {
         std::ifstream input(path, std::ios::binary);
         std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
                                         std::istreambuf_iterator<char>()};
-        write_u32(bytes, bytes.size() - sizeof(std::int32_t), 4);
+        write_u32(bytes, bytes.size() - sizeof(std::int32_t) - 1 - 128 - 4, 4);
         write_u32(bytes, 10, test_crc32(bytes, 14));
         write_bytes(path, bytes);
         bool rejected_specialty = false;
@@ -611,12 +705,103 @@ void test_game_save() {
         } catch (const std::runtime_error&) {
             rejected_specialty = true;
         }
-        check(rejected_specialty, "version 16 rejects an invalid saved specialty");
+        check(rejected_specialty, "version 17 rejects an invalid saved specialty");
         yipe::save_game_atomic(path, original);
+    }
+
+    {
+        std::ifstream input(path, std::ios::binary);
+        std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
+                                       std::istreambuf_iterator<char>()};
+        bytes[bytes.size() - 1 - 128 - 4] = 2;
+        write_u32(bytes, 10, test_crc32(bytes, 14));
+        write_bytes(path, bytes);
+        bool rejected_mode = false;
+        try {
+            static_cast<void>(yipe::load_game(path));
+        } catch (const std::runtime_error&) {
+            rejected_mode = true;
+        }
+        check(rejected_mode, "version 17 rejects an invalid saved mode with a valid checksum");
+        yipe::save_game_atomic(path, original);
+        remove_save_extension(path, 133, 17);
+        bool rejected_truncated_mode = false;
+        try {
+            static_cast<void>(yipe::load_game(path));
+        } catch (const std::runtime_error&) {
+            rejected_truncated_mode = true;
+        }
+        check(rejected_truncated_mode, "version 17 requires its mode flag");
+        original.player.silly_mode = false;
+        yipe::save_game_atomic(path, original);
+        check(!yipe::load_game(path).player.silly_mode,
+              "saving Normal Mode does not infer Silly Mode from the portrait");
     }
 
     constexpr std::size_t defeat_extension_size =
         yipe::Player::monster_defeat_table_size * sizeof(std::int32_t) + sizeof(std::uint8_t);
+    for (const std::uint16_t value : {0, 4, 5, 0x8000, 0xffff}) {
+        auto with_suffix = original;
+        with_suffix.player.value_06a4 = value;
+        yipe::save_game_atomic(path, with_suffix);
+        check(yipe::load_game(path).player.value_06a4 == value,
+              "version 20 retains the raw suffix field without inventing a value restriction");
+    }
+    for (const std::size_t missing : {1, 2}) {
+        yipe::save_game_atomic(path, original);
+        remove_save_extension(path, missing, 20);
+        bool rejected = false;
+        try { static_cast<void>(yipe::load_game(path)); }
+        catch (const std::runtime_error&) { rejected = true; }
+        check(rejected, "version 20 requires both suffix-field bytes with a valid checksum");
+    }
+    yipe::save_game_atomic(path, original);
+    {
+        std::ifstream input(path, std::ios::binary);
+        std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),
+                                       std::istreambuf_iterator<char>()};
+        bytes[bytes.size() - 4] = 5;
+        write_u32(bytes, 10, test_crc32(bytes, 14));
+        write_bytes(path, bytes);
+        bool rejected = false;
+        try { static_cast<void>(yipe::load_game(path)); }
+        catch (const std::runtime_error&) { rejected = true; }
+        check(rejected, "version 19 rejects an invalid shop stage with a valid checksum");
+        yipe::save_game_atomic(path, original);
+        remove_save_extension(path, 3, 19);
+        rejected = false;
+        try { static_cast<void>(yipe::load_game(path)); }
+        catch (const std::runtime_error&) { rejected = true; }
+        check(rejected, "version 19 requires both shop-stage bytes");
+        yipe::save_game_atomic(path, original);
+        auto invalid = original;
+        invalid.player.miscellaneous_shop_stage = 5;
+        rejected = false;
+        try { yipe::save_game_atomic(path, invalid); }
+        catch (const std::runtime_error&) { rejected = true; }
+        check(rejected && yipe::load_game(path).player.miscellaneous_shop_stage == 4,
+              "invalid shop state cannot overwrite a valid native save");
+    }
+    remove_save_extension(path, 2, 19);
+    const auto version_19 = yipe::load_game(path);
+    check(version_19.player.value_06a4 == 0
+              && version_19.player.miscellaneous_shop_stage == 4
+              && version_19.player.monster_defeats == original.player.monster_defeats,
+          "version 19 preserves shop and defeat state while defaulting the unavailable suffix field");
+    remove_save_extension(path, 2, 18);
+    const auto version_18 = yipe::load_game(path);
+    check(version_18.player.miscellaneous_shop_stage == 0
+              && version_18.player.opened_chests == original.player.opened_chests,
+          "version 18 preserves chest flags and defaults the newly recovered shop stage");
+    remove_save_extension(path, 128, 17);
+    check(yipe::load_game(path).player.opened_chests == std::array<std::uint8_t, 128>{},
+          "version 17 defaults to unopened chests because it had no chest gameplay");
+    remove_save_extension(path, 1, 16);
+    const yipe::GameState loaded_version_16 = yipe::load_game(path);
+    check(!loaded_version_16.player.silly_mode && loaded_version_16.player.specialty == 0
+              && loaded_version_16.player.inventory[28] == 12
+              && loaded_version_16.player.monster_defeats == original.player.monster_defeats,
+          "version 16 keeps specialty and portrait while defaulting to Normal Mode");
     remove_save_extension(path, sizeof(std::int32_t), 15);
     const yipe::GameState loaded_version_15 = yipe::load_game(path);
     check(loaded_version_15.player.specialty == 1
@@ -766,7 +951,7 @@ void test_game_save() {
     check(yipe::load_game(path).player.monster_defeats[49]
               == std::numeric_limits<std::int32_t>::min(),
           "native saves retain the signed bit pattern of a wrapped defeat counter");
-    remove_save_extension(path, 1, 15);
+    remove_save_extension(path, sizeof(std::int32_t) + 2 + 128 + 4, 15);
     bool rejected_truncated_counts = false;
     try {
         static_cast<void>(yipe::load_game(path));
@@ -780,7 +965,9 @@ void test_game_save() {
 
 std::vector<std::uint8_t> legacy_save_bytes(const std::string& name,
                                           std::int32_t wormoid_defeats = 1034,
-                                          std::int32_t ability = 2) {
+                                          std::int32_t ability = 2,
+                                          std::uint16_t shop_stage = 2,
+                                          std::uint16_t value_06a4 = 0) {
     std::vector<std::uint8_t> bytes;
     if (name.size() < 0xff) {
         bytes.push_back(static_cast<std::uint8_t>(name.size()));
@@ -842,10 +1029,12 @@ std::vector<std::uint8_t> legacy_save_bytes(const std::string& name,
         case 17: value = 22; break;
         case 18: value = 7; break;
         case 19: value = 0xffff; break;
+        case 20: value = shop_stage; break;
         case 26: value = 2; break;
         case 27: value = 1; break;
         case 30: value = 3; break;
         case 31: value = 1; break;
+        case 35: value = value_06a4; break;
         default: break;
         }
         append_u16(bytes, value);
@@ -872,6 +1061,9 @@ void test_legacy_save_import() {
 
     const yipe::LegacySave imported = yipe::load_legacy_save(path);
     const yipe::Player& player = imported.game.player;
+    check(!player.silly_mode, "legacy saves omit the mode flag and import in Normal Mode");
+    check(player.stat_cap_mode == 2 && player.maximum_stat() == 50,
+          "legacy saves omit the profile and deliberately adopt the rebuild's supplied-content limits");
     check(player.name == "Legacy" && player.dexterity == 13
               && player.intelligence == 12 && player.strength == 11
               && player.health == 7 && player.maximum_health == 13,
@@ -940,9 +1132,27 @@ void test_legacy_save_import() {
               && imported.extended_entries[4].flag_0552
               && imported.trailing_healing_flag,
           "legacy import retains unresolved serialized fields");
+    std::array<std::uint8_t, 128> legacy_chests{};
+    legacy_chests[1] = 8;
+    check(player.opened_chests == legacy_chests,
+          "legacy chest index 7 maps to map 2 slot 3 independently of the interleaved table");
+    check(player.miscellaneous_shop_stage == 2,
+          "legacy +0x686 maps the shop stage independently of the adjacent Hell state");
 
     const std::filesystem::path native_path =
         std::filesystem::temp_directory_path() / "yipe3-legacy-ability-test.y3r";
+    for (const std::uint16_t value : {0, 4, 5, 0x8000, 0xffff}) {
+        write_bytes(path, legacy_save_bytes("Legacy", 1034, 2, 2, value));
+        const auto imported_code = yipe::load_legacy_save(path);
+        yipe::save_game_atomic(native_path, imported_code.game);
+        const auto converted = yipe::load_game(native_path);
+        check(imported_code.extended_entries[35].value_065e == value
+                  && imported_code.game.player.value_06a4 == value
+                  && converted.player.value_06a4 == value
+                  && yipe::high_score_code(converted.player)
+                      == std::string("0L7W2L901W853L44W6W855W2") + (value == 5 ? "W" : ""),
+              "legacy +0x6a4 and all 50 defeat counters produce the same code after native conversion");
+    }
     for (int ability = 0; ability <= 4; ++ability) {
         write_bytes(path, legacy_save_bytes("Legacy", 1034, ability));
         const auto learned = yipe::load_legacy_save(path);
@@ -950,10 +1160,27 @@ void test_legacy_save_import() {
                   && learned.unknown_0074 == ability,
               "legacy imports restore each supported learned ability");
         yipe::save_game_atomic(native_path, learned.game);
-        check(yipe::load_game(native_path).player.special_ability == learned.game.player.special_ability,
-              "the imported learned ability survives conversion to native saves");
+        const auto converted = yipe::load_game(native_path);
+        check(converted.player.special_ability == learned.game.player.special_ability
+                  && converted.player.miscellaneous_shop_stage == 2,
+              "the imported learned ability and shop stage survive conversion to native saves");
     }
     std::filesystem::remove(native_path);
+    for (std::uint16_t stage = 0; stage <= 4; ++stage) {
+        write_bytes(path, legacy_save_bytes("Legacy", 1034, 2, stage));
+        const auto imported_shop = yipe::load_legacy_save(path).game;
+        yipe::save_game_atomic(native_path, imported_shop);
+        check(imported_shop.player.miscellaneous_shop_stage == stage
+                  && yipe::load_game(native_path).player.miscellaneous_shop_stage == stage
+                  && yipe::load_game(native_path).player.stat_cap_mode == 2,
+              "all original shop stages survive legacy-to-native conversion");
+    }
+    std::filesystem::remove(native_path);
+    write_bytes(path, legacy_save_bytes("Legacy", 1034, 2, 5));
+    bool rejected_shop = false;
+    try { static_cast<void>(yipe::load_legacy_save(path)); }
+    catch (const std::runtime_error&) { rejected_shop = true; }
+    check(rejected_shop, "legacy imports explicitly reject unsupported shop stages");
     for (const int ability : {-1, 5, 256}) {
         write_bytes(path, legacy_save_bytes("Legacy", 1034, ability));
         bool rejected_ability = false;
@@ -1050,6 +1277,66 @@ void test_original_auxiliary_data() {
     }
     check(rejected, "original auxiliary reader rejects truncation");
     std::filesystem::remove(temporary);
+}
+
+void test_high_score_code() {
+    yipe::Player player;
+    constexpr auto empty = "0L0W0L1000W0L0W0W0W2";
+    check(player.value_06a4 == 0 && yipe::high_score_code(player) == empty,
+          "new characters have the original empty High Score Code and no suffix");
+    player.monster_defeats.fill(1);
+    check(yipe::high_score_code(player) == "0L0W0L1000W0L49W0W0W2",
+          "High Score Code includes all 50 counters, not the 41 shown in Kills");
+    player.monster_defeats.fill(0);
+    player.level = 15;
+    player.gold = 450;
+    player.monster_defeats[49] = 60;
+    check(yipe::high_score_code(player) == "0L14W0L551W0L59W0W0W2",
+          "exact divisor inputs still encode the last remainder of the preceding group");
+    ++player.level;
+    ++player.gold;
+    ++player.monster_defeats[49];
+    check(yipe::high_score_code(player) == "1L0W1L1000W1L0W0W3W2",
+          "all three quotients advance one above their divisors and contribute to the checksum");
+    player.level = 31;
+    player.gold = 902;
+    player.monster_defeats[49] = 122;
+    player.gatekeeper_state = 3;
+    player.difficulty = 3;
+    check(yipe::high_score_code(player) == "2L0W2L999W2L1W9W6W3",
+          "code encodes gold inversion, Gatekeeper times three, quotient sum, and difficulty in order");
+    for (const std::uint16_t value : {0, 4, 5, 0x8005, 0xffff}) {
+        player.value_06a4 = value;
+        check(yipe::high_score_code(player)
+                  == std::string("2L0W2L999W2L1W9W6W3") + (value == 5 ? "W" : ""),
+              "only exact raw +0x6a4 value five adds a trailing W");
+    }
+    player = yipe::Player{};
+    for (int value : {0, 1, -1, std::numeric_limits<std::int32_t>::min()}) {
+        player.level = player.gold = player.monster_defeats[0] = value;
+        check(yipe::high_score_code(player) == empty,
+              "nonpositive inputs and one have zero quotient/remainder without signed overflow");
+    }
+    player.level = player.gold = player.monster_defeats[0] = std::numeric_limits<std::int32_t>::max();
+    check(yipe::high_score_code(player) == "143165576L6W4772185L604W35791394L6W0W183729155W2",
+          "maximum signed inputs preserve the original loop's result without billions of iterations");
+    player = yipe::Player{};
+    player.monster_defeats[0] = std::numeric_limits<std::int32_t>::max();
+    player.monster_defeats[49] = 1;
+    check(yipe::high_score_code(player) == empty,
+          "defeat summation wraps to a signed negative value before encoding");
+    player.monster_defeats[0] = -1;
+    player.monster_defeats[49] = 61;
+    player.gatekeeper_state = 0x8000;
+    player.difficulty = 0x8002;
+    check(yipe::high_score_code(player) == "0L0W0L1000W0L59W-98304W0W-32766",
+          "counter cancellation and signed-short Gatekeeper/difficulty match the original");
+    player = yipe::Player{};
+    player.monster_defeat_history_complete = false;
+    player.quest_progress_total = 900;
+    player.monster_defeats[49] = 61;
+    check(yipe::high_score_code(player) == "0L0W0L1000W1L0W0W1W2",
+          "code uses recorded counters without silently substituting old saves' unattributed aggregate");
 }
 
 void test_high_scores() {
@@ -1330,9 +1617,70 @@ void test_settings_and_audio_catalog() {
               && !yipe::combat_action_for_key(defaults, 0x26),
           "combat key lookup covers all five configurable actions");
 
+    constexpr std::array movement_order{
+        yipe::InputAction::north, yipe::InputAction::northeast, yipe::InputAction::northwest,
+        yipe::InputAction::south, yipe::InputAction::southwest, yipe::InputAction::southeast,
+        yipe::InputAction::west, yipe::InputAction::east,
+    };
+    yipe::GameSettings remapped;
+    for (std::size_t index = 0; index < 8; ++index) {
+        remapped.keys[index] = static_cast<std::uint16_t>('0' + index);
+        check(yipe::movement_action_for_key(remapped, remapped.keys[index])
+                  == static_cast<yipe::InputAction>(index),
+              "every configured movement key resolves to its direction");
+    }
+    constexpr std::array<std::uint16_t, 8> fixed_keypad{0x68, 0x69, 0x67, 0x62, 0x61, 0x63, 0x64, 0x66};
+    for (std::size_t index = 0; index < fixed_keypad.size(); ++index) {
+        check(yipe::movement_action_for_key(remapped, fixed_keypad[index]) == movement_order[index],
+              "original keypad directions survive rebinding");
+    }
+    for (const auto [key, action] : {
+             std::pair{0x25, yipe::InputAction::west}, {0x26, yipe::InputAction::north},
+             {0x27, yipe::InputAction::east}, {0x28, yipe::InputAction::south}}) {
+        check(yipe::movement_action_for_key(remapped, static_cast<std::uint16_t>(key)) == action,
+              "original arrow directions survive rebinding");
+    }
+    for (std::size_t first = 0; first < movement_order.size(); ++first) {
+        for (std::size_t second = first + 1; second < movement_order.size(); ++second) {
+            auto duplicate = remapped;
+            duplicate.keys[static_cast<std::size_t>(movement_order[first])] = 'X';
+            duplicate.keys[static_cast<std::size_t>(movement_order[second])] = 'X';
+            check(yipe::movement_action_for_key(duplicate, 'X') == movement_order[first],
+                  "movement duplicates follow the recovered branch order");
+        }
+    }
+    remapped.keys[static_cast<std::size_t>(yipe::InputAction::northwest)] = 0x26;
+    remapped.keys[static_cast<std::size_t>(yipe::InputAction::north)] = 0x69;
+    check(yipe::movement_action_for_key(remapped, 0x26) == yipe::InputAction::north
+              && yipe::movement_action_for_key(remapped, 0x69) == yipe::InputAction::north
+              && !yipe::movement_action_for_key(remapped, 0),
+          "fixed and configured movement keys interleave like the original handler");
+    constexpr std::array combat_order{yipe::InputAction::run, yipe::InputAction::attack,
+        yipe::InputAction::cast, yipe::InputAction::use_item, yipe::InputAction::special};
+    for (std::size_t first = 0; first < combat_order.size(); ++first) {
+        for (std::size_t second = first + 1; second < combat_order.size(); ++second) {
+            auto duplicate = defaults;
+            duplicate.keys[static_cast<std::size_t>(combat_order[first])] = 'X';
+            duplicate.keys[static_cast<std::size_t>(combat_order[second])] = 'X';
+            check(yipe::combat_action_for_key(duplicate, 'X') == combat_order[first],
+                  "combat duplicates follow Run, Attack, Cast, Item, Special priority");
+        }
+    }
+    remapped.keys[static_cast<std::size_t>(yipe::InputAction::cast)] = 0x0d;
+    remapped.keys[static_cast<std::size_t>(yipe::InputAction::attack)] = 0x1b;
+    check(yipe::combat_action_for_key(remapped, 0x0d) == yipe::InputAction::attack
+              && yipe::combat_action_for_key(remapped, 0x1b) == yipe::InputAction::run,
+          "Enter and Escape retain their original combat branch precedence");
+    remapped.keys[static_cast<std::size_t>(yipe::InputAction::run)] = 0x0d;
+    check(yipe::combat_action_for_key(remapped, 0x0d) == yipe::InputAction::run,
+          "an existing Run binding precedes the original Enter fallback");
+
     yipe::GameSettings changed = defaults;
     changed.sound_enabled = false;
     changed.keys[static_cast<std::size_t>(yipe::InputAction::north)] = 0x57;
+    changed.keys[static_cast<std::size_t>(yipe::InputAction::attack)] = 0x52;
+    changed.keys[static_cast<std::size_t>(yipe::InputAction::cast)] = 0xba;
+    changed.keys[static_cast<std::size_t>(yipe::InputAction::use_item)] = 0x6a;
     const std::filesystem::path path =
         std::filesystem::temp_directory_path() / "yipe3-settings-test.y3r";
     yipe::save_settings_atomic(path, changed);
@@ -1576,6 +1924,13 @@ void test_runtime_generated_maps() {
           "a nondefault entry receives its recovered extra corridor and random calls");
     check(reachable_paths(alternate_entry) == alternate_paths,
           "the alternate entry connects to every generated corridor");
+
+    yipe::MsvcRandom clamped_room_random(2566201570u);
+    const auto clamped_room = yipe::generate_original_map(0x78, {1, 1}, clamped_room_random);
+    const auto [clamped_paths, clamped_hash] = summarize(clamped_room);
+    check(clamped_paths == 50 && clamped_hash == 1763368075u
+              && clamped_room_random.state() == 1822273529u,
+          "late maze clamps room minimum Y to 9, matching the original executable grid and RNG");
 }
 
 void test_other_action() {
@@ -2023,7 +2378,7 @@ void test_monster_defeat_statistics() {
             player.special_ability = yipe::SpecialAbility::backstab;
             player.ability_points = 20;
             player.gatekeeper_state = boss == 41 ? 1 : 0;
-            player.has_underworld_key = true;
+            player.has_underworld_key = false;
             yipe::CombatEncounter encounter = make_encounter(boss);
             encounter.map_environment = 6;
             yipe::MsvcRandom random(1);
@@ -2043,6 +2398,8 @@ void test_monster_defeat_statistics() {
                       && player.monster_defeats[34] == (frighten_last ? 0 : 1)
                       && player.quest_progress_total == (frighten_last ? 2 : 3)
                       && player.gatekeeper_state == (boss == 40 ? 1 : 2)
+                      && player.has_underworld_key == (boss == 41)
+                      && victory.reward.underworld_key == (boss == 41)
                       && player.stamps_found == (boss == 40 ? 1 : 0),
                   "both final-kill and Frighten victories count the primary boss once and advance quests");
         }
@@ -2267,7 +2624,7 @@ void test_special_movement_actions() {
 }
 
 void test_starting_shop() {
-    const auto& stock = yipe::freds_miscellaneous_stock();
+    const auto stock = yipe::miscellaneous_shop_stock(yipe::Player{}, 0x11);
     check(stock.size() == 11, "Fred's shop exposes all original stock rows");
     check(stock[0].name == "French Fries" && stock[0].price == 75
               && stock[0].type == 1,
@@ -2305,6 +2662,131 @@ void test_starting_shop() {
               == yipe::PurchaseStatus::inventory_full
               && player.gold == 10000,
           "Fred's shop preserves gold when all 13 carrying slots are full");
+}
+
+void test_miscellaneous_shops() {
+    constexpr std::array maps{0x11, 0x1b, 8, 0x0c};
+    constexpr std::array<std::array<int, 11>, 4> prices{{
+        {75, 250, 1000, 1000, 2000, 2500, 250, 50, 100, 50, 75},
+        {80, 275, 1000, 900, 2100, 1200, 200, 1500, 3000, 2500, 500},
+        {75, 245, 800, 1900, 2750, 2000, 300, 10000, 2500, 6000, 8000},
+        {70, 240, 900, 1000, 2600, 1000, 350, 500, 25, 1000, 5000},
+    }};
+    constexpr std::array<std::array<int, 11>, 4> types{{
+        {1, 2, 6, 8, 9, 10, 5, 2, 3, 4, 7},
+        {1, 2, 8, 7, 9, 4, 5, 2, 3, 4, 7},
+        {1, 2, 8, 9, 10, 3, 5, 1, 2, 3, 4},
+        {1, 2, 6, 7, 10, 4, 5, 1, 2, 3, 7},
+    }};
+    constexpr std::array<std::array<int, 4>, 4> tiers{{
+        {1, 1, 1, 1}, {3, 3, 4, 2}, {7, 4, 5, 6}, {2, 1, 2, 5},
+    }};
+    for (std::size_t map_index = 0; map_index < maps.size(); ++map_index) {
+        yipe::Player customer;
+        const auto stock = yipe::miscellaneous_shop_stock(customer, maps[map_index]);
+        customer.miscellaneous_shop_stage = 1;
+        const auto inflated = yipe::miscellaneous_shop_stock(customer, maps[map_index]);
+        for (std::size_t i = 0; i < stock.size(); ++i) {
+            const auto& item = stock[i];
+            check(item.price == prices[map_index][i] && item.type == types[map_index][i]
+                      && item.kind == (i < 7 ? yipe::ShopItemKind::consumable : yipe::ShopItemKind::equipment)
+                      && item.tier == (i < 7 ? 0 : tiers[map_index][i - 7]),
+                  "miscellaneous stock matches source row " + std::to_string(i)
+                      + " on map " + std::to_string(maps[map_index]));
+            const bool stat_potion = i == 2 || (i == 3 && map_index != 2);
+            check(inflated[i].price == prices[map_index][i] + (stat_potion ? 1500 : 0)
+                      && inflated[i].name == item.name && inflated[i].type == item.type,
+                  "only the seven original stat-potion prices rise by 1500");
+            yipe::Player buyer;
+            buyer.gold = item.price - 1;
+            check(yipe::purchase_shop_item(buyer, item).status == yipe::PurchaseStatus::insufficient_gold
+                      && buyer.gold == item.price - 1,
+                  "each miscellaneous row rejects insufficient funds without charging");
+            buyer.gold = item.price;
+            const auto purchase = yipe::purchase_shop_item(buyer, item);
+            check(purchase.status == yipe::PurchaseStatus::purchased && buyer.gold == 0,
+                  "each miscellaneous row can be purchased with exact gold");
+            if (i < 7) {
+                check(purchase.inventory_slot == 1 && buyer.inventory[1] == item.type,
+                      "remote consumables use the first free carried slot");
+                std::fill_n(buyer.inventory.begin(), yipe::Player::carried_inventory_size, 1);
+                buyer.gold = item.price;
+                check(yipe::purchase_shop_item(buyer, item).status == yipe::PurchaseStatus::inventory_full
+                          && buyer.gold == item.price && buyer.inventory[13] == 0,
+                      "remote consumables cannot occupy reserved slots or charge on failure");
+            } else {
+                const int equipped = item.type == 1 ? buyer.helmet_rank
+                    : item.type == 2 ? buyer.gloves_rank : item.type == 3 ? buyer.ring_rank
+                    : item.type == 4 ? buyer.boots_rank : buyer.necklace_rank;
+                check(equipped == tiers[map_index][i - 7], "remote accessories equip the recovered tier");
+                buyer.gold = item.price;
+                check(yipe::purchase_shop_item(buyer, item).status == yipe::PurchaseStatus::already_equipped
+                          && buyer.gold == item.price,
+                      "remote accessories cannot be bought repeatedly at the same tier");
+            }
+        }
+    }
+
+    for (int difficulty : {1, 2, 3}) {
+        yipe::Player customer;
+        customer.difficulty = difficulty;
+        customer.strength = 60 - difficulty - customer.dexterity - customer.intelligence;
+        customer.level = 26;
+        check(!yipe::enter_miscellaneous_shop(customer) && customer.miscellaneous_shop_stage == 0,
+              "level alone and equality at the stat threshold cannot unlock the shop stage");
+        ++customer.strength;
+        customer.level = 25;
+        check(yipe::enter_miscellaneous_shop(customer) && customer.miscellaneous_shop_stage == 1,
+              "the first strictly greater stat total triggers the price notice");
+        customer.strength = 1;
+        check(!yipe::enter_miscellaneous_shop(customer) && customer.miscellaneous_shop_stage == 1,
+              "lower stats neither undo the price increase nor repeat its notice");
+        customer.level = 26;
+        check(!yipe::enter_miscellaneous_shop(customer) && customer.miscellaneous_shop_stage == 2,
+              "level 26 unlocks the key after the price milestone");
+        const auto key = yipe::miscellaneous_shop_stock(customer, 0x0c)[8];
+        check(key.name == "Rainbow Key" && key.type == 8 && key.price == (difficulty + 6) * 500,
+              "Outback replaces its mittens row with the difficulty-priced Rainbow Key");
+        customer.inventory.fill(1);
+        customer.gold = key.price - 1;
+        check(yipe::purchase_shop_item(customer, key).status == yipe::PurchaseStatus::insufficient_gold
+                  && !customer.has_rainbow_key && customer.miscellaneous_shop_stage == 2,
+              "failed key purchases cannot change the key or shop stage");
+        customer.gold = key.price * 2;
+        const auto original_inventory = customer.inventory;
+        check(yipe::purchase_shop_item(customer, key).status == yipe::PurchaseStatus::purchased
+                  && customer.has_rainbow_key && customer.miscellaneous_shop_stage == 3
+                  && customer.gold == key.price && customer.inventory == original_inventory,
+              "purchased Rainbow Key uses its special flag even with full inventory");
+        check(yipe::purchase_shop_item(customer, key).status == yipe::PurchaseStatus::already_equipped
+                  && customer.gold == key.price,
+              "a second key purchase in the same visit is rejected without charging");
+        const auto rebuilt_during_visit = yipe::miscellaneous_shop_stock(customer, 0x0c)[8];
+        check(rebuilt_during_visit.name == "Wet Mittens" && rebuilt_during_visit.type == 8
+                  && rebuilt_during_visit.price == key.price,
+              "a rebuilt stage-3 stock list preserves the original label/purchase mismatch");
+        customer.miscellaneous_shop_stage = 4;
+        const auto after_exit = yipe::miscellaneous_shop_stock(customer, 0x0c)[8];
+        check(after_exit.name == "Wet Mittens" && after_exit.type == 2 && after_exit.price == 25,
+              "after leaving with the key the Outback row returns to ordinary mittens");
+        customer.miscellaneous_shop_stage = 2;
+        check(yipe::miscellaneous_shop_stock(customer, 0x0c)[8].type == 2,
+              "a Rainbow Key obtained elsewhere prevents the shop's special offer");
+    }
+
+    yipe::Player growing;
+    growing.gold = 20000;
+    yipe::MsvcRandom random(1);
+    const auto town = yipe::miscellaneous_shop_stock(growing, 0x11);
+    for (int i = 0; i < 20; ++i) {
+        const auto bought = yipe::purchase_shop_item(growing, town[3]);
+        check(bought.status == yipe::PurchaseStatus::purchased
+                  && growing.use_inventory_item(bought.inventory_slot, random).consumed,
+              "purchased intelligence potions build stats through the ordinary inventory API");
+    }
+    check(growing.intelligence == 30 && growing.gold == 0
+              && yipe::enter_miscellaneous_shop(growing) && growing.miscellaneous_shop_stage == 1,
+          "funded ordinary growth earns the price milestone without supplying the shop flag");
 }
 
 void test_recovered_shop_transactions() {
@@ -2510,6 +2992,63 @@ void test_giant_beetle_encounter() {
 }
 
 void test_multi_monster_encounter() {
+    // Measured from the supplied original's 0x004042e0 damage routine. These
+    // cover its low-HP decrement and the defense-roll boundaries at 28 and 38.
+    struct CounterattackCase {
+        int level;
+        int health;
+        std::uint32_t seed;
+        int damage;
+        std::uint32_t after;
+    };
+    for (const auto& fixture : std::array{
+             CounterattackCase{2, 1, 1, 23, 1844513277u},
+             CounterattackCase{3, 1, 1, 24, 1844513277u},
+             CounterattackCase{28, 1000, 4, 11, 2492333137u},
+             CounterattackCase{37, 1000, 3, 2, 354542668u},
+             CounterattackCase{38, 1000, 1, 33, 1844513277u}}) {
+        yipe::Player player;
+        player.difficulty = 1;
+        player.level = fixture.level;
+        player.health = fixture.health;
+        player.maximum_health = 1000;
+        player.dexterity = 12;
+        player.armor_rank = 1;
+        player.helmet_rank = 0;
+        yipe::CombatEncounter group;
+        group.monsters[0].type_id = 1;
+        group.monsters[0].health = group.monsters[0].maximum_health = 1000;
+        group.monsters[0].rank = 25;
+        group.monsters[0].attack_rating = 30;
+        yipe::MsvcRandom random(fixture.seed);
+        const auto turn = yipe::resolve_monster_turn(player, group, random);
+        check(turn.monster_damage == fixture.damage
+                  && player.health == fixture.health - fixture.damage
+                  && random.state() == fixture.after,
+              "original counterattack damage, HP and RNG at level "
+                  + std::to_string(fixture.level));
+    }
+
+    yipe::Player missed_flee_player;
+    missed_flee_player.level = 4;
+    missed_flee_player.difficulty = 3;
+    missed_flee_player.health = missed_flee_player.maximum_health = 10;
+    missed_flee_player.dexterity = 12;
+    missed_flee_player.armor_rank = 1;
+    missed_flee_player.helmet_rank = 0;
+    yipe::Monster missed_flee_monster;
+    missed_flee_monster.type_id = 7;
+    missed_flee_monster.health = missed_flee_monster.maximum_health = 1000;
+    missed_flee_monster.rank = 25;
+    missed_flee_monster.attack_rating = 30;
+    yipe::MsvcRandom missed_flee_random(7);
+    const auto missed_flee = yipe::try_flee(
+        missed_flee_player, missed_flee_monster, missed_flee_random);
+    check(!missed_flee.escaped && missed_flee.monster_damage == 0
+              && missed_flee_player.health == 10
+              && missed_flee_random.state() == 1333266977u,
+          "failed flee preserves an original zero-damage miss instead of forcing one HP damage");
+
     yipe::MsvcRandom setup_random(1);
     const yipe::CombatEncounter encounter =
         yipe::start_monster_encounter(2, 3, setup_random);
@@ -2992,6 +3531,30 @@ void test_roaming_monsters() {
               && blocked_spawn->position != yipe::MapPosition{11, 7},
           "roaming monster generation avoids the map-authored pursuer");
 
+    yipe::MapEvents chest_events;
+    chest_events.chests[0] = {11, 7};
+    chest_events.chests[1] = {2, 2};
+    yipe::Map chest_map(20, 1, tiles, chest_events);
+    yipe::MsvcRandom chest_spawn_random(1);
+    const auto chest_spawn = yipe::spawn_roaming_monster(
+        chest_map, player, {5, 5}, {}, visibility, {}, chest_spawn_random);
+    check(chest_spawn && chest_spawn->position != yipe::MapPosition{11, 7}
+              && chest_spawn->position != yipe::MapPosition{2, 2},
+          "roaming monsters cannot spawn on unopened chests");
+    yipe::RoamingMonster chest_pursuit{7, {1, 1}};
+    yipe::MsvcRandom chest_move_random(1);
+    static_cast<void>(yipe::move_roaming_monster(
+        chest_pursuit, chest_map, {4, 4}, {}, chest_move_random));
+    check(chest_pursuit.position == yipe::MapPosition{1, 2},
+          "an unopened chest diverts roaming pursuit");
+    chest_map.remove_chest(1);
+    chest_pursuit.position = {1, 1};
+    yipe::MsvcRandom opened_chest_random(1);
+    static_cast<void>(yipe::move_roaming_monster(
+        chest_pursuit, chest_map, {4, 4}, {}, opened_chest_random));
+    check(chest_pursuit.position == yipe::MapPosition{2, 2},
+          "an opened chest releases its cell for roaming pursuit");
+
     const yipe::Map excluded_map(8, 1, tiles);
     yipe::MsvcRandom excluded_random(1);
     const std::uint32_t excluded_state = excluded_random.state();
@@ -3363,6 +3926,193 @@ void test_king_quest_dialog() {
           "the final King conversation grants the fixed end-game equipment");
 }
 
+void test_chest_rewards() {
+    int count = 0;
+    for (int id = 1; id <= 128; ++id) {
+        for (const auto position : yipe::original_chests_for_map(id)) {
+            if (position.x >= 0) ++count;
+        }
+    }
+    check(count == 145, "chest catalog retains all four slots across 75 original map IDs");
+    check(yipe::original_chests_for_map(0x63)[1] == yipe::MapPosition{9, 1},
+          "the independently identified spray chest is slot 1 at (9,1) on map 0x63");
+    for (std::size_t slot = 0; slot < 4; ++slot) {
+        yipe::Player player;
+        auto map = *yipe::original_map(0x63);
+        yipe::MsvcRandom random(1);
+        const auto position = map.events().chests[slot];
+        const auto reward = yipe::open_chest(player, map, position, slot, random);
+        constexpr std::array xp{28, 29, 30, 31};
+        constexpr std::array gold{55, 72, 103, 115};
+        check(reward.opened && reward.experience == xp[slot] && reward.gold == gold[slot]
+                  && player.experience == xp[slot] && player.gold == gold[slot],
+              "seed-1 chest XP/gold matches the four original rolls for slot " + std::to_string(slot));
+        yipe::MsvcRandom reference(1);
+        for (int i = 0; i < (slot == 1 ? 4 : 6); ++i) static_cast<void>(reference.next());
+        check(random.state() == reference.state(), "spray skips random loot; ordinary chest uses two loot rolls");
+        check(slot == 1 ? reward.loot.waterproof_shoe_spray && player.has_waterproof_shoe_spray
+                       : slot == 0 ? reward.loot.item_id == 1 && player.inventory[0] == 1
+                                   : reward.loot.equipment_upgrade == yipe::EquipmentUpgrade::gloves
+                                         && player.gloves_rank == 1,
+              "each original chest kind selects its recovered reward branch");
+        const auto before_repeat = random.state();
+        check(!yipe::open_chest(player, map, position, slot, random).opened
+                  && random.state() == before_repeat && player.gold == gold[slot],
+              "opening the same chest twice cannot repeat rewards or consume randomness");
+        auto reentered = *yipe::original_map(0x63);
+        yipe::initialize_map_actions(player, reentered, {9, 2});
+        check(reentered.events().chests[slot] == yipe::MapPosition{-1, -1},
+              "map re-entry removes the opened chest by its original slot");
+    }
+
+    yipe::Player spray;
+    auto spray_map = *yipe::original_map(0x63);
+    yipe::MapPosition position{9, 2};
+    yipe::MsvcRandom random(1);
+    check(yipe::try_move(spray_map, position, 0, -1).position_changed
+              && yipe::open_chest(spray, spray_map, position, 1, random).loot.waterproof_shoe_spray,
+          "ordinary movement reaches and awards the real spray chest without supplying its flag");
+    auto stream = yipe::starting_map();
+    for (int x = 1; x < yipe::Map::width; ++x) {
+        for (int y = 0; y < yipe::Map::height; ++y) {
+            if (stream.tile({x, y}) != 0x58 && stream.tile({x, y}) != 0x59) continue;
+            yipe::MapPosition from{x - 1, y};
+            check(!yipe::try_move(stream, from, 1, 0).position_changed
+                      && yipe::try_move(stream, from, 1, 0,
+                                       {spray.has_waterproof_shoe_spray}).position_changed,
+                  "acquired spray unlocks a real stream tile");
+        }
+    }
+
+    yipe::Player full;
+    full.inventory.fill(2);
+    auto full_map = *yipe::original_map(0x63);
+    yipe::MsvcRandom full_random(1);
+    const auto full_reward = yipe::open_chest(full, full_map, {1, 3}, 0, full_random);
+    yipe::MsvcRandom full_reference(1);
+    for (int i = 0; i < 5; ++i) static_cast<void>(full_reference.next());
+    check(full_reward.opened && full_reward.loot.inventory_full && full.gold == 55
+              && full_random.state() == full_reference.state(),
+          "full inventory retains chest gold/XP, consumes the chest, and skips the item roll");
+    full.inventory[13] = 0;
+    yipe::MsvcRandom reserved_random(1);
+    check(yipe::roll_treasure(full, 999, 1, reserved_random).inventory_full,
+          "reserved inventory slots cannot accept chest consumables");
+
+    struct ConsumableCase {
+        int kind;
+        std::uint32_t seed;
+        std::uint16_t item;
+        std::uint16_t item_at_limits;
+    };
+    constexpr std::array<ConsumableCase, 26> consumables{{
+        {1, 3, 1, 2}, {1, 1, 1, 2}, {1, 6, 1, 2}, {1, 13, 1, 2},
+        {1, 4, 2, 2}, {1, 2, 2, 2}, {1, 7, 2, 2},
+        {2, 3, 2, 2}, {2, 1, 2, 2}, {2, 6, 2, 2}, {2, 13, 5, 5},
+        {2, 4, 5, 5}, {2, 2, 4, 4}, {2, 7, 4, 4},
+        {3, 8, 6, 2}, {3, 5, 7, 2}, {3, 2, 8, 2},
+        {3, 10, 6, 2}, {3, 7, 7, 2}, {3, 1, 8, 2},
+        {4, 8, 6, 2}, {4, 5, 7, 2}, {4, 2, 8, 2},
+        {4, 10, 9, 9}, {4, 7, 10, 10}, {4, 1, 3, 3},
+    }};
+    for (const auto& test : consumables) {
+        for (bool at_limits : {false, true}) {
+            yipe::Player recipient;
+            recipient.level = at_limits ? 11 : 10;
+            recipient.strength = recipient.dexterity = recipient.intelligence = at_limits ? 50 : 49;
+            recipient.inventory[0] = 10;
+            yipe::MsvcRandom item_random(test.seed);
+            yipe::MsvcRandom item_reference(test.seed);
+            static_cast<void>(item_reference.next());
+            static_cast<void>(item_reference.next());
+            const auto loot = yipe::roll_treasure(recipient, 999, test.kind, item_random);
+            const auto item = at_limits ? test.item_at_limits : test.item;
+            check(loot.item_id == item && recipient.inventory[0] == 10
+                      && recipient.inventory[1] == item && item_random.state() == item_reference.state(),
+                  "chest consumable selection and level/stat boundary for kind "
+                      + std::to_string(test.kind) + " seed " + std::to_string(test.seed));
+        }
+    }
+
+    yipe::Player capped;
+    capped.helmet_rank = 6; capped.weapon_rank = 29; capped.armor_rank = 26;
+    capped.ring_rank = 5; capped.necklace_rank = 6; capped.gloves_rank = 5; capped.boots_rank = 5;
+    yipe::MsvcRandom capped_random(1);
+    const auto capped_loot = yipe::roll_treasure(capped, -1, 4, capped_random);
+    check(capped_loot.equipment_upgrade == yipe::EquipmentUpgrade::none && capped_loot.item_id != 0,
+          "a capped equipment roll falls through to chest consumables");
+
+    yipe::Player forced;
+    forced.level = 15;
+    yipe::MsvcRandom forced_random(1);
+    const auto forced_loot = yipe::roll_treasure(forced, 99, 1, forced_random);
+    yipe::MsvcRandom forced_reference(1);
+    static_cast<void>(forced_reference.next());
+    check(forced_loot.equipment_upgrade == yipe::EquipmentUpgrade::weapon
+              && forced.weapon_rank == 3 && forced.equipment_upgrade_count == 1
+              && forced.quest_score == 10 && forced_random.state() == forced_reference.state(),
+          "forced weapon upgrade retains score and skips selection/item rolls");
+    forced.current_map_id = 0x63;
+    forced.equipment_upgrade_count = 0;
+    const auto before_spray = forced_random.state();
+    check(yipe::roll_treasure(forced, 78, 2, forced_random).waterproof_shoe_spray
+              && forced.equipment_upgrade_count == 1 && forced.weapon_rank == 3
+              && forced_random.state() == before_spray,
+          "spray preserves the original forced-upgrade bookkeeping without granting equipment");
+
+    forced.current_map_id = 1;
+    forced.equipment_upgrade_count = 0;
+    forced.loot_roll_penalty = 100;
+    yipe::MsvcRandom penalized_random(1);
+    const auto penalized = yipe::roll_treasure(forced, 99, 1, penalized_random);
+    check(penalized.equipment_upgrade == yipe::EquipmentUpgrade::none && penalized.item_id == 0
+              && forced.equipment_upgrade_count == 1 && penalized_random.state() == forced_reference.state(),
+          "a failed forced threshold retains its bookkeeping and skips consumable randomness");
+
+    yipe::MsvcRandom generated_random(1);
+    auto generated = yipe::generate_original_map(0x78, {1, 1}, generated_random);
+    check(generated.events().chests[2] == yipe::MapPosition{3, 5}
+              && generated.events().chests[3] == yipe::MapPosition{10, 10},
+          "runtime-generated map retains both original chest slots");
+    generated.restore_tile({3, 5}, 0x24);
+    yipe::initialize_map_actions(spray, generated, {1, 1});
+    check(generated.events().chests[2] == yipe::MapPosition{-1, -1},
+          "map initialization suppresses a chest on generated fire terrain, as in 0x0041ce30");
+
+    const auto path = std::filesystem::temp_directory_path() / "yipe-chest-state-test.y3r";
+    yipe::GameState state;
+    state.player = spray;
+    state.player.opened_chests[127] = 15;
+    yipe::save_game_atomic(path, state);
+    check(yipe::load_game(path).player.opened_chests == state.player.opened_chests,
+          "native chest flags retain early and last-map slots");
+    state.player.opened_chests[0] = 16;
+    bool rejected = false;
+    try { yipe::save_game_atomic(path, state); }
+    catch (const std::runtime_error&) { rejected = true; }
+    check(rejected, "native chest flags reject bits outside the four original slots");
+    remove_save_extension(path, 4, 18);
+    std::ifstream input(path, std::ios::binary);
+    std::vector<std::uint8_t> invalid_flags{std::istreambuf_iterator<char>(input),
+                                           std::istreambuf_iterator<char>()};
+    input.close();
+    invalid_flags.back() = 16;
+    write_u32(invalid_flags, 10, test_crc32(invalid_flags, 14));
+    write_bytes(path, invalid_flags);
+    rejected = false;
+    try { static_cast<void>(yipe::load_game(path)); }
+    catch (const std::runtime_error&) { rejected = true; }
+    check(rejected, "version 18 rejects invalid chest bits even with a valid checksum");
+    state.player.opened_chests[0] = 0;
+    yipe::save_game_atomic(path, state);
+    remove_save_extension(path, 5, 18);
+    rejected = false;
+    try { static_cast<void>(yipe::load_game(path)); }
+    catch (const std::runtime_error&) { rejected = true; }
+    check(rejected, "version 18 requires all 128 chest-state bytes");
+    std::filesystem::remove(path);
+}
+
 void test_quest_progression_events() {
     yipe::Player gold_player;
     yipe::MsvcRandom gold_random(1);
@@ -3464,10 +4214,26 @@ void test_quest_progression_events() {
 
     yipe::Player final_gatekeeper;
     final_gatekeeper.gatekeeper_state = 1;
-    final_gatekeeper.has_underworld_key = true;
     static_cast<void>(win_battle(final_gatekeeper, 41, 0));
-    check(final_gatekeeper.gatekeeper_state == 2 && final_gatekeeper.stamps_found == 0,
-          "the keyed Gatekeeper victory advances state without granting a stamp");
+    check(final_gatekeeper.has_underworld_key && final_gatekeeper.gatekeeper_state == 2
+              && final_gatekeeper.stamps_found == 0,
+          "the first Gatekeeper victory awards the key before advancing state without a stamp");
+
+    for (bool already_keyed : {false, true}) {
+        yipe::Player early;
+        early.level = 15;
+        early.special_ability = yipe::SpecialAbility::backstab;
+        early.has_underworld_key = already_keyed;
+        yipe::CombatEncounter encounter;
+        encounter.monsters[0] = {41, "Gatekeeper", 214, 1, 1, 0, 1, 1, 0, false};
+        yipe::MsvcRandom random(1);
+        const auto reward = yipe::resolve_special_ability_turn(early, encounter, random);
+        check(reward.outcome == yipe::CombatOutcome::victory && early.has_underworld_key
+                  && early.gatekeeper_state == 0 && reward.reward.underworld_key == !already_keyed
+                  && early.weapon_rank == (already_keyed ? 3 : 2)
+                  && early.equipment_upgrade_count == (already_keyed ? 1 : 0),
+              "early Gatekeeper win grants its key once, skips first-win loot, and leaves later quest state locked");
+    }
 
     yipe::Player finale;
     finale.gatekeeper_state = 2;
@@ -3928,6 +4694,267 @@ void test_first_playable_flow() {
     std::filesystem::remove(path);
 }
 
+void test_original_runtime_saves() {
+    const auto directory = std::filesystem::path(YIPE_TEST_EVIDENCE_DIR) / "r08";
+    const auto native = std::filesystem::temp_directory_path() / "yipe-r08-import.y3r";
+    for (const auto* filename : {"R08Combat-start.yp3", "R08Combat-south.yp3",
+                                 "R08Combat-reopened.yp3", "R08Combat-restart.yp3"}) {
+        const auto imported = yipe::load_legacy_save(directory / filename);
+        const auto& game = imported.game;
+        const auto& player = game.player;
+        const int y = std::string_view(filename) == "R08Combat-start.yp3" ? 5 : 6;
+        check(imported.validation_passed && imported.stored_validation == 5
+                  && player.name == "R08Combat" && player.dexterity == 13
+                  && player.intelligence == 10 && player.strength == 16
+                  && player.health == 13 && player.maximum_health == 13
+                  && player.spell_points == 10 && player.maximum_spell_points == 10
+                  && player.ability_points == 5 && player.maximum_ability_points == 5
+                  && player.level == 1 && player.gold == 0 && player.experience == 0
+                  && player.weapon_rank == 2 && player.armor_rank == 2
+                  && player.helmet_rank == 1 && player.difficulty == 2
+                  && player.inventory[28] == 0 && !player.silly_mode
+                  && game.location.map_id == 0x11 && game.location.map_layer == 0
+                  && game.location.region_x == 0 && game.location.region_y == 0
+                  && game.location.position == yipe::MapPosition{5, y},
+              std::string("original-produced archive matches recorded state: ") + filename);
+        yipe::save_game_atomic(native, game);
+        const auto restored = yipe::load_game(native);
+        check(restored.player.name == player.name
+                  && restored.player.health == player.health
+                  && restored.player.strength == player.strength
+                  && restored.player.spell_points == player.spell_points
+                  && restored.player.ability_points == player.ability_points
+                  && restored.player.inventory == player.inventory
+                  && restored.player.inventory_values == player.inventory_values
+                  && restored.player.spells == player.spells
+                  && restored.player.monster_defeats == player.monster_defeats
+                  && restored.player.encountered_monster_types == player.encountered_monster_types
+                  && restored.location.position == game.location.position
+                  && restored.location.map_id == game.location.map_id,
+              std::string("real archive survives native save/reload: ") + filename);
+    }
+    std::filesystem::remove(native);
+}
+
+void test_exploration_timer() {
+    yipe::Player player;
+    player.health = player.maximum_health = 90;
+    yipe::MsvcRandom random(1);
+    for (int id = 0; id <= 0x85; ++id) {
+        const auto hazard = yipe::timed_hazard_for_map(id);
+        if (!hazard) continue;
+        auto map = *yipe::original_map(id);
+        yipe::MapVisibility visibility;
+        visibility.map_id = id;
+        visibility.visible[static_cast<std::size_t>(
+            hazard->first.x * yipe::Map::height + hazard->first.y)] = true;
+        std::optional<yipe::RoamingMonster> roaming = yipe::RoamingMonster{1, hazard->second};
+        check(!yipe::advance_timed_hazard(map, visibility, player, {0, 0}, roaming, random).changed,
+              "both hazard cells must be visible before the timer changes terrain");
+        visibility.visible.fill(true);
+        map.restore_tile(hazard->first, hazard->floor);
+        map.restore_tile(hazard->second, hazard->floor);
+        auto update = yipe::advance_timed_hazard(
+            map, visibility, player, hazard->first, roaming, random);
+        check(update.changed && map.tile(hazard->first) == hazard->hazard
+                  && map.tile(hazard->second) == hazard->hazard,
+              "timer arms both authored hazard cells");
+        check((hazard->hazard == 0x24) == !roaming.has_value(),
+              "arming fire removes the roaming monster but arming spikes/cracks does not");
+        player.health = 1;
+        roaming = yipe::RoamingMonster{1, hazard->second};
+        update = yipe::advance_timed_hazard(
+            map, visibility, player, hazard->second, roaming, random);
+        check(!roaming && player.health == 1
+                  && update.fell == (hazard->hazard == 0x2a)
+                  && update.sound_id == (hazard->hazard == 0x24 ? 0
+                                         : hazard->hazard == 0x2a ? 135 : 137),
+              "hazard activation affects the second cell and never kills the player");
+        if (hazard->hazard != 0x24) {
+            check(map.tile(hazard->first) == hazard->hazard + 1,
+                  "spikes and cracks retain an active phase");
+            static_cast<void>(yipe::advance_timed_hazard(
+                map, visibility, player, {0, 0}, roaming, random));
+        }
+        check(map.tile(hazard->first) == hazard->floor
+                  && map.tile(hazard->second) == hazard->floor,
+              "the hazard cycle restores both original floors");
+    }
+
+    yipe::Map::Tiles rails;
+    rails.fill(0x0d);
+    yipe::MapEvents events;
+    events.overlay = {{4, 5}, 1};
+    yipe::Map platform(0x4a, 5, rails, events);
+    yipe::MapVisibility visibility;
+    yipe::MapPosition rider{4, 5};
+    check(!platform.advance_overlay(visibility, rider, random),
+          "hidden platforms do not move");
+    visibility.visible.fill(true);
+    check(!platform.advance_overlay(visibility, rider, random, yipe::MapPosition{4, 4})
+              && platform.events().overlay.value == 3,
+          "roaming monster blocks the platform and reverses its direction");
+    check(platform.advance_overlay(visibility, rider, random)
+              && rider == yipe::MapPosition{4, 6},
+          "a visible platform carries its rider in the reversed direction");
+    platform.restore_tile({4, 7}, 0x53);
+    check(!platform.advance_overlay(visibility, rider, random)
+              && platform.events().overlay.value == 1,
+          "platforms cannot leave their authored 0x0c/0x0d rails");
+    events.overlay.value = 5;
+    rails.fill(0x53);
+    rails[4 * yipe::Map::height + 5] = 0x0d;
+    yipe::Map random_platform(0x4a, 5, rails, events);
+    yipe::MsvcRandom expected_random(random.state());
+    static_cast<void>(expected_random.next());
+    static_cast<void>(expected_random.next());
+    static_cast<void>(random_platform.advance_overlay(visibility, rider, random));
+    check(random.state() == expected_random.state(),
+          "random platform retries do not consume extra random numbers");
+
+    auto passage = *yipe::original_map(5);
+    yipe::ExplorationTimer timer;
+    player.spell_points = player.ability_points = 0;
+    player.maximum_spell_points = player.maximum_ability_points = 10;
+    for (int tick = 1; tick <= 76; ++tick) {
+        check(timer.advance(player, passage, {5, 5}) == tick,
+              "exploration timer follows its 76-tick phase");
+        if (tick == 38) check(player.spell_points == 2, "first SP restoration tick");
+        if (tick == 47) check(passage.tile({7, 8}) == 2, "timed mountain passage opens");
+        if (tick == 57) check(player.ability_points == 1, "AP restoration tick");
+        if (tick == 61) check(passage.tile({7, 8}) == 0x11, "timed passage closes");
+    }
+    check(player.spell_points == 4 && timer.advance(player, passage, {5, 5}) == 1,
+          "the final SP tick resets the phase without a duplicate zero tick");
+    player.monster_repellent_steps = 2;
+    player.random_encounter_threshold = 125;
+    player.saved_random_encounter_threshold = 79;
+    check(!yipe::advance_repellent_timer(player) && yipe::advance_repellent_timer(player)
+              && player.random_encounter_threshold == 79,
+          "repellent duration counts timer ticks, restoring the saved encounter threshold");
+    player.monster_repellent_steps = 1;
+    player.saved_random_encounter_threshold = 125;
+    player.difficulty = 2;
+    check(yipe::advance_repellent_timer(player) && player.random_encounter_threshold == 83,
+          "repellent expiration reproduces the original threshold fallback");
+
+    player.difficulty = 2;
+    player.level = 7;
+    player.health = 90;
+    yipe::MsvcRandom fire_random(1);
+    check(yipe::apply_fire_wall(player, fire_random) == 2 + 41 % 2 + 18467 % 7
+              && player.health == 86,
+          "fire damage consumes the difficulty roll before the level roll");
+}
+
+void test_timed_princess_routes() {
+    yipe::GameState game;
+    game.player.has_rainbow_key = true;
+    game.player.health = game.player.maximum_health = 100;
+    yipe::MsvcRandom random(1);
+    yipe::Map map = *yipe::original_map(0x44);
+    game.location = {{9, 10}, -1, -2, 1, false, 0x44};
+    check(yipe::try_move(map, game.location.position, 0, 1).original_code == 2
+              && yipe::cross_map_edge(game.location) && game.location.map_id == 0x4a
+              && game.location.position == yipe::MapPosition{9, 1},
+          "princess 11 route enters 0x4a from the ordinary south edge of 0x44");
+    map = *yipe::original_map(0x4a);
+    yipe::initialize_map_visibility(game.map_visibility, map, game.location.position);
+    const auto step = [&](yipe::MapPosition next) {
+        const auto previous = game.location.position;
+        check(std::abs(next.x - previous.x) <= 1 && std::abs(next.y - previous.y) <= 1,
+              "route proof uses only adjacent movement");
+        const auto result = yipe::try_move(
+            map, game.location.position, next.x - previous.x, next.y - previous.y,
+            {false, game.player.has_rainbow_key, false, false});
+        check(result.position_changed && game.location.position == next,
+              "timed princess route uses legal movement");
+        if (result.original_code == 0x12) map.open_door(previous, next);
+        yipe::reveal_map_from(game.map_visibility, map, game.location.position);
+    };
+    for (const auto next : {yipe::MapPosition{8, 2}, {7, 3}, {6, 4}, {5, 5},
+                            {5, 6}, {5, 7}, {5, 8}, {4, 9}}) step(next);
+    yipe::ExplorationTimer timer;
+    const auto wait_for_platform = [&](yipe::MapPosition target) {
+        for (int ticks = 0; ticks < 10000 && game.location.position != target; ++ticks) {
+            if (timer.advance(game.player, map, game.location.position) % 3 == 0) {
+                static_cast<void>(map.advance_overlay(
+                    game.map_visibility, game.location.position, random));
+                yipe::reveal_map_from(game.map_visibility, map, game.location.position);
+            }
+        }
+        check(game.location.position == target, "seeded platform reaches the required landing");
+    };
+    wait_for_platform({3, 3});
+    const auto native = std::filesystem::temp_directory_path() / "yipe-platform-rider.y3r";
+    game.random_state = random.state();
+    yipe::save_game_atomic(native, game);
+    game = yipe::load_game(native);
+    map = *yipe::original_map(0x4a);
+    map.restore_overlay_for_saved_position(game.location.position);
+    yipe::initialize_map_visibility(game.map_visibility, map, game.location.position);
+    check(map.events().overlay.position == game.location.position,
+          "reopening aboard a platform restores support without permanent terrain changes");
+    step({2, 3});
+    step({1, 3});
+    step({1, 2});
+    step({1, 1});
+    step({2, 1});
+    check(game.location.position == map.events().princess.position
+              && map.events().princess.rescue_index == 11,
+          "moving platform plus rainbow-key door reaches princess 11");
+    static_cast<void>(yipe::rescue_princess(game.player, 11, yipe::PrincessGift::kiss, random));
+    for (const auto next : {yipe::MapPosition{1, 1}, {1, 2}, {1, 3}, {2, 3}, {3, 3}}) step(next);
+    wait_for_platform({4, 5});
+    step({5, 5});
+    check(game.player.inventory_values[11] > 0 && game.map_tile_changes.empty(),
+          "princess 11 can be rescued and left without opening permanent terrain");
+
+    map = *yipe::original_map(0x7f);
+    game.location = {{8, 10}, 0, -2, 0, true, 0x7f};
+    check(yipe::try_move(map, game.location.position, 0, 1).original_code == 2
+              && yipe::cross_map_edge(game.location) && game.location.map_id == 0x85
+              && game.location.position == yipe::MapPosition{8, 1},
+          "princess 20 route enters 0x85 from 0x7f's ordinary south edge");
+    map = *yipe::original_map(0x85);
+    yipe::initialize_map_visibility(game.map_visibility, map, game.location.position);
+    for (const auto next : {yipe::MapPosition{7, 2}, {6, 3}, {6, 4}, {6, 5},
+                            {6, 6}, {6, 7}, {6, 8}}) step(next);
+    check(!yipe::try_move(map, game.location.position, -1, 0).position_changed,
+          "the fire wall blocks the princess chamber until a timed opening");
+    yipe::ExplorationTimer fire_timer;
+    for (int tick = 0; tick < 4; ++tick) {
+        if (fire_timer.advance(game.player, map, game.location.position) % 4 == 0) {
+            static_cast<void>(yipe::advance_timed_hazard(
+                map, game.map_visibility, game.player, game.location.position,
+                game.roaming_monster, random));
+        }
+    }
+    for (const auto next : {yipe::MapPosition{5, 8}, {4, 8}, {3, 8}, {2, 8}, {1, 9}}) step(next);
+    check(game.location.position == map.events().princess.position
+              && map.events().princess.rescue_index == 20,
+          "the timed fire-wall opening reaches princess 20");
+    static_cast<void>(yipe::rescue_princess(game.player, 20, yipe::PrincessGift::kiss, random));
+    static_cast<void>(yipe::advance_timed_hazard(
+        map, game.map_visibility, game.player, game.location.position,
+        game.roaming_monster, random));
+    check(map.tile({5, 8}) == 0x24 && map.tile({8, 5}) == 0x24,
+          "both fire walls close again rather than becoming permanent exits");
+    for (const auto next : {yipe::MapPosition{2, 8}, {3, 8}, {4, 8}}) step(next);
+    static_cast<void>(yipe::advance_timed_hazard(
+        map, game.map_visibility, game.player, game.location.position,
+        game.roaming_monster, random));
+    step({5, 8});
+    step({6, 8});
+    yipe::save_game_atomic(native, game);
+    const auto restored = yipe::load_game(native);
+    check(restored.player.inventory_values[11] > 0 && restored.player.inventory_values[20] > 0
+              && restored.map_tile_changes.empty()
+              && yipe::original_map(0x85)->tile({5, 8}) == 0x24,
+          "both rescues survive saving while timed terrain resets on map reload");
+    std::filesystem::remove(native);
+}
+
 void test_linked_princess_route() {
     std::optional<yipe::Map> entrance_map = yipe::original_map(0x2d);
     std::optional<yipe::Map> princess_map = yipe::original_map(0x2e);
@@ -3938,7 +4965,27 @@ void test_linked_princess_route() {
     }
 
     yipe::Player player;
-    player.strength = 40;
+    player.gold = 30000; // Fund the purchases; this does not prove normal-play income.
+    yipe::MsvcRandom random(1);
+    for (int strength = 17; strength <= 40; ++strength) {
+        static_cast<void>(yipe::enter_miscellaneous_shop(player));
+        const auto purchase = yipe::purchase_shop_item(
+            player, yipe::miscellaneous_shop_stock(player, 0x11)[2]);
+        if (purchase.status != yipe::PurchaseStatus::purchased) {
+            check(false, "funded strength growth can purchase the next potion");
+            return;
+        }
+        check(player.use_inventory_item(purchase.inventory_slot, random, false).consumed
+                  && player.strength == strength,
+              "ordinary shop purchases and item use grow strength through 30 to 40");
+        if (strength == 39) {
+            yipe::initialize_map_actions(player, *entrance_map, {10, 9});
+            check(entrance_map->tile({11, 9}) == 0x49 && entrance_map->tile({12, 9}) == 0x25,
+                  "earned strength 39 still leaves the outer linked mechanism disabled");
+        }
+    }
+    check(player.gold == 0 && player.miscellaneous_shop_stage == 1,
+          "24 strength potions cost 30000 including the earned shop price increase");
     yipe::WorldLocation location{{10, 9}, 0, 2, 1, false, 0x2d};
     yipe::initialize_map_actions(player, *entrance_map, location.position);
     const yipe::MovementResult switch_step =
@@ -4000,6 +5047,10 @@ void test_linked_princess_route() {
     check(opened_door && location.position == princess_map->events().princess.position
               && princess_map->events().princess.rescue_index == 13,
           "linked wall and rainbow key make princess 13 reachable by ordinary movement");
+    check(yipe::rescue_princess(player, princess_map->events().princess.rescue_index,
+                              yipe::PrincessGift::kiss, random).rescued
+              && player.inventory_values[13] > 0,
+          "the linked route rescues princess 13 after earning its strength prerequisite");
 }
 
 } // namespace
@@ -4013,13 +5064,16 @@ int main() {
     test_level_progression();
     test_healing_item();
     test_stat_and_maximum_items();
+    test_stat_caps();
     test_relocation_item();
     test_item_names();
     test_native_save();
     test_game_save();
     test_legacy_save_import();
+    test_original_runtime_saves();
     test_original_auxiliary_data();
     test_high_scores();
+    test_high_score_code();
     test_high_score_save();
     test_settings_and_audio_catalog();
     test_starting_map();
@@ -4031,6 +5085,7 @@ int main() {
     test_movement_hint_defeat_state();
     test_monster_defeat_statistics();
     test_starting_shop();
+    test_miscellaneous_shops();
     test_recovered_shop_transactions();
     test_recovered_casino_games();
     test_giant_beetle_encounter();
@@ -4043,10 +5098,13 @@ int main() {
     test_equipment_combat_ratings();
     test_king_quest_dialog();
     test_quest_progression_events();
+    test_chest_rewards();
     test_death_and_hell_recovery();
     test_recovered_spells();
     test_first_playable_flow();
     test_linked_princess_route();
+    test_exploration_timer();
+    test_timed_princess_routes();
 
     if (failures != 0) {
         std::cerr << failures << " test(s) failed\n";

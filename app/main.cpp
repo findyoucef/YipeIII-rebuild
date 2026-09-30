@@ -2,6 +2,7 @@
 #include "yipe/auxiliary_data.hpp"
 #include "yipe/casino.hpp"
 #include "yipe/encounter.hpp"
+#include "yipe/exploration.hpp"
 #include "yipe/item_names.hpp"
 #include "yipe/legacy_save.hpp"
 #include "yipe/map.hpp"
@@ -13,6 +14,7 @@
 #include "yipe/spell.hpp"
 #include "generated/original_help.hpp"
 #include "file_dialog.hpp"
+#include "printing.hpp"
 
 #include <SDL.h>
 
@@ -28,6 +30,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -43,6 +46,10 @@ constexpr int startup_height = 397;
 constexpr int tile_size = 32;
 constexpr int map_width = yipe::Map::width * tile_size;
 constexpr int map_height = yipe::Map::height * tile_size;
+constexpr int status_bar_height = 20;
+bool status_bar_visible = true; // Frame preference for this application session.
+void draw_status_bar(SDL_Renderer* renderer, int width, int top, std::string_view message);
+void toggle_status_bar(SDL_Renderer* renderer);
 constexpr yipe::MapPosition hell_gatekeeper_position{6, 0};
 
 constexpr std::array<std::string_view, 21> location_messages{
@@ -73,13 +80,15 @@ using Window = std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
 using Renderer = std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)>;
 using Texture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>;
 using Cursor = std::unique_ptr<SDL_Cursor, decltype(&SDL_FreeCursor)>;
+using Surface = std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface)>;
 
-enum class StartupChoice { new_game, load_game, settings, high_scores, help, quit };
+enum class StartupChoice { new_game, load_game, recent_game, settings, high_scores, help, page_setup, quit };
 
 struct GameExit {
     StartupChoice choice;
     std::optional<yipe::GameState> opened_game = std::nullopt;
     std::filesystem::path opened_save_path{};
+    std::filesystem::path opened_source_path{};
 };
 
 struct RuntimeAssets {
@@ -318,6 +327,7 @@ void render_startup(SDL_Renderer* renderer, SDL_Texture* menu, SDL_Texture* copy
     const SDL_Rect copyright_destination{61, 368, 166, 21};
     copy_texture(renderer, menu, nullptr, &menu_destination);
     copy_texture(renderer, copyright, nullptr, &copyright_destination);
+    draw_status_bar(renderer, startup_width, startup_height, "Ready - F1 Help");
     SDL_RenderPresent(renderer);
 }
 
@@ -346,6 +356,29 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
             return StartupChoice::quit;
         }
         if (event.type == SDL_KEYDOWN) {
+            if (event.key.keysym.sym == SDLK_b && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+                if (event.key.repeat == 0
+                    && (event.key.keysym.mod & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) == 0) {
+                    toggle_status_bar(renderer);
+                    render_startup(renderer, menu, copyright);
+                }
+                continue;
+            }
+            if (event.key.keysym.sym == SDLK_r
+                 || (event.key.keysym.sym == SDLK_l
+                     && (event.key.keysym.mod & KMOD_CTRL) != 0)) {
+                if (event.key.repeat == 0
+                    && (event.key.keysym.mod & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) == 0) {
+                    return StartupChoice::recent_game;
+                }
+                continue;
+            }
+            if (event.key.keysym.sym == SDLK_p && event.key.repeat == 0
+                && (event.key.keysym.mod & KMOD_CTRL) != 0
+                && (event.key.keysym.mod & KMOD_SHIFT) != 0
+                && (event.key.keysym.mod & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) == 0) {
+                return StartupChoice::page_setup;
+            }
             if (event.key.keysym.sym == SDLK_n) {
                 return StartupChoice::new_game;
             }
@@ -366,21 +399,21 @@ StartupChoice run_startup_menu(SDL_Renderer* renderer, SDL_Texture* menu,
             }
         }
         if (event.type == SDL_MOUSEMOTION) {
-            float x = 0.0F;
-            float y = 0.0F;
-            SDL_RenderWindowToLogical(renderer, event.motion.x, event.motion.y, &x, &y);
+            // SDL_RenderSetLogicalSize already transforms mouse event coordinates.
+            const auto x = static_cast<float>(event.motion.x);
+            const auto y = static_cast<float>(event.motion.y);
             const bool over_option = x >= 45.0F && x <= 250.0F && y >= 257.0F && y < 360.0F;
             SDL_SetCursor(over_option ? hand.get() : arrow.get());
         }
         if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
-            float x = 0.0F;
-            float y = 0.0F;
-            SDL_RenderWindowToLogical(renderer, event.button.x, event.button.y, &x, &y);
+            const auto x = static_cast<float>(event.button.x);
+            const auto y = static_cast<float>(event.button.y);
             if (x >= 45.0F && x <= 250.0F && y >= 257.0F && y < 360.0F) {
                 return option_at(y);
             }
         }
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
+        if (event.type == SDL_KEYUP
+            || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED)) {
             render_startup(renderer, menu, copyright);
         }
     }
@@ -559,6 +592,10 @@ TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
         return graphic(140, 0, 0);
     case 0x39:
         return graphic(139, 0, 0);
+    case 0x3c:
+        return graphic(153, 0, 32);
+    case 0x3d:
+        return graphic(153, 32, 32);
     case 0x3e:
     case 0x3f:
     case 0x40:
@@ -601,18 +638,31 @@ TileGraphic tile_graphic(std::uint16_t tile, const GameTextures& textures) {
 
 void prepare_game_view(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_SetWindowTitle(window, "Yipe! III - F1 Help | F5 Save | F10 Settings");
-    SDL_SetWindowSize(window, map_width * 2, map_height * 2);
-    if (SDL_RenderSetLogicalSize(renderer, map_width, map_height) != 0) {
+    const int height = map_height + (status_bar_visible ? status_bar_height : 0);
+    SDL_SetWindowSize(window, map_width * 2, height * 2);
+    if (SDL_RenderSetLogicalSize(renderer, map_width, height) != 0) {
         throw std::runtime_error(std::string("could not set map render size: ") + SDL_GetError());
     }
 }
 
 void prepare_startup_view(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_SetWindowTitle(window, "Yipe! III - F1 Help | S Settings | H High Scores");
-    SDL_SetWindowSize(window, startup_width * 2, startup_height * 2);
-    if (SDL_RenderSetLogicalSize(renderer, startup_width, startup_height) != 0) {
+    const int height = startup_height + (status_bar_visible ? status_bar_height : 0);
+    SDL_SetWindowSize(window, startup_width * 2, height * 2);
+    if (SDL_RenderSetLogicalSize(renderer, startup_width, height) != 0) {
         throw std::runtime_error(std::string("could not set startup render size: ")
                                  + SDL_GetError());
+    }
+}
+
+void toggle_status_bar(SDL_Renderer* renderer) {
+    int width = 0;
+    int height = 0;
+    SDL_RenderGetLogicalSize(renderer, &width, &height);
+    status_bar_visible = !status_bar_visible;
+    if (width > 0 && SDL_RenderSetLogicalSize(renderer, width,
+            height + (status_bar_visible ? status_bar_height : -status_bar_height)) != 0) {
+        throw std::runtime_error(std::string("could not resize status bar: ") + SDL_GetError());
     }
 }
 
@@ -640,7 +690,8 @@ std::vector<yipe::MonsterPlacement> active_monster_placements(
 }
 
 void render_game(SDL_Renderer* renderer, const yipe::Map& map,
-                 const GameTextures& textures, const yipe::GameState& game) {
+                 const GameTextures& textures, const yipe::GameState& game,
+                 bool present = true) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     for (int x = 0; x < yipe::Map::width; ++x) {
@@ -648,10 +699,25 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
             if (!game.map_visibility.contains({x, y})) {
                 continue;
             }
-            const TileGraphic graphic = tile_graphic(map.tile({x, y}), textures);
+            const auto tile = map.tile({x, y});
+            if (tile == 0x3c || tile == 0x3d) {
+                const auto hazard = yipe::timed_hazard_for_map(map.id());
+                if (!hazard) throw std::logic_error("spike tile has no recovered floor");
+                const TileGraphic floor = tile_graphic(hazard->floor, textures);
+                const SDL_Rect destination{x * tile_size, y * tile_size, tile_size, tile_size};
+                copy_texture(renderer, floor.texture, &floor.source, &destination);
+            }
+            const TileGraphic graphic = tile_graphic(tile, textures);
             const SDL_Rect destination{x * tile_size, y * tile_size, tile_size, tile_size};
             copy_texture(renderer, graphic.texture, &graphic.source, &destination);
         }
+    }
+    for (const auto position : map.events().chests) {
+        if (!map.contains(position) || !game.map_visibility.contains(position)) continue;
+        const SDL_Rect source{0, 0, tile_size, tile_size};
+        const SDL_Rect destination{position.x * tile_size, position.y * tile_size,
+                                   tile_size, tile_size};
+        copy_texture(renderer, textures.find(153), &source, &destination);
     }
     for (const yipe::MonsterPlacement& placement : active_monster_placements(game)) {
         if (!game.map_visibility.contains(placement.position)) {
@@ -735,7 +801,48 @@ void render_game(SDL_Renderer* renderer, const yipe::Map& map,
     const int portrait = game.player.inventory[28];
     copy_texture(renderer, textures.find(405 + (portrait >= 1 && portrait <= 12 ? portrait : 1)),
                  nullptr, &player_destination);
-    SDL_RenderPresent(renderer);
+    if (present) {
+        draw_status_bar(renderer, map_width, map_height, "Ready - F1 Help");
+        SDL_RenderPresent(renderer);
+    }
+}
+
+Surface printable_game_view(SDL_Renderer* renderer, const yipe::Map& map,
+                            const GameTextures& textures, const yipe::GameState& game) {
+    const Texture target(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                                           SDL_TEXTUREACCESS_TARGET, map_width, map_height),
+                         SDL_DestroyTexture);
+    Surface image(SDL_CreateRGBSurfaceWithFormat(0, map_width, map_height, 32,
+                                                 SDL_PIXELFORMAT_RGBA32), SDL_FreeSurface);
+    if (!target || !image) {
+        throw std::runtime_error(std::string("could not allocate the print image: ") + SDL_GetError());
+    }
+    struct RestoreTarget {
+        SDL_Renderer* renderer;
+        SDL_Texture* previous;
+        int width = 0;
+        int height = 0;
+        ~RestoreTarget() {
+            if (SDL_SetRenderTarget(renderer, previous) != 0) {
+                SDL_LogError(SDL_LOG_CATEGORY_RENDER, "could not restore the game render target: %s",
+                             SDL_GetError());
+            }
+            SDL_RenderSetLogicalSize(renderer, width, height);
+        }
+    } restore{renderer, SDL_GetRenderTarget(renderer)};
+    SDL_RenderGetLogicalSize(renderer, &restore.width, &restore.height);
+    if (SDL_SetRenderTarget(renderer, target.get()) != 0) {
+        throw std::runtime_error(std::string("could not select the print render target: ") + SDL_GetError());
+    }
+    if (SDL_RenderSetLogicalSize(renderer, map_width, map_height) != 0) {
+        throw std::runtime_error(std::string("could not size the print view: ") + SDL_GetError());
+    }
+    render_game(renderer, map, textures, game, false);
+    if (SDL_RenderReadPixels(renderer, nullptr, SDL_PIXELFORMAT_RGBA32,
+                             image->pixels, image->pitch) != 0) {
+        throw std::runtime_error(std::string("could not capture the print image: ") + SDL_GetError());
+    }
+    return image;
 }
 
 void show_message(SDL_Window* window, const char* title, const std::string& message) {
@@ -840,67 +947,150 @@ std::optional<std::string> request_text(SDL_Window* window, const char* title,
                                         const std::string& prompt,
                                         const char* field = "code") {
     show_message(window, title, prompt + "\n\nType the " + field + ", then press Enter. "
-                                         "Press Escape to cancel. Your typing will appear "
-                                         "in the game window's title bar.");
-    const std::string original_title = SDL_GetWindowTitle(window);
+        "Escape cancels. Text appears in the window title; | marks the cursor "
+        "and [brackets] mark selected text.\n\n"
+        "Arrows/Home/End move; hold Shift to select. Ctrl or Command + "
+        "A/X/C/V/Z selects all, cuts, copies, pastes, or undoes the last edit. "
+        "Undo again restores it. F2 or right-click opens Edit.\n"
+        "Use one line, up to 128 UTF-8 bytes.");
+    struct RestoreTextInput {
+        SDL_Window* window;
+        std::string title;
+        ~RestoreTextInput() {
+            SDL_StopTextInput();
+            SDL_SetWindowTitle(window, title.c_str());
+        }
+    } restore{window, SDL_GetWindowTitle(window)};
     std::string input;
+    std::optional<std::string> undo;
+    std::size_t cursor = 0;
+    std::size_t anchor = 0;
     const auto update_title = [&] {
-        SDL_SetWindowTitle(window,
-                           (std::string(title) + " " + field + ": " + input).c_str());
+        const auto [first, last] = std::minmax(cursor, anchor);
+        const std::string display = first == last
+            ? input.substr(0, cursor) + "|" + input.substr(cursor)
+            : input.substr(0, first) + "[" + input.substr(first, last - first)
+                + "]" + input.substr(last);
+        SDL_SetWindowTitle(window, (std::string(title) + " " + field + ": " + display).c_str());
     };
-    const auto finish = [&] {
-        SDL_StopTextInput();
-        SDL_SetWindowTitle(window, original_title.c_str());
+    const auto previous_position = [&](std::size_t position) {
+        if (position > 0) --position;
+        while (position > 0 && (static_cast<unsigned char>(input[position]) & 0xc0u) == 0x80u) {
+            --position;
+        }
+        return position;
     };
-
+    const auto next_position = [&](std::size_t position) {
+        if (position < input.size()) ++position;
+        while (position < input.size()
+               && (static_cast<unsigned char>(input[position]) & 0xc0u) == 0x80u) ++position;
+        return position;
+    };
+    const auto replace_selection = [&](std::string_view text) {
+        const auto [first, last] = std::minmax(cursor, anchor);
+        if (input.size() - (last - first) + text.size() > 128
+            || std::any_of(text.begin(), text.end(), [](unsigned char byte) { return byte < 32; })) {
+            show_message(window, "Text Not Inserted", "Use a single line of text, up to 128 UTF-8 bytes.");
+            return;
+        }
+        const auto changed = input.substr(0, first) + std::string(text) + input.substr(last);
+        if (changed != input) {
+            undo = input;
+            input = changed;
+        }
+        cursor = first + text.size();
+        anchor = cursor;
+        update_title();
+    };
     update_title();
     SDL_FlushEvent(SDL_TEXTINPUT);
     SDL_StartTextInput();
     while (true) {
         SDL_Event event{};
         if (SDL_WaitEvent(&event) == 0) {
-            finish();
-            throw std::runtime_error(std::string("SDL event wait failed: ")
-                                     + SDL_GetError());
+            throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
         }
         if (event.type == SDL_QUIT) {
             SDL_PushEvent(&event);
-            finish();
             return std::nullopt;
         }
         if (event.type == SDL_TEXTINPUT) {
-            if (input.size() + std::char_traits<char>::length(event.text.text) <= 128) {
-                input += event.text.text;
-                update_title();
-            }
+            replace_selection(event.text.text);
             continue;
         }
-        if (event.type != SDL_KEYDOWN) {
-            continue;
-        }
-        if (event.key.keysym.sym == SDLK_RETURN
-            || event.key.keysym.sym == SDLK_KP_ENTER) {
-            finish();
-            return input;
-        }
-        if (event.key.keysym.sym == SDLK_ESCAPE) {
-            finish();
-            return std::nullopt;
-        }
-        if (event.key.keysym.sym == SDLK_BACKSPACE && !input.empty()) {
-            const bool multibyte =
-                (static_cast<unsigned char>(input.back()) & 0xc0u) == 0x80u;
-            input.pop_back();
-            if (multibyte) {
-                while (!input.empty()
-                       && (static_cast<unsigned char>(input.back()) & 0xc0u) == 0x80u) {
-                    input.pop_back();
-                }
-                if (!input.empty()) {
-                    input.pop_back();
+        SDL_Keycode command = 0;
+        const bool keydown = event.type == SDL_KEYDOWN;
+        const auto key = keydown ? event.key.keysym.sym : SDLK_UNKNOWN;
+        const auto modifiers = keydown ? event.key.keysym.mod : 0;
+        const bool shift = (modifiers & KMOD_SHIFT) != 0;
+        const bool control = (modifiers & (KMOD_CTRL | KMOD_GUI)) != 0;
+        if ((keydown && key == SDLK_F2 && event.key.repeat == 0
+                && (modifiers & (KMOD_CTRL | KMOD_GUI | KMOD_ALT | KMOD_SHIFT | KMOD_MODE)) == 0)
+            || (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_RIGHT)) {
+            constexpr std::array buttons{
+                SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Back"},
+                SDL_MessageBoxButtonData{0, 1, "Undo / Restore"},
+                SDL_MessageBoxButtonData{0, 2, "Cut"},
+                SDL_MessageBoxButtonData{0, 3, "Copy"},
+                SDL_MessageBoxButtonData{0, 4, "Paste"},
+                SDL_MessageBoxButtonData{0, 5, "Select All"},
+            };
+            const int choice = show_choice(window, "Edit Text", input.empty() ? "(Empty)" : input,
+                                            buttons.data(), static_cast<int>(buttons.size()));
+            constexpr std::array<SDL_Keycode, 6> commands{0, SDLK_z, SDLK_x, SDLK_c, SDLK_v, SDLK_a};
+            if (choice >= 1 && choice < static_cast<int>(commands.size())) {
+                command = commands[static_cast<std::size_t>(choice)];
+            }
+        } else if (keydown) {
+            if (event.key.repeat == 0) {
+                if (control && (modifiers & (KMOD_ALT | KMOD_MODE)) == 0
+                    && (key == SDLK_a || key == SDLK_x || key == SDLK_c || key == SDLK_v
+                        || key == SDLK_z)) command = key;
+                else if ((modifiers & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) == 0) {
+                    if (key == SDLK_INSERT && !control && shift) command = SDLK_v;
+                    else if (key == SDLK_INSERT && control && !shift) command = SDLK_c;
+                    else if (key == SDLK_DELETE && !control && shift) command = SDLK_x;
+                } else if (key == SDLK_BACKSPACE && (modifiers & KMOD_ALT) != 0
+                         && !control && !shift) command = SDLK_z;
+            }
+            if (command == 0 && !(key == SDLK_DELETE && shift)
+                && (modifiers & (KMOD_CTRL | KMOD_GUI | KMOD_ALT | KMOD_MODE)) == 0) {
+                if (key == SDLK_RETURN || key == SDLK_KP_ENTER) return input;
+                if (key == SDLK_ESCAPE) return std::nullopt;
+                if (key == SDLK_LEFT || key == SDLK_RIGHT || key == SDLK_HOME || key == SDLK_END) {
+                    if (key == SDLK_HOME) cursor = 0;
+                    else if (key == SDLK_END) cursor = input.size();
+                    else if (!shift && cursor != anchor) cursor = key == SDLK_LEFT
+                        ? std::min(cursor, anchor) : std::max(cursor, anchor);
+                    else cursor = key == SDLK_LEFT ? previous_position(cursor) : next_position(cursor);
+                    if (!shift) anchor = cursor;
+                    update_title();
+                } else if (key == SDLK_BACKSPACE || key == SDLK_DELETE) {
+                    if (cursor == anchor) {
+                        anchor = key == SDLK_BACKSPACE ? previous_position(cursor) : next_position(cursor);
+                    }
+                    replace_selection("");
                 }
             }
+        }
+        if (command == SDLK_a) {
+            anchor = 0;
+            cursor = input.size();
             update_title();
+        } else if (command == SDLK_z && undo) {
+            input.swap(*undo);
+            cursor = anchor = input.size();
+            update_title();
+        } else if ((command == SDLK_c || command == SDLK_x) && cursor != anchor) {
+            const auto [first, last] = std::minmax(cursor, anchor);
+            if (SDL_SetClipboardText(input.substr(first, last - first).c_str()) != 0) {
+                show_message(window, "Clipboard Failed", SDL_GetError());
+            } else if (command == SDLK_x) replace_selection("");
+        } else if (command == SDLK_v) {
+            SDL_ClearError();
+            std::unique_ptr<char, decltype(&SDL_free)> text(SDL_GetClipboardText(), SDL_free);
+            if (!text || *SDL_GetError() != '\0') show_message(window, "Clipboard Failed", SDL_GetError());
+            else if (*text != '\0') replace_selection(text.get());
         }
     }
 }
@@ -929,8 +1119,8 @@ void show_secret_tree(SDL_Window* window, yipe::Player& player) {
 std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* renderer,
                                             const GameTextures& textures) {
     show_message(window, "Choose Portrait",
-                 "Click a portrait or press 1-8, then Enter. S switches the first four "
-                 "portraits to Silly Mode. Escape returns to character setup.");
+                 "Click a portrait or press 1-8, then Enter. S switches to Silly Mode "
+                 "with four portraits and silly equipment names. Escape returns to character setup.");
     const std::string original_title = SDL_GetWindowTitle(window);
     int selected = 0;
     bool silly = false;
@@ -939,11 +1129,12 @@ std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* r
     };
     const auto draw = [&] {
         SDL_SetWindowTitle(window,
-                           ("Choose Portrait " + std::to_string(selected + 1) + "/8 ("
+                           ("Choose Portrait " + std::to_string(selected + 1)
+                            + (silly ? "/4 (" : "/8 (")
                             + (silly ? "Silly" : "Normal") + ") - S toggles, Enter accepts").c_str());
         SDL_SetRenderDrawColor(renderer, 18, 24, 35, 255);
         SDL_RenderClear(renderer);
-        for (int index = 0; index < 8; ++index) {
+        for (int index = 0; index < (silly ? 4 : 8); ++index) {
             const SDL_Rect border{10 + index % 4 * 70, 82 + index / 4 * 90, 58, 58};
             SDL_SetRenderDrawColor(renderer, index == selected ? 255 : 90,
                                    index == selected ? 213 : 106,
@@ -952,6 +1143,7 @@ std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* r
             const SDL_Rect image{border.x + 5, border.y + 5, 48, 48};
             copy_texture(renderer, textures.find(portrait_id(index)), nullptr, &image);
         }
+        draw_status_bar(renderer, startup_width, startup_height, "Choose a portrait");
         SDL_RenderPresent(renderer);
     };
     const auto finish = [&] { SDL_SetWindowTitle(window, original_title.c_str()); };
@@ -967,14 +1159,14 @@ std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* r
             finish();
             return std::nullopt;
         }
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED) {
+        if (event.type == SDL_KEYUP
+            || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_EXPOSED)) {
             draw();
         }
         if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
-            float x = 0.0F;
-            float y = 0.0F;
-            SDL_RenderWindowToLogical(renderer, event.button.x, event.button.y, &x, &y);
-            for (int index = 0; index < 8; ++index) {
+            const auto x = static_cast<float>(event.button.x);
+            const auto y = static_cast<float>(event.button.y);
+            for (int index = 0; index < (silly ? 4 : 8); ++index) {
                 const float left = static_cast<float>(10 + index % 4 * 70);
                 const float top = static_cast<float>(82 + index / 4 * 90);
                 if (x >= left && x < left + 58 && y >= top && y < top + 58) {
@@ -987,11 +1179,14 @@ std::optional<std::uint16_t> choose_portrait(SDL_Window* window, SDL_Renderer* r
             continue;
         }
         const SDL_Keycode key = event.key.keysym.sym;
-        if (key >= SDLK_1 && key <= SDLK_8) {
+        if (key >= SDLK_1 && key <= (silly ? SDLK_4 : SDLK_8)) {
             selected = static_cast<int>(key - SDLK_1);
             draw();
         } else if (key == SDLK_s) {
             silly = !silly;
+            if (silly && selected >= 4) {
+                selected = 0;
+            }
             draw();
         } else if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
             finish();
@@ -1039,7 +1234,8 @@ std::optional<yipe::Player> choose_character(SDL_Window* window, SDL_Renderer* r
                 + "   Intelligence " + std::to_string(player.intelligence)
                 + "\nHP " + std::to_string(player.health)
                 + "   SP " + std::to_string(player.spell_points)
-                + "   AP " + std::to_string(player.ability_points);
+                + "   AP " + std::to_string(player.ability_points)
+                + "\nStat limit " + std::to_string(player.maximum_stat());
             constexpr std::array preset_buttons{
                 SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Use Stats"},
                 SDL_MessageBoxButtonData{0, 0, "Change Type"},
@@ -1096,6 +1292,7 @@ std::optional<yipe::Player> choose_character(SDL_Window* window, SDL_Renderer* r
             continue;
         }
         player.inventory[28] = *portrait;
+        player.silly_mode = *portrait >= 9;
         constexpr std::array intro_buttons{
             SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT
                                          | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
@@ -1197,6 +1394,23 @@ std::optional<std::uint16_t> portable_key_code(SDL_Keycode key) {
         return 0x68;
     case SDLK_KP_9:
         return 0x69;
+    case SDLK_KP_MULTIPLY: return 0x6a;
+    case SDLK_KP_PLUS: return 0x6b;
+    case SDLK_SEPARATOR: return 0x6c;
+    case SDLK_KP_MINUS: return 0x6d;
+    case SDLK_KP_PERIOD: return 0x6e;
+    case SDLK_KP_DIVIDE: return 0x6f;
+    case SDLK_SEMICOLON: return 0xba;
+    case SDLK_EQUALS: return 0xbb;
+    case SDLK_COMMA: return 0xbc;
+    case SDLK_MINUS: return 0xbd;
+    case SDLK_PERIOD: return 0xbe;
+    case SDLK_SLASH: return 0xbf;
+    case SDLK_BACKQUOTE: return 0xc0;
+    case SDLK_LEFTBRACKET: return 0xdb;
+    case SDLK_BACKSLASH: return 0xdc;
+    case SDLK_RIGHTBRACKET: return 0xdd;
+    case SDLK_QUOTE: return 0xde;
     default:
         return std::nullopt;
     }
@@ -1205,6 +1419,79 @@ std::optional<std::uint16_t> portable_key_code(SDL_Keycode key) {
 std::uint16_t binding(const yipe::GameSettings& settings,
                       yipe::InputAction action) {
     return settings.keys[static_cast<std::size_t>(action)];
+}
+
+std::optional<yipe::InputAction> exploration_action_for_key(
+    const yipe::GameSettings& settings, std::uint16_t key) {
+    if (const auto movement = yipe::movement_action_for_key(settings, key)) return movement;
+    switch (key) {
+    case 'W': return yipe::InputAction::north;
+    case 'A': return yipe::InputAction::west;
+    case 'S': return yipe::InputAction::south;
+    case 'D': return yipe::InputAction::east;
+    default: break;
+    }
+    for (const auto action : {yipe::InputAction::use_item, yipe::InputAction::cast}) {
+        if (key == binding(settings, action)) return action;
+    }
+    return std::nullopt;
+}
+
+std::string_view exploration_reserved_key(std::uint16_t key) {
+    switch (key) {
+    case 'Q':
+    case 0x1b: return "Quit";
+    case 0x70: return "Help";
+    case 0x74: return "Save";
+    case 0x75: return "Player Status";
+    case 0x79: return "Settings";
+    default: return {};
+    }
+}
+
+std::string key_binding_warnings(const yipe::GameSettings& settings) {
+    std::ostringstream warnings;
+    for (std::size_t index = 0; index < yipe::input_action_count; ++index) {
+        const auto action = static_cast<yipe::InputAction>(index);
+        const auto key = settings.keys[index];
+        const auto name = yipe::key_binding_name(key);
+        const auto report = [&](const std::string& reason) {
+            warnings << (index < 8 ? "Movement " : "Combat ")
+                     << yipe::input_action_name(action) << " [" << name << "]: " << reason << '\n';
+        };
+        if (name == "Unknown") {
+            report("unsupported key code " + std::to_string(key) + "; choose another key.");
+            continue;
+        }
+        if (index >= 8) {
+            const auto combat = yipe::combat_action_for_key(settings, key);
+            if (combat && combat != action) {
+                report("invokes " + std::string(yipe::input_action_name(*combat)) + " in combat instead.");
+            } else if (key == 0x0d && action != yipe::InputAction::attack) {
+                report("Enter invokes " + std::string(yipe::input_action_name(action))
+                       + " in combat instead of Attack.");
+            } else if (key == 0x09 || (key >= 0x25 && key <= 0x28)) {
+                report("replaces target cycling on this key; the Next Target button remains available.");
+            }
+        }
+        if (index < 8 || action == yipe::InputAction::cast || action == yipe::InputAction::use_item) {
+            const auto reserved = exploration_reserved_key(key);
+            const auto exploring = exploration_action_for_key(settings, key);
+            if (!reserved.empty()) {
+                report("reserved for " + std::string(reserved) + " during exploration.");
+            } else if (exploring && exploring != action) {
+                report("invokes " + std::string(yipe::input_action_name(*exploring))
+                       + " during exploration instead.");
+            } else if (index < 8) {
+                const auto original = exploration_action_for_key(yipe::GameSettings{}, key);
+                if (original && static_cast<std::size_t>(*original) < 8 && original != action) {
+                    report("replaces the fixed/convenience "
+                           + std::string(yipe::input_action_name(*original)) + " key.");
+                }
+            }
+        }
+    }
+    return warnings.str();
 }
 
 using Glyph = std::array<std::uint8_t, 7>;
@@ -1296,7 +1583,25 @@ void draw_text(SDL_Renderer* renderer, int x, int y, std::string_view value,
     }
 }
 
-struct CombatButton {
+void draw_status_bar(SDL_Renderer* renderer, int width, int top, std::string_view message) {
+    if (!status_bar_visible) return;
+    const SDL_Rect bar{0, top, width, status_bar_height};
+    SDL_SetRenderDrawColor(renderer, 228, 228, 228, 255);
+    SDL_RenderFillRect(renderer, &bar);
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    SDL_RenderDrawLine(renderer, 0, top, width - 1, top);
+    draw_text(renderer, 6, top + 7, message, {48, 48, 48, 255});
+    const auto locks = SDL_GetModState();
+    int left = width - 88;
+    for (const auto& [flag, label] : std::array<std::pair<int, std::string_view>, 3>{{
+            {KMOD_CAPS, "CAP"}, {KMOD_NUM, "NUM"}, {KMOD_SCROLL, "SCRL"}}}) {
+        const Uint8 shade = (locks & flag) != 0 ? 32 : 160;
+        draw_text(renderer, left, top + 7, label, {shade, shade, shade, 255});
+        left += 28;
+    }
+}
+
+struct DialogButton {
     SDL_Rect bounds;
     int action;
     std::string label;
@@ -1313,22 +1618,11 @@ int combat_action_id(yipe::InputAction action) {
     }
 }
 
-void render_combat_picker(SDL_Renderer* renderer, const std::string& status,
-                          const std::array<CombatButton, 6>& buttons,
-                          int hovered_button) {
-    SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
-    SDL_RenderClear(renderer);
-    const SDL_Rect panel{12, 10, map_width - 24, map_height - 20};
-    SDL_SetRenderDrawColor(renderer, 224, 216, 184, 255);
-    SDL_RenderFillRect(renderer, &panel);
-    SDL_SetRenderDrawColor(renderer, 52, 42, 28, 255);
-    SDL_RenderDrawRect(renderer, &panel);
-    draw_text(renderer, 172, 20, "COMBAT", {52, 42, 28, 255}, 2);
-    draw_text(renderer, 24, 46, status, {32, 28, 24, 255});
-
+void draw_dialog_buttons(SDL_Renderer* renderer, std::span<const DialogButton> buttons,
+                         int selected_button) {
     for (std::size_t index = 0; index < buttons.size(); ++index) {
-        const CombatButton& button = buttons[index];
-        const bool hovered = static_cast<int>(index) == hovered_button;
+        const DialogButton& button = buttons[index];
+        const bool hovered = static_cast<int>(index) == selected_button;
         SDL_SetRenderDrawColor(renderer, hovered ? 116 : 76,
                               hovered ? 104 : 68, hovered ? 72 : 48, 255);
         SDL_RenderFillRect(renderer, &button.bounds);
@@ -1339,6 +1633,22 @@ void render_combat_picker(SDL_Renderer* renderer, const std::string& status,
                   button.bounds.x + std::max(4, (button.bounds.w - text_width) / 2),
                   button.bounds.y + 11, button.label, {255, 248, 220, 255});
     }
+}
+
+void render_combat_picker(SDL_Renderer* renderer, const std::string& status,
+                          const std::array<DialogButton, 6>& buttons,
+                          int hovered_button) {
+    SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
+    SDL_RenderClear(renderer);
+    const SDL_Rect panel{12, 10, map_width - 24, map_height - 20};
+    SDL_SetRenderDrawColor(renderer, 224, 216, 184, 255);
+    SDL_RenderFillRect(renderer, &panel);
+    SDL_SetRenderDrawColor(renderer, 52, 42, 28, 255);
+    SDL_RenderDrawRect(renderer, &panel);
+    draw_text(renderer, 172, 20, "COMBAT", {52, 42, 28, 255}, 2);
+    draw_text(renderer, 24, 46, status, {32, 28, 24, 255});
+    draw_dialog_buttons(renderer, buttons, hovered_button);
+    draw_status_bar(renderer, map_width, map_height, "Combat - choose action");
     SDL_RenderPresent(renderer);
 }
 
@@ -1349,7 +1659,7 @@ int choose_combat_action(SDL_Renderer* renderer, const std::string& status,
         return std::string(name) + " ["
             + std::string(yipe::key_binding_name(binding(settings, action))) + "]";
     };
-    const std::array<CombatButton, 6> buttons{{
+    const std::array<DialogButton, 6> buttons{{
         {{32, 142, 352, 29}, 1, label("Attack", yipe::InputAction::attack)},
         {{32, 175, 352, 29}, 2, label("Use Item", yipe::InputAction::use_item)},
         {{32, 208, 352, 29}, 3, label("Cast", yipe::InputAction::cast)},
@@ -1371,13 +1681,14 @@ int choose_combat_action(SDL_Renderer* renderer, const std::string& status,
         if (event.type == SDL_QUIT) {
             return 0;
         }
-        if (event.type == SDL_WINDOWEVENT
+        if (event.type == SDL_KEYUP || (event.type == SDL_WINDOWEVENT
             && (event.window.event == SDL_WINDOWEVENT_EXPOSED
-                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
+                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED))) {
             render_combat_picker(renderer, status, buttons, hovered_button);
             continue;
         }
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
+            if ((event.key.keysym.mod & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) != 0) continue;
             const std::optional<std::uint16_t> key =
                 portable_key_code(event.key.keysym.sym);
             if (key) {
@@ -1394,19 +1705,10 @@ int choose_combat_action(SDL_Renderer* renderer, const std::string& status,
                 || event.key.keysym.sym == SDLK_DOWN) {
                 return 5;
             }
-            if (event.key.keysym.sym == SDLK_RETURN
-                || event.key.keysym.sym == SDLK_KP_ENTER) {
-                return 1;
-            }
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
-                return 4;
-            }
         }
         if (event.type == SDL_MOUSEMOTION) {
-            float x = 0.0F;
-            float y = 0.0F;
-            SDL_RenderWindowToLogical(renderer, event.motion.x, event.motion.y,
-                                      &x, &y);
+            const auto x = static_cast<float>(event.motion.x);
+            const auto y = static_cast<float>(event.motion.y);
             hovered_button = -1;
             for (std::size_t index = 0; index < buttons.size(); ++index) {
                 const SDL_Rect& bounds = buttons[index].bounds;
@@ -1423,11 +1725,9 @@ int choose_combat_action(SDL_Renderer* renderer, const std::string& status,
         }
         if (event.type == SDL_MOUSEBUTTONUP
             && event.button.button == SDL_BUTTON_LEFT) {
-            float x = 0.0F;
-            float y = 0.0F;
-            SDL_RenderWindowToLogical(renderer, event.button.x, event.button.y,
-                                      &x, &y);
-            for (const CombatButton& button : buttons) {
+            const auto x = static_cast<float>(event.button.x);
+            const auto y = static_cast<float>(event.button.y);
+            for (const DialogButton& button : buttons) {
                 if (x >= static_cast<float>(button.bounds.x)
                     && x < static_cast<float>(button.bounds.x + button.bounds.w)
                     && y >= static_cast<float>(button.bounds.y)
@@ -1445,34 +1745,54 @@ std::optional<std::uint16_t> capture_key_binding(
     const std::string action_name(yipe::input_action_name(action));
     show_message(window, "Edit Keys",
                  "Press OK, then press the new key for " + action_name
-                     + ".\n\nPress Escape to cancel.");
-    const std::string original_title = SDL_GetWindowTitle(window);
+                     + ".\n\nBindings store one key, not modifier combinations. "
+                       "Release Shift, Control, Alt, and Command first. Press Escape to cancel.");
+    struct RestoreTitle {
+        SDL_Window* window;
+        std::string title;
+        ~RestoreTitle() { SDL_SetWindowTitle(window, title.c_str()); }
+    } restore_title{window, SDL_GetWindowTitle(window)};
     SDL_SetWindowTitle(window, ("Yipe! III - press key for " + action_name).c_str());
     while (true) {
         SDL_Event event{};
         if (SDL_WaitEvent(&event) == 0) {
-            SDL_SetWindowTitle(window, original_title.c_str());
             throw std::runtime_error(std::string("SDL event wait failed: ")
                                      + SDL_GetError());
         }
-        if (event.type == SDL_QUIT) {
-            SDL_PushEvent(&event);
-            SDL_SetWindowTitle(window, original_title.c_str());
+        if (event.type == SDL_QUIT
+            || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)) {
+            event.type = SDL_QUIT;
+            if (SDL_PushEvent(&event) != 1) {
+                throw std::runtime_error(std::string("SDL quit event failed: ") + SDL_GetError());
+            }
             return std::nullopt;
         }
         if (event.type != SDL_KEYDOWN || event.key.repeat != 0) {
             continue;
         }
-        SDL_SetWindowTitle(window, original_title.c_str());
         if (event.key.keysym.sym == SDLK_ESCAPE) {
             return std::nullopt;
+        }
+        switch (event.key.keysym.sym) {
+        case SDLK_LSHIFT: case SDLK_RSHIFT: case SDLK_LCTRL: case SDLK_RCTRL:
+        case SDLK_LALT: case SDLK_RALT: case SDLK_LGUI: case SDLK_RGUI:
+        case SDLK_CAPSLOCK: case SDLK_NUMLOCKCLEAR: case SDLK_SCROLLLOCK: case SDLK_MODE:
+            continue;
+        default: break;
+        }
+        if ((event.key.keysym.mod & (KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI | KMOD_MODE)) != 0) {
+            show_message(window, "Single Keys Only",
+                         "Modifier combinations are not stored. Release the modifiers and press "
+                         "a single key, or Escape to cancel.");
+            continue;
         }
         const std::optional<std::uint16_t> key =
             portable_key_code(event.key.keysym.sym);
         if (!key) {
             show_message(window, "Edit Keys",
                          "That key is not supported. Letters, numbers, arrows, "
-                         "navigation keys, the numeric keypad, and F1-F12 are supported.");
+                         "navigation keys, punctuation, the numeric keypad, and F1-F12 are supported.");
+            continue;
         }
         return key;
     }
@@ -1525,28 +1845,43 @@ std::string settings_summary(const yipe::GameSettings& settings) {
         summary << "\n" << yipe::input_action_name(action) << ": "
                 << yipe::key_binding_name(settings.keys[index]);
     }
+    summary << "\n\nBindings store single keys; modifiers are not part of a binding."
+            << "\nArrows/keypad and WASD remain available; conflicts follow displayed warnings."
+            << "\nCtrl shortcuts take priority while exploring."
+            << "\nCtrl+I/C always provide Inventory/Cast; mouse buttons remain available.";
+    const std::string warnings = key_binding_warnings(settings);
+    if (!warnings.empty()) summary << "\n\nKey conflicts:\n" << warnings;
     return summary.str();
 }
 
-void show_help(SDL_Window* window, const yipe::GameSettings& settings) {
+void show_help(SDL_Window* window, const yipe::GameSettings& settings,
+               const yipe::Player* player = nullptr) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
                                      | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Done"},
         SDL_MessageBoxButtonData{0, 1, "Original Manual"},
         SDL_MessageBoxButtonData{0, 2, "Current Keys"},
         SDL_MessageBoxButtonData{0, 3, "About"},
+        SDL_MessageBoxButtonData{0, 4, "Profile / Registration"},
     };
     while (true) {
         const int choice = show_choice(window, "Yipe! III Help",
             "Rebuild Controls\n\n"
-            "Startup: N New Game, L Load, S Settings, H High Scores.\n"
+            "Startup: N New Game, L Load, R Recent, S Settings, H High Scores.\n"
             "F1 opens this help at startup or while exploring.\n\n"
             "Explore with your configured movement keys or WASD.\n"
+            "Left-click the map to take one step toward the clicked tile.\n"
             "Walk onto a monster to fight; enter buildings to visit shops.\n"
             "Ctrl+I: Inventory    Ctrl+C: Cast Spell\n"
             "Ctrl+T: Player Status    Ctrl+E: Equipment\n"
+            "F6 or Shift+F6: switch between the map and Player Status.\n"
+            "Status: Tab/Arrows select, Enter opens, D shows details, Esc returns.\n"
             "Ctrl+H: High Scores    Ctrl+N: New Game\n"
+            "High Scores during play also offers your High Score Code to copy.\n"
+            "Ctrl+P: Print / Preview    Ctrl+Shift+P: Page Setup\n"
             "Ctrl+O: Open saved game    Ctrl+Shift+O: Other\n"
+            "Ctrl+L: Recent Games (also available at startup)\n"
+            "Ctrl+B: Toggle Status Bar (session preference)\n"
             "F5 or Ctrl+S: Save    Ctrl+Shift+S: Save As\n"
             "F10: Settings; first save of a new game asks for a file.\n"
             "Q or Escape: Quit, with a save choice.\n\n"
@@ -1569,6 +1904,31 @@ void show_help(SDL_Window* window, const yipe::GameSettings& settings) {
                 "game, with an adapted macOS interface.\n\n"
                 "Original contact information (2003):\n"
                 "YipeSFT@aol.com\nwww.yipesoftware.com");
+        } else if (choice == 4) {
+            std::string profile =
+                "Serial Number: This rebuild has no original Yipe! III serial number.\n\n"
+                "The original Windows game displayed its installation's serial number "
+                "and accepted registration codes. This rebuild does not use those codes.\n\n"
+                "New characters and original-save imports can grow Strength, Dexterity, "
+                "and Intelligence to 50; random weapon upgrades can reach rank 29. "
+                "Native saves retain their stored limits.\n";
+            if (player) {
+                profile += "\nCurrent character's stat limit: "
+                    + std::to_string(player->maximum_stat())
+                    + "\nRandom weapon-upgrade limit: "
+                    + std::to_string(player->stat_cap_mode == 2 ? 29 : 23) + "\n";
+            }
+            profile += "\nOriginal Registration opens the preserved 2003 instructions. "
+                "Historical prices, contacts, and services are not verified as current.";
+            constexpr std::array profile_buttons{
+                SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                    | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
+                SDL_MessageBoxButtonData{0, 1, "Original Registration"},
+            };
+            if (show_choice(window, "Profile / Registration", profile, profile_buttons.data(),
+                            static_cast<int>(profile_buttons.size())) == 1) {
+                show_original_help(window, 22);
+            }
         } else {
             return;
         }
@@ -1576,18 +1936,28 @@ void show_help(SDL_Window* window, const yipe::GameSettings& settings) {
 }
 
 void show_settings(SDL_Window* window, yipe::GameSettings& settings,
-                   const std::filesystem::path& path, AudioPlayer& audio) {
+                   const std::filesystem::path& path, AudioPlayer& audio,
+                   yipe::Player* player = nullptr) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Done"},
         SDL_MessageBoxButtonData{0, 1, "Toggle Sound"},
         SDL_MessageBoxButtonData{0, 2, "Movement Keys"},
         SDL_MessageBoxButtonData{0, 3, "Combat Keys"},
         SDL_MessageBoxButtonData{0, 4, "Restore Defaults"},
+        SDL_MessageBoxButtonData{0, 6, "Toggle Status Bar"},
+        SDL_MessageBoxButtonData{0, 5, "Toggle Silly/Normal Mode"},
     };
     bool changed = false;
     while (true) {
-        const int choice = show_choice(window, "Settings", settings_summary(settings),
-                                       buttons.data(), static_cast<int>(buttons.size()));
+        std::string summary = settings_summary(settings);
+        summary += std::string("\nStatus bar: ") + (status_bar_visible ? "Shown" : "Hidden")
+            + " (this session)";
+        if (player != nullptr) {
+            summary += std::string("\n\nEquipment names: ")
+                + (player->silly_mode ? "Silly" : "Normal") + " (saved with this character)";
+        }
+        const int choice = show_choice(window, "Settings", summary, buttons.data(),
+                                       static_cast<int>(buttons.size()) - (player == nullptr ? 1 : 0));
         if (choice == 1) {
             if (!settings.sound_enabled && !audio.available()) {
                 show_message(window, "Audio Unavailable", audio.error());
@@ -1608,9 +1978,24 @@ void show_settings(SDL_Window* window, yipe::GameSettings& settings,
             }
             const std::optional<std::uint16_t> key =
                 capture_key_binding(window, *action);
+            if (!key && SDL_HasEvent(SDL_QUIT)) break;
             if (key) {
-                settings.keys[static_cast<std::size_t>(*action)] = *key;
-                changed = true;
+                auto proposed = settings;
+                proposed.keys[static_cast<std::size_t>(*action)] = *key;
+                const std::string warnings = key_binding_warnings(proposed);
+                if (proposed != settings && !warnings.empty()) {
+                    constexpr std::array conflict_buttons{
+                        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Cancel Change"},
+                        SDL_MessageBoxButtonData{0, 1, "Use Key Anyway"},
+                    };
+                    if (show_choice(window, "Key Conflicts", warnings,
+                                    conflict_buttons.data(), static_cast<int>(conflict_buttons.size())) != 1) {
+                        continue;
+                    }
+                }
+                changed = changed || proposed != settings;
+                settings = proposed;
             }
         } else if (choice == 4) {
             settings = yipe::GameSettings{};
@@ -1618,15 +2003,23 @@ void show_settings(SDL_Window* window, yipe::GameSettings& settings,
                 settings.sound_enabled = false;
             }
             changed = true;
+        } else if (choice == 6) {
+            toggle_status_bar(SDL_GetRenderer(window));
+        } else if (choice == 5 && player != nullptr) {
+            player->silly_mode = !player->silly_mode;
+            show_message(window, "Silly/Normal Mode",
+                         player->silly_mode
+                             ? "Weapon and Armor names will now be in 'Silly' mode."
+                             : "Weapon and Armor names will now be in 'Normal' mode.");
         } else {
-            if (changed) {
-                try {
-                    yipe::save_settings_atomic(path, settings);
-                } catch (const std::runtime_error& error) {
-                    show_message(window, "Settings Save Failed", error.what());
-                }
-            }
-            return;
+            break;
+        }
+    }
+    if (changed) {
+        try {
+            yipe::save_settings_atomic(path, settings);
+        } catch (const std::runtime_error& error) {
+            show_message(window, "Settings Save Failed", error.what());
         }
     }
 }
@@ -1646,26 +2039,53 @@ std::string purchase_message(const yipe::ShopStockItem& item,
     throw std::logic_error("unknown purchase result");
 }
 
-void show_freds_shop(SDL_Window* window, yipe::Player& player) {
+bool allow_quizilog_shop(SDL_Window* window, yipe::GameState& game) {
+    if (game.location.map_id != 8 || game.player.has_tree_climbing_shoes) return true;
+    if (!active_monster_placements(game).empty()) {
+        show_message(window, "Quizilog",
+                     "The townspeople of Quizilog are being harassed by evil monsters "
+                     "surrounding their city. They are so busy trying to fight the monsters "
+                     "that they have no time to sell you anything from the local shops.\n\n"
+                     "They ask you to lend them a hand in getting rid of the monsters. "
+                     "Once the monsters are gone, they will once again open up their shops "
+                     "for business.");
+        return false;
+    }
+    game.player.has_tree_climbing_shoes = true;
+    show_message(window, "Quizilog Reward",
+                 "The townspeople thank you greatly for freeing the town! All monsters "
+                 "have been defeated and the town can now live in peace and quiet once again.\n\n"
+                 "As a special reward, the townspeople give you a special set of tools "
+                 "that can be used to climb certain trees around the world of Yipe!");
+    return true;
+}
+
+void show_miscellaneous_shop(SDL_Window* window, yipe::Player& player, int map_id) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Leave"},
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Buy"},
         SDL_MessageBoxButtonData{0, 2, "Next"},
         SDL_MessageBoxButtonData{0, 3, "Previous"},
     };
-    const auto& stock = yipe::freds_miscellaneous_stock();
+    const char* title = map_id == 0x11 ? "Fred's Miscellaneous Shop"
+        : map_id == 0x1b ? "Maynard Supplies Shop"
+        : map_id == 8 ? "Quizilog Random Items Shop" : "Outback Shop";
+    if (yipe::enter_miscellaneous_shop(player)) {
+        show_message(window, title,
+                     "Due to a worldwide shortage of supplies the price for certain items has increased.");
+    }
+    const auto stock = yipe::miscellaneous_shop_stock(player, map_id);
     std::size_t selected = 0;
     while (true) {
         const yipe::ShopStockItem& item = stock[selected];
         std::ostringstream message;
         message << item.name << "\nPrice: " << item.price << " gold\nYour gold: "
                 << player.gold << "\n\nItem " << selected + 1 << " of " << stock.size();
-        switch (show_choice(window, "Fred's Miscellaneous Shop", message.str(),
+        switch (show_choice(window, title, message.str(),
                             buttons.data(), static_cast<int>(buttons.size()))) {
         case 1: {
             const yipe::PurchaseResult result = yipe::purchase_shop_item(player, item);
-            show_message(window, "Fred's Miscellaneous Shop",
-                         purchase_message(item, result.status));
+            show_message(window, title, purchase_message(item, result.status));
             break;
         }
         case 2:
@@ -1675,14 +2095,17 @@ void show_freds_shop(SDL_Window* window, yipe::Player& player) {
             selected = (selected + stock.size() - 1) % stock.size();
             break;
         default:
+            if (player.miscellaneous_shop_stage == 3) player.miscellaneous_shop_stage = 4;
             return;
         }
     }
 }
 
-std::string equipment_name(yipe::EquipmentKind kind, int rank) {
-    static const yipe::ItemNames names =
+std::string equipment_name(yipe::EquipmentKind kind, int rank, bool silly_mode) {
+    static const yipe::ItemNames normal_names =
         yipe::load_item_names(runtime_assets("Yipe! III").item_names);
+    static const yipe::ItemNames silly_names = yipe::embedded_item_names(true);
+    const yipe::ItemNames& names = silly_mode ? silly_names : normal_names;
     if (rank < 1) {
         return "None";
     }
@@ -1716,9 +2139,10 @@ void show_equipment_shop(SDL_Window* window, yipe::Player& player, int map_id,
         const int current_rank = kind == yipe::EquipmentKind::weapon
             ? player.weapon_rank : player.armor_rank;
         std::ostringstream message;
-        message << equipment_name(kind, item.rank) << " (rank " << item.rank << ")\nCost: "
+        message << equipment_name(kind, item.rank, player.silly_mode)
+                << " (rank " << item.rank << ")\nCost: "
                 << item.price << " gold\n\nCurrent: "
-                << equipment_name(kind, current_rank) << "\nSell value: "
+                << equipment_name(kind, current_rank, player.silly_mode) << "\nSell value: "
                 << yipe::equipment_sale_value(player, kind) << " gold\nYour gold: "
                 << player.gold << "\n\nItem " << selected + 1 << " of " << stock.size();
         const int choice = show_choice(window, title, message.str(), buttons.data(),
@@ -2335,17 +2759,49 @@ std::string high_score_page(const yipe::HighScores& scores, int difficulty) {
     return message.str();
 }
 
-void show_high_scores(SDL_Window* window, const yipe::HighScores& scores, int difficulty = 2) {
+void show_high_score_code(SDL_Window* window, const yipe::Player& player) {
+    const std::string code = yipe::high_score_code(player);
+    std::string message = player.name + "\n\n" + code;
+    if (!player.monster_defeat_history_complete) {
+        message += "\n\nOlder save: this code includes only recorded defeat counters.\n"
+                   "Earlier defeats are not included.";
+    }
+    message += "\n\nThe original game provided this code for emailing scores to\n"
+               "YipeScores@aol.com. Availability of that historical service is unknown.\n"
+               "Copy Code copies the code locally; nothing is sent.";
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
+                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
+        SDL_MessageBoxButtonData{0, 1, "Copy Code"},
+    };
+    while (show_choice(window, "High Score Code", message, buttons.data(),
+                       static_cast<int>(buttons.size())) == 1) {
+        if (SDL_SetClipboardText(code.c_str()) != 0) {
+            show_message(window, "Copy Code Failed", SDL_GetError());
+        } else {
+            show_message(window, "High Score Code", "Code copied to the clipboard.");
+            return;
+        }
+    }
+}
+
+void show_high_scores(SDL_Window* window, const yipe::HighScores& scores, int difficulty = 2,
+                      const yipe::Player* player = nullptr) {
     constexpr std::array buttons{
         SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
                                      | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
         SDL_MessageBoxButtonData{0, 1, "Easy"},
         SDL_MessageBoxButtonData{0, 2, "Medium"},
         SDL_MessageBoxButtonData{0, 3, "Hard"},
+        SDL_MessageBoxButtonData{0, 4, "High Score Code"},
     };
     while (true) {
         const int choice = show_choice(window, "High Scores", high_score_page(scores, difficulty),
-                                       buttons.data(), static_cast<int>(buttons.size()));
+                                       buttons.data(), player ? 5 : 4);
+        if (choice == 4 && player) {
+            show_high_score_code(window, *player);
+            continue;
+        }
         if (choice < 1 || choice > 3) {
             return;
         }
@@ -2427,9 +2883,11 @@ std::string equipment_statistics_page(const yipe::Player& player) {
     const int amulet = static_cast<std::int16_t>(player.necklace_rank);
     std::ostringstream message;
     message << "Current Items Equipped\nAC = Armor Class; WC = Weapon Class\n\n"
-            << "Weapon: " << equipment_name(yipe::EquipmentKind::weapon, player.weapon_rank)
+            << "Weapon: " << equipment_name(yipe::EquipmentKind::weapon, player.weapon_rank,
+                                           player.silly_mode)
             << "  (AC 0, WC " << player.weapon_rank << ")\n"
-            << "Body Armor: " << equipment_name(yipe::EquipmentKind::armor, player.armor_rank)
+            << "Body Armor: " << equipment_name(yipe::EquipmentKind::armor, player.armor_rank,
+                                               player.silly_mode)
             << "  (AC " << player.armor_rank << ", WC 0)";
     const auto append_accessory = [&](std::string_view label, int rank,
                                       const auto& names, int ac, int wc) {
@@ -2452,48 +2910,147 @@ std::string equipment_statistics_page(const yipe::Player& player) {
     return message.str();
 }
 
-void show_player_status(SDL_Window* window, const yipe::Player& player,
-                        const std::filesystem::path& high_scores_path,
-                        yipe::HighScores& high_scores) {
+std::string player_status_values(const yipe::Player& player) {
     const auto carried = std::count_if(
         player.inventory.begin(),
         player.inventory.begin()
             + static_cast<std::ptrdiff_t>(yipe::Player::carried_inventory_size),
         [](std::uint16_t item) { return item != 0; });
     std::ostringstream message;
-    message << player.name << "\nLevel " << player.level << "  XP " << player.experience
-            << "  Gold " << player.gold << "\nHP " << player.health << "/"
-            << player.maximum_health << "  SP " << player.spell_points << "/"
-            << player.maximum_spell_points << "  AP " << player.ability_points << "/"
+    message << "Level " << player.level << "  XP " << player.experience
+            << "\nGold " << player.gold << "\nHealth Points " << player.health << "/"
+            << player.maximum_health << "\nSpell Points " << player.spell_points << "/"
+            << player.maximum_spell_points << "\nAbility Points " << player.ability_points << "/"
             << player.maximum_ability_points << "\nStrength " << player.strength
-            << "  Dexterity " << player.dexterity << "  Intelligence "
-            << player.intelligence << "\nWC " << yipe::player_attack_equipment_rating(player)
+            << "  Dexterity " << player.dexterity << "\nIntelligence "
+            << player.intelligence << "\nStat limit " << player.maximum_stat()
+            << "\nWC " << yipe::player_attack_equipment_rating(player)
             << "  AC " << yipe::player_defense_equipment_rating(player)
             << "\nCarried items " << carried << "/"
             << yipe::Player::carried_inventory_size;
-    constexpr std::array buttons{
-        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
-                                     | SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Back"},
-        SDL_MessageBoxButtonData{0, 1, "Kills"},
-        SDL_MessageBoxButtonData{0, 2, "High Scores"},
-        SDL_MessageBoxButtonData{0, 3, "Special"},
-        SDL_MessageBoxButtonData{0, 4, "Equipment"},
-    };
+    return message.str();
+}
+
+void render_player_status(SDL_Renderer* renderer, const GameTextures& textures,
+                          const yipe::Player& player, const std::string& values,
+                          std::span<const DialogButton> buttons, int selected_button) {
+    SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
+    SDL_RenderClear(renderer);
+    const SDL_Rect panel{12, 10, map_width - 24, map_height - 20};
+    SDL_SetRenderDrawColor(renderer, 224, 216, 184, 255);
+    SDL_RenderFillRect(renderer, &panel);
+    SDL_SetRenderDrawColor(renderer, 52, 42, 28, 255);
+    SDL_RenderDrawRect(renderer, &panel);
+    draw_text(renderer, 130, 20, "PLAYER STATUS", {52, 42, 28, 255}, 2);
+    const auto portrait = player.inventory[28];
+    const SDL_Rect image{24, 46, 64, 64};
+    copy_texture(renderer, textures.find(405 + (portrait >= 1 && portrait <= 12 ? portrait : 1)),
+                 nullptr, &image);
+    draw_text(renderer, 104, 50, "Stats For:", {32, 28, 24, 255});
+    // The bitmap font cannot represent every name; the title and native Details can.
+    const bool supported_name = std::all_of(player.name.begin(), player.name.end(), [](char c) {
+        return c == '?' || glyph_for(c) != glyph_for('?');
+    });
+    const std::string name = !supported_name ? "[Name in Details]"
+        : player.name.size() > 47 ? player.name.substr(0, 44) + "..." : player.name;
+    draw_text(renderer, 104, 68, name, {32, 28, 24, 255});
+    draw_text(renderer, 104, 94, "Full name and text: Details [D]", {52, 42, 28, 255});
+    std::istringstream lines(values);
+    std::string line;
+    for (int y = 120; std::getline(lines, line); y += 16) {
+        draw_text(renderer, 24, y, line, {32, 28, 24, 255});
+    }
+    draw_dialog_buttons(renderer, buttons, selected_button);
+    draw_text(renderer, 24, 358, "Tab/Arrows: select  Enter: open  Esc: back", {52, 42, 28, 255});
+    draw_status_bar(renderer, map_width, map_height, "Player status");
+    SDL_RenderPresent(renderer);
+}
+
+void show_player_status(SDL_Window* window, SDL_Renderer* renderer,
+                        const GameTextures& textures, const yipe::Player& player,
+                        const std::filesystem::path& high_scores_path,
+                        yipe::HighScores& high_scores) {
+    struct RestoreTitle {
+        SDL_Window* window;
+        std::string title;
+        ~RestoreTitle() { SDL_SetWindowTitle(window, title.c_str()); }
+    } restore_title{window, SDL_GetWindowTitle(window)};
+    SDL_SetWindowTitle(window, ("Player Status - " + player.name).c_str());
+    const std::string values = player_status_values(player);
+    const std::array<DialogButton, 6> buttons{{
+        {{24, 286, 116, 29}, 0, "Back [B]"},
+        {{150, 286, 116, 29}, 1, "Kills [K]"},
+        {{276, 286, 116, 29}, 2, "High Scores [H]"},
+        {{24, 321, 116, 29}, 3, "Special [S]"},
+        {{150, 321, 116, 29}, 4, "Equipment [E]"},
+        {{276, 321, 116, 29}, 5, "Details [D]"},
+    }};
+    int selected = 0;
+    render_player_status(renderer, textures, player, values, buttons, selected);
     while (true) {
-        const int choice = show_choice(window, "Player Status", message.str(), buttons.data(),
-                                       static_cast<int>(buttons.size()));
+        SDL_Event event{};
+        if (SDL_WaitEvent(&event) == 0) {
+            throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
+        }
+        if (event.type == SDL_QUIT
+            || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)) {
+            event.type = SDL_QUIT;
+            if (SDL_PushEvent(&event) != 1) {
+                throw std::runtime_error(std::string("SDL quit event failed: ") + SDL_GetError());
+            }
+            return;
+        }
+        int choice = -1;
+        if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
+            const auto key = event.key.keysym;
+            if (key.sym == SDLK_ESCAPE) return;
+            if (key.sym == SDLK_F6
+                && (key.mod & (KMOD_CTRL | KMOD_ALT | KMOD_GUI | KMOD_MODE)) == 0) return;
+            if ((key.mod & (KMOD_CTRL | KMOD_ALT | KMOD_GUI)) != 0) continue;
+            switch (key.sym) {
+            case SDLK_TAB: selected = (selected + ((key.mod & KMOD_SHIFT) ? 5 : 1)) % 6; break;
+            case SDLK_LEFT: selected = (selected + 5) % 6; break;
+            case SDLK_RIGHT: selected = (selected + 1) % 6; break;
+            case SDLK_UP:
+            case SDLK_DOWN: selected = (selected + 3) % 6; break;
+            case SDLK_RETURN:
+            case SDLK_KP_ENTER: choice = buttons[static_cast<std::size_t>(selected)].action; break;
+            case SDLK_b: choice = 0; break;
+            case SDLK_k: choice = 1; break;
+            case SDLK_h: choice = 2; break;
+            case SDLK_s: choice = 3; break;
+            case SDLK_e: choice = 4; break;
+            case SDLK_d: choice = 5; break;
+            default: break;
+            }
+        }
+        if (event.type == SDL_MOUSEMOTION
+            || (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)) {
+            const SDL_Point point = event.type == SDL_MOUSEMOTION
+                ? SDL_Point{event.motion.x, event.motion.y}
+                : SDL_Point{event.button.x, event.button.y};
+            for (std::size_t index = 0; index < buttons.size(); ++index) {
+                if (SDL_PointInRect(&point, &buttons[index].bounds)) {
+                    selected = static_cast<int>(index);
+                    if (event.type == SDL_MOUSEBUTTONUP) choice = buttons[index].action;
+                    break;
+                }
+            }
+        }
+        if (choice == 0) return;
         if (choice == 1) {
             show_monster_defeats(window, player);
         } else if (choice == 2) {
             record_player_high_scores(high_scores_path, high_scores, player);
-            show_high_scores(window, high_scores, player.difficulty);
+            show_high_scores(window, high_scores, player.difficulty, &player);
         } else if (choice == 3) {
             show_message(window, "Special Statistics", special_statistics_page(player));
         } else if (choice == 4) {
             show_message(window, "Equipment Statistics", equipment_statistics_page(player));
-        } else {
-            return;
+        } else if (choice == 5) {
+            show_message(window, "Player Status Details", player.name + "\n\n" + values);
         }
+        render_player_status(renderer, textures, player, values, buttons, selected);
     }
 }
 
@@ -2518,6 +3075,9 @@ void append_victory_details(std::ostringstream& message, const yipe::CombatTurn&
     message << "\n\nAll monsters are defeated.\nYou gain "
             << turn.reward.experience << " experience and " << turn.reward.gold
             << " gold.";
+    if (turn.reward.underworld_key) {
+        message << "\nYou found the Underworld Key.";
+    }
     if (turn.reward.equipment_upgrade != yipe::EquipmentUpgrade::none) {
         message << "\nYou found a "
                 << yipe::equipment_upgrade_name(turn.reward.equipment_upgrade)
@@ -2917,8 +3477,9 @@ void cast_exploration_spell(SDL_Window* window, yipe::GameState& game,
     if (result.healing > 0) {
         message << "\nYou recover " << result.healing << " health.";
     } else if (selection->index == 4) {
-        message << "\nThe smell will repel monsters for "
-                << result.repellent_duration << " steps.";
+        message << "\nThe smell will repel monsters for about "
+                << (result.repellent_duration * 512 + 500) / 1000
+                << " seconds of exploration.";
     } else if (result.location_changed) {
         message << "\nYou arrive safely on the surface.";
     } else {
@@ -3014,6 +3575,7 @@ bool save_current_game(SDL_Window* window, std::filesystem::path& path,
     synchronize_player_location(game);
     yipe::save_game_atomic(destination, game);
     path = std::move(destination);
+    yipe_app::remember_game_file(path);
     if (show_confirmation) {
         show_message(window, "Game Saved", "Your game was saved to:\n" + path.string());
     }
@@ -3021,8 +3583,9 @@ bool save_current_game(SDL_Window* window, std::filesystem::path& path,
 }
 
 std::optional<GameExit> choose_game_to_open(
-    const std::filesystem::path& initial_directory) {
-    const auto selected = yipe_app::choose_open_game_file(initial_directory);
+    const std::filesystem::path& initial_directory,
+    std::optional<std::filesystem::path> selected = std::nullopt) {
+    if (!selected) selected = yipe_app::choose_open_game_file(initial_directory);
     if (!selected) {
         return std::nullopt;
     }
@@ -3048,7 +3611,36 @@ std::optional<GameExit> choose_game_to_open(
         }
         native_path = *converted;
     }
-    return GameExit{StartupChoice::load_game, std::move(game), std::move(native_path)};
+    return GameExit{StartupChoice::load_game, std::move(game), std::move(native_path), *selected};
+}
+
+std::optional<GameExit> choose_recent_game_to_open(
+    SDL_Window* window, const std::filesystem::path& initial_directory) {
+    const auto files = yipe_app::recent_game_files();
+    if (files.empty()) {
+        show_message(window, "Recent Games", "No recent games. Open or save a game to add it here.");
+        return std::nullopt;
+    }
+    constexpr std::array buttons{
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel"},
+        SDL_MessageBoxButtonData{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Open"},
+        SDL_MessageBoxButtonData{0, 2, "Previous"},
+        SDL_MessageBoxButtonData{0, 3, "Next"},
+        SDL_MessageBoxButtonData{0, 4, "Clear List"},
+    };
+    std::size_t index = 0;
+    while (true) {
+        const int choice = show_choice(window, "Recent Games",
+            "Game " + std::to_string(index + 1) + " of " + std::to_string(files.size())
+                + "\n\n" + files[index].string(), buttons.data(), static_cast<int>(buttons.size()));
+        if (choice == 1) return choose_game_to_open(initial_directory, files[index]);
+        if (choice == 2) index = index == 0 ? files.size() - 1 : index - 1;
+        else if (choice == 3) index = (index + 1) % files.size();
+        else if (choice == 4) {
+            yipe_app::clear_recent_game_files();
+            return std::nullopt;
+        } else return std::nullopt;
+    }
 }
 
 void save_current_game_as(SDL_Window* window, std::filesystem::path& path,
@@ -3082,6 +3674,17 @@ bool confirm_leave_game(SDL_Window* window, const char* title, const char* messa
     return choice == 1;
 }
 
+class PauseExplorationTimer {
+public:
+    explicit PauseExplorationTimer(Uint64& deadline)
+        : deadline_(deadline), started_(SDL_GetTicks64()) {}
+    ~PauseExplorationTimer() { deadline_ += SDL_GetTicks64() - started_; }
+
+private:
+    Uint64& deadline_;
+    Uint64 started_;
+};
+
 GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                   const GameTextures& textures, yipe::GameState game,
                   std::filesystem::path& save_path,
@@ -3100,6 +3703,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         synchronize_player_location(game);
         initialize_map_state(game, map);
         apply_map_tile_changes(map, game);
+        map.restore_overlay_for_saved_position(game.location.position);
         yipe::initialize_map_visibility(
             game.map_visibility, map, game.location.position);
     }
@@ -3133,11 +3737,112 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         return result;
     };
 
-    while (true) {
-        SDL_Event event{};
-        if (SDL_WaitEvent(&event) == 0) {
-            throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
+    const auto advance_monsters = [&](bool allow_spawn, int movement_code) {
+        const auto placements = active_monster_placements(game);
+        const auto pursuing_position = game.pursuing_monster
+            ? std::optional{game.pursuing_monster->position} : std::nullopt;
+        auto roaming_update = yipe::RoamingMonsterUpdate::none;
+        if (allow_spawn) {
+            roaming_update = yipe::update_roaming_monster(
+                game.roaming_monster, map, game.player, game.location,
+                static_cast<std::uint16_t>(movement_code), placements,
+                game.map_visibility, {}, random, pursuing_position);
+        } else if (game.roaming_monster
+                   && yipe::move_roaming_monster(
+                          *game.roaming_monster, map, game.location.position,
+                          placements, random, pursuing_position)
+                       == yipe::RoamingMonsterMove::encountered_player) {
+            roaming_update = yipe::RoamingMonsterUpdate::encountered_player;
         }
+        if (roaming_update == yipe::RoamingMonsterUpdate::encountered_player) {
+            const int type = game.roaming_monster->type_id;
+            const auto encounter = fight_monster(
+                transient_monster_placement(type, game.roaming_monster->position));
+            game.roaming_monster.reset();
+            if (encounter == EncounterResult::quit_requested
+                && save_current_game(window, save_path, game, random, false)) return true;
+            if (encounter == EncounterResult::defeat) {
+                recover_from_combat_defeat(window, game, map, random, type);
+            }
+            return false;
+        }
+        if (roaming_update == yipe::RoamingMonsterUpdate::spawned) return false;
+        if (game.pursuing_monster
+            && yipe::move_pursuing_monster(
+                   *game.pursuing_monster, map, game.location.position, placements,
+                   game.roaming_monster, game.map_visibility, random)
+                == yipe::RoamingMonsterMove::encountered_player) {
+            const int type = game.pursuing_monster->type_id;
+            const auto encounter = fight_monster(
+                transient_monster_placement(type, game.pursuing_monster->position));
+            if (encounter == EncounterResult::quit_requested
+                && save_current_game(window, save_path, game, random, false)) return true;
+            if (encounter == EncounterResult::victory) {
+                game.pursuing_monster.reset();
+            } else if (encounter == EncounterResult::defeat) {
+                recover_from_combat_defeat(window, game, map, random, type);
+            }
+        }
+        return false;
+    };
+
+    yipe::ExplorationTimer exploration_timer;
+    Uint64 timer_deadline = SDL_GetTicks64() + 500;
+    while (true) {
+        const Uint64 now = SDL_GetTicks64();
+        if (now >= timer_deadline) {
+            const int tick = exploration_timer.advance(game.player, map, game.location.position);
+            if (tick % 4 == 0) {
+                const auto hazard = yipe::advance_timed_hazard(
+                    map, game.map_visibility, game.player, game.location.position,
+                    game.roaming_monster, random);
+                audio.play(hazard.sound_id, settings.sound_enabled);
+                if (hazard.fell) {
+                    if (!yipe::change_map_depth(game.location, 0x10)) {
+                        throw std::logic_error("timed fall has no depth action");
+                    }
+                    const auto destination = load_world_map(game.location, random);
+                    if (!destination) throw std::runtime_error("timed fall map is unavailable");
+                    map = *destination;
+                    game.temporarily_defeated_monster_placements.clear();
+                    initialize_map_state(game, map);
+                    synchronize_player_location(game);
+                    apply_map_tile_changes(map, game);
+                    yipe::initialize_map_visibility(
+                        game.map_visibility, map, game.location.position);
+                } else if (hazard.sound_id == 144) {
+                    show_message(window, "Fire Wall",
+                                 "The fire from a nearby wall spreads over where you are standing and burns you!");
+                }
+            }
+            if (tick % 3 == 0) {
+                const auto roaming_position = game.roaming_monster
+                    ? std::optional{game.roaming_monster->position} : std::nullopt;
+                if (map.advance_overlay(game.map_visibility, game.location.position,
+                                        random, roaming_position)) {
+                    yipe::reveal_map_from(game.map_visibility, map, game.location.position);
+                    if (advance_monsters(false, 0)) return {StartupChoice::quit};
+                }
+            }
+            if (yipe::advance_repellent_timer(game.player)) {
+                audio.play(199, settings.sound_enabled);
+                show_message(window, "Monster Repellent",
+                             "The terrible smell that was around you seems to have faded away.");
+            }
+            render_game(renderer, map, textures, game);
+            timer_deadline = SDL_GetTicks64() + 512;
+            continue;
+        }
+        SDL_Event event{};
+        SDL_ClearError();
+        if (SDL_WaitEventTimeout(&event, static_cast<int>(timer_deadline - now)) == 0) {
+            if (*SDL_GetError() != '\0') {
+                throw std::runtime_error(std::string("SDL event wait failed: ") + SDL_GetError());
+            }
+            continue;
+        }
+        // Modal UI and combat consume no exploration time or queued catch-up ticks.
+        const PauseExplorationTimer pause_timer(timer_deadline);
         if (event.type == SDL_QUIT) {
             if (save_current_game(window, save_path, game, random, false)) {
                 return {StartupChoice::quit};
@@ -3145,15 +3850,32 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.type == SDL_WINDOWEVENT
+        if (event.type == SDL_KEYUP || (event.type == SDL_WINDOWEVENT
             && (event.window.event == SDL_WINDOWEVENT_EXPOSED
-                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)) {
+                || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED))) {
             render_game(renderer, map, textures, game);
         }
-        if (event.type != SDL_KEYDOWN) {
+        const bool mouse_move = event.type == SDL_MOUSEBUTTONUP
+            && event.button.button == SDL_BUTTON_LEFT;
+        if (event.type != SDL_KEYDOWN && !mouse_move) {
             continue;
         }
-        if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q) {
+        const SDL_Keysym keysym = event.type == SDL_KEYDOWN
+            ? event.key.keysym : SDL_Keysym{};
+        if ((keysym.mod & (KMOD_ALT | KMOD_GUI | KMOD_MODE)) != 0) continue;
+        if (keysym.sym == SDLK_b && (keysym.mod & KMOD_CTRL) != 0) {
+            if (event.key.repeat == 0) toggle_status_bar(renderer);
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        // The original Edit accelerators belong to text controls, and must
+        // not fall through to a rebound movement key while exploring.
+        if (((keysym.mod & KMOD_CTRL) != 0
+                && (keysym.sym == SDLK_x || keysym.sym == SDLK_v || keysym.sym == SDLK_z
+                    || keysym.sym == SDLK_INSERT))
+            || ((keysym.mod & KMOD_SHIFT) != 0
+                && (keysym.sym == SDLK_INSERT || keysym.sym == SDLK_DELETE))) continue;
+        if (keysym.sym == SDLK_ESCAPE || keysym.sym == SDLK_q) {
             if (confirm_leave_game(window, "Quit Game",
                                    "Do you want to save before quitting?",
                                    save_path, game, random)) {
@@ -3162,16 +3884,18 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if ((event.key.keysym.mod & KMOD_CTRL) != 0
-            && (event.key.keysym.sym == SDLK_n
-                || (event.key.keysym.sym == SDLK_o
-                    && (event.key.keysym.mod & KMOD_SHIFT) == 0))) {
+        if ((keysym.mod & KMOD_CTRL) != 0
+            && (keysym.sym == SDLK_n
+                || keysym.sym == SDLK_l
+                || (keysym.sym == SDLK_o
+                    && (keysym.mod & KMOD_SHIFT) == 0))) {
             if (event.key.repeat == 0) {
-                const bool opening = event.key.keysym.sym == SDLK_o;
+                const bool opening = keysym.sym != SDLK_n;
                 if (opening) {
                     try {
-                        auto opened = choose_game_to_open(
-                            default_preference_directory());
+                        auto opened = keysym.sym == SDLK_l
+                            ? choose_recent_game_to_open(window, default_preference_directory())
+                            : choose_game_to_open(default_preference_directory());
                         if (opened) {
                             std::error_code error;
                             const bool same_path = !save_path.empty()
@@ -3189,6 +3913,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                                         window, "Reopen Game",
                                         "Discard unsaved changes and reopen this save?",
                                         buttons.data(), static_cast<int>(buttons.size())) == 1) {
+                                    yipe_app::remember_game_file(opened->opened_source_path);
                                     return std::move(*opened);
                                 }
                             } else if (confirm_leave_game(
@@ -3196,6 +3921,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                                            "Open the selected game? Save current progress first?",
                                            save_path, game, random,
                                            opened->opened_save_path)) {
+                                yipe_app::remember_game_file(opened->opened_source_path);
                                 return std::move(*opened);
                             }
                         }
@@ -3212,17 +3938,17 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_F1) {
+        if (keysym.sym == SDLK_F1) {
             if (event.key.repeat == 0) {
-                show_help(window, settings);
+                show_help(window, settings, &game.player);
             }
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_F5
-            || (event.key.keysym.sym == SDLK_s
-                && (event.key.keysym.mod & KMOD_CTRL) != 0
-                && (event.key.keysym.mod & KMOD_SHIFT) == 0)) {
+        if (keysym.sym == SDLK_F5
+            || (keysym.sym == SDLK_s
+                && (keysym.mod & KMOD_CTRL) != 0
+                && (keysym.mod & KMOD_SHIFT) == 0)) {
             if (event.key.repeat == 0) {
                 static_cast<void>(save_current_game(
                     window, save_path, game, random, true));
@@ -3230,36 +3956,55 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_s
-            && (event.key.keysym.mod & KMOD_CTRL) != 0
-            && (event.key.keysym.mod & KMOD_SHIFT) != 0) {
+        if (keysym.sym == SDLK_p && (keysym.mod & KMOD_CTRL) != 0) {
+            if (event.key.repeat == 0) {
+                try {
+                    if ((keysym.mod & KMOD_SHIFT) != 0) {
+                        yipe_app::show_page_setup();
+                    } else {
+                        const Surface image = printable_game_view(renderer, map, textures, game);
+                        yipe_app::show_print_dialog(*image);
+                    }
+                } catch (const std::runtime_error& error) {
+                    show_message(window, "Printing Failed", error.what());
+                }
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if (keysym.sym == SDLK_s
+            && (keysym.mod & KMOD_CTRL) != 0
+            && (keysym.mod & KMOD_SHIFT) != 0) {
             if (event.key.repeat == 0) {
                 save_current_game_as(window, save_path, game, random);
             }
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_F10) {
-            show_settings(window, settings, settings_path, audio);
-            render_game(renderer, map, textures, game);
-            continue;
-        }
-        if (event.key.keysym.sym == SDLK_t
-            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+        if (keysym.sym == SDLK_F10) {
             if (event.key.repeat == 0) {
-                show_player_status(window, game.player, high_scores_path, high_scores);
+                show_settings(window, settings, settings_path, audio, &game.player);
             }
             render_game(renderer, map, textures, game);
             continue;
         }
-        if ((event.key.keysym.mod & KMOD_CTRL) != 0
-            && (event.key.keysym.sym == SDLK_e || event.key.keysym.sym == SDLK_i
-                || event.key.keysym.sym == SDLK_c)) {
+        if ((keysym.sym == SDLK_t && (keysym.mod & KMOD_CTRL) != 0)
+            || (keysym.sym == SDLK_F6 && (keysym.mod & KMOD_CTRL) == 0)) {
             if (event.key.repeat == 0) {
-                if (event.key.keysym.sym == SDLK_e) {
+                show_player_status(window, renderer, textures, game.player, high_scores_path,
+                                   high_scores);
+            }
+            render_game(renderer, map, textures, game);
+            continue;
+        }
+        if ((keysym.mod & KMOD_CTRL) != 0
+            && (keysym.sym == SDLK_e || keysym.sym == SDLK_i
+                || keysym.sym == SDLK_c)) {
+            if (event.key.repeat == 0) {
+                if (keysym.sym == SDLK_e) {
                     show_message(window, "Equipment Statistics",
                                  equipment_statistics_page(game.player));
-                } else if (event.key.keysym.sym == SDLK_i) {
+                } else if (keysym.sym == SDLK_i) {
                     use_exploration_item(window, game, map, random, audio, settings);
                 } else {
                     cast_exploration_spell(window, game, map, random, audio, settings);
@@ -3268,17 +4013,17 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_h
-            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+        if (keysym.sym == SDLK_h
+            && (keysym.mod & KMOD_CTRL) != 0) {
             if (event.key.repeat == 0) {
                 record_player_high_scores(high_scores_path, high_scores, game.player);
-                show_high_scores(window, high_scores, game.player.difficulty);
+                show_high_scores(window, high_scores, game.player.difficulty, &game.player);
             }
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_r
-            && (event.key.keysym.mod & KMOD_CTRL) != 0) {
+        if (keysym.sym == SDLK_r
+            && (keysym.mod & KMOD_CTRL) != 0) {
             if (event.key.repeat == 0) {
                 const yipe::MapEvent& sign = map.events().message;
                 if (sign.has_position() && sign.position == game.location.position) {
@@ -3289,9 +4034,9 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             render_game(renderer, map, textures, game);
             continue;
         }
-        if (event.key.keysym.sym == SDLK_o
-            && (event.key.keysym.mod & KMOD_CTRL) != 0
-            && (event.key.keysym.mod & KMOD_SHIFT) != 0) {
+        if (keysym.sym == SDLK_o
+            && (keysym.mod & KMOD_CTRL) != 0
+            && (keysym.mod & KMOD_SHIFT) != 0) {
             if (event.key.repeat == 0) {
                 const yipe::OtherActionResult result = use_other_action(game, map, random);
                 audio.play(result.sound_id, settings.sound_enabled);
@@ -3304,52 +4049,34 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
         }
 
         const std::optional<std::uint16_t> key =
-            portable_key_code(event.key.keysym.sym);
+            portable_key_code(keysym.sym);
+        const auto action = key ? exploration_action_for_key(settings, *key) : std::nullopt;
         int delta_x = 0;
         int delta_y = 0;
-        if (key && *key == binding(settings, yipe::InputAction::northwest)) {
-            delta_x = -1;
-            delta_y = -1;
-        } else if (key && *key == binding(settings, yipe::InputAction::north)) {
-            delta_y = -1;
-        } else if (key && *key == binding(settings, yipe::InputAction::northeast)) {
-            delta_x = 1;
-            delta_y = -1;
-        } else if (key && *key == binding(settings, yipe::InputAction::west)) {
-            delta_x = -1;
-        } else if (key && *key == binding(settings, yipe::InputAction::east)) {
-            delta_x = 1;
-        } else if (key && *key == binding(settings, yipe::InputAction::southwest)) {
-            delta_x = -1;
-            delta_y = 1;
-        } else if (key && *key == binding(settings, yipe::InputAction::south)) {
-            delta_y = 1;
-        } else if (key && *key == binding(settings, yipe::InputAction::southeast)) {
-            delta_x = 1;
-            delta_y = 1;
-        } else {
-            switch (event.key.keysym.sym) {
-            case SDLK_a:
-                delta_x = -1;
-                break;
-            case SDLK_d:
-                delta_x = 1;
-                break;
-            case SDLK_w:
-                delta_y = -1;
-                break;
-            case SDLK_s:
-                delta_y = 1;
-                break;
-            default:
-                break;
+        if (mouse_move) {
+            if (event.button.x < 0 || event.button.x >= map_width
+                || event.button.y < 0 || event.button.y >= map_height) {
+                continue;
             }
+            // Original 0x00410f50 compares tile coordinates, not distance or angle.
+            const int x = event.button.x / tile_size;
+            const int y = event.button.y / tile_size;
+            delta_x = (x > game.location.position.x) - (x < game.location.position.x);
+            delta_y = (y > game.location.position.y) - (y < game.location.position.y);
+        } else if (action && static_cast<std::size_t>(*action) < 8) {
+            constexpr std::array<SDL_Point, 8> directions{{
+                {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1},
+            }};
+            const auto direction = directions[static_cast<std::size_t>(*action)];
+            delta_x = direction.x;
+            delta_y = direction.y;
         }
         if (delta_x == 0 && delta_y == 0) {
-            if (key && *key == binding(settings, yipe::InputAction::use_item)) {
+            if (event.type == SDL_KEYDOWN && event.key.repeat != 0) continue;
+            if (action == yipe::InputAction::use_item) {
                 use_exploration_item(window, game, map, random, audio, settings);
                 render_game(renderer, map, textures, game);
-            } else if (key && *key == binding(settings, yipe::InputAction::cast)) {
+            } else if (action == yipe::InputAction::cast) {
                 cast_exploration_spell(
                     window, game, map, random, audio, settings);
                 render_game(renderer, map, textures, game);
@@ -3502,9 +4229,39 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                 }
                 render_game(renderer, map, textures, game);
             }
+            // The original combat dispatch replaces the arrival action, so a
+            // chest waits for a later visit even when the fight is won.
+            const bool chest_blocked_by_encounter = encounter_resolved
+                || (game.roaming_monster
+                    && game.roaming_monster->position == game.location.position)
+                || (game.pursuing_monster
+                    && game.pursuing_monster->position == game.location.position);
+            for (std::size_t slot = 0;
+                 !chest_blocked_by_encounter && slot < map.events().chests.size(); ++slot) {
+                const auto reward = yipe::open_chest(
+                    game.player, map, game.location.position, slot, random);
+                if (!reward.opened) continue;
+                std::ostringstream text;
+                text << "You found " << reward.gold << " gold and "
+                     << reward.experience << " experience.";
+                if (reward.loot.waterproof_shoe_spray) {
+                    text << "\nWaterproof Shoe Spray";
+                } else if (reward.loot.equipment_upgrade != yipe::EquipmentUpgrade::none) {
+                    text << "\nYou found a "
+                         << yipe::equipment_upgrade_name(reward.loot.equipment_upgrade)
+                         << " upgrade.";
+                } else if (reward.loot.item_id != 0) {
+                    text << "\n" << inventory_item_name(reward.loot.item_id);
+                } else if (reward.loot.inventory_full) {
+                    text << "\nYour inventory is full.";
+                }
+                render_game(renderer, map, textures, game);
+                show_message(window, "Treasure Chest", text.str());
+            }
         } else {
             switch (result.original_code) {
             case 5:
+                if (!allow_quizilog_shop(window, game)) break;
                 show_equipment_shop(window, game.player, game.location.map_id,
                                     yipe::EquipmentKind::weapon);
                 break;
@@ -3516,12 +4273,8 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
                 show_healing_shop(window, game.player, random);
                 break;
             case 8:
-                if (game.location.map_id == 0x11) {
-                    show_freds_shop(window, game.player);
-                } else {
-                    show_message(window, "Miscellaneous Shop",
-                                 "This entrance leads to a miscellaneous shop.");
-                }
+                if (!allow_quizilog_shop(window, game)) break;
+                show_miscellaneous_shop(window, game.player, game.location.map_id);
                 break;
             case 9:
                 show_magic_shop(window, game.player, random);
@@ -3702,69 +4455,7 @@ GameExit run_game(SDL_Window* window, SDL_Renderer* renderer,
             continue;
         }
 
-        const std::vector<yipe::MonsterPlacement> active_placements =
-            active_monster_placements(game);
-        const std::optional<yipe::MapPosition> pursuing_position =
-            game.pursuing_monster
-            ? std::optional<yipe::MapPosition>{
-                  game.pursuing_monster->position}
-            : std::nullopt;
-        const yipe::RoamingMonsterUpdate roaming_update =
-            yipe::update_roaming_monster(
-                game.roaming_monster, map, game.player, game.location,
-                static_cast<std::uint16_t>(result.original_code),
-                active_placements, game.map_visibility, {}, random,
-                pursuing_position);
-        if (roaming_update
-            == yipe::RoamingMonsterUpdate::encountered_player) {
-            const int monster_type = game.roaming_monster->type_id;
-            const EncounterResult encounter = fight_monster(
-                transient_monster_placement(
-                    monster_type, game.roaming_monster->position));
-            game.roaming_monster.reset();
-            if (encounter == EncounterResult::quit_requested) {
-                if (save_current_game(window, save_path, game, random, false)) {
-                    return {StartupChoice::quit};
-                }
-                render_game(renderer, map, textures, game);
-                continue;
-            }
-            if (encounter == EncounterResult::defeat) {
-                recover_from_combat_defeat(
-                    window, game, map, random, monster_type);
-            }
-            render_game(renderer, map, textures, game);
-            continue;
-        }
-        if (roaming_update == yipe::RoamingMonsterUpdate::spawned) {
-            render_game(renderer, map, textures, game);
-            continue;
-        }
-
-        if (game.pursuing_monster
-            && yipe::move_pursuing_monster(
-                   *game.pursuing_monster, map, game.location.position,
-                   active_placements, game.roaming_monster,
-                   game.map_visibility, random)
-                == yipe::RoamingMonsterMove::encountered_player) {
-            const int monster_type = game.pursuing_monster->type_id;
-            const EncounterResult encounter = fight_monster(
-                transient_monster_placement(
-                    monster_type, game.pursuing_monster->position));
-            if (encounter == EncounterResult::quit_requested) {
-                if (save_current_game(window, save_path, game, random, false)) {
-                    return {StartupChoice::quit};
-                }
-                render_game(renderer, map, textures, game);
-                continue;
-            }
-            if (encounter == EncounterResult::victory) {
-                game.pursuing_monster.reset();
-            } else if (encounter == EncounterResult::defeat) {
-                recover_from_combat_defeat(
-                    window, game, map, random, monster_type);
-            }
-        }
+        if (advance_monsters(true, result.original_code)) return {StartupChoice::quit};
         render_game(renderer, map, textures, game);
     }
 }
@@ -3933,13 +4624,13 @@ int main(int argc, char* argv[]) {
                 throw std::runtime_error("the supplied equipment-name file is missing or invalid");
             }
             for (std::size_t index = 0; index < packaged_names.weapons.size(); ++index) {
-                if (equipment_name(yipe::EquipmentKind::weapon, static_cast<int>(index + 1))
+                if (equipment_name(yipe::EquipmentKind::weapon, static_cast<int>(index + 1), false)
                     != packaged_names.weapons[index]) {
                     throw std::runtime_error("weapon displays did not use the packaged item names");
                 }
             }
             for (std::size_t index = 0; index < packaged_names.armor.size(); ++index) {
-                if (equipment_name(yipe::EquipmentKind::armor, static_cast<int>(index + 1))
+                if (equipment_name(yipe::EquipmentKind::armor, static_cast<int>(index + 1), false)
                     != packaged_names.armor[index]) {
                     throw std::runtime_error("armor displays did not use the packaged item names");
                 }
@@ -4277,6 +4968,7 @@ int main(int argc, char* argv[]) {
             SDL_Event combat_click{};
             combat_click.type = SDL_MOUSEBUTTONUP;
             combat_click.button.button = SDL_BUTTON_LEFT;
+            combat_click.button.windowID = SDL_GetWindowID(window.get());
             SDL_RenderLogicalToWindow(
                 renderer.get(), 100.0F, 288.0F,
                 &combat_click.button.x, &combat_click.button.y);
@@ -4329,15 +5021,19 @@ int main(int argc, char* argv[]) {
                 pending_exit = std::move(exit);
                 break;
             }
+            case StartupChoice::recent_game:
             case StartupChoice::load_game:
                 try {
                     auto opened = pending && pending->opened_game
                         ? std::move(pending)
-                        : choose_game_to_open(preference_directory);
+                        : choice == StartupChoice::recent_game
+                            ? choose_recent_game_to_open(window.get(), preference_directory)
+                            : choose_game_to_open(preference_directory);
                     if (!opened) {
                         break;
                     }
                     active_save_path = opened->opened_save_path;
+                    if (!pending) yipe_app::remember_game_file(opened->opened_source_path);
                     GameExit exit = run_game(
                         window.get(), renderer.get(), game_textures,
                         std::move(*opened->opened_game), active_save_path, settings_path,
@@ -4358,6 +5054,13 @@ int main(int argc, char* argv[]) {
                 break;
             case StartupChoice::help:
                 show_help(window.get(), settings);
+                break;
+            case StartupChoice::page_setup:
+                try {
+                    yipe_app::show_page_setup();
+                } catch (const std::runtime_error& error) {
+                    show_message(window.get(), "Printing Failed", error.what());
+                }
                 break;
             case StartupChoice::quit:
                 return 0;

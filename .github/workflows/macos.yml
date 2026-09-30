@@ -1,0 +1,69 @@
+name: macOS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test-package:
+    runs-on: macos-26
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install build dependencies
+        run: brew install cmake sdl2
+
+      - name: Configure Release
+        run: >-
+          cmake -S . -B build/mac-ci
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=26.0
+          -DCMAKE_PREFIX_PATH="$(brew --prefix sdl2)"
+
+      - name: Build
+        run: cmake --build build/mac-ci --parallel 3
+
+      - name: Run tests
+        run: >-
+          ctest --test-dir build/mac-ci --output-on-failure
+          --output-junit "${{ github.workspace }}/build/mac-ci/test-results.xml"
+
+      - name: Package application
+        run: cmake --build build/mac-ci --target package
+
+      - name: Verify extracted package
+        run: >-
+          python3 tools/verify_mac_package.py
+          build/mac-ci/packages/YipeIII-rebuild-0.1.0-Darwin.tar.gz
+
+      - name: Upload verified application
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: YipeIII-macOS-arm64
+          path: build/mac-ci/packages/*.tar.gz
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macOS-test-results
+          path: |
+            build/mac-ci/test-results.xml
+            build/mac-ci/Testing/Temporary/LastTest.log
+          if-no-files-found: warn

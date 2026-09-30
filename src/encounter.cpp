@@ -1,5 +1,6 @@
 #include "yipe/encounter.hpp"
 #include "yipe/spell.hpp"
+#include "yipe/shop.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -58,6 +59,8 @@ int roll(MsvcRandom& random, int bound) {
 }
 
 bool map_event_at(const MapEvents& events, MapPosition position) {
+    if (std::find(events.chests.begin(), events.chests.end(), position)
+        != events.chests.end()) return true;
     if ((events.message.has_position() && events.message.position == position)
         || (events.overlay.has_position() && events.overlay.position == position)
         || (events.princess.has_position()
@@ -392,7 +395,7 @@ int low_level_defense_range(int level) {
     if (level <= 27) {
         return 20;
     }
-    return level <= 37 ? 29 : 35;
+    return level <= 37 ? 28 : 35;
 }
 
 void clear_combat_status(Player& player) {
@@ -467,6 +470,8 @@ int calculate_monster_damage(Player& player, const Monster& monster,
         }
         if (damage > 2 && player.level == 1 && player.health < 6) {
             damage = 1;
+        } else if (damage > 2 && player.level < 4 && player.health < 6) {
+            --damage;
         }
         if (damage > 10 && player_defense_equipment_rating(player) > 10) {
             damage -= 1 + roll(random, 6);
@@ -540,28 +545,12 @@ void start_enrage(Player& player, MsvcRandom& random) {
     player.intelligence += 1 + roll(random, player.intelligence / 2);
 }
 
-EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
-                                         MsvcRandom& random) {
-    bool forced_upgrade = false;
-    if (player.level >= 15 && player.weapon_rank <= 12 && player.equipment_upgrade_count == 0) {
-        forced_upgrade = true;
-        drop_threshold = -10;
-        player.equipment_upgrade_count = 1;
-    } else if (player.level > 24 && player.weapon_rank < 15
-               && player.equipment_upgrade_count < 2) {
-        forced_upgrade = true;
-        drop_threshold = -10;
-        ++player.equipment_upgrade_count;
-    }
-
-    if (drop_threshold >= roll(random, 101) - player.loot_roll_penalty * 2) {
-        return EquipmentUpgrade::none;
-    }
-    const int choice = forced_upgrade ? 1 : roll(random, 11);
+EquipmentUpgrade upgrade_equipment(Player& player, int choice) {
     switch (choice) {
     case 0:
     case 7:
         if (player.helmet_rank < 6) {
+            player.quest_score += player.helmet_rank * 50;
             ++player.helmet_rank;
             return EquipmentUpgrade::helmet;
         }
@@ -569,6 +558,7 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     case 1: {
         const int maximum = player.stat_cap_mode == 2 ? 29 : 23;
         if (player.weapon_rank < maximum) {
+            player.quest_score += equipment_price(EquipmentKind::weapon, player.weapon_rank) / 5;
             ++player.weapon_rank;
             return EquipmentUpgrade::weapon;
         }
@@ -576,6 +566,7 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     }
     case 2:
         if (player.armor_rank <= 25) {
+            player.quest_score += equipment_price(EquipmentKind::armor, player.armor_rank) / 5;
             ++player.armor_rank;
             return EquipmentUpgrade::armor;
         }
@@ -583,12 +574,14 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     case 3:
     case 10:
         if (player.ring_rank <= 4) {
+            player.quest_score += player.ring_rank * 50;
             ++player.ring_rank;
             return EquipmentUpgrade::ring;
         }
         break;
     case 4:
         if (player.necklace_rank <= 5) {
+            player.quest_score += player.necklace_rank * (player.necklace_rank > 3 ? 95 : 20);
             ++player.necklace_rank;
             return EquipmentUpgrade::necklace;
         }
@@ -596,6 +589,7 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     case 5:
     case 8:
         if (player.gloves_rank <= 4) {
+            player.quest_score += player.gloves_rank * 30;
             ++player.gloves_rank;
             return EquipmentUpgrade::gloves;
         }
@@ -603,6 +597,7 @@ EquipmentUpgrade maybe_upgrade_equipment(Player& player, int drop_threshold,
     case 6:
     case 9:
         if (player.boots_rank <= 4) {
+            player.quest_score += player.boots_rank * 50;
             ++player.boots_rank;
             return EquipmentUpgrade::boots;
         }
@@ -645,20 +640,33 @@ int encounter_size(const CombatEncounter& encounter) {
         [](const Monster& monster) { return monster.type_id > 0; }));
 }
 
-EquipmentUpgrade finish_encounter_rewards(Player& player,
+CombatReward finish_encounter_rewards(Player& player,
                                           const CombatEncounter& encounter,
                                           MsvcRandom& random) {
     player.experience += encounter.pending_reward.experience;
     player.gold += encounter.pending_reward.gold;
 
+    CombatReward reward = encounter.pending_reward;
     const int primary_type_id = encounter.monsters[0].type_id;
+    // 0x00405210 awards the first key before the caller's quest-state check,
+    // and both this reward and a matching stamp replace the random item drop.
+    if (primary_type_id == 41 && !player.has_underworld_key) {
+        player.has_underworld_key = true;
+        reward.underworld_key = true;
+        return reward;
+    }
+    if (primary_type_id >= 35 && primary_type_id <= 40
+        && primary_type_id == encounter.map_environment + 34) {
+        return reward;
+    }
     const int opponents = encounter_size(encounter);
     const int opponent_penalty = opponents == 1 ? 1 : opponents == 2 ? 3 : 6;
     const int drop_base = primary_type_id < 35 || primary_type_id == 41 ? 91 : 90;
     const int drop_threshold =
         player.level - primary_type_id / 4 - primary_type_id
         + drop_base - opponent_penalty;
-    return maybe_upgrade_equipment(player, drop_threshold, random);
+    reward.equipment_upgrade = roll_treasure(player, drop_threshold, 0, random).equipment_upgrade;
+    return reward;
 }
 
 Monster initialize_monster(int type_id, MsvcRandom& random) {
@@ -721,8 +729,7 @@ void finish_encounter_victory(Player& player, CombatEncounter& encounter,
         player.record_monster_defeat(primary_type);
     }
     result.outcome = CombatOutcome::victory;
-    result.reward = encounter.pending_reward;
-    result.reward.equipment_upgrade = finish_encounter_rewards(player, encounter, random);
+    result.reward = finish_encounter_rewards(player, encounter, random);
     result.level_up = try_level_up(player, random);
     if (primary_type >= 35 && primary_type != 41
         && primary_type == encounter.map_environment + 34) {
@@ -823,6 +830,65 @@ void replace_monster_with_rabbit(CombatEncounter& encounter) {
 }
 
 } // namespace
+
+LootReward roll_treasure(Player& player, int drop_threshold, int chest_kind,
+                         MsvcRandom& random) {
+    if (chest_kind < 0 || chest_kind > 4) {
+        throw std::invalid_argument("unknown chest kind");
+    }
+    bool forced_upgrade = false;
+    if (player.level >= 15 && player.weapon_rank <= 12 && player.equipment_upgrade_count == 0) {
+        forced_upgrade = true;
+        drop_threshold = -10;
+        player.equipment_upgrade_count = 1;
+    } else if (player.level > 24 && player.weapon_rank < 15
+               && player.equipment_upgrade_count < 2) {
+        forced_upgrade = true;
+        drop_threshold = -10;
+        ++player.equipment_upgrade_count;
+    }
+
+    LootReward result;
+    if (player.current_map_id == 0x63 && chest_kind == 2) {
+        player.has_waterproof_shoe_spray = true;
+        result.waterproof_shoe_spray = true;
+        return result;
+    }
+    if (drop_threshold < roll(random, 101) - player.loot_roll_penalty * 2) {
+        result.equipment_upgrade = upgrade_equipment(
+            player, forced_upgrade ? 1 : roll(random, 11));
+        if (result.equipment_upgrade != EquipmentUpgrade::none) return result;
+    } else if (forced_upgrade) {
+        // The original keeps its upgrade marker even if the penalty defeats
+        // the forced threshold, suppressing the consumable fallback.
+        return result;
+    }
+    if (chest_kind == 0) return result;
+
+    const auto end = player.inventory.begin() + Player::carried_inventory_size;
+    const auto slot = std::find(player.inventory.begin(), end, 0);
+    if (slot == end) {
+        result.inventory_full = true;
+        return result;
+    }
+    const int choice = chest_kind == 1 ? roll(random, 7)
+        : chest_kind == 2 ? roll(random, 7) + 4
+        : chest_kind == 3 ? roll(random, 6) + 11 : roll(random, 6) + 14;
+    switch (choice) {
+    case 4: case 5: case 6: result.item_id = 2; break;
+    case 7: case 8: result.item_id = 5; break;
+    case 9: case 10: result.item_id = 4; break;
+    case 11: case 14: result.item_id = player.strength < 50 ? 6 : 2; break;
+    case 12: case 15: result.item_id = player.dexterity < 50 ? 7 : 2; break;
+    case 13: case 16: result.item_id = player.intelligence < 50 ? 8 : 2; break;
+    case 17: result.item_id = 9; break;
+    case 18: result.item_id = 10; break;
+    case 19: result.item_id = 3; break;
+    default: result.item_id = player.level > 10 ? 2 : 1; break;
+    }
+    *slot = result.item_id;
+    return result;
+}
 
 bool should_spawn_roaming_monster(
     const Player& player, const WorldLocation& location,
@@ -1268,6 +1334,9 @@ FleeResult try_flee(Player& player, const CombatEncounter& encounter,
             continue;
         }
         int damage = calculate_monster_damage(player, monster, random);
+        if (damage == 0) {
+            continue;
+        }
         if (slot == 2) {
             damage /= 2;
         }

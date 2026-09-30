@@ -22,8 +22,11 @@ struct ShopStockItem {
     int tier;
 };
 
-// Stock selected for map 0x11 by 0x00440e50 and priced by 0x00441010.
-[[nodiscard]] const std::array<ShopStockItem, 11>& freds_miscellaneous_stock();
+// 0x004402b0: advances shop progression; true requests the one-time price notice.
+[[nodiscard]] bool enter_miscellaneous_shop(Player& player);
+// Map-specific stock (0x004408f0..0x00440e50) and prices (0x00441010).
+[[nodiscard]] std::array<ShopStockItem, 11> miscellaneous_shop_stock(
+    const Player& player, int map_id);
 
 enum class PurchaseStatus {
     purchased,
@@ -37,8 +40,8 @@ struct PurchaseResult {
     std::size_t inventory_slot = 0;
 };
 
-// Reconstructs Fred's purchase handling at 0x00441250 and equipment updates at
-// 0x00440710. Only successful purchases deduct gold.
+// 0x00441250 / 0x00440710: consumables, accessory upgrades, and type-8 Rainbow
+// Key purchases. Only successful purchases deduct gold.
 [[nodiscard]] PurchaseResult purchase_shop_item(Player& player,
                                                 const ShopStockItem& item);
 

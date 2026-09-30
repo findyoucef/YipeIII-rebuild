@@ -1,3 +1,8 @@
 /build/
+/build-release/
+/build-verification-release/
+/build-generated-map-clamp-release/
+/build-persistence-parity-release/
 .DS_Store
 __pycache__/
+/build-corrected-completion-release/

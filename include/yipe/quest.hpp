@@ -2,6 +2,7 @@
 
 #include "yipe/player.hpp"
 #include "yipe/random.hpp"
+#include "yipe/encounter.hpp"
 
 #include <cstddef>
 #include <string>
@@ -33,6 +34,17 @@ struct PrincessReward {
     int amount = 0;
     std::string message;
 };
+
+struct ChestReward {
+    bool opened = false;
+    int experience = 0;
+    int gold = 0;
+    LootReward loot;
+};
+
+// 0x0040e880 / 0x004450d0: one-time collection at the player's current tile.
+[[nodiscard]] ChestReward open_chest(Player& player, Map& map, MapPosition position,
+                                     std::size_t slot, MsvcRandom& random);
 
 struct CombatDefeatResult {
     int message_resource_id = 701;

@@ -1,6 +1,6 @@
 # Legacy `.yp3` save analysis
 
-This is the static field map for the player serializer at `0x00443c90`, called through the document serializer at `0x0044f760`. The import implementation follows the original executable's archive path exactly, but compatibility is not yet demonstrated against a real `.yp3` sample.
+This is the static field map for the player serializer at `0x00443c90`, called through the document serializer at `0x0044f760`. The importer follows the recovered archive path and now loads four original-produced 1.1.6.0 saves. Their early-game state, byte differences, and native conversion are verified; later progression and other original versions remain unverified (E060).
 
 ## Archive framing and string encoding
 
@@ -92,6 +92,14 @@ and `has_defeated_wormoid` retains the hint condition. Other unresolved arrays
 likewise remain there so future reconstruction does not
 require reparsing the file.
 
+The registration/profile mode at `+0x654` is **not serialized**. Under D8/E064,
+legacy imports deliberately adopt rebuild mode 2: stat limit 50 and random
+weapon-upgrade ceiling 29. This is an adaptation, not a recovered original
+profile. Imported stat/equipment values are unchanged, including values above
+these growth limits. Subsequent native saves retain the chosen mode. Existing
+native versions 1-19 already store it and retain modes 0/1/2, so no format bump
+or automatic upgrade of earlier native characters is needed.
+
 The chosen character portrait at `+0x0cc` is item-ID array entry 28 and is
 imported through `Player::inventory[28]`. Extended entry 15 at `+0x67c` is the
 level-up stat bias (`Player::combat_style`); it is separate from the selected
@@ -102,14 +110,37 @@ retains the default Combat specialty as an explicit inference. Native saves
 from rebuild version 16 onward store specialty separately; versions 2–15 infer
 it from the old rebuild class value.
 
+The Silly/Normal Mode flag at player `+0x6e6` is also absent from the original
+archive. The 50-entry `+0x65e` short array ends at `+0x6c0`; neither serializer
+branch accesses `+0x6e6`. Creation writes it from dialog flag `+0x2dd` at
+`0x00443300`, and command 32784 toggles it at `0x0041c5d0` independently of the
+portrait. A saved silly portrait therefore cannot establish the current mode.
+Legacy import and native versions 1-16 retain the rebuild's Normal Mode default.
+Native version 17 deliberately appends a checked 0/1 byte after version 16's
+specialty field, preserving the mode with each character as a rebuild adaptation
+(E058/U023). The earlier player-only version 1 writer remains a limited format.
+
+The 512 archive booleans at player `+0x152` record four chest slots for maps
+1-128. Import maps archive index `i` to `opened_chests[i/4]`, bit `i%4`,
+independently of the interleaved `+0x352` table. Native version 18 retains these
+bits, so converting a legacy save does not reopen its collected chests (E062).
+
+Extended entry 20 (`+0x686`) is the miscellaneous-shop stage: 0 initial,
+1 raised prices, 2 key offer unlocked, 3 key bought in the current dialog,
+4 exited after purchase. Import and native version 19 retain it, independently
+of adjacent Hell Gatekeeper state (`+0x684`). Supported values are 0-4; an
+invalid stage is reported explicitly (E063).
+
 The original validation expression is evaluated and reported through
 `validation_passed`. A mismatch is non-fatal, matching the original loader,
 which stores the result as player state rather than rejecting the document.
 The importer never writes `.yp3` files.
 On macOS, File/Open can now select a `.yp3` through the native file chooser.
 The application asks for a separate `.y3r` path for future saves before
-entering play. This exposes the strict importer but does not establish
-compatibility with a real original save; that still needs an R08 sample.
+entering play. The SDL event-loop test imports an actual R08 archive through
+this path and saves/reloads the native result without changing the original.
+The native file chooser is substituted in that test; visible macOS import
+interaction remains unverified.
 
 ## Special statistics fields
 
@@ -192,7 +223,20 @@ view. The counters, aggregate, and hint predicate are maintained through
 `Player::record_monster_defeat`, without changing old payload offsets.
 When importing version 9,
 defeats now known to be reload-respawning migrate into the transient current-map
-state instead of becoming permanent. The loader accepts all fifteen versions,
+state instead of becoming permanent. Version 16 appends the signed 32-bit
+specialty, version 17 appends the checked Silly Mode byte, and version 18 appends
+128 bytes of opened-chest masks (maps 1-128, bits 0-3). Both writer and reader
+reject masks above 15; truncated suffixes are rejected. Versions 1-17 default
+to unopened chests because those rebuild versions had no chest gameplay.
+Version 19 appends the 16-bit miscellaneous-shop stage. Versions 1-18 default
+to stage 0 and advance it on their next eligible shop visit; they had no such
+milestone. Writer and reader reject stages above 4 and truncated stage bytes.
+Version 20 appends raw player `+0x6a4` as a `u16` for the High Score Code's
+optional trailing `W`. Legacy extended entry 35 restores this value; only 5
+adds the suffix, and other values are retained without assigning a meaning.
+Both bytes are required. Versions 1-19 default it to zero because the field
+was not retained, including by earlier native conversions of original saves.
+The loader accepts all twenty versions,
 derives missing return coordinates from the current region for older files,
 and migrates the first-encounter bit in versions 2–8 to the Giant Beetle's
 placement index 5. Writes use a temporary file and atomic replacement so a
@@ -205,6 +249,19 @@ failed write does not destroy the previous save.
 - Byte-level synthetic tests exercise every field family, both supported ANSI
   length forms practical for player names, validation, unknown-field retention,
   truncation, and the unsupported Unicode marker.
-- No original `.yp3` exists in the preserved runtime evidence or analysis
-  workspace. Capture paired R08 saves and load them in the rebuild before
-  claiming original-save compatibility.
+- Four original-produced 5074-byte archives now pass import and native
+  save/reload. Their name, stats, equipment, map, and changed Y coordinate
+  match the preserved capture state. The two other differing fields are
+  random values rewritten by the original serializer on every save. See the
+  [R08 capture record](../evidence/original-runtime/r08/README.md) for hashes,
+  field offsets, control dumps, and the limits of the restart evidence.
+- The application imports the captured south save through its normal loader
+  and writes a separate native file in the headless SDL test. No importer
+  format changes were needed to accept these files.
+- These are early-game samples. The chest flag array now maps to `GameState`
+  and native saves, with synthetic slot/index coverage. Other unresolved
+  per-map arrays and fields remain only in `LegacySave`. Populated late-game
+  placement state and active
+  ability effects still need mapping and original fixtures. The original
+  archive also omits RNG state, specialty, and Silly Mode; import uses rebuild
+  defaults for those fields. No all-state or cross-version parity is claimed.

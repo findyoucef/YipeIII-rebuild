@@ -137,6 +137,23 @@ std::string_view key_binding_name(std::uint16_t key) {
         return "Numpad 8";
     case 0x69:
         return "Numpad 9";
+    case 0x6a: return "Numpad Multiply";
+    case 0x6b: return "Numpad Add";
+    case 0x6c: return "Numpad Separator";
+    case 0x6d: return "Numpad Subtract";
+    case 0x6e: return "Numpad Decimal";
+    case 0x6f: return "Numpad Divide";
+    case 0xba: return "Semicolon";
+    case 0xbb: return "Equals";
+    case 0xbc: return "Comma";
+    case 0xbd: return "Minus";
+    case 0xbe: return "Period";
+    case 0xbf: return "Slash";
+    case 0xc0: return "Backquote";
+    case 0xdb: return "Left Bracket";
+    case 0xdc: return "Backslash";
+    case 0xdd: return "Right Bracket";
+    case 0xde: return "Quote";
     case 0x70:
         return "F1";
     case 0x71:
@@ -180,13 +197,36 @@ std::string_view key_binding_name(std::uint16_t key) {
     return "Unknown";
 }
 
+std::optional<InputAction> movement_action_for_key(
+    const GameSettings& settings, std::uint16_t key) {
+    // 0x0040bbb0 interleaves fixed keys and configured directions in this order.
+    constexpr std::array order{
+        InputAction::north, InputAction::northeast, InputAction::northwest,
+        InputAction::south, InputAction::southwest, InputAction::southeast,
+        InputAction::west, InputAction::east,
+    };
+    constexpr std::array<std::uint16_t, 8> keypad{0x68, 0x69, 0x67, 0x62, 0x61, 0x63, 0x64, 0x66};
+    constexpr std::array<std::uint16_t, 8> arrows{0x26, 0, 0, 0x28, 0, 0, 0x25, 0x27};
+    for (std::size_t index = 0; index < order.size(); ++index) {
+        if (key != 0 && (key == keypad[index] || key == arrows[index]
+                        || key == settings.keys[static_cast<std::size_t>(order[index])])) {
+            return order[index];
+        }
+    }
+    return std::nullopt;
+}
+
 std::optional<InputAction> combat_action_for_key(
     const GameSettings& settings, std::uint16_t key) {
-    for (std::size_t index = static_cast<std::size_t>(InputAction::attack);
-         index < input_action_count; ++index) {
-        if (settings.keys[index] == key) {
-            return static_cast<InputAction>(index);
-        }
+    // 0x004060f0 tests Run/Escape before Attack/Enter, then the other actions.
+    if (key == 0x1b || key == settings.keys[static_cast<std::size_t>(InputAction::run)]) {
+        return InputAction::run;
+    }
+    if (key == 0x0d || key == settings.keys[static_cast<std::size_t>(InputAction::attack)]) {
+        return InputAction::attack;
+    }
+    for (const auto action : {InputAction::cast, InputAction::use_item, InputAction::special}) {
+        if (key == settings.keys[static_cast<std::size_t>(action)]) return action;
     }
     return std::nullopt;
 }

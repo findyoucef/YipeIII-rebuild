@@ -160,6 +160,31 @@ bool update_high_scores(HighScores& scores, const Player& player, bool completed
     return scores != previous;
 }
 
+std::string high_score_code(const Player& player) {
+    std::uint32_t defeats = 0;
+    for (const auto count : player.monster_defeats) {
+        defeats += static_cast<std::uint32_t>(count);
+    }
+    const std::array values{player.level, player.gold, static_cast<std::int32_t>(defeats)};
+    constexpr std::array divisors{15, 450, 60};
+    int quotient_sum = 0;
+    std::string code;
+    for (std::size_t index = 0; index < values.size(); ++index) {
+        // The original decrements before counting, so positive inputs encode value - 1.
+        const int value = values[index] > 0 ? values[index] - 1 : 0;
+        const int quotient = value / divisors[index];
+        const int remainder = value % divisors[index];
+        quotient_sum += quotient;
+        code += std::to_string(quotient) + "L"
+            + std::to_string(index == 1 ? 1000 - remainder : remainder) + "W";
+    }
+    code += std::to_string(static_cast<std::int16_t>(player.gatekeeper_state) * 3) + "W"
+        + std::to_string(quotient_sum) + "W"
+        + std::to_string(static_cast<std::int16_t>(player.difficulty));
+    if (player.value_06a4 == 5) code += "W";
+    return code;
+}
+
 OriginalAuxiliaryData load_original_auxiliary_data(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);
     if (!input) {

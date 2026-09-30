@@ -114,6 +114,7 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     ArchiveReader reader(bytes);
     LegacySave save;
     Player& player = save.game.player;
+    // .yp3 omits +0x654; retain the rebuild's default stat/loot limits (D8).
 
     player.name = reader.archive_string();
     if (reader.remaining() != fixed_payload_size) {
@@ -166,6 +167,9 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     for (std::size_t index = 0; index < save.flags_0152.size(); ++index) {
         save.flags_0152[index] = reader.archive_bool();
         save.flags_0352[index] = reader.archive_bool();
+        if (save.flags_0152[index]) {
+            player.opened_chests[index / 4] |= static_cast<std::uint8_t>(1u << (index % 4));
+        }
     }
     for (std::uint16_t& value : save.values_010c) {
         value = reader.u16();
@@ -225,11 +229,16 @@ LegacySave load_legacy_save(const std::filesystem::path& path) {
     player.princess_mystery_uses = save.extended_entries[18].value_065e;
     player.hell_gatekeeper_state = static_cast<HellGatekeeperState>(
         signed_u16(save.extended_entries[19].value_065e));
+    player.miscellaneous_shop_stage = save.extended_entries[20].value_065e;
+    if (player.miscellaneous_shop_stage > 4) {
+        throw std::runtime_error("legacy .yp3 contains an invalid miscellaneous-shop stage");
+    }
     player.pending_relocation = save.extended_entries[26].value_065e;
     player.cave_coins_collected = save.extended_entries[27].value_065e != 0;
     player.snow_search_count = save.extended_entries[30].value_065e;
     player.has_bonus_healing_ring = save.extended_entries[31].value_065e == 1;
     player.has_defeated_wormoid = save.extended_entries[34].value_0584 != 0;
+    player.value_06a4 = save.extended_entries[35].value_065e;
 
     save.game.location.position.x = signed_u16(reader.u16());
     save.game.location.position.y = signed_u16(reader.u16());

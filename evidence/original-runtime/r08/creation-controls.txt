@@ -1,0 +1,56 @@
+Game process: 200
+00000000000100B4 id=0 class=#32770 visible=1 enabled=1 rect=821,478,1235,796 text=Yipe! III
+  00000000000100B6 id=1093 class=Edit visible=1 enabled=1 rect=891,509,1152,535 text=
+  00000000000100B8 id=1098 class=Button visible=0 enabled=0 rect=1155,596,1202,622 text=Reroll
+  00000000000100BA id=-1 class=Static visible=1 enabled=1 rect=898,491,1080,506 text=Enter the name of your character
+  00000000000100BC id=-1 class=Static visible=1 enabled=1 rect=1125,650,1178,665 text=Dexterity:
+  00000000000100BE id=-1 class=Static visible=1 enabled=1 rect=1131,629,1184,644 text=Strength:
+  00000000000100C0 id=-1 class=Static visible=1 enabled=1 rect=1113,671,1181,686 text=Intelligence:
+  00000000000100C2 id=1095 class=Static visible=1 enabled=1 rect=1194,629,1226,644 text=16
+  00000000000100C4 id=1096 class=Static visible=1 enabled=1 rect=1194,650,1226,665 text=13
+  00000000000100C6 id=1097 class=Static visible=1 enabled=1 rect=1194,671,1226,686 text=10
+  00000000000100C8 id=-1 class=Static visible=1 enabled=1 rect=1083,691,1185,706 text=Health Points (HP):
+  00000000000100CA id=1099 class=Static visible=1 enabled=1 rect=1194,691,1226,706 text=13
+  00000000000100CC id=1395 class=Button visible=1 enabled=1 rect=921,747,1001,781 text= 
+  00000000000100CE id=1225 class=Button visible=1 enabled=1 rect=894,582,964,601 text=Combat
+  00000000000100D0 id=1226 class=Button visible=1 enabled=1 rect=894,609,980,628 text=Quickness
+  00000000000100D2 id=1227 class=Button visible=1 enabled=1 rect=1027,582,1088,601 text=Magic
+  00000000000100D4 id=1228 class=Button visible=1 enabled=1 rect=1027,609,1102,628 text=Random
+  00000000000100D6 id=-1 class=Static visible=1 enabled=1 rect=898,554,1096,569 text=Pick one of the following specialties
+  00000000000100D8 id=-1 class=Static visible=1 enabled=1 rect=1090,714,1185,729 text=Spell Points (SP):
+  00000000000100DA id=1229 class=Static visible=1 enabled=1 rect=1194,714,1226,729 text=10
+  00000000000100DC id=-1 class=Static visible=1 enabled=1 rect=884,575,1113,577 text=
+  00000000000100DE id=1393 class=Static visible=1 enabled=1 rect=1174,502,1188,516 text=ÿ“
+  00000000000100E0 id=-1 class=Static visible=1 enabled=1 rect=1173,522,1201,537 text=Help
+  00000000000100E2 id=1394 class=Static visible=1 enabled=1 rect=844,648,1059,725 text=This character is good at using weapons and hand to hand combat.  Your overall health is slightly higher, but you are not as good at using spells.
+  00000000000100E4 id=1396 class=Button visible=1 enabled=1 rect=1054,747,1134,784 text= 
+  00000000000100E6 id=-1 class=Static visible=1 enabled=1 rect=842,502,874,534 text=ÿ”
+0000000000010072 id=196700 class=Afx:400000:b:20050:6:30058 visible=0 enabled=1 rect=693,438,1362,890 text=Yipe! III
+  000000000002007A id=59648 class=AfxMDIFrame42s visible=0 enabled=1 rect=696,486,1359,887 text=
+  000000000003007E id=59648 class=#32770 visible=0 enabled=1 rect=696,486,932,742 text=
+  0000000000010084 id=65535 class=Static visible=0 enabled=1 rect=721,556,744,573 text=HP:
+  0000000000010086 id=65535 class=Static visible=0 enabled=1 rect=717,652,743,669 text=Exp:
+  0000000000010088 id=65535 class=Static visible=0 enabled=1 rect=714,628,744,645 text=Gold:
+  000000000001008A id=65535 class=Static visible=0 enabled=1 rect=722,580,743,597 text=SP:
+  000000000001008C id=1025 class=Button visible=0 enabled=0 rect=700,543,726,573 text=Lev
+  000000000001008E id=1026 class=Button visible=0 enabled=0 rect=700,705,726,735 text=w-a
+  0000000000010090 id=1027 class=Button visible=0 enabled=0 rect=700,586,723,616 text=Sts
+  0000000000010092 id=1015 class=Button visible=0 enabled=1 rect=715,679,785,711 text=STATS_BUTTON
+  0000000000010094 id=1035 class=Button visible=0 enabled=0 rect=700,641,730,671 text=Heal
+  0000000000010096 id=1016 class=Button visible=0 enabled=1 rect=715,722,785,754 text=ITEMS_BUTTON
+  0000000000010098 id=65535 class=Static visible=0 enabled=1 rect=710,531,745,548 text=Level:
+  000000000001009A id=1177 class=Button visible=0 enabled=1 rect=820,679,890,711 text=SPELLS_BUTTON
+  000000000001009C id=1014 class=Button visible=0 enabled=1 rect=820,722,890,754 text=OTHER_BUTTON
+  000000000001009E id=1000 class=Static visible=0 enabled=1 rect=700,495,901,512 text=Yipie
+  00000000000100A0 id=1006 class=Static visible=0 enabled=1 rect=750,531,901,548 text=1
+  00000000000100A2 id=1001 class=Static visible=0 enabled=1 rect=750,556,908,573 text=13 / 13 
+  00000000000100A4 id=1005 class=Static visible=0 enabled=1 rect=750,580,906,597 text=0 / 0 
+  00000000000100A6 id=1004 class=Static visible=0 enabled=1 rect=750,628,901,645 text=0
+  00000000000100A8 id=1002 class=Static visible=0 enabled=1 rect=750,652,901,669 text=0
+  00000000000100AA id=65535 class=Static visible=0 enabled=1 rect=722,605,741,622 text=AP:
+  00000000000100AC id=65535 class=Static visible=0 enabled=1 rect=700,518,912,520 text=
+  00000000000100AE id=1003 class=Static visible=0 enabled=1 rect=700,764,922,858 text=Welcome to Yipe!
+  00000000000100B0 id=1392 class=Static visible=0 enabled=1 rect=750,605,901,622 text=0 / 0 
+  0000000000020080 id=59649 class=AfxFrameOrView42s visible=0 enabled=1 rect=696,486,1696,742 text=
+  0000000000030082 id=59393 class=msctls_statusbar32 visible=0 enabled=1 rect=696,486,696,486 text=
+0000000000010078 id=0 class=IME visible=0 enabled=0 rect=0,0,1,1 text=Default IME

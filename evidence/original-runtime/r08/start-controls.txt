@@ -1,0 +1,30 @@
+Game process: 200
+0000000000010072 id=196700 class=Afx:400000:b:20050:6:30058 visible=1 enabled=1 rect=693,438,1362,890 text=R08Combat-start.yp3 - Yipe! III
+  000000000002007A id=59648 class=AfxMDIFrame42s visible=1 enabled=1 rect=696,486,1359,869 text=
+  000000000003007E id=59648 class=#32770 visible=1 enabled=1 rect=698,488,934,867 text=
+  0000000000010084 id=65535 class=Static visible=1 enabled=1 rect=723,558,746,575 text=HP:
+  0000000000010086 id=65535 class=Static visible=1 enabled=1 rect=719,654,745,671 text=Exp:
+  0000000000010088 id=65535 class=Static visible=1 enabled=1 rect=716,630,746,647 text=Gold:
+  000000000001008A id=65535 class=Static visible=1 enabled=1 rect=724,582,745,599 text=SP:
+  000000000001008C id=1025 class=Button visible=0 enabled=0 rect=702,545,728,575 text=Lev
+  000000000001008E id=1026 class=Button visible=0 enabled=0 rect=702,707,728,737 text=w-a
+  0000000000010090 id=1027 class=Button visible=0 enabled=0 rect=702,588,725,618 text=Sts
+  0000000000010092 id=1015 class=Button visible=1 enabled=1 rect=717,681,808,715 text= 
+  0000000000010094 id=1035 class=Button visible=0 enabled=0 rect=702,643,732,673 text=Heal
+  0000000000010096 id=1016 class=Button visible=1 enabled=1 rect=717,724,808,758 text= 
+  0000000000010098 id=65535 class=Static visible=1 enabled=1 rect=712,533,747,550 text=Level:
+  000000000001009A id=1177 class=Button visible=1 enabled=1 rect=822,681,913,715 text= 
+  000000000001009C id=1014 class=Button visible=1 enabled=1 rect=822,724,913,758 text= 
+  000000000001009E id=1000 class=Static visible=1 enabled=1 rect=702,497,903,514 text=R08Combat
+  00000000000100A0 id=1006 class=Static visible=1 enabled=1 rect=752,533,903,550 text=1
+  00000000000100A2 id=1001 class=Static visible=1 enabled=1 rect=752,558,910,575 text=13 / 13 
+  00000000000100A4 id=1005 class=Static visible=1 enabled=1 rect=752,582,908,599 text=10 / 10 
+  00000000000100A6 id=1004 class=Static visible=1 enabled=1 rect=752,630,903,647 text=0
+  00000000000100A8 id=1002 class=Static visible=1 enabled=1 rect=752,654,903,671 text=0
+  00000000000100AA id=65535 class=Static visible=1 enabled=1 rect=724,607,743,624 text=AP:
+  00000000000100AC id=65535 class=Static visible=1 enabled=1 rect=702,520,914,522 text=
+  00000000000100AE id=1003 class=Static visible=1 enabled=1 rect=702,766,924,860 text=
+  00000000000100B0 id=1392 class=Static visible=1 enabled=1 rect=752,607,903,624 text=5 / 5 
+  0000000000020080 id=59649 class=AfxFrameOrView42s visible=1 enabled=1 rect=941,488,1357,867 text=
+  0000000000030082 id=59393 class=msctls_statusbar32 visible=1 enabled=1 rect=696,869,1359,887 text=
+0000000000010078 id=0 class=IME visible=0 enabled=0 rect=0,0,1,1 text=Default IME

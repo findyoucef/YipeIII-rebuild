@@ -247,6 +247,38 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
     functions = decompiled_directory / "functions"
     dispatch = parse_dispatch(functions / "0041e110.c")
     events = parse_events(functions / "0041ec40.c")
+    # The four chest slots are direct coordinate writes, not event helper calls.
+    source = (functions / "0041ec40.c").read_text(encoding="utf-8")
+    chests = {}
+    assignments = 0
+    for case in re.finditer(
+        r"^  case (0x[\da-f]+|\d+):([\s\S]*?)(?=^  (?:case |default:)|\Z)",
+        source, re.MULTILINE,
+    ):
+        values = {}
+        for match in re.finditer(
+            r"(?:\*param_1|param_1\[(\d+)\]) = (0x[\da-f]+|\d+);", case[2]
+        ):
+            index = int(match[1] or 0)
+            if index in values or not 0 <= index < 8:
+                raise ValueError("invalid chest coordinate write")
+            values[index] = int(match[2], 0)
+            assignments += 1
+        if not values:
+            continue
+        slots = []
+        for slot in range(4):
+            if 2 * slot not in values and 2 * slot + 1 not in values:
+                slots.append(None)
+                continue
+            x, y = values[2 * slot], values[2 * slot + 1]
+            if not (0 <= x < WIDTH and 0 <= y < HEIGHT):
+                raise ValueError("invalid chest position")
+            slots.append({"x": x, "y": y})
+        chests[int(case[1], 0)] = slots
+    if (assignments != 290 or len(chests) != 75
+        or assignments != len(re.findall(r"(?:\*param_1|param_1\[\d+\]) = ", source))):
+        raise ValueError("incomplete chest coordinate extraction")
     maps = []
     for map_id, loader, environment in dispatch:
         flat_tiles = parse_loader(functions / f"{loader}.c")
@@ -275,7 +307,7 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
         )
 
     return {
-        "format": "yipe3-original-map-tables-v4",
+        "format": "yipe3-original-map-tables-v5",
         "source_dispatch": "0041e110",
         "source_events": "0041ec40",
         "dimensions": {
@@ -284,6 +316,8 @@ def extract(decompiled_directory: Path) -> dict[str, object]:
             "storage": "column-major",
         },
         "maps": maps,
+        "chests": [{"map_id": map_id, "slots": slots}
+                   for map_id, slots in sorted(chests.items())],
     }
 
 
@@ -358,16 +392,23 @@ def render_cpp(result: dict[str, object]) -> str:
             "std::optional<Map> original_map(int id) {",
             "    for (const OriginalMapRecord& record : original_maps) {",
             "        if (record.id == id) {",
-            "            return Map(record.id, record.environment, record.tiles, record.events);",
+            "            auto events = record.events;",
+            "            events.chests = original_chests_for_map(id);",
+            "            return Map(record.id, record.environment, record.tiles, events);",
             "        }",
             "    }",
             "    return std::nullopt;",
             "}",
             "",
-            "} // namespace yipe",
-            "",
         ]
     )
+    lines.extend(["std::array<MapPosition, 4> original_chests_for_map(int id) {", "    switch (id) {"])
+    for record in result["chests"]:
+        slots = ", ".join(f"{{{p['x']}, {p['y']}}}" if p else "{-1, -1}"
+                          for p in record["slots"])
+        lines.append(f"    case {record['map_id']}: return {{{{{slots}}}}};")
+    lines.extend(["    default: return {{{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}}};",
+                  "    }", "}", "", "} // namespace yipe", ""])
     return "\n".join(lines)
 
 

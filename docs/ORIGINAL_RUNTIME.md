@@ -38,8 +38,27 @@ The fresh bottle bootstrapped successfully. A direct Wine launch retained `Yipe!
 
 The captured window shows the Yipe! III title image and the selectable `New Game`, `Load Game`, and `Quit` entries, followed by `Kevin Kinell © 2003`. The capture is stored as `evidence/reference-captures/R00-start-menu.png` with SHA-256 `204311ebf11444c427e42d9265bd0ecafe927773ee7fd632b192fd0d2adf885b`.
 
+## Save capture checkpoint, 2026-09-22
+
+The interrupted run used the Wine-native `evidence/scripts/original_ui.c` helper to capture one Combat/Medium character, a southward move, and four actual `.yp3` files with Win32 control dumps. The existing importer accepts every archive, and native conversion and the headless SDL import path pass. See the [R08 record](../evidence/original-runtime/r08/README.md) for hashes, byte differences, and evidence limits. R08 remains partial: the reported restart has control dumps but no independent process-lifetime or visual record, and no later-game checkpoint is captured.
+
 ## Current limitation
 
-Startup is verified, but no gameplay reference case is complete. The Codex host still lacks working Computer Use/Accessibility control for the Wine window, so advancing through menus is pending. A prior bottle initialized under a beta library faulted after debugger attachment; that result is recorded only as an environment failure.
+A fresh follow-up launch reached the startup dialog in an isolated build directory. The current computer-use inventory did not expose Wine, selecting `wine64-preloader` failed, and the helper's PrintWindow capture was black. No new visual route or restart result is claimed from that attempt. A prior bottle initialized under a beta library faulted after debugger attachment; that result is recorded only as an environment failure.
+
+The follow-up Wine session also reported `wineserver crashed` after interruption. This remains runner evidence, not a game-behavior result.
 
 After the host app has working Accessibility control, repeat the cases in `REFERENCE_CASES.md` with this fresh bottle. If the game faults during ordinary interaction, retain the Wine log and use a Windows virtual machine for authoritative reference runs.
+
+E081/E082 subsequently executes isolated original damage, successful flee,
+generated map-entry and other data leaves under Wine. It also composes failed
+flee and consumable-purchase arithmetic from unchanged leaves plus disassembly.
+The [bounded record](../evidence/persistence-parity/README.md) identifies exactly
+which original routines ran and which UI-dependent paths remain excluded.
+E082's eighteen restart cases and five continuations run the rebuild's native
+Open path; they are not new original GUI observations or `.yp3` captures.
+
+E084 records four new production-created rebuild completions on the E081
+corrected combat build. The [commands and replay evidence](../evidence/corrected-completion/README.md)
+are automated native rebuild observations; they add no original GUI capture
+and do not change the R01–R10 reference-case statuses.

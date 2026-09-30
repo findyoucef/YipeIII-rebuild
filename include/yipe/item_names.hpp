@@ -18,6 +18,6 @@ struct ItemNames {
 
 // Reconstructs the parser at 0x00417e40.
 [[nodiscard]] ItemNames load_item_names(const std::filesystem::path& path);
-[[nodiscard]] ItemNames embedded_item_names();
+[[nodiscard]] ItemNames embedded_item_names(bool silly_mode = false);
 
 } // namespace yipe

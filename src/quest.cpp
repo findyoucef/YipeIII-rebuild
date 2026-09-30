@@ -473,6 +473,31 @@ PrincessReward rescue_princess(Player& player, std::size_t rescue_index,
                            "in your journey.", 500)};
 }
 
+ChestReward open_chest(Player& player, Map& map, MapPosition position,
+                       std::size_t slot, MsvcRandom& random) {
+    if (slot >= map.events().chests.size()) throw std::out_of_range("invalid chest slot");
+    if (map.id() < 1 || map.id() > 128 || !map.contains(position)
+        || map.events().chests[slot] != position) return {};
+    auto& opened = player.opened_chests[static_cast<std::size_t>(map.id() - 1)];
+    const auto mask = static_cast<std::uint8_t>(1u << slot);
+    if ((opened & mask) != 0) return {};
+    map.remove_chest(slot);
+    opened |= mask;
+    const int chest = static_cast<int>(slot);
+    const int level_roll = random.next() % std::max(player.level, 1);
+    const int experience = random.next() % 12 + chest + level_roll + 13
+        + player.difficulty * 2;
+    const int gold_roll = random.next() % (chest + 30);
+    const int gold = experience + 25 + gold_roll + chest * 10
+        - random.next() % 8 + player.difficulty;
+    player.experience += experience;
+    player.gold += gold;
+    player.current_map_id = map.id();
+    constexpr std::array thresholds{99, 78, 70, -1};
+    return {true, experience, gold,
+            roll_treasure(player, thresholds[slot], chest + 1, random)};
+}
+
 bool complete_gatekeeper_finale(Player& player) {
     if (player.gatekeeper_state != 2 || player.rescued_princess_count() != 20) {
         return false;

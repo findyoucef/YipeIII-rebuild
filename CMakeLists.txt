@@ -17,6 +17,7 @@ add_library(yipe_core
     src/auxiliary_data.cpp
     src/casino.cpp
     src/encounter.cpp
+    src/exploration.cpp
     src/item_names.cpp
     src/legacy_save.cpp
     src/map.cpp
@@ -46,11 +47,12 @@ if(APPLE)
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
     )
-    target_sources(yipe3 PRIVATE app/file_dialog_mac.mm)
+    target_sources(yipe3 PRIVATE app/file_dialog_mac.mm app/printing_mac.mm)
+    set_source_files_properties(app/printing_mac.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
     target_link_libraries(yipe3 PRIVATE "-framework AppKit"
                                         "-framework UniformTypeIdentifiers")
 else()
-    target_sources(yipe3 PRIVATE app/file_dialog_fallback.cpp)
+    target_sources(yipe3 PRIVATE app/file_dialog_fallback.cpp app/printing_fallback.cpp)
 endif()
 target_compile_options(yipe3 PRIVATE
     $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall;-Wextra;-Wpedantic;-Wconversion>
@@ -129,8 +131,33 @@ add_test(NAME yipe_core_tests COMMAND yipe_core_tests)
 add_test(NAME yipe_app_smoke COMMAND yipe3 --smoke-test)
 add_executable(yipe_app_shortcut_tests tests/app_shortcut_tests.cpp)
 target_link_libraries(yipe_app_shortcut_tests PRIVATE yipe_core SDL2::SDL2)
+target_compile_definitions(yipe_app_shortcut_tests PRIVATE
+    YIPE_TEST_EVIDENCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/evidence/original-runtime"
+)
 add_test(NAME yipe_app_shortcut_tests COMMAND yipe_app_shortcut_tests)
 set_tests_properties(yipe_app_smoke yipe_app_shortcut_tests PROPERTIES
     ENVIRONMENT "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy"
     TIMEOUT 30
 )
+set_tests_properties(yipe_app_shortcut_tests PROPERTIES TIMEOUT 90)
+if(APPLE)
+    add_executable(yipe_file_history_tests MACOSX_BUNDLE
+        tests/file_history_mac_tests.mm app/file_dialog_mac.mm)
+    set_target_properties(yipe_file_history_tests PROPERTIES
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.yipe3rebuild.tests.filehistory")
+    target_link_libraries(yipe_file_history_tests PRIVATE
+        "-framework AppKit" "-framework UniformTypeIdentifiers")
+    foreach(phase write read clear)
+        add_test(NAME yipe_file_history_${phase} COMMAND yipe_file_history_tests
+            ${phase} "${CMAKE_CURRENT_BINARY_DIR}/file-history-output")
+        set_tests_properties(yipe_file_history_${phase} PROPERTIES TIMEOUT 30)
+    endforeach()
+    set_tests_properties(yipe_file_history_write PROPERTIES FIXTURES_SETUP file_history)
+    set_tests_properties(yipe_file_history_read PROPERTIES FIXTURES_REQUIRED file_history)
+    set_tests_properties(yipe_file_history_clear PROPERTIES FIXTURES_CLEANUP file_history)
+    add_executable(yipe_printing_tests tests/printing_mac_tests.mm)
+    target_compile_options(yipe_printing_tests PRIVATE -fobjc-arc -Wall -Wextra -Wpedantic -Wconversion)
+    target_link_libraries(yipe_printing_tests PRIVATE SDL2::SDL2 "-framework AppKit")
+    add_test(NAME yipe_printing_tests COMMAND yipe_printing_tests "${CMAKE_CURRENT_BINARY_DIR}/print-output")
+    set_tests_properties(yipe_printing_tests PROPERTIES TIMEOUT 30)
+endif()
