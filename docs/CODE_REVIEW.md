@@ -42,6 +42,12 @@ non-generated production translation units, including the two macOS adapters.
 The save-error finding comes from control-flow review and the focused diagnostic;
 a clean analyzer result does not cover application exception recovery.
 
+The [first hosted CI attempt](https://github.com/findyoucef/YipeIII-rebuild/actions/runs/36786718551)
+was rejected before any checkout or build step: GitHub reported, "The job was
+not started because an Actions budget is preventing further use." Hosted CI
+therefore remains unverified until the account's Actions budget allows a run.
+The local build/test/package results above are independent of this restriction.
+
 Large progression traces and original-UI captures remain local. The four small
 original save fixtures required by the automated import tests are included in
 the repository. Original GUI parity and interactive distribution remain outside
