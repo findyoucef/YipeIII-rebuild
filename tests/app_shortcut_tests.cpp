@@ -957,6 +957,7 @@ int main(int argc, char* argv[]) {
             if (SDL_PushEvent(&event) != 1) throw std::runtime_error(SDL_GetError());
         };
         const auto run_script = [&](yipe::GameState game, const std::string& name) {
+            std::cerr << "CI progress: " << name << " case " << cases << '\n';
             auto path = test_directory / (name + ".y3r");
             push_key(SDLK_F5);
             push_key(SDLK_q);

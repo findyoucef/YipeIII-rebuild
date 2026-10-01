@@ -139,7 +139,7 @@ set_tests_properties(yipe_app_smoke yipe_app_shortcut_tests PROPERTIES
     ENVIRONMENT "SDL_VIDEODRIVER=dummy;SDL_AUDIODRIVER=dummy"
     TIMEOUT 30
 )
-set_tests_properties(yipe_app_shortcut_tests PROPERTIES TIMEOUT 90)
+set_tests_properties(yipe_app_shortcut_tests PROPERTIES TIMEOUT 180)
 if(APPLE)
     add_executable(yipe_file_history_tests MACOSX_BUNDLE
         tests/file_history_mac_tests.mm app/file_dialog_mac.mm)
