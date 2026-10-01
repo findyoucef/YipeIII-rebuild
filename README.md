@@ -2,6 +2,11 @@
 
 This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1.1.6.0 from the supplied 2003 Windows executable. The original binary is an input and reference; generated decompiler output is evidence, not compilable source.
 
+Download the macOS preview from [Releases](https://github.com/findyoucef/YipeIII-rebuild/releases).
+Choose the `.tar.gz` asset, extract it, and open `Yipe III.app` or move it to
+Applications. It requires an Apple Silicon Mac running macOS 26 or newer.
+The app is ad-hoc signed and is not notarized.
+
 The current build contains the first platform-neutral gameplay modules: player defaults, health changes, consumable item effects, level progression, the original Visual C++ random-number generator, the external item-name parser, map grids, fog-of-war visibility, and event records, movement, the secret-tree puzzle, princess rescues, the King's quest dialog and rewards, equipment transactions and combat bonuses, service transactions, the three casino games, all twelve learned spells, and combat for groups of up to three opponents, including Backstab, Frighten, Invisibility, and Enrage. Generated catalogs preserve all 20 princess placements, all 22 map-authored pursuers, all 186 recovered monster placements, all 41 monster definitions and damage ranges, all 42 weapon damage ranges, and the original sound-effect and monster-sound aliases. Its SDL2 application renders the recovered startup menu, all 112 static maps and three runtime-generated maps, all 20 placed location messages, princesses and their four reward choices, weapon, armor, healing, miscellaneous, magic, training, casino, and King interactions, and every recovered monster placement from original bitmap resources. Repeatable placements return after a map reload, high-rank monsters occupy and render across their original 2×2 footprint, and transient roaming monsters use the recovered encounter threshold, environment tables, spawn constraints, and pursuit movement. Map-authored pursuers remain within their recovered local bounds and enter ordinary combat. Combat defeat now sends the player to Yipe Hell, where the Gatekeeper accepts his difficulty-based fee or a fight before reopening the route to town. The application also plays the supplied WAV assets through SDL audio and persists the recovered sound and keyboard settings. The remaining game systems are tracked in the [feature inventory](docs/FEATURE_COVERAGE.md).
 
 The E075–E080 verification milestone passed all seven Release tests, including
@@ -54,9 +59,12 @@ The [macOS workflow](.github/workflows/macos.yml) builds Release on GitHub's
 Apple Silicon `macos-26` runner with pinned SDL2 Classic 2.32.10. It runs all
 seven CTest checks, creates the application archive, and verifies extracted
 assets, bundled SDL2, signatures, and startup outside the checkout. Successful
-runs upload `YipeIII-macOS-arm64`;
+runs upload the `YipeIII-macOS-arm64` Actions artifact;
 test results are retained even when a later step fails. Pushes to `main`, pull
 requests, and manual dispatch run the same checks with read-only permissions.
+Pushing a `v*` tag also runs these checks, then a separate job publishes the
+verified archive as a GitHub prerelease with notes from the tag. Use an annotated
+tag to supply release notes. Only the release job has repository write permission.
 
 The current target is arm64/macOS 26.0. See the [code review](docs/CODE_REVIEW.md)
 for the resolved save and high-score error handling bugs and their regression
