@@ -47,9 +47,9 @@ int route_dialog_pages = 0;
 std::vector<SDL_Event> text_input_events;
 std::size_t text_event_index = 0;
 
-// The opt-in progression proof checks game state, not pixels. Avoid rasterizing
-// millions of hidden rest frames; normal regression runs retain real rendering.
-bool omit_proof_pixels() { return full_game_mode && full_game_continuing; }
+// The scripted progression route checks state, not pixels. Earlier regression
+// cases cover rendering; avoid rasterizing its many hidden frames.
+bool omit_proof_pixels() { return route_combat; }
 int test_render_copy(SDL_Renderer* renderer, SDL_Texture* texture,
                      const SDL_Rect* source, const SDL_Rect* destination) {
     return omit_proof_pixels() ? 0 : SDL_RenderCopy(renderer, texture, source, destination);
@@ -957,7 +957,6 @@ int main(int argc, char* argv[]) {
             if (SDL_PushEvent(&event) != 1) throw std::runtime_error(SDL_GetError());
         };
         const auto run_script = [&](yipe::GameState game, const std::string& name) {
-            std::cerr << "CI progress: " << name << " case " << cases << '\n';
             auto path = test_directory / (name + ".y3r");
             push_key(SDLK_F5);
             push_key(SDLK_q);
