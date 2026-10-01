@@ -25,7 +25,23 @@ jobs:
           persist-credentials: false
 
       - name: Install build dependencies
-        run: brew install cmake sdl2
+        run: brew install cmake
+
+      - name: Build SDL2 Classic
+        run: |
+          curl -fsSL --retry 3 \
+            https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.tar.gz \
+            -o "$RUNNER_TEMP/SDL2-2.32.10.tar.gz"
+          echo "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165  $RUNNER_TEMP/SDL2-2.32.10.tar.gz" | shasum -a 256 -c -
+          tar -xzf "$RUNNER_TEMP/SDL2-2.32.10.tar.gz" -C "$RUNNER_TEMP"
+          cmake -S "$RUNNER_TEMP/SDL2-2.32.10" -B "$RUNNER_TEMP/sdl2-build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=26.0 \
+            -DCMAKE_INSTALL_PREFIX="$RUNNER_TEMP/sdl2-install" \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST=OFF
+          cmake --build "$RUNNER_TEMP/sdl2-build" --parallel 3
+          cmake --install "$RUNNER_TEMP/sdl2-build"
 
       - name: Configure Release
         run: >-
@@ -33,7 +49,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_OSX_DEPLOYMENT_TARGET=26.0
-          -DCMAKE_PREFIX_PATH="$(brew --prefix sdl2)"
+          -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/sdl2-install"
 
       - name: Build
         run: cmake --build build/mac-ci --parallel 3

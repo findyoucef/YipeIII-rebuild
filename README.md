@@ -51,9 +51,10 @@ and identity are recorded in [the current package record](evidence/corrected-com
 ## macOS CI
 
 The [macOS workflow](.github/workflows/macos.yml) builds Release on GitHub's
-Apple Silicon `macos-26` runner. It runs all seven CTest checks, creates the
-application archive, and verifies extracted assets, bundled SDL2, signatures,
-and startup outside the checkout. Successful runs upload `YipeIII-macOS-arm64`;
+Apple Silicon `macos-26` runner with pinned SDL2 Classic 2.32.10. It runs all
+seven CTest checks, creates the application archive, and verifies extracted
+assets, bundled SDL2, signatures, and startup outside the checkout. Successful
+runs upload `YipeIII-macOS-arm64`;
 test results are retained even when a later step fails. Pushes to `main`, pull
 requests, and manual dispatch run the same checks with read-only permissions.
 

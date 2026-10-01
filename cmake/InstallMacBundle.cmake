@@ -2,7 +2,7 @@
 include(BundleUtilities)
 set(bundle "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/Yipe III.app")
 set(BU_CHMOD_BUNDLE_ITEMS TRUE)
-fixup_bundle("${bundle}" "" "")
+fixup_bundle("${bundle}" "" "${YIPE_SDL2_LIBRARY_DIR}")
 
 # install_name_tool invalidates the copied Mach-O signatures. Sign nested
 # libraries first, then seal the application for local Apple Silicon execution.
