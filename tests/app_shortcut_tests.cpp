@@ -581,15 +581,15 @@ int main(int argc, char* argv[]) {
             event.key.repeat = repeat ? 1 : 0;
             if (SDL_PushEvent(&event) != 1) throw std::runtime_error(SDL_GetError());
         };
-        const auto push_mouse = [&](int x, int y, Uint8 button = SDL_BUTTON_LEFT,
+        const auto push_mouse = [](int x, int y, Uint8 button = SDL_BUTTON_LEFT,
                                     Uint32 type = SDL_MOUSEBUTTONUP) {
             SDL_Event event{};
             event.type = type;
             event.button.button = button;
-            // Real window IDs let SDL perform its normal logical-coordinate scaling.
-            event.button.windowID = SDL_GetWindowID(window.get());
-            SDL_RenderLogicalToWindow(renderer.get(), static_cast<float>(x),
-                                      static_cast<float>(y), &event.button.x, &event.button.y);
+            // SDL delivers logical coordinates to the game. Synthetic events
+            // have no window ID so SDL does not scale them a second time.
+            event.button.x = x;
+            event.button.y = y;
             if (SDL_PushEvent(&event) != 1) throw std::runtime_error(SDL_GetError());
         };
         if (full_game_resuming) {
@@ -1209,6 +1209,17 @@ int main(int argc, char* argv[]) {
                 prepare_game_view(window.get(), renderer.get());
                 SDL_SetWindowSize(window.get(), size.x, size.y);
                 SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+                int window_x = 0;
+                int window_y = 0;
+                float logical_x = 0;
+                float logical_y = 0;
+                SDL_RenderLogicalToWindow(renderer.get(), 9 * tile_size + 16,
+                                          5 * tile_size + 16, &window_x, &window_y);
+                SDL_RenderWindowToLogical(renderer.get(), window_x, window_y,
+                                          &logical_x, &logical_y);
+                require(static_cast<int>(logical_x) / tile_size == 9
+                            && static_cast<int>(logical_y) / tile_size == 5,
+                        "scaled window did not preserve the clicked map cell");
                 // A bar click must never be a movement command; the next map
                 // click still means one eastward step at every scale.
                 push_mouse(100, map_height + 10);
