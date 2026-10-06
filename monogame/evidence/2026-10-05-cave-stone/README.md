@@ -21,9 +21,14 @@ Primary references resolved from the surface map: Maynard **E3 / 1,1**, map 17;
   the current native terrain and town atlases.
 
 The before sides reuse the prior style correction's CPU composites; the after
-sides are fresh GPU captures. Scaling is nearest-neighbor. Visual acceptance
-remains with the user; no manual inspection through an image-viewing tool was
-available in this session.
+sides are fresh GPU captures. Scaling is nearest-neighbor. The later completion
+audit viewed these images directly, together with the original F3 GPU baseline,
+current area maps 17/18/23, desert F1 and the village gameplay camera. The cave
+comparison has a player overlapping the new entrance; `after/area-017.png` shows
+the entrance unobstructed, and `after/yipe-village-focus-4-1.png` shows it in play.
+These confirm the connected contours, darker fronts and retained native detail;
+the cave rim shares the wall's slate and its opening remains clearly visible.
+User feedback can guide further visual refinements.
 
 ## Current evidence
 
@@ -55,3 +60,19 @@ and no gameplay, collision, encounters, map data or save-format code changed.
 Production changes are confined to two small native art processing methods in
 `RetroArt.cs`; the existing graphics runner contains the regression coverage.
 Historical CPU harnesses import older native art and do not cover this correction.
+
+## Completion audit
+
+| Requirement | Inspected evidence |
+| --- | --- |
+| Connected irregular mountain masses, with F3 / 2,6 as reference | Original `mountain-form/before/map-018.png`, current `after/area-018.png`, contour and 40,960 overlap-pixel checks. |
+| Distinct faces and original pixel-art style | F3, F1, E4 and village captures; native atlas, binary-alpha and top/front contrast checks. |
+| Blend cave entrances into darker slate walls | Unobstructed village and F3 area captures, gameplay close-up, five cave/stone checks and native pixel comparison. |
+| Routes, secrets and saves preserved | All 36 surface maps' open-cell/blocked-core checks, secret and cache checks, full save/RNG comparisons; production edits are rendering-only. |
+| Town, world and map consistency | Shared renderer/import source, identical town/world cave and terrain checks, fog checks and captured area/gameplay views. |
+| Durable progress and verification | Updated `PORTING_PLAN.md`, retained build and 1,203-check graphics logs, screenshots and completion checksums. |
+
+The completion audit verified every production/test source and art asset listed
+in `source.sha256` against the current worktree. Only its plan-document checksum
+differs after later documentation updates. `completion.sha256` records the final
+documentation and reviewed evidence alongside the unchanged tested sources.

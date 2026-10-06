@@ -18,7 +18,7 @@ integration remain separate; this is a playable desktop port, not a release clai
 | Field | Current state |
 | --- | --- |
 | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
-| Next task | Mountain/cave stone correction is implemented and graphics integration is complete. User review of the darker stone remains pending; other presentation features and P5/P6 remain queued. See the current GPU captures in the cave-stone evidence packet. |
+| Next task | Active goal: implement subtle moving cloud shadows and sun shafts for outdoor gameplay, with separate saved strengths and native pixel shading. Validate settings, timing, visibility, presentation and cost; retain evidence below. |
 | Last completed work | Matched mountain stone to the cave's darker slate gray, retained small authored highlight cores, and lifted only the cave's outer border to the same gray. Shared native art import covers town, world, area maps and desert foothills. References: Maynard E3 / 1,1 and F3 / 7,4, near the original F3 / 2,6 ridge report. See [cave-stone evidence](evidence/2026-10-05-cave-stone/README.md). |
 | Latest verification | Checked Release build: zero warnings/errors. 1,203 current GPU integration checks pass, including 360 gameplay tour frames, all 36 surface mountain layouts, 40,960 matching overlap pixels, cave/stone brightness, dark doorway preservation, secret equivalence, fog and save/RNG isolation. The earlier graphics-context blocker is resolved. |
 | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
@@ -47,7 +47,22 @@ At the start of a resumed session:
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
 
-## Implemented: mountain form and cave stone — 2026-10-05
+## Active goal: cloud shadows and sun shafts — 2026-10-05
+
+Add faint drifting cloud shadows and northwest-to-southeast sun shafts to outdoor
+gameplay. Keep the approved pixel-art style, original gameplay, saves and RNG.
+Use world coordinates, native pixel steps and the existing paused scene clock.
+Cloud shadows and sun shafts each have Off/Subtle/Strong controls, default Subtle.
+Interiors, Hell, fog, area-map artwork and overlay text must remain unaffected.
+
+- [ ] Implement shared outdoor masks, drift and bounded shade/light strength.
+- [ ] Add independent saved settings, old-profile defaults and reachable menu rows.
+- [ ] Verify drift, camera/region continuity, pause, visibility, UI and existing effects.
+- [ ] Check rendering cost, inspect actual captures where graphics access is available,
+      and retain reproducible evidence and any environment limitations.
+- [ ] Update this plan and the visual backlog with completion/resume status.
+
+## Complete: mountain form and cave stone — 2026-10-05
 
 Replace the staircase of rounded tile blocks and repeated cobblestone fill with
 larger coherent rock masses, long irregular slopes and distinct cliff faces.
@@ -63,6 +78,7 @@ as the before image; surface F3 / 2,6 is grass west of the diagonal ridge.
 - [x] Validate native terrain, seams, secrets, mutable terrain and gameplay isolation; retain evidence.
 - [x] Match mountain stone to the cave rim and preserve the dark tunnel, native detail and silhouettes.
 - [x] Run the current graphics integration suite and capture actual gameplay/post-effects after graphics-context access was restored.
+- [x] Visually inspect actual F3, village, desert and narrow-passage GPU captures against the earlier artwork, and confirm the tested source still matches the working tree.
 
 Implementation: connected ridge bends use broader cuts while thin tips retain
 solid centers. Following the user's rejection of the broad flat gray patches,
@@ -95,7 +111,14 @@ Current GPU captures, comparisons and logs are in [the cave-stone evidence packe
 The earlier 530 core and 249 CPU passes remain historical evidence for the form
 revision. Its CPU harness imports older native art, so it does not exercise this
 latest import correction. Use the current GPU runner for resuming validation.
-User review of the appearance is pending; no new shaders or art assets were added.
+The final visual audit inspected the original F3 map against the current GPU
+area capture, the village cave without an overlapping player, desert F1, E4's
+narrow passages and the village gameplay camera. These show broader connected
+contours, darker lower faces, intact routes, crisp original rock clusters and a
+slate cave rim surrounding a readable dark opening. All recorded production and
+test-source hashes still match; only later documentation has changed. The goal
+is complete. User feedback can guide further refinements; no new shaders or art
+assets were added.
 
 ## Surface mountain barriers — 2026-10-05 (previous revisions)
 
@@ -191,7 +214,8 @@ The user approved all six recommendations and selected localized lighting first.
 | Feature | Status | Intended behavior |
 | --- | --- | --- |
 | Localized pixel lighting | Done | Windows, wall torches and lava light nearby scenery and actors with restrained flicker, stepped shading and a saved toggle. Respects walls, fog and existing gameplay. |
-| Moving cloud shadows | Queued | Broad, faint shadows drift across outdoor scenery. |
+| Moving cloud shadows | In progress | Broad, faint shadows drift across outdoor scenery; separate saved strength. |
+| Sun shafts | In progress | Restrained warm diagonal shafts through cloud openings, native pixel shading and a separate saved strength. |
 | Rain and surface splashes | Queued | Fine rain, small ground splashes and water rings, with adjustable intensity. |
 | Combat feedback | Queued | Brief hit flashes, impact bursts, damage numbers and optional light screen shake. |
 | Walking puddle ripples | Queued | Footsteps create small water rings and disturb the character's reflection. |
