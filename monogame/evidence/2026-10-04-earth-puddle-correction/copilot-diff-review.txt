@@ -1,0 +1,4 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+1. **Puddle finger is clipped by the scan bounding box.** The finger test can extend to normalized `dx = .65 + sqrt(.22 * 1.10) ≈ 1.142`, but the loop scans only to `center.X + radius.X + 2`, or at most normalized `1 + 2 / radius.X` (`1.083–1.111` for these radii). This truncates the finger by up to ~1.4 pixels, on the side selected by the seed mirroring. **Smallest correction:** expand the horizontal scan padding from `2` to `4` pixels.
+
+No other concrete bug is provable from the supplied diff. Verifying effects outside Earth caves requires the missing definitions/assignments of `HasPuddles` and the local `puddles` variable, plus the call-site gating for `AddEarthPuddles`.

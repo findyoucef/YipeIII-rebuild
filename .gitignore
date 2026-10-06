@@ -6,3 +6,5 @@
 .DS_Store
 __pycache__/
 /build-corrected-completion-release/
+/monogame/**/bin/
+/monogame/**/obj/

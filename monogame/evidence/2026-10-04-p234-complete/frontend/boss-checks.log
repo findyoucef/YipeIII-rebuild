@@ -1,0 +1,12 @@
+UTC: 2026-10-04T14:36:44.8288610Z
+Runtime: .NET 10.0.8
+OS: macOS 26.7.1
+PASS The late frontend starts with the campaign's earned movement and quest prerequisites
+PASS The compared C# campaign save opens before the final boss
+PASS Cancelling New adventure restores the active combat interaction
+PASS The earned late save defeats the empowered Gatekeeper through combat overlays (HP 32, Gatekeeper 2, battle Victory)
+PASS The boss passage reaches the nineteenth princess with earned progress
+PASS The earned late route reaches the final fire-wall landing
+PASS Production pause-menu save preserves the complete earned late-game state
+PASS earned late frontend boss and saved continuation; 49434 normal-clock update frames.
+PASS fresh-process late frontend save/reload and earned finale.

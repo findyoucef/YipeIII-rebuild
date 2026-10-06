@@ -1,0 +1,1244 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/graphics-checks/yipe-graphics-20261005-223853-8405419a
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Map 17: local lights visibly affect scenery and nearby actors
+PASS: Map 17: lighting repeats exactly at a paused scene clock
+PASS: Map 17: lighting preserves gameplay, map contents and RNG
+PASS: Map 17: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 57: local lights visibly affect scenery and nearby actors
+PASS: Map 57: lighting repeats exactly at a paused scene clock
+PASS: Map 57: lighting preserves gameplay, map contents and RNG
+PASS: Map 57: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 63: local lights visibly affect scenery and nearby actors
+PASS: Map 63: lighting repeats exactly at a paused scene clock
+PASS: Map 63: lighting preserves gameplay, map contents and RNG
+PASS: Map 63: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 117: local lights visibly affect scenery and nearby actors
+PASS: Map 117: lighting repeats exactly at a paused scene clock
+PASS: Map 117: lighting preserves gameplay, map contents and RNG
+PASS: Map 117: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 118: local lights visibly affect scenery and nearby actors
+PASS: Map 118: lighting repeats exactly at a paused scene clock
+PASS: Map 118: lighting preserves gameplay, map contents and RNG
+PASS: Map 118: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 119: local lights visibly affect scenery and nearby actors
+PASS: Map 119: lighting repeats exactly at a paused scene clock
+PASS: Map 119: lighting preserves gameplay, map contents and RNG
+PASS: Map 119: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 120: local lights visibly affect scenery and nearby actors
+PASS: Map 120: lighting repeats exactly at a paused scene clock
+PASS: Map 120: lighting preserves gameplay, map contents and RNG
+PASS: Map 120: lighting composes with heat, miniature, vignette and scanlines
+PASS: A wall-mounted cave torch emits a local light field
+PASS: A closed door blocks torchlight from reaching the floor behind it
+PASS: Opening a door invalidates the lighting cache and restores the light path
+PASS: Wall variant 43 cannot reveal a secret through its lighting
+PASS: Wall variant 23 cannot reveal a secret through its lighting
+PASS: Wall variant 44 cannot reveal a secret through its lighting
+PASS: Wall variant 25 cannot reveal a secret through its lighting
+PASS: Wall variant 5a cannot reveal a secret through its lighting
+PASS: Torch flicker advances only with scene time and preserves its fixed footprint
+PASS: Removing a torch wall leaves no stale light behind
+PASS: An undiscovered fire source cannot cast light into a discovered room
+PASS: Visible fire light never paints undiscovered map cells
+PASS: Overlapping flames stay below one source's peak brightness instead of accumulating bloom
+PASS: Local lighting preserves black outlines and opaque alpha instead of adding haze
+PASS: The light pass brightens existing colors gently without flattening terrain contrast
+PASS: Pixel lighting switches off through the pause menu
+PASS: The lighting menu preference survives reopening its profile
+PASS: Pixel lighting leaves the pause panel and every other label unchanged
+PASS: Local lighting leaves the area map and its labels unchanged
+PASS: Vignette defaults to off
+PASS: Vignette toggles on through the pause menu
+PASS: The pause-menu vignette preference survives reopening its profile
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 0, scanlines False
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 0, scanlines True
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 1, scanlines False
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 1, scanlines True
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 2, scanlines False
+PASS: Vignette darkens edges, preserves the center and never blurs or brightens with miniature 2, scanlines True
+PASS: Vignette leaves pause text and panels unchanged apart from its own On/Off label
+PASS: Action and dialogue panels retain their original colors with vignette enabled
+PASS: Vignette does not darken the full-screen map or its labels
+PASS: Vignette toggles off again without changing gameplay or RNG
+PASS: Miniature menu advances to Strong
+PASS: Miniature menu advances to Off
+PASS: Miniature menu wraps to Subtle
+PASS: All three strengths render distinct images
+PASS: Stronger settings progressively soften distant terrain detail
+PASS: Focus band and hero stay pixel-sharp at map position 5,5
+PASS: Focus band and hero stay pixel-sharp at map position 4,1
+PASS: Focus band and hero stay pixel-sharp at map position 10,10
+PASS: Blur preserves brightness and fills every border pixel without transparent seams
+Gradient contrast: edge=132, center=160, levels=26, max row jump=2
+PASS: Falloff contains a gradual range of contrast levels
+PASS: No abrupt contrast boundary between presentation rows
+PASS: Subpixel focus movement does not pop between blur bands
+PASS: Opaque pause panel and typography remain untouched by the blur
+PASS: Location message overlay stays sharp
+PASS: No pre-motion trail for {X:1 Y:0}
+PASS: Faint trail appears for {X:1 Y:0}
+PASS: Trail stays within three pixels behind {X:1 Y:0}
+PASS: Trail fades before stopping {X:1 Y:0}
+PASS: Completed step clears trail for {X:1 Y:0}
+PASS: No pre-motion trail for {X:-1 Y:0}
+PASS: Faint trail appears for {X:-1 Y:0}
+PASS: Trail stays within three pixels behind {X:-1 Y:0}
+PASS: Trail fades before stopping {X:-1 Y:0}
+PASS: Completed step clears trail for {X:-1 Y:0}
+PASS: No pre-motion trail for {X:0 Y:1}
+PASS: Faint trail appears for {X:0 Y:1}
+PASS: Trail stays within three pixels behind {X:0 Y:1}
+PASS: Trail fades before stopping {X:0 Y:1}
+PASS: Completed step clears trail for {X:0 Y:1}
+PASS: No pre-motion trail for {X:0 Y:-1}
+PASS: Faint trail appears for {X:0 Y:-1}
+PASS: Trail stays within three pixels behind {X:0 Y:-1}
+PASS: Trail fades before stopping {X:0 Y:-1}
+PASS: Completed step clears trail for {X:0 Y:-1}
+PASS: Facing a blocked direction without moving creates no trail
+PASS: Drawing repeatedly without updates leaves exposure unchanged
+PASS: Loading/resetting mid-step clears the trail
+PASS: Standing creates no footstep particles
+PASS: Paved routes produce sparse low-opacity dust
+PASS: Grass produces green blade disturbance instead of road dust
+PASS: Paused footsteps do not evolve between draws
+PASS: Wooden bridges produce no grass or dust
+PASS: Loading or resetting clears footstep effects
+PASS: River is one connected water surface through both bends and bridges
+PASS: River reaches both map edges and flows beneath both bridges
+PASS: Natural river width varies along the banks
+PASS: Moving ripples and foam remain inside the river and leave banks untouched
+PASS: River animation is deterministic and freezes with scene time
+PASS: Bridge 3,3 reflection faces {X:0 Y:1} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:-1 Y:0} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:1 Y:0} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:0 Y:-1} and stays faint and inside water
+PASS: Bridge 3,3 reflection freezes at a fixed scene time
+PASS: Bridge 3,3 reflection has gentle animated ripples
+PASS: Bridge deck stays opaque over the reflection
+PASS: Part of the character reflection remains visible beyond the bridge deck
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 3, Y = 3 } dir=-1: 0,0,60,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 3, Y = 3 } dir=1: 6,20,58,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Bridge 2,6 reflection faces {X:0 Y:1} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:-1 Y:0} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:1 Y:0} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:0 Y:-1} and stays faint and inside water
+PASS: Bridge 2,6 reflection freezes at a fixed scene time
+PASS: Bridge 2,6 reflection has gentle animated ripples
+PASS: Bridge deck stays opaque over the reflection
+PASS: Part of the character reflection remains visible beyond the bridge deck
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 2, Y = 6 } dir=-1: 0,0,60,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 2, Y = 6 } dir=1: 0,0,58,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Load or reset inland clears the reflection immediately
+PASS: Facing a nearby shop changes only its small doorstep cue
+PASS: Entrance cue stays hidden during movement
+PASS: Sign 8 retains its dark bottom outline while swaying
+PASS: Sign 9 retains its dark bottom outline while swaying
+PASS: Sign 10 retains its dark bottom outline while swaying
+PASS: Sign 11 retains its dark bottom outline while swaying
+PASS: Sign 12 retains its dark bottom outline while swaying
+PASS: Hanging shop signs sway with scene time
+PASS: Shop props freeze while paused
+PASS: Authored flowers and foliage leave paved walking routes clear
+PASS: Shop 1 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 1 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 2 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 2 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 0 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 0 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 3 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 3 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 4 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 4 keeps its hanging board and symbol visible beside the facade
+PASS: Cave threshold reaches the last row of its mountain tile, with no gap below
+PASS: Tour stays inside the map
+PASS: Pause freezes motion and environmental time
+PASS: Pause clears buffered movement
+PASS: Resume finishes the pending visual step
+PASS: Session accepts the logical destination before the visual step finishes
+PASS: Saving during animation and loading restores the accepted destination without a stale tween
+PASS: Loading synchronizes the logical session and animated player
+PASS: Pause-menu full load restores character, inventory, progression, chest/defeat flags and RNG
+PASS: Successful load rebinds the renderer to the new session and disposes the old textures
+The save's integrity check failed.
+PASS: A corrupt full save leaves the live session, renderer and in-flight animation untouched
+PASS: Load failure is reported in the pause overlay
+The map journal does not match this saved adventure.
+PASS: A wider-world save opens in its cave with the animated player synchronized
+The map journal does not match this saved adventure.
+PASS: Generated-map loading advances the restored RNG exactly once, independently of rendering
+Invalid MonoGame save length.
+PASS: Loading raw preview JSON cannot silently replace earned character progress
+The map journal does not match this saved adventure.
+PASS: The full game can display saved positions beyond the former preview restriction
+PASS: Missing-save feedback preserves the live game
+Invalid character progression flags.
+PASS: Pause-menu save validation failure preserves the previous successful file
+PASS: Game dispatch animates diagonal {X:-1 Y:-1} on both axes
+PASS: Diagonal {X:-1 Y:-1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:1 Y:-1} on both axes
+PASS: Diagonal {X:1 Y:-1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:-1 Y:1} on both axes
+PASS: Diagonal {X:-1 Y:1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:1 Y:1} on both axes
+PASS: Diagonal {X:1 Y:1} lands on its accepted destination after 250 ms
+PASS: Cave entry changes the live map and snaps to the authored arrival
+PASS: Surface-edge dispatch enters the adjoining map
+PASS: Entering the general store opens its live purchasing overlay
+PASS: Leaving a shop resumes the original town encounter roll exactly once
+PASS: Camera clamps at the north edge
+PASS: Camera clamps at the south edge
+PASS: Camera clamps at the west edge
+PASS: Camera clamps at the east edge
+PASS: Fullscreen activates
+PASS: Windowed 16:9 resolution restores
+PASS: Scanlines toggle on through the menu
+PASS: Scanlines alter the presentation and toggle off again
+PASS: terrain uses its native pixel grid
+PASS: terrain has only palette colors and binary alpha
+PASS: town uses its native pixel grid
+PASS: town has only palette colors and binary alpha
+PASS: hero uses its native pixel grid
+PASS: hero has only palette colors and binary alpha
+PASS: meadow uses its native pixel grid
+PASS: meadow has only palette colors and binary alpha
+PASS: details uses its native pixel grid
+PASS: details has only palette colors and binary alpha
+PASS: World atlas 1 uses the shared palette and binary alpha
+PASS: Monster/NPC sprite 1 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 2 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 3 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 4 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 5 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 6 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 7 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 8 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 9 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 10 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 11 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 12 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 13 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 14 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 15 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 16 is nonempty with a clear atlas border
+PASS: World atlas 2 uses the shared palette and binary alpha
+PASS: Monster/NPC sprite 17 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 18 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 19 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 20 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 21 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 22 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 23 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 24 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 25 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 26 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 27 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 28 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 29 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 30 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 31 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 32 is nonempty with a clear atlas border
+PASS: World atlas 3 uses the shared palette and binary alpha
+PASS: Monster/NPC sprite 33 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 34 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 35 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 36 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 37 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 38 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 39 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 40 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 41 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 42 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 43 is nonempty with a clear atlas border
+PASS: Monster/NPC sprite 44 is nonempty with a clear atlas border
+PASS: World atlas 4 uses the shared palette and binary alpha
+PASS: Map atlas 4 prop 1 has a clear atlas border
+PASS: Map atlas 4 prop 2 has a clear atlas border
+PASS: Map atlas 4 prop 3 has a clear atlas border
+PASS: Map atlas 4 prop 4 has a clear atlas border
+PASS: Map atlas 4 prop 5 has a clear atlas border
+PASS: Map atlas 4 prop 6 has a clear atlas border
+PASS: Map atlas 4 prop 7 has a clear atlas border
+PASS: Map atlas 4 prop 8 has a clear atlas border
+PASS: Map atlas 4 prop 9 has a clear atlas border
+PASS: Map atlas 4 prop 10 has a clear atlas border
+PASS: Map atlas 4 prop 11 has a clear atlas border
+PASS: Map atlas 4 prop 12 has a clear atlas border
+PASS: Map atlas 4 prop 13 has a clear atlas border
+PASS: Map atlas 4 prop 14 has a clear atlas border
+PASS: Map atlas 4 prop 15 has a clear atlas border
+PASS: Map atlas 4 prop 16 has a clear atlas border
+PASS: World atlas 5 uses the shared palette and binary alpha
+PASS: Map atlas 5 prop 1 has a clear atlas border
+PASS: Map atlas 5 prop 2 has a clear atlas border
+PASS: Map atlas 5 prop 3 has a clear atlas border
+PASS: Map atlas 5 prop 4 has a clear atlas border
+PASS: Map atlas 5 prop 5 has a clear atlas border
+PASS: Map atlas 5 prop 6 has a clear atlas border
+PASS: Map atlas 5 prop 7 has a clear atlas border
+PASS: Map atlas 5 prop 8 has a clear atlas border
+PASS: Map atlas 5 prop 9 has a clear atlas border
+PASS: Map atlas 5 prop 10 has a clear atlas border
+PASS: Map atlas 5 prop 11 has a clear atlas border
+PASS: Map atlas 5 prop 12 has a clear atlas border
+PASS: World atlas 6 uses the shared palette and binary alpha
+PASS: Map atlas 6 prop 1 has a clear atlas border
+PASS: Map atlas 6 prop 2 has a clear atlas border
+PASS: Map atlas 6 prop 3 has a clear atlas border
+PASS: Map atlas 6 prop 4 has a clear atlas border
+PASS: Character atlas 1 uses native palette colors and binary alpha
+PASS: Character sheet 1 pose 1 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 2 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 3 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 4 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 5 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 6 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 7 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 8 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 9 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 10 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 11 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 12 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 13 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 14 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 15 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 16 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 17 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 18 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 19 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 20 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 21 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 22 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 23 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 24 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 25 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 26 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 27 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 28 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 29 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 30 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 31 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 pose 32 is complete and aligned at the shared foot anchor
+PASS: Character sheet 1 appearance 1 has distinct walking poses
+PASS: Character sheet 1 appearance 2 has distinct walking poses
+PASS: Character sheet 1 appearance 3 has distinct walking poses
+PASS: Character sheet 1 appearance 4 has distinct walking poses
+PASS: Character atlas 2 uses native palette colors and binary alpha
+PASS: Character sheet 2 pose 1 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 2 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 3 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 4 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 5 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 6 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 7 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 8 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 9 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 10 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 11 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 12 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 13 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 14 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 15 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 pose 16 is complete and aligned at the shared foot anchor
+PASS: Character sheet 2 appearance 1 has distinct walking poses
+PASS: Character sheet 2 appearance 2 has distinct walking poses
+PASS: Character atlas 3 uses native palette colors and binary alpha
+PASS: Character sheet 3 pose 1 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 2 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 3 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 4 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 5 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 6 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 7 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 8 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 9 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 10 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 11 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 12 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 13 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 14 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 15 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 pose 16 is complete and aligned at the shared foot anchor
+PASS: Character sheet 3 appearance 1 has distinct walking poses
+PASS: Character sheet 3 appearance 2 has distinct walking poses
+PASS: Character atlas 4 uses native palette colors and binary alpha
+PASS: Character sheet 4 pose 1 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 2 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 3 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 4 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 5 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 6 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 7 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 8 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 9 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 10 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 11 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 12 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 13 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 14 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 15 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 16 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 17 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 18 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 19 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 20 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 21 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 22 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 23 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 24 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 25 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 26 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 27 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 28 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 29 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 30 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 31 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 pose 32 is complete and aligned at the shared foot anchor
+PASS: Character sheet 4 appearance 1 has distinct walking poses
+PASS: Character sheet 4 appearance 2 has distinct walking poses
+PASS: Character sheet 4 appearance 3 has distinct walking poses
+PASS: Character sheet 4 appearance 4 has distinct walking poses
+PASS: World monster 1, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 2, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 3, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 4, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 5, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 6, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 7, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: Surface D4 monster 7 has visible contact shading beneath its feet
+PASS: World monster 8, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 9, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: Surface D4 monster 9 has visible contact shading beneath its feet
+PASS: World monster 10, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 11, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 12, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 13, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 14, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 15, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 16, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 17, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 18, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 19, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 20, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 21, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 22, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 23, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 24, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 25, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 26, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 27, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 28, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 29, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 30, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 31, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 32, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 33, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 34, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 35, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 35, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 36, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 36, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 37, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 37, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 38, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 38, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 39, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 39, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 40, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 40, scale 2: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 41, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 42, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 43, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: World monster 44, scale 1: the complete sprite meets the tile base, with restrained shadow inside its footprint
+PASS: Map 1 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 2 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 3 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 4 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 5 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 6 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 7 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 8 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 9 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 10 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 11 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 11 bridge 3,5 reflects the character faintly on visible water only
+PASS: Map 12 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 13 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 14 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 15 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 16 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 17 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 17 bridge 3,3 reflects the character faintly on visible water only
+PASS: Map 17 bridge 2,6 reflects the character faintly on visible water only
+PASS: Map 18 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 19 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 20 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 21 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 22 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 23 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 23 bridge 2,5 reflects the character faintly on visible water only
+PASS: Map 24 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 25 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 26 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 27 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 28 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 29 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 30 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 31 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 32 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 33 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 33 bridge 9,3 reflects the character faintly on visible water only
+PASS: Map 34 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 35 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 36 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 41 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 42 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 43 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 44 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 45 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 46 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 47 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 48 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 49 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 50 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 51 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 52 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 53 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 54 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 55 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 56 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 57 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 58 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 59 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 60 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 61 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 62 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 63 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 64 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 65 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 66 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 67 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 68 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 69 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 70 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 71 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 72 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 73 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 74 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 75 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 76 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 81 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 82 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 83 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 84 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 85 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 86 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 87 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 88 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 89 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 90 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 91 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 92 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 93 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 94 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 95 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 96 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 97 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 98 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 99 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 100 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 101 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 102 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 103 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 104 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 105 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 106 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 107 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 108 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 109 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 110 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 111 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 112 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 113 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 114 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 115 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 116 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 117 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 118 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 119 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 120 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 121 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 127 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Map 133 renders its revealed terrain, events and actors without consuming gameplay RNG
+PASS: Tile 01 has explicit ground artwork
+PASS: Tile 02 has explicit ground artwork
+PASS: Tile 03 has explicit ground artwork
+PASS: Tile 04 has explicit ground artwork
+PASS: Tile 05 has explicit ground artwork
+PASS: Tile 06 has explicit ground artwork
+PASS: Tile 07 has explicit ground artwork
+PASS: Tile 08 has explicit ground artwork
+PASS: Tile 09 has explicit ground artwork
+PASS: Tile 0a has explicit ground artwork
+PASS: Tile 0b has explicit ground artwork
+PASS: Tile 0c has explicit ground artwork
+PASS: Tile 0d has explicit ground artwork
+PASS: Tile 0e has explicit ground artwork
+PASS: Tile 0f has explicit ground artwork
+PASS: Tile 10 has explicit ground artwork
+PASS: Tile 11 has explicit ground artwork
+PASS: Tile 12 has explicit ground artwork
+PASS: Tile 13 has explicit ground artwork
+PASS: Tile 14 has explicit ground artwork
+PASS: Tile 15 has explicit ground artwork
+PASS: Tile 16 has explicit ground artwork
+PASS: Tile 17 has explicit ground artwork
+PASS: Tile 18 has explicit ground artwork
+PASS: Tile 19 has explicit ground artwork
+PASS: Tile 1a has explicit ground artwork
+PASS: Tile 1b has explicit ground artwork
+PASS: Tile 1c has explicit ground artwork
+PASS: Tile 1d has explicit ground artwork
+PASS: Tile 1e has explicit ground artwork
+PASS: Tile 1f has explicit ground artwork
+PASS: Tile 20 has explicit ground artwork
+PASS: Tile 21 has explicit ground artwork
+PASS: Tile 22 has explicit ground artwork
+PASS: Tile 23 has explicit ground artwork
+PASS: Tile 24 has explicit ground artwork
+PASS: Tile 25 has explicit ground artwork
+PASS: Tile 26 has explicit ground artwork
+PASS: Tile 27 has explicit ground artwork
+PASS: Tile 28 has explicit ground artwork
+PASS: Tile 29 has explicit ground artwork
+PASS: Tile 2a has explicit ground artwork
+PASS: Tile 2b has explicit ground artwork
+PASS: Tile 2c has explicit ground artwork
+PASS: Tile 2d has explicit ground artwork
+PASS: Tile 2e has explicit ground artwork
+PASS: Tile 2f has explicit ground artwork
+PASS: Tile 30 has explicit ground artwork
+PASS: Tile 31 has explicit ground artwork
+PASS: Tile 32 has explicit ground artwork
+PASS: Tile 33 has explicit ground artwork
+PASS: Tile 34 has explicit ground artwork
+PASS: Tile 35 has explicit ground artwork
+PASS: Tile 36 has explicit ground artwork
+PASS: Tile 39 has explicit ground artwork
+PASS: Tile 3c has explicit ground artwork
+PASS: Tile 3d has explicit ground artwork
+PASS: Tile 3e has explicit ground artwork
+PASS: Tile 3f has explicit ground artwork
+PASS: Tile 40 has explicit ground artwork
+PASS: Tile 41 has explicit ground artwork
+PASS: Tile 42 has explicit ground artwork
+PASS: Tile 43 has explicit ground artwork
+PASS: Tile 44 has explicit ground artwork
+PASS: Tile 45 has explicit ground artwork
+PASS: Tile 46 has explicit ground artwork
+PASS: Tile 47 has explicit ground artwork
+PASS: Tile 48 has explicit ground artwork
+PASS: Tile 49 has explicit ground artwork
+PASS: Tile 4a has explicit ground artwork
+PASS: Tile 4b has explicit ground artwork
+PASS: Tile 4c has explicit ground artwork
+PASS: Tile 4d has explicit ground artwork
+PASS: Tile 4e has explicit ground artwork
+PASS: Tile 4f has explicit ground artwork
+PASS: Tile 50 has explicit ground artwork
+PASS: Tile 51 has explicit ground artwork
+PASS: Tile 52 has explicit ground artwork
+PASS: Tile 53 has explicit ground artwork
+PASS: Tile 54 has explicit ground artwork
+PASS: Tile 55 has explicit ground artwork
+PASS: Tile 56 has explicit ground artwork
+PASS: Tile 57 has explicit ground artwork
+PASS: Tile 58 has explicit ground artwork
+PASS: Tile 59 has explicit ground artwork
+PASS: Tile 5a has explicit ground artwork
+PASS: Tile 5d has explicit ground artwork
+PASS: Tile 5e has explicit ground artwork
+PASS: Tile 5f has explicit ground artwork
+PASS: Tile 61 has explicit ground artwork
+PASS: Tile 62 has explicit ground artwork
+PASS: Tile 65 has explicit ground artwork
+PASS: Tile 66 has explicit ground artwork
+PASS: Tile 67 has explicit ground artwork
+PASS: Tile 68 has explicit ground artwork
+PASS: Tile 69 has explicit ground artwork
+PASS: Tile 71 has explicit ground artwork
+PASS: Hidden tile 46 preserves ordinary tile 02 appearance
+PASS: Hidden tile 45 preserves ordinary tile 03 appearance
+PASS: Hidden tile 43 preserves ordinary tile 22 appearance
+PASS: Hidden tile 44 preserves ordinary tile 23 appearance
+PASS: Hidden tile 5a preserves ordinary tile 25 appearance
+PASS: Hidden tile 47 preserves ordinary tile 27 appearance
+PASS: Hidden tile 48 preserves ordinary tile 28 appearance
+PASS: Hidden tile 42 preserves ordinary tile 2d appearance
+PASS: Adjacent lake tiles share uninterrupted village-textured water without an internal bank
+PASS: A changed map tile invalidates cached water without leaving a stale pool
+PASS: Rebuilding or redrawing unchanged shorelines is deterministic
+PASS: World waves freeze with scene time and animate strictly inside the shared water mask
+PASS: Paused desert dust and tumbleweeds stay pixel-identical at a fixed scene time
+PASS: Desert wind drifts over time with restrained translucent dust
+PASS: Dust, tumbleweeds and their shadows remain on clear sand, away from plants and obstacles
+PASS: Visible tumbleweed silhouettes roll and move across the desert
+PASS: Desert effects leave the complete gameplay snapshot and RNG unchanged
+PASS: Wind animation cannot flicker or rebuild the static sand boundary
+PASS: Desert weather stays out of the village and underground rooms
+PASS: Changing a desert tile restores its grass without stale sand or weather
+PASS: Desert palm crowns sway while trunks and roots remain anchored
+PASS: Mountain stone uses dark slate with sparse authored highlights, without green-gray fill
+PASS: Mountain stone and cave rim have matching average slate brightness
+PASS: Village and world cave entrances share the same softened stone rim
+PASS: Cave rim treatment only lifts exterior shadows; sprite silhouettes and other atlas cells stay intact
+PASS: Cave roof joins the slate wall while the recessed tunnel stays dark
+PASS: Surface 1 mountains keep native palette colors and binary pixel edges
+PASS: Surface 1 mountains leave every non-mountain cell unobstructed
+PASS: Surface 1 all blocked mountain cells retain a solid visible core
+PASS: Surface 1 cached mountains remain deterministic
+PASS: Surface 1 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 2 mountains keep native palette colors and binary pixel edges
+PASS: Surface 2 mountains leave every non-mountain cell unobstructed
+PASS: Surface 2 all blocked mountain cells retain a solid visible core
+PASS: Surface 3 mountains keep native palette colors and binary pixel edges
+PASS: Surface 3 mountains leave every non-mountain cell unobstructed
+PASS: Surface 3 all blocked mountain cells retain a solid visible core
+PASS: Surface 4 mountains keep native palette colors and binary pixel edges
+PASS: Surface 4 mountains leave every non-mountain cell unobstructed
+PASS: Surface 4 all blocked mountain cells retain a solid visible core
+PASS: Surface 5 mountains keep native palette colors and binary pixel edges
+PASS: Surface 5 mountains leave every non-mountain cell unobstructed
+PASS: Surface 5 all blocked mountain cells retain a solid visible core
+PASS: Surface 6 mountains keep native palette colors and binary pixel edges
+PASS: Surface 6 mountains leave every non-mountain cell unobstructed
+PASS: Surface 6 all blocked mountain cells retain a solid visible core
+PASS: Surface 6 cached mountains remain deterministic
+PASS: Surface 6 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 7 mountains keep native palette colors and binary pixel edges
+PASS: Surface 7 mountains leave every non-mountain cell unobstructed
+PASS: Surface 7 all blocked mountain cells retain a solid visible core
+PASS: Surface 8 mountains keep native palette colors and binary pixel edges
+PASS: Surface 8 mountains leave every non-mountain cell unobstructed
+PASS: Surface 8 all blocked mountain cells retain a solid visible core
+PASS: Surface 9 mountains keep native palette colors and binary pixel edges
+PASS: Surface 9 mountains leave every non-mountain cell unobstructed
+PASS: Surface 9 all blocked mountain cells retain a solid visible core
+PASS: Surface 10 mountains keep native palette colors and binary pixel edges
+PASS: Surface 10 mountains leave every non-mountain cell unobstructed
+PASS: Surface 10 all blocked mountain cells retain a solid visible core
+PASS: Surface 11 mountains keep native palette colors and binary pixel edges
+PASS: Surface 11 mountains leave every non-mountain cell unobstructed
+PASS: Surface 11 all blocked mountain cells retain a solid visible core
+PASS: Surface 12 mountains keep native palette colors and binary pixel edges
+PASS: Surface 12 mountains leave every non-mountain cell unobstructed
+PASS: Surface 12 all blocked mountain cells retain a solid visible core
+PASS: Surface 13 mountains keep native palette colors and binary pixel edges
+PASS: Surface 13 mountains leave every non-mountain cell unobstructed
+PASS: Surface 13 all blocked mountain cells retain a solid visible core
+PASS: Surface 14 mountains keep native palette colors and binary pixel edges
+PASS: Surface 14 mountains leave every non-mountain cell unobstructed
+PASS: Surface 14 all blocked mountain cells retain a solid visible core
+PASS: Surface 15 mountains keep native palette colors and binary pixel edges
+PASS: Surface 15 mountains leave every non-mountain cell unobstructed
+PASS: Surface 15 all blocked mountain cells retain a solid visible core
+PASS: Surface 16 mountains keep native palette colors and binary pixel edges
+PASS: Surface 16 mountains leave every non-mountain cell unobstructed
+PASS: Surface 16 all blocked mountain cells retain a solid visible core
+PASS: Surface 17 mountains keep native palette colors and binary pixel edges
+PASS: Surface 17 mountains leave every non-mountain cell unobstructed
+PASS: Surface 17 all blocked mountain cells retain a solid visible core
+PASS: Surface 17 cached mountains remain deterministic
+PASS: Surface 17 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 18 mountains keep native palette colors and binary pixel edges
+PASS: Surface 18 mountains leave every non-mountain cell unobstructed
+PASS: Surface 18 all blocked mountain cells retain a solid visible core
+PASS: Surface 18 cached mountains remain deterministic
+PASS: Surface 18 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 19 mountains keep native palette colors and binary pixel edges
+PASS: Surface 19 mountains leave every non-mountain cell unobstructed
+PASS: Surface 19 all blocked mountain cells retain a solid visible core
+PASS: Surface 20 mountains keep native palette colors and binary pixel edges
+PASS: Surface 20 mountains leave every non-mountain cell unobstructed
+PASS: Surface 20 all blocked mountain cells retain a solid visible core
+PASS: Surface 21 mountains keep native palette colors and binary pixel edges
+PASS: Surface 21 mountains leave every non-mountain cell unobstructed
+PASS: Surface 21 all blocked mountain cells retain a solid visible core
+PASS: Surface 22 mountains keep native palette colors and binary pixel edges
+PASS: Surface 22 mountains leave every non-mountain cell unobstructed
+PASS: Surface 22 all blocked mountain cells retain a solid visible core
+PASS: Surface 22 cached mountains remain deterministic
+PASS: Surface 22 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 23 mountains keep native palette colors and binary pixel edges
+PASS: Surface 23 mountains leave every non-mountain cell unobstructed
+PASS: Surface 23 all blocked mountain cells retain a solid visible core
+PASS: Surface 23 cached mountains remain deterministic
+PASS: Surface 23 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 24 mountains keep native palette colors and binary pixel edges
+PASS: Surface 24 mountains leave every non-mountain cell unobstructed
+PASS: Surface 24 all blocked mountain cells retain a solid visible core
+PASS: Surface 24 cached mountains remain deterministic
+PASS: Surface 24 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 25 mountains keep native palette colors and binary pixel edges
+PASS: Surface 25 mountains leave every non-mountain cell unobstructed
+PASS: Surface 25 all blocked mountain cells retain a solid visible core
+PASS: Surface 26 mountains keep native palette colors and binary pixel edges
+PASS: Surface 26 mountains leave every non-mountain cell unobstructed
+PASS: Surface 26 all blocked mountain cells retain a solid visible core
+PASS: Surface 27 mountains keep native palette colors and binary pixel edges
+PASS: Surface 27 mountains leave every non-mountain cell unobstructed
+PASS: Surface 27 all blocked mountain cells retain a solid visible core
+PASS: Surface 28 mountains keep native palette colors and binary pixel edges
+PASS: Surface 28 mountains leave every non-mountain cell unobstructed
+PASS: Surface 28 all blocked mountain cells retain a solid visible core
+PASS: Surface 29 mountains keep native palette colors and binary pixel edges
+PASS: Surface 29 mountains leave every non-mountain cell unobstructed
+PASS: Surface 29 all blocked mountain cells retain a solid visible core
+PASS: Surface 30 mountains keep native palette colors and binary pixel edges
+PASS: Surface 30 mountains leave every non-mountain cell unobstructed
+PASS: Surface 30 all blocked mountain cells retain a solid visible core
+PASS: Surface 31 mountains keep native palette colors and binary pixel edges
+PASS: Surface 31 mountains leave every non-mountain cell unobstructed
+PASS: Surface 31 all blocked mountain cells retain a solid visible core
+PASS: Surface 32 mountains keep native palette colors and binary pixel edges
+PASS: Surface 32 mountains leave every non-mountain cell unobstructed
+PASS: Surface 32 all blocked mountain cells retain a solid visible core
+PASS: Surface 33 mountains keep native palette colors and binary pixel edges
+PASS: Surface 33 mountains leave every non-mountain cell unobstructed
+PASS: Surface 33 all blocked mountain cells retain a solid visible core
+PASS: Surface 34 mountains keep native palette colors and binary pixel edges
+PASS: Surface 34 mountains leave every non-mountain cell unobstructed
+PASS: Surface 34 all blocked mountain cells retain a solid visible core
+PASS: Surface 35 mountains keep native palette colors and binary pixel edges
+PASS: Surface 35 mountains leave every non-mountain cell unobstructed
+PASS: Surface 35 all blocked mountain cells retain a solid visible core
+PASS: Surface 36 mountains keep native palette colors and binary pixel edges
+PASS: Surface 36 mountains leave every non-mountain cell unobstructed
+PASS: Surface 36 all blocked mountain cells retain a solid visible core
+PASS: Maynard gameplay and area maps share identical mountain and cave backing artwork
+PASS: All 40960 matching mountain overlap pixels join across region edges and world wrap
+PASS: Surface F3 beside 2,6 has a long diagonal contour instead of a lightly rounded square step
+PASS: Mountain tops remain visibly lighter than the broad front cliff faces
+PASS: Exposed mountain rock and ground contacts never acquire an artificial near-black outline
+PASS: Meadow grass and moss overlap broken parts of the rock foot, leaving visible stone between them
+PASS: Adjacent mountain tiles form continuous rock without internal outlines or transparent seams
+PASS: Exposed mountain borders have uneven pixel ledges and cut-back corners
+PASS: Secret mountain passages do not change contours, texture or decoration
+PASS: Removing mountain terrain invalidates its cached silhouette
+PASS: Restoring terrain reconstructs the same mountain without cache residue
+PASS: Desert cut-back mountain corners expose warm sand instead of green meadow
+PASS: Desert rock feet use overlapping sand instead of meadow-green patches
+PASS: Rock beside a paved approach does not grow a meadow fringe across it
+PASS: Mountain rock meets its authored walkable foothill without a grass seam
+PASS: Connected mountain formations and cave sprites cannot expose unseen area-map cells
+PASS: Hell sprites compile to the shared palette and binary alpha
+PASS: Hell sprite 1 is complete with a clear frame border
+PASS: Hell sprite 2 is complete with a clear frame border
+PASS: Hell sprite 3 is complete with a clear frame border
+PASS: Hell sprite 4 is complete with a clear frame border
+PASS: Hell sprite 5 is complete with a clear frame border
+PASS: Hell sprite 6 is complete with a clear frame border
+PASS: Hell sprite 7 is complete with a clear frame border
+PASS: Hell sprite 8 is complete with a clear frame border
+PASS: East Hell door fixture keeps the corridor behind the visible door unexplored
+PASS: The visible east Hell door keeps its complete crown beside an unexplored corridor
+PASS: The area map also preserves the complete known Hell door
+PASS: Restoring the known door crown reveals no terrain or objects in the unexplored corridor
+PASS: Hell door 3e crown matches the full sprite's lighting
+PASS: Hell door 3f crown matches the full sprite's lighting
+PASS: Hell door 40 crown matches the full sprite's lighting
+PASS: Rendering the door crown preserves gameplay, RNG and exploration visibility
+PASS: Opening the Hell door leaves no orphaned crown over unexplored cells
+PASS: Hell 117 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 117 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 117 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 117 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell A4 monster at 4,7 keeps its complete silhouette beside the low ruins
+PASS: Hell A4 ruin at 4,8 stays below the neighboring monster's feet
+PASS: Hell A4 monster at 8,7 keeps its complete silhouette beside the low ruins
+PASS: Hell A4 ruin at 8,8 stays below the neighboring monster's feet
+PASS: Hell flames freeze, animate and have independent local phases
+PASS: Small vent flames and larger flame clusters have visibly different silhouettes
+PASS: Hell firelight softly reaches nearby walkable floor without an opaque veil
+PASS: Hell embers, ash, smoke and bubbles animate with sparse coverage
+PASS: Hell atmosphere is absent from the village
+PASS: Hell firelight fluctuates on the nearby floor independently of lava movement
+PASS: Opening a Hell door immediately removes its iron door artwork
+PASS: Changed fire-wall terrain clears molten pixels from every cached animation frame
+PASS: The waiting Gatekeeper remains visible beside the ruined entrance
+PASS: Hell 118 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 118 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 118 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 99: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 99: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 99: every lava frame stays strictly within original fire-wall cells
+Earth 57 terrain preparation: 9.7 ms
+PASS: Earth 57 terrain fills every native pixel without gaps
+PASS: Earth 57 terrain and landmarks use only the shared retro palette
+Earth 57 wall/floor luminance separation: 56.1/255
+PASS: Earth 57 wall tops remain clearly brighter than the walkable floor
+Earth 57 100 cached preparations: 0.1 ms
+PASS: Earth 57 cached preparation is deterministic
+PASS: Earth 57 ambient effects never reveal unexplored tiles
+PASS: Earth 57 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 57 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 57 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 57 still water uses a small warm palette with discrete shades
+PASS: Earth 57 puddle ripples freeze and animate strictly inside water
+PASS: Earth 57 puddle 3,4 reflects the character faintly inside visible water
+PASS: Earth 57 puddle 3,4 reflection freezes and ripples with scene time
+PASS: Earth 57 puddle 8,8 reflects the character faintly inside visible water
+PASS: Earth 57 puddle 8,8 reflection freezes and ripples with scene time
+PASS: Earth 57 reflection cannot reveal an unexplored puddle
+PASS: Earth 57 a new wall removes cached puddle water immediately
+PASS: Earth 57 restoring the floor restores the exact puddle shoreline
+PASS: Accepting a step toward an Earth puddle does not pop the reflection ahead of the character
+PASS: Walking into an Earth puddle fades the reflection through intermediate strengths
+PASS: The Earth reflection disappears after leaving the puddle
+PASS: Earth 57 ambient animation stays sparse
+PASS: Earth 57 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 57 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 57 changed terrain invalidates the cached formation
+PASS: Earth 57 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 63 terrain preparation: 9.0 ms
+PASS: Earth 63 terrain fills every native pixel without gaps
+PASS: Earth 63 terrain and landmarks use only the shared retro palette
+Earth 63 wall/floor luminance separation: 48.3/255
+PASS: Earth 63 wall tops remain clearly brighter than the walkable floor
+Earth 63 100 cached preparations: 0.0 ms
+PASS: Earth 63 cached preparation is deterministic
+PASS: Earth 63 ambient effects never reveal unexplored tiles
+PASS: Earth 63 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 63 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 63 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 63 still water uses a small warm palette with discrete shades
+PASS: Earth 63 puddle ripples freeze and animate strictly inside water
+PASS: Earth 63 puddle 5,5 reflects the character faintly inside visible water
+PASS: Earth 63 puddle 5,5 reflection freezes and ripples with scene time
+PASS: Earth 63 puddle 9,3 reflects the character faintly inside visible water
+PASS: Earth 63 puddle 9,3 reflection freezes and ripples with scene time
+PASS: Earth 63 reflection cannot reveal an unexplored puddle
+PASS: Earth 63 a new wall removes cached puddle water immediately
+PASS: Earth 63 restoring the floor restores the exact puddle shoreline
+PASS: Earth 63 ambient animation stays sparse
+PASS: Earth 63 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 63 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 63 changed terrain invalidates the cached formation
+PASS: Earth 63 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 69 terrain preparation: 9.4 ms
+PASS: Earth 69 terrain fills every native pixel without gaps
+PASS: Earth 69 terrain and landmarks use only the shared retro palette
+Earth 69 wall/floor luminance separation: 55.9/255
+PASS: Earth 69 wall tops remain clearly brighter than the walkable floor
+Earth 69 100 cached preparations: 0.0 ms
+PASS: Earth 69 cached preparation is deterministic
+PASS: Earth 69 ambient effects never reveal unexplored tiles
+PASS: Earth 69 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 69 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 69 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 69 still water uses a small warm palette with discrete shades
+PASS: Earth 69 puddle ripples freeze and animate strictly inside water
+PASS: Earth 69 puddle 8,6 reflects the character faintly inside visible water
+PASS: Earth 69 puddle 8,6 reflection freezes and ripples with scene time
+PASS: Earth 69 puddle 4,2 reflects the character faintly inside visible water
+PASS: Earth 69 puddle 4,2 reflection freezes and ripples with scene time
+PASS: Earth 69 reflection cannot reveal an unexplored puddle
+PASS: Earth 69 a new wall removes cached puddle water immediately
+PASS: Earth 69 restoring the floor restores the exact puddle shoreline
+PASS: Earth 69 ambient animation stays sparse
+PASS: Earth 69 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 69 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 69 changed terrain invalidates the cached formation
+PASS: Earth 69 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 75 terrain preparation: 9.6 ms
+PASS: Earth 75 terrain fills every native pixel without gaps
+PASS: Earth 75 terrain and landmarks use only the shared retro palette
+Earth 75 wall/floor luminance separation: 60.0/255
+PASS: Earth 75 wall tops remain clearly brighter than the walkable floor
+Earth 75 100 cached preparations: 0.0 ms
+PASS: Earth 75 cached preparation is deterministic
+PASS: Earth 75 ambient effects never reveal unexplored tiles
+PASS: Earth 75 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 75 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 75 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 75 still water uses a small warm palette with discrete shades
+PASS: Earth 75 puddle ripples freeze and animate strictly inside water
+PASS: Earth 75 puddle 7,6 reflects the character faintly inside visible water
+PASS: Earth 75 puddle 7,6 reflection freezes and ripples with scene time
+PASS: Earth 75 puddle 8,2 reflects the character faintly inside visible water
+PASS: Earth 75 puddle 8,2 reflection freezes and ripples with scene time
+PASS: Earth 75 reflection cannot reveal an unexplored puddle
+PASS: Earth 75 a new wall removes cached puddle water immediately
+PASS: Earth 75 restoring the floor restores the exact puddle shoreline
+PASS: Earth 75 ambient animation stays sparse
+PASS: Earth 75 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 75 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 75 changed terrain invalidates the cached formation
+PASS: Earth 75 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 103 terrain preparation: 9.0 ms
+PASS: Earth 103 terrain fills every native pixel without gaps
+PASS: Earth 103 terrain and landmarks use only the shared retro palette
+Earth 103 wall/floor luminance separation: 60.5/255
+PASS: Earth 103 wall tops remain clearly brighter than the walkable floor
+Earth 103 100 cached preparations: 0.0 ms
+PASS: Earth 103 cached preparation is deterministic
+PASS: Earth 103 ambient effects never reveal unexplored tiles
+PASS: Earth 103 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 103 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 103 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 103 still water uses a small warm palette with discrete shades
+PASS: Earth 103 puddle ripples freeze and animate strictly inside water
+PASS: Earth 103 puddle 6,5 reflects the character faintly inside visible water
+PASS: Earth 103 puddle 6,5 reflection freezes and ripples with scene time
+PASS: Earth 103 puddle 8,8 reflects the character faintly inside visible water
+PASS: Earth 103 puddle 8,8 reflection freezes and ripples with scene time
+PASS: Earth 103 reflection cannot reveal an unexplored puddle
+PASS: Earth 103 a new wall removes cached puddle water immediately
+PASS: Earth 103 restoring the floor restores the exact puddle shoreline
+PASS: Earth 103 ambient animation stays sparse
+PASS: Earth 103 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 103 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 103 changed terrain invalidates the cached formation
+PASS: Earth 103 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 109 terrain preparation: 10.1 ms
+PASS: Earth 109 terrain fills every native pixel without gaps
+PASS: Earth 109 terrain and landmarks use only the shared retro palette
+Earth 109 wall/floor luminance separation: 62.7/255
+PASS: Earth 109 wall tops remain clearly brighter than the walkable floor
+Earth 109 100 cached preparations: 0.0 ms
+PASS: Earth 109 cached preparation is deterministic
+PASS: Earth 109 ambient effects never reveal unexplored tiles
+PASS: Earth 109 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 109 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 109 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 109 still water uses a small warm palette with discrete shades
+PASS: Earth 109 puddle ripples freeze and animate strictly inside water
+PASS: Earth 109 puddle 7,5 reflects the character faintly inside visible water
+PASS: Earth 109 puddle 7,5 reflection freezes and ripples with scene time
+PASS: Earth 109 puddle 7,1 reflects the character faintly inside visible water
+PASS: Earth 109 puddle 7,1 reflection freezes and ripples with scene time
+PASS: Earth 109 reflection cannot reveal an unexplored puddle
+PASS: Earth 109 a new wall removes cached puddle water immediately
+PASS: Earth 109 restoring the floor restores the exact puddle shoreline
+PASS: Earth 109 ambient animation stays sparse
+PASS: Earth 109 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 109 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 109 changed terrain invalidates the cached formation
+PASS: Earth 109 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 115 terrain preparation: 9.7 ms
+PASS: Earth 115 terrain fills every native pixel without gaps
+PASS: Earth 115 terrain and landmarks use only the shared retro palette
+Earth 115 wall/floor luminance separation: 57.8/255
+PASS: Earth 115 wall tops remain clearly brighter than the walkable floor
+Earth 115 100 cached preparations: 0.0 ms
+PASS: Earth 115 cached preparation is deterministic
+PASS: Earth 115 ambient effects never reveal unexplored tiles
+PASS: Earth 115 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 115 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 115 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 115 still water uses a small warm palette with discrete shades
+PASS: Earth 115 puddle ripples freeze and animate strictly inside water
+PASS: Earth 115 puddle 4,8 reflects the character faintly inside visible water
+PASS: Earth 115 puddle 4,8 reflection freezes and ripples with scene time
+PASS: Earth 115 puddle 8,2 reflects the character faintly inside visible water
+PASS: Earth 115 puddle 8,2 reflection freezes and ripples with scene time
+PASS: Earth 115 reflection cannot reveal an unexplored puddle
+PASS: Earth 115 a new wall removes cached puddle water immediately
+PASS: Earth 115 restoring the floor restores the exact puddle shoreline
+PASS: Earth 115 ambient animation stays sparse
+PASS: Earth 115 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 115 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 115 changed terrain invalidates the cached formation
+PASS: Earth 115 rendering and cache restoration preserve the full gameplay snapshot and RNG
+PASS: Earth effects are absent from other biome 17
+PASS: Earth effects are absent from other biome 41
+PASS: Earth effects are absent from other biome 117
+PASS: Heat presentation selects the expected biome in map 1
+PASS: Map 1 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 1 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Heat refraction moves smoothly between display frames without a stepped clock
+PASS: Heat preserves the character and nearby scenery pixel-for-pixel
+PASS: Heat fills the complete viewport without transparent seams
+PASS: The paused game freezes heat, camera and other scene animation together
+PASS: Heat never distorts the opaque pause panel or its text
+PASS: Heat rendering map 1 preserves the complete gameplay state and RNG
+PASS: Map 1 heat also composes correctly with vignette when miniature is off
+PASS: Heat presentation selects the expected biome in map 7
+PASS: Map 7 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 7 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Desert heat leaves the distant grassy side of a mixed region untouched
+PASS: Heat rendering map 7 preserves the complete gameplay state and RNG
+PASS: Heat presentation selects the expected biome in map 117
+PASS: Map 117 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 117 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Hell 117 heat moves existing pixel colors without blending its gate and rock edges
+PASS: Hell 117 retains every native pixel exactly even with Strong miniature selected
+PASS: Heat rendering map 117 preserves the complete gameplay state and RNG
+PASS: Map 117 heat also composes correctly with vignette when miniature is off
+PASS: Heat presentation selects the expected biome in map 118
+PASS: Map 118 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 118 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Hell 118 heat moves existing pixel colors without blending its gate and rock edges
+PASS: Hell 118 retains every native pixel exactly even with Strong miniature selected
+PASS: Heat rendering map 118 preserves the complete gameplay state and RNG
+PASS: Heat presentation selects the expected biome in map 119
+PASS: Map 119 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 119 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Hell 119 heat moves existing pixel colors without blending its gate and rock edges
+PASS: Hell 119 retains every native pixel exactly even with Strong miniature selected
+PASS: Heat rendering map 119 preserves the complete gameplay state and RNG
+PASS: Heat presentation selects the expected biome in map 120
+PASS: Map 120 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Map 120 heat freezes at a fixed clock and refracts scenery as time advances
+PASS: Hell 120 heat moves existing pixel colors without blending its gate and rock edges
+PASS: Hell 120 retains every native pixel exactly even with Strong miniature selected
+PASS: Heat rendering map 120 preserves the complete gameplay state and RNG
+PASS: Heat presentation selects the expected biome in map 17
+PASS: Map 17 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Heat rendering map 17 preserves the complete gameplay state and RNG
+PASS: Heat presentation selects the expected biome in map 41
+PASS: Map 41 vignette combines with heat and miniature while keeping the central scene unchanged
+PASS: Heat rendering map 41 preserves the complete gameplay state and RNG
+PASS: Surface D4 at 5,6 renders the grounded monsters without changing gameplay state or RNG
+PASS: The Earth E3 puddle route accepts a walking step without water equipment
+PASS: The Earth E3 puddle route accepts a walking step without water equipment
+PASS: The Earth E3 puddle route accepts a walking step without water equipment
+PASS: The Earth E3 walk-through retains the approved walking pace and reaches dry ground
+PASS: Earth Cave 57 default-effects view preserves complete gameplay state and RNG
+PASS: Earth Cave 63 default-effects view preserves complete gameplay state and RNG
+PASS: Earth Cave 69 default-effects view preserves complete gameplay state and RNG
+PASS: Earth Cave 75 default-effects view preserves complete gameplay state and RNG
+PASS: Earth Cave 103 default-effects view preserves complete gameplay state and RNG
+PASS: Pausing Earth Cave freezes its ambience, camera and presentation together
+PASS: Earth Cave 109 default-effects view preserves complete gameplay state and RNG
+PASS: Earth Cave 115 default-effects view preserves complete gameplay state and RNG
+PASS: Rendering and display settings do not draw gameplay RNG
+PASS: All original effects and packaged monster WAV files load on the real audio device
+PASS: An original effect starts playback on the real audio device
+PASS: A monster sound replaces and disposes the previous effect
+PASS: Losing focus stops and releases the playing sound
+PASS: Cancelling New adventure restores name entry after suspending its text input
+PASS: Controller-style creation choices start an unmodified Combat/Medium character
+PASS: Backing out of New adventure restores the action menu without changing gameplay RNG
+PASS: High-score overlay navigates difficulty groups with controller-style choices
+PASS: Score-code overlay exposes the original code without drawing RNG
+PASS: Monster history lists all 41 unknown types and does not reveal a name from an encounter alone
+PASS: Monster history exposes recorded defeats, totals and the imported-history limitation
+PASS: Character statistics include carried capacity and the current special ability
+PASS: Silly Mode can be toggled during play while preserving appearance, equipment ranks and RNG
+PASS: Switching back restores the original equipment names in the statistics overlay
+PASS: Inventory cancel returns through its parent overlays without consuming an item
+PASS: Unavailable surface-return spell leaves SP untouched through the frontend
+PASS: Continuous walking does not starve exploration timers
+PASS: Action overlays pause exploration without advancing timer phases
+PASS: Closing an overlay does not replay elapsed paused time
+PASS: An unfunded slot spin consumes no gameplay RNG through the overlay
+PASS: Slot insert, spin, collection and leave preserve the verified payout and RNG rules
+PASS: A funded dot race asks for a racer before spending the wager or RNG
+PASS: Dot racing resolves the selected racer and refunds an unplayed wager on leave
+PASS: Three controller-driven dart throws preserve aiming, payout, round lock and session high score
+PASS: Leaving a dart round retains the original uncollected-wager behavior
+The map journal does not match this saved adventure.
+PASS: At the approved walking pace, the character enters the water cave and boards its moving platform
+PASS: Production pause-menu save/load restores platform support under its rider
+PASS: The moving-platform route reaches princess 11 through the key door using normal frontend movement
+PASS: The platform rescue returns aboard and disembarks safely with exploration timers running
+The map journal does not match this saved adventure.
+PASS: The timed fire opening is long enough to reach princess 20 at 250 ms per step
+PASS: The fire-wall rescue returns safely; dialogue pauses do not replay hazard ticks
+The map journal does not match this saved adventure.
+PASS: The surface potion relocates through its inventory overlay without drawing RNG
+PASS: Acknowledging a surface potion plays the return cue after its item cue
+The map journal does not match this saved adventure.
+PASS: Actions opens the complete current-area map first
+PASS: An open map freezes gameplay, scene animation and RNG
+PASS: Area map and all labels stay sharp at every miniature setting
+PASS: Confirm switches from area to world overview
+PASS: Back closes the map and restores its action-menu parent
+PASS: Map can open during an ordinary walking step
+PASS: Opening the map freezes the walking tween and clears buffered movement
+PASS: Closing the map does not replay paused time or buffered input
+PASS: New adventure from the map's pause menu exposes its confirmation correctly
+PASS: World overview cycles through discovered cave layers
+PASS: Alternate regions occupy their original coordinates on a separate world layer
+PASS: Production save/load restores the map journal and closes the old map screen
+PASS: Unexplored map cells hide terrain and overlapping tall sprites completely
+PASS: A generated area map renders its current discoveries without consuming extra RNG
+The map journal does not match this saved adventure.
+PASS: Map refuses to interrupt character name entry
+PASS: Appearance 1 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 2 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 3 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 4 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 5 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 6 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 7 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 8 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 9 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 10 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 11 starts fresh map notes without changing attributes or RNG
+PASS: Appearance 12 starts fresh map notes without changing attributes or RNG
+The map journal does not match this saved adventure.
+Passed 1203 visual integration checks. Rendered 360 tour frames. Recording: disabled.

@@ -1,0 +1,9 @@
+{
+  "monogame/Yipe.Desktop/WorldHell.cs": "f7988f7d08cbf1d8c44e0624a8c96e084b60f89ec15c2b28f8b5e42f93c62718",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "843c4b70e72db8eb22700178dbd083fc8458dcab5cefe4a0c514c52190d5e453",
+  "monogame/Yipe.Desktop/WorldTerrain.cs": "935fc89cb33507b62b771ba773a29cbe14c98306dada7cc594b1a78dd17ccccb",
+  "monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs": "98aa21b27611b69bfec8e7b814f2798fd0761f1156b43f9bc8da35577bd9c0ba",
+  "monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs": "66772cb5da72fb650bb77fbf256ab679c2c5f18e8e65acab5519845bef36f174",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "8c9263a1b6b0379dfc1e0dd2330e6aa2a4e3b51139b18dea527e6edb39df9bc7",
+  "monogame/Yipe.Desktop/Content/Art/Retro/World/hell.png": "0f0ee90cfc1b131710e2303997d6432ebbaa7ea64cb25f091684ec63d71a0092"
+}

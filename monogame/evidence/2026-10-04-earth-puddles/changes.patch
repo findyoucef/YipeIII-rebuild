@@ -1,0 +1,271 @@
+--- a/monogame/Yipe.Desktop/WorldEarth.cs
++++ b/monogame/Yipe.Desktop/WorldEarth.cs
+@@ -279,6 +279,36 @@
+         }
+     }
+ 
++    private void AddEarthPuddles(Map map)
++    {
++        // Broad enough to walk across and see a full reflection. These are visual
++        // shallows on existing floor; stairs, chests and narrow passages stay clear.
++        (MapPosition Cell, Point Radius)[] pools = map.Id switch
++        {
++            57 => [(new(3, 4), new(38, 24)), (new(8, 8), new(38, 24))],
++            63 => [(new(5, 5), new(42, 25)), (new(9, 3), new(30, 20))],
++            69 => [(new(8, 6), new(36, 24)), (new(4, 2), new(37, 23))],
++            75 => [(new(7, 6), new(35, 23)), (new(8, 2), new(33, 21))],
++            103 => [(new(6, 5), new(44, 25)), (new(8, 8), new(37, 23))],
++            109 => [(new(7, 5), new(32, 25)), (new(7, 1), new(34, 23))],
++            115 => [(new(4, 8), new(35, 24)), (new(8, 2), new(32, 21))],
++            _ => [],
++        };
++        foreach (var (cell, radius) in pools)
++        {
++            var center = new Point(cell.X * 32 + 16, cell.Y * 32 + 32);
++            for (var y = Math.Max(0, center.Y - radius.Y - 2); y <= Math.Min(EarthHeight - 1, center.Y + radius.Y + 2); y++)
++                for (var x = Math.Max(0, center.X - radius.X - 2); x <= Math.Min(EarthWidth - 1, center.X + radius.X + 2); x++)
++                {
++                    // Secret floor has the same appearance as ordinary floor.
++                    if (map.Tile(new(x / 32, y / 32)) is not (0x27 or 0x47)) continue;
++                    var dx = (x - center.X) / (float)radius.X; var dy = (y - center.Y) / (float)radius.Y;
++                    var rim = 1 + .055f * MathF.Sin(x * .27f + y * .16f) + .035f * MathF.Sin(x * .13f - y * .31f);
++                    if (dx * dx + dy * dy < rim) waterMask[y * WaterWidth + x] = true;
++                }
++        }
++    }
++
+     private void DrawEarthAtmosphere(SpriteBatch batch, Adventure game, double time)
+     {
+         if (!IsEarth(game.Map)) return;
+--- a/monogame/Yipe.Desktop/WorldWater.cs
++++ b/monogame/Yipe.Desktop/WorldWater.cs
+@@ -35,14 +35,19 @@
+     internal bool WaterAt(int x, int y) => x >= 0 && y >= 0 && x < WaterWidth && y < WaterHeight
+         && waterMask[y * WaterWidth + x];
+ 
++    internal bool HasPuddles => waterMap is { } map && IsEarth(map);
++
+     private void PrepareWater(Map map)
+     {
+         var changed = !ReferenceEquals(waterMap, map);
++        var puddles = IsEarth(map);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+             {
+                 var index = y * Map.Width + x;
+-                var tile = WaterTile(map.Tile(new(x, y)));
++                // Puddle clipping also depends on the dry terrain underneath it.
++                var tile = map.Tile(new(x, y));
++                if (!puddles) tile = WaterTile(tile);
+                 changed |= waterTiles[index] != tile;
+                 waterTiles[index] = tile;
+             }
+@@ -53,7 +58,7 @@
+         for (var y = 0; y < WaterHeight; y++)
+             for (var x = 0; x < WaterWidth; x++)
+             {
+-                var tile = waterTiles[y / 32 * Map.Width + x / 32];
++                var tile = WaterTile(waterTiles[y / 32 * Map.Width + x / 32]);
+                 var px = x % 32 + .5f; var py = y % 32 + .5f;
+                 var ripple = MathF.Sin(x * .35f + y * .19f) * 1.3f
+                     + MathF.Sin(x * .13f - y * .41f) * .6f;
+@@ -78,6 +83,7 @@
+                 };
+             }
+ 
++        if (puddles) AddEarthPuddles(map);
+         ShoreDistance(toWater: false);
+         for (var y = 0; y < WaterHeight; y++)
+             for (var x = 0; x < WaterWidth; x++)
+@@ -143,8 +149,8 @@
+     private void DrawWater(SpriteBatch batch, Rectangle bounds, double time)
+     {
+         batch.Draw(water, bounds, bounds, Color.White);
+-        var tile = waterTiles[bounds.Y / 32 * Map.Width + bounds.X / 32];
+-        if (tile == 0) return;
++        var tile = WaterTile(waterTiles[bounds.Y / 32 * Map.Width + bounds.X / 32]);
++        if (tile == 0 && !HasPuddles) return;
+         var tick = (int)(time * 6);
+         var seed = bounds.X / 32 * 13 + bounds.Y / 32 * 7;
+         for (var i = 0; i < 2; i++)
+--- a/monogame/Yipe.Desktop/WorldTerrain.cs
++++ b/monogame/Yipe.Desktop/WorldTerrain.cs
+@@ -18,7 +18,12 @@
+         if (!HasArtwork(tile)) throw new InvalidDataException($"No world artwork for tile {tile:x} in map {map.Id}.");
+         var bounds = new Rectangle(cell.X * 32, cell.Y * 32, 32, 32);
+         if (IsHell(map)) { DrawHellGround(batch, bounds, time); return; }
+-        if (IsEarth(map)) { batch.Draw(earthGround, bounds, bounds, Color.White); return; }
++        if (IsEarth(map))
++        {
++            batch.Draw(earthGround, bounds, bounds, Color.White);
++            DrawWater(batch, bounds, time);
++            return;
++        }
+         var surface = map.Id < 41;
+         var floor = (Math.Clamp(map.Environment, 1, 7) - 1) * 2;
+         batch.Draw(surface ? meadow : floors, bounds,
+--- a/monogame/Yipe.Desktop/TownScenery.cs
++++ b/monogame/Yipe.Desktop/TownScenery.cs
+@@ -162,10 +162,20 @@
+                 var along = MathHelper.SmoothStep(0, 1, Math.Max(0, 1 - Math.Abs(position.Y - y)));
+                 strength = Math.Max(strength, across * along);
+             }
++        var feet = new Point((int)MathF.Round(position.X * 32) + 16, (int)MathF.Round(position.Y * 32) + 25);
++        if (renderer?.HasPuddles == true)
++        {
++            // A small footprint around the animated boots fades the existing
++            // reflection in and out at a puddle's irregular shoreline.
++            var wet = 0;
++            for (var dy = -4; dy <= 4; dy++)
++                for (var dx = -8; dx <= 8; dx++)
++                    if (Water(feet.X + dx, feet.Y + dy)) wet++;
++            strength = Math.Max(strength, MathHelper.SmoothStep(0, 1, wet / (17f * 9)));
++        }
+         if (strength <= 0) return;
+ 
+         var source = HeroFrame(player, time);
+-        var feet = new Point((int)MathF.Round(position.X * 32) + 16, (int)MathF.Round(position.Y * 32) + 25);
+         var tick = (int)(time * 6);
+         for (var row = 0; row < 20; row++)
+         {
+--- a/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
+@@ -16,6 +16,9 @@
+         var draw = type.GetMethod("Draw")!;
+         var drawMap = type.GetMethod("DrawMap", flags)!;
+         var prepare = type.GetMethod("PrepareEarth", flags)!;
++        var prepareWater = type.GetMethod("PrepareWater", flags)!;
++        var drawWater = type.GetMethod("DrawWater", flags)!;
++        var reflection = town.GetType().GetMethod("DrawWorldReflection", flags)!;
+         var atmosphere = type.GetMethod("DrawEarthAtmosphere", flags)!;
+         var texture = (Texture2D)type.GetField("earthGround", flags)!.GetValue(world)!;
+         var palette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+@@ -60,6 +63,75 @@
+             check(first.SequenceEqual(repeatFrame) && !first.SequenceEqual(later),
+                 $"Earth {id} animation freezes at a fixed clock and advances with scene time");
+             Frame(1); Save($"map-{id}.png");
++            var mask = (bool[])((bool[])type.GetField("waterMask", flags)!.GetValue(world)!).Clone();
++            var wet = Enumerable.Range(0, mask.Length).Where(i => mask[i]).ToArray();
++            var wetTiles = wet.Select(i => new MapPosition(i % 416 / 32, i / 416 / 32)).Distinct().ToArray();
++            check(wet.Length > 2500 && wetTiles.All(p => game.Map.Tile(p) is 0x27 or 0x47
++                && game.Map.Move(new(p.X - 1, p.Y), 1, 0).Moved),
++                $"Earth {id} puddles cover only ordinary walkable floor and need no water equipment");
++            check(wetTiles.All(p => !game.Map.Events.Chests.Contains(p)
++                && !game.Map.Events.Depth.Any(d => d.HasPosition && d.Position == p)
++                && (!game.Map.Events.Princess.HasPosition || game.Map.Events.Princess.Position != p)),
++                $"Earth {id} puddles leave treasure, stairs and rescue positions dry");
++            var water = (Texture2D)type.GetField("water", flags)!.GetValue(world)!;
++            var waterPixels = new Color[mask.Length]; water.GetData(waterPixels);
++            var pattern = (Color[])type.GetField("waterPattern", flags)!.GetValue(world)!;
++            var interiors = wet.Where(i => i % 416 is > 3 and < 412 && i / 416 is > 3 and < 380
++                && Enumerable.Range(-3, 7).All(dy => Enumerable.Range(-3, 7).All(dx => mask[i + dy * 416 + dx]))).ToArray();
++            check(interiors.Length > 1000 && interiors.All(i => waterPixels[i] == pattern[i / 416 % 32 * 32 + i % 416 % 32]),
++                $"Earth {id} puddles reuse the exact village river texture inside their shorelines");
++            var waterFirst = WaterFrame(1); var waterLater = WaterFrame(2);
++            check(waterFirst.SequenceEqual(WaterFrame(1)) && !waterFirst.SequenceEqual(waterLater)
++                && Enumerable.Range(0, mask.Length).All(i => waterFirst[i] == waterLater[i] || mask[i]),
++                $"Earth {id} puddle ripples freeze and animate strictly inside water");
++            MapPosition[] poolCenters = id switch
++            {
++                57 => [new(3, 4), new(8, 8)], 63 => [new(5, 5), new(9, 3)],
++                69 => [new(8, 6), new(4, 2)], 75 => [new(7, 6), new(8, 2)],
++                103 => [new(6, 5), new(8, 8)], 109 => [new(7, 5), new(7, 1)],
++                _ => [new(4, 8), new(8, 2)],
++            };
++            foreach (var center in poolCenters)
++            {
++                var actor = new PlayerMotion(center);
++                var reflected = Reflection(actor, 1);
++                var ink = Enumerable.Range(0, reflected.Length).Where(i => reflected[i].A > 0).ToArray();
++                check(ink.Length > 20 && ink.All(i => mask[i] && reflected[i].A < 80
++                    && game.Visibility.Contains(new(i % 416 / 32, i / 416 / 32))),
++                    $"Earth {id} puddle {center.X},{center.Y} reflects the character faintly inside visible water");
++                check(reflected.SequenceEqual(Reflection(actor, 1)) && !reflected.SequenceEqual(Reflection(actor, 2)),
++                    $"Earth {id} puddle {center.X},{center.Y} reflection freezes and ripples with scene time");
++            }
++            Layer(() => draw.Invoke(world, [batch, game, new PlayerMotion(poolCenters[0]), town, 1d, false]));
++            Save($"puddle-{id}.png");
++            var hidden = new Adventure(new GameSession(catalog, location: new()
++            { MapId = id, MapLayer = layer, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = new(1, 1) }));
++            // A sealed visibility fixture keeps both puddles unexplored.
++            hidden.Visibility.Initialize(new Map(id, 1, Enumerable.Repeat((ushort)0x22, Map.TileCount).ToArray()), new(0, 0));
++            check(Layer(() => reflection.Invoke(town, [batch, new PlayerMotion(poolCenters[0]), 1d, hidden, world])).All(p => p.A == 0),
++                $"Earth {id} reflection cannot reveal an unexplored puddle");
++            var changedCell = poolCenters[0]; var changedTile = game.Map.Tile(changedCell);
++            game.Map.RestoreTile(changedCell, 0x22); prepareWater.Invoke(world, [game.Map]);
++            var clipped = (bool[])type.GetField("waterMask", flags)!.GetValue(world)!;
++            check((from py in Enumerable.Range(changedCell.Y * 32, 32) from px in Enumerable.Range(changedCell.X * 32, 32)
++                select clipped[py * 416 + px]).All(v => !v), $"Earth {id} a new wall removes cached puddle water immediately");
++            game.Map.RestoreTile(changedCell, changedTile); prepareWater.Invoke(world, [game.Map]);
++            check(mask.SequenceEqual((bool[])type.GetField("waterMask", flags)!.GetValue(world)!),
++                $"Earth {id} restoring the floor restores the exact puddle shoreline");
++            if (id == 57)
++            {
++                var actor = new PlayerMotion(new(3, 3)); var dry = Reflection(actor, 1);
++                actor.MoveTo(new(3, 4));
++                check(dry.All(p => p.A == 0) && dry.SequenceEqual(Reflection(actor, 1)),
++                    "Accepting a step toward an Earth puddle does not pop the reflection ahead of the character");
++                var strengths = new List<int>();
++                for (var frame = 0; frame < 30; frame++)
++                { actor.Update(PlayerMotion.StepDuration / 30); strengths.Add(Reflection(actor, 1).Max(p => (int)p.A)); }
++                check(strengths.Max() > 30 && strengths.Any(s => s > 0 && s < strengths.Max() / 2),
++                    "Walking into an Earth puddle fades the reflection through intermediate strengths");
++                actor.SnapTo(new(3, 6));
++                check(Reflection(actor, 1).All(p => p.A == 0), "The Earth reflection disappears after leaving the puddle");
++            }
+             var air = Layer(() => atmosphere.Invoke(world, [batch, game, 1d]));
+             check(air.Count(p => p.A > 0) is > 0 and < 5000, $"Earth {id} ambient animation stays sparse");
+             var floors = (from y in Enumerable.Range(0, Map.Height) from x in Enumerable.Range(0, Map.Width)
+@@ -75,8 +147,9 @@
+                     if (tile is not (0x43 or 0x47)) continue;
+                     secret.Add((position, tile)); game.Map.RestoreTile(position, tile == 0x43 ? (ushort)0x22 : (ushort)0x27);
+                 }
+-            prepare.Invoke(world, [game.Map]);
+-            check(original.SequenceEqual(Ground()) && air.SequenceEqual(Layer(() => atmosphere.Invoke(world, [batch, game, 1d]))),
++            prepare.Invoke(world, [game.Map]); prepareWater.Invoke(world, [game.Map]);
++            check(original.SequenceEqual(Ground()) && mask.SequenceEqual((bool[])type.GetField("waterMask", flags)!.GetValue(world)!)
++                && air.SequenceEqual(Layer(() => atmosphere.Invoke(world, [batch, game, 1d]))),
+                 $"Earth {id} secret terrain and ambient details are visually identical to ordinary terrain");
+             foreach (var entry in secret) game.Map.RestoreTile(entry.Position, entry.Tile);
+             prepare.Invoke(world, [game.Map]);
+@@ -91,6 +164,12 @@
+ 
+             Color[] Frame(double time) => Layer(() => draw.Invoke(world,
+                 [batch, game, new PlayerMotion(new MapPosition(1, 1)), town, time, false]));
++            Color[] Reflection(PlayerMotion actor, double time) => Layer(() => reflection.Invoke(town, [batch, actor, time, game, world]));
++            Color[] WaterFrame(double time) => Layer(() =>
++            {
++                for (var y = 0; y < Map.Height; y++)
++                    for (var x = 0; x < Map.Width; x++) drawWater.Invoke(world, [batch, new Rectangle(x * 32, y * 32, 32, 32), time]);
++            });
+         }
+         foreach (var id in new[] { 17, 41, 117 })
+         {
+--- a/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
+@@ -145,6 +145,25 @@
+                 Set("session", earth); Set("adventure", adventure); player.SnapTo(entry);
+                 Set("cameraPosition", new Vector2(Math.Clamp(entry.X * 32 - 144, 0, 96), Math.Clamp(entry.Y * 32 - 74, 0, 204)));
+                 Save(Frame(1), $"earth-{id:D3}-defaults.png");
++                if (id == 57)
++                {
++                    var frames = Path.Combine(directory, "earth-puddle-walk"); Directory.CreateDirectory(frames);
++                    player.SnapTo(new(3, 3));
++                    for (var frame = 0; frame < 64; frame++)
++                    {
++                        if (frame is 8 or 32 or 40)
++                        {
++                            var step = adventure.Map.Move(player.Position, 0, 1);
++                            check(step.Moved, "The Earth E3 puddle route accepts a walking step without water equipment");
++                            player.MoveTo(step.Position);
++                        }
++                        player.Update(1d / 32);
++                        Save(Frame(1 + frame / 32d), Path.Combine(frames, $"frame-{frame:D2}.png"));
++                    }
++                    check(!player.IsMoving && player.Position == new MapPosition(3, 6),
++                        "The Earth E3 walk-through retains the approved walking pace and reaches dry ground");
++                    player.SnapTo(entry);
++                }
+                 if (id == 109)
+                 {
+                     Set("miniatureMode", 0); Save(Frame(1), "earth-109-crisp.png"); Set("miniatureMode", 2);

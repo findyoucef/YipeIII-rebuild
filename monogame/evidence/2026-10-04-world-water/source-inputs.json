@@ -1,0 +1,8 @@
+{
+  "monogame/Yipe.Desktop/WorldWater.cs": "ecc8404b54da73ba0b6458811d00370f4320cb839d9ae25593edabe9fc26eb77",
+  "monogame/Yipe.Desktop/WorldTerrain.cs": "cf074e7f814f5999c92481702668e6bc5806787eafecf4ad40e2f9502f0400e8",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "13fa7b9dbfba9e02030b5eee23cc5d7e0dd51b719f684ac66fee1d33625ec25b",
+  "monogame/Yipe.Desktop/TownScenery.cs": "8bb2adef0696a1903002ec7b97afcfc0202c24d7e059474fa347909be1d50439",
+  "monogame/Yipe.GraphicsChecks/WorldPresentationChecks.cs": "61453d6933a8a145138b58b11e32f26514b2db046679e6779fc9c5bf7cc3187f",
+  "monogame/Yipe.Desktop/Content/Art/Retro/terrain.png": "ad805904483ac87d865004514af01c50d2edf41795d817414dbe490a620f9586"
+}

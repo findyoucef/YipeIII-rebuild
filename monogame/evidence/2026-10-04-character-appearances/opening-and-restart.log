@@ -1,0 +1,51 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/graphics-checks/yipe-graphics-20261004-130907-864be262
+PASS frontend checkpoint 0.y3r: map 17, level 1, gold 0, RNG 1
+PASS frontend checkpoint 1.y3r: map 57, level 1, gold 53, RNG 3104592263
+PASS frontend checkpoint 2.y3r: map 57, level 1, gold 216, RNG 1562841591
+PASS frontend checkpoint 3.y3r: map 17, level 1, gold 7, RNG 1658932731
+PASS frontend checkpoint 4.y3r: map 11, level 2, gold 175, RNG 146664662
+PASS frontend checkpoint 5.y3r: map 17, level 2, gold 119, RNG 2801604192
+PASS frontend checkpoint 6.y3r: map 17, level 2, gold 227, RNG 1590745175
+PASS frontend checkpoint 7.y3r: map 17, level 3, gold 214, RNG 2066990842
+PASS frontend checkpoint 8.y3r: map 17, level 4, gold 290, RNG 1929423038
+PASS frontend checkpoint 9.y3r: map 17, level 4, gold 176, RNG 2109220990
+PASS frontend checkpoint 10.y3r: map 17, level 5, gold 359, RNG 4111832846
+PASS frontend checkpoint 11.y3r: map 57, level 5, gold 507, RNG 789993329
+PASS frontend checkpoint 12.y3r: map 63, level 5, gold 677, RNG 422930664
+PASS frontend checkpoint 13.y3r: map 63, level 5, gold 848, RNG 731425173
+PASS frontend checkpoint 14.y3r: map 69, level 5, gold 1028, RNG 3496581866
+PASS frontend checkpoint 15.y3r: map 17, level 5, gold 63, RNG 1259332182
+PASS frontend checkpoint 16.y3r: map 17, level 7, gold 869, RNG 945018427
+PASS frontend checkpoint 17.y3r: map 17, level 7, gold 19, RNG 2965708030
+PASS frontend checkpoint 18.y3r: map 23, level 7, gold 205, RNG 2003749711
+PASS frontend checkpoint 19.y3r: map 58, level 7, gold 205, RNG 3548039289
+PASS frontend checkpoint 20.y3r: map 58, level 7, gold 326, RNG 1158350910
+PASS frontend checkpoint 21.y3r: map 17, level 7, gold 1, RNG 1601034011
+PASS frontend checkpoint 22.y3r: map 52, level 8, gold 247, RNG 2471174703
+PASS frontend checkpoint 23.y3r: map 51, level 8, gold 349, RNG 2185237131
+PASS frontend checkpoint 24.y3r: map 51, level 8, gold 434, RNG 543619909
+PASS frontend checkpoint 25.y3r: map 69, level 8, gold 265, RNG 1584994247
+PASS frontend checkpoint 26.y3r: map 69, level 8, gold 463, RNG 3052241072
+PASS frontend checkpoint 27.y3r: map 69, level 8, gold 615, RNG 2362454097
+PASS frontend checkpoint 28.y3r: map 75, level 8, gold 691, RNG 1832458553
+PASS frontend checkpoint 29.y3r: map 75, level 8, gold 830, RNG 3029791822
+PASS frontend checkpoint 30.y3r: map 75, level 8, gold 728, RNG 4181364089
+PASS frontend checkpoint 31.y3r: map 75, level 8, gold 844, RNG 3139594532
+PASS frontend checkpoint 32.y3r: map 115, level 8, gold 991, RNG 4272215843
+PASS frontend checkpoint 33.y3r: map 115, level 8, gold 1138, RNG 3634656145
+PASS frontend checkpoint 34.y3r: map 115, level 8, gold 1293, RNG 3198380289
+PASS frontend checkpoint 35.y3r: map 115, level 8, gold 1472, RNG 2292526195
+PASS frontend checkpoint 36.y3r: map 109, level 8, gold 1472, RNG 2106255872
+PASS frontend checkpoint 37.y3r: map 17, level 9, gold 2671, RNG 3470794852
+PASS frontend checkpoint 38.y3r: map 17, level 9, gold 721, RNG 1559046591
+PASS frontend checkpoint 39.y3r: map 109, level 9, gold 794, RNG 2541285795
+PASS frontend checkpoint 40.y3r: map 109, level 9, gold 1378, RNG 1031425364
+PASS frontend checkpoint 41.y3r: map 109, level 10, gold 1738, RNG 388035828
+PASS frontend checkpoint king-return.y3r: map 17, level 10, gold 2238, RNG 3906560132
+PASS earned frontend opening: 42 C++ checkpoints + King return; 116 victories, 14 chests, 2 rescues; 9940 rendered frames; pause-menu save verified. Only default/selected portrait metadata is normalized in the expected fixtures.
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/graphics-checks/yipe-graphics-20261004-130907-864be262/yipe-graphics-20261004-130952-113154ea
+PASS frontend checkpoint 39.y3r: map 109, level 9, gold 794, RNG 2541285795
+PASS frontend checkpoint 40.y3r: map 109, level 9, gold 1378, RNG 1031425364
+PASS frontend checkpoint 41.y3r: map 109, level 10, gold 1738, RNG 388035828
+PASS frontend checkpoint king-return.y3r: map 17, level 10, gold 2238, RNG 3906560132
+PASS earned frontend opening fresh-process continuation: 42 C++ checkpoints + King return; 116 victories, 14 chests, 2 rescues; 135 rendered frames; pause-menu save verified. Only default/selected portrait metadata is normalized in the expected fixtures.

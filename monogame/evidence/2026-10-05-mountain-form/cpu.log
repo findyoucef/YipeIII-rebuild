@@ -1,0 +1,286 @@
+PASS 1 palette and binary alpha
+PASS 1 open cells untouched
+PASS 1 solid blocked cores
+PASS 1 map unchanged
+PASS 1 deterministic cache
+PASS 1 complete save and RNG unchanged
+1 preparation 5.1ms
+PASS 1 foothill 6,2 joins the solid middle of its neighboring rock
+PASS 1 foothill 5,3 joins the solid middle of its neighboring rock
+PASS 1 foothill 7,3 joins the solid middle of its neighboring rock
+PASS 1 foothill 9,3 joins the solid middle of its neighboring rock
+PASS 1 foothill 6,4 joins the solid middle of its neighboring rock
+PASS 1 foothill 8,4 joins the solid middle of its neighboring rock
+PASS 1 foothill 10,4 joins the solid middle of its neighboring rock
+PASS 1 foothill 9,5 joins the solid middle of its neighboring rock
+PASS 2 palette and binary alpha
+PASS 2 open cells untouched
+PASS 2 solid blocked cores
+PASS 2 map unchanged
+PASS 2 deterministic cache
+PASS 2 complete save and RNG unchanged
+2 preparation 1.0ms
+PASS 3 palette and binary alpha
+PASS 3 open cells untouched
+PASS 3 solid blocked cores
+PASS 3 map unchanged
+PASS 3 deterministic cache
+PASS 3 complete save and RNG unchanged
+3 preparation 1.0ms
+PASS 4 palette and binary alpha
+PASS 4 open cells untouched
+PASS 4 solid blocked cores
+PASS 4 map unchanged
+PASS 4 deterministic cache
+PASS 4 complete save and RNG unchanged
+4 preparation 0.9ms
+PASS 5 palette and binary alpha
+PASS 5 open cells untouched
+PASS 5 solid blocked cores
+PASS 5 map unchanged
+PASS 5 deterministic cache
+PASS 5 complete save and RNG unchanged
+5 preparation 1.0ms
+PASS 6 palette and binary alpha
+PASS 6 open cells untouched
+PASS 6 solid blocked cores
+PASS 6 map unchanged
+PASS 6 deterministic cache
+PASS 6 complete save and RNG unchanged
+6 preparation 9.1ms
+PASS 6 foothill 4,2 joins the solid middle of its neighboring rock
+PASS 6 foothill 8,2 joins the solid middle of its neighboring rock
+PASS 6 foothill 11,2 joins the solid middle of its neighboring rock
+PASS 6 foothill 12,2 joins the solid middle of its neighboring rock
+PASS 6 foothill 7,3 joins the solid middle of its neighboring rock
+PASS 6 foothill 5,5 joins the solid middle of its neighboring rock
+PASS 6 foothill 6,6 joins the solid middle of its neighboring rock
+PASS 6 foothill 5,8 joins the solid middle of its neighboring rock
+PASS 6 foothill 6,9 joins the solid middle of its neighboring rock
+PASS 7 palette and binary alpha
+PASS 7 open cells untouched
+PASS 7 solid blocked cores
+PASS 7 map unchanged
+PASS 7 deterministic cache
+PASS 7 complete save and RNG unchanged
+7 preparation 2.8ms
+PASS 8 palette and binary alpha
+PASS 8 open cells untouched
+PASS 8 solid blocked cores
+PASS 8 map unchanged
+PASS 8 deterministic cache
+PASS 8 complete save and RNG unchanged
+8 preparation 0.8ms
+PASS 9 palette and binary alpha
+PASS 9 open cells untouched
+PASS 9 solid blocked cores
+PASS 9 map unchanged
+PASS 9 deterministic cache
+PASS 9 complete save and RNG unchanged
+9 preparation 0.8ms
+PASS 10 palette and binary alpha
+PASS 10 open cells untouched
+PASS 10 solid blocked cores
+PASS 10 map unchanged
+PASS 10 deterministic cache
+PASS 10 complete save and RNG unchanged
+10 preparation 3.0ms
+PASS 11 palette and binary alpha
+PASS 11 open cells untouched
+PASS 11 solid blocked cores
+PASS 11 map unchanged
+PASS 11 deterministic cache
+PASS 11 complete save and RNG unchanged
+11 preparation 3.3ms
+PASS 12 palette and binary alpha
+PASS 12 open cells untouched
+PASS 12 solid blocked cores
+PASS 12 map unchanged
+PASS 12 deterministic cache
+PASS 12 complete save and RNG unchanged
+12 preparation 5.2ms
+PASS 13 palette and binary alpha
+PASS 13 open cells untouched
+PASS 13 solid blocked cores
+PASS 13 map unchanged
+PASS 13 deterministic cache
+PASS 13 complete save and RNG unchanged
+13 preparation 7.1ms
+PASS 14 palette and binary alpha
+PASS 14 open cells untouched
+PASS 14 solid blocked cores
+PASS 14 map unchanged
+PASS 14 deterministic cache
+PASS 14 complete save and RNG unchanged
+14 preparation 1.5ms
+PASS 15 palette and binary alpha
+PASS 15 open cells untouched
+PASS 15 solid blocked cores
+PASS 15 map unchanged
+PASS 15 deterministic cache
+PASS 15 complete save and RNG unchanged
+15 preparation 3.1ms
+PASS 16 palette and binary alpha
+PASS 16 open cells untouched
+PASS 16 solid blocked cores
+PASS 16 map unchanged
+PASS 16 deterministic cache
+PASS 16 complete save and RNG unchanged
+16 preparation 1.9ms
+PASS 17 palette and binary alpha
+PASS 17 open cells untouched
+PASS 17 solid blocked cores
+PASS 17 map unchanged
+PASS 17 deterministic cache
+PASS 17 complete save and RNG unchanged
+17 preparation 4.3ms
+PASS 18 palette and binary alpha
+PASS 18 open cells untouched
+PASS 18 solid blocked cores
+PASS 18 map unchanged
+PASS 18 deterministic cache
+PASS 18 complete save and RNG unchanged
+18 preparation 7.6ms
+PASS 19 palette and binary alpha
+PASS 19 open cells untouched
+PASS 19 solid blocked cores
+PASS 19 map unchanged
+PASS 19 deterministic cache
+PASS 19 complete save and RNG unchanged
+19 preparation 9.0ms
+PASS 20 palette and binary alpha
+PASS 20 open cells untouched
+PASS 20 solid blocked cores
+PASS 20 map unchanged
+PASS 20 deterministic cache
+PASS 20 complete save and RNG unchanged
+20 preparation 6.6ms
+PASS 21 palette and binary alpha
+PASS 21 open cells untouched
+PASS 21 solid blocked cores
+PASS 21 map unchanged
+PASS 21 deterministic cache
+PASS 21 complete save and RNG unchanged
+21 preparation 10.6ms
+PASS 21 foothill 10,1 joins the solid middle of its neighboring rock
+PASS 21 foothill 11,1 joins the solid middle of its neighboring rock
+PASS 22 palette and binary alpha
+PASS 22 open cells untouched
+PASS 22 solid blocked cores
+PASS 22 map unchanged
+PASS 22 deterministic cache
+PASS 22 complete save and RNG unchanged
+22 preparation 4.8ms
+PASS 23 palette and binary alpha
+PASS 23 open cells untouched
+PASS 23 solid blocked cores
+PASS 23 map unchanged
+PASS 23 deterministic cache
+PASS 23 complete save and RNG unchanged
+23 preparation 3.7ms
+PASS 24 palette and binary alpha
+PASS 24 open cells untouched
+PASS 24 solid blocked cores
+PASS 24 map unchanged
+PASS 24 deterministic cache
+PASS 24 complete save and RNG unchanged
+24 preparation 3.7ms
+PASS 25 palette and binary alpha
+PASS 25 open cells untouched
+PASS 25 solid blocked cores
+PASS 25 map unchanged
+PASS 25 deterministic cache
+PASS 25 complete save and RNG unchanged
+25 preparation 5.4ms
+PASS 26 palette and binary alpha
+PASS 26 open cells untouched
+PASS 26 solid blocked cores
+PASS 26 map unchanged
+PASS 26 deterministic cache
+PASS 26 complete save and RNG unchanged
+26 preparation 3.8ms
+PASS 27 palette and binary alpha
+PASS 27 open cells untouched
+PASS 27 solid blocked cores
+PASS 27 map unchanged
+PASS 27 deterministic cache
+PASS 27 complete save and RNG unchanged
+27 preparation 2.0ms
+PASS 28 palette and binary alpha
+PASS 28 open cells untouched
+PASS 28 solid blocked cores
+PASS 28 map unchanged
+PASS 28 deterministic cache
+PASS 28 complete save and RNG unchanged
+28 preparation 0.7ms
+PASS 29 palette and binary alpha
+PASS 29 open cells untouched
+PASS 29 solid blocked cores
+PASS 29 map unchanged
+PASS 29 deterministic cache
+PASS 29 complete save and RNG unchanged
+29 preparation 1.7ms
+PASS 30 palette and binary alpha
+PASS 30 open cells untouched
+PASS 30 solid blocked cores
+PASS 30 map unchanged
+PASS 30 deterministic cache
+PASS 30 complete save and RNG unchanged
+30 preparation 3.4ms
+PASS 31 palette and binary alpha
+PASS 31 open cells untouched
+PASS 31 solid blocked cores
+PASS 31 map unchanged
+PASS 31 deterministic cache
+PASS 31 complete save and RNG unchanged
+31 preparation 0.6ms
+PASS 32 palette and binary alpha
+PASS 32 open cells untouched
+PASS 32 solid blocked cores
+PASS 32 map unchanged
+PASS 32 deterministic cache
+PASS 32 complete save and RNG unchanged
+32 preparation 3.6ms
+PASS 33 palette and binary alpha
+PASS 33 open cells untouched
+PASS 33 solid blocked cores
+PASS 33 map unchanged
+PASS 33 deterministic cache
+PASS 33 complete save and RNG unchanged
+33 preparation 0.7ms
+PASS 34 palette and binary alpha
+PASS 34 open cells untouched
+PASS 34 solid blocked cores
+PASS 34 map unchanged
+PASS 34 deterministic cache
+PASS 34 complete save and RNG unchanged
+34 preparation 1.0ms
+PASS 35 palette and binary alpha
+PASS 35 open cells untouched
+PASS 35 solid blocked cores
+PASS 35 map unchanged
+PASS 35 deterministic cache
+PASS 35 complete save and RNG unchanged
+35 preparation 0.6ms
+PASS 36 palette and binary alpha
+PASS 36 open cells untouched
+PASS 36 solid blocked cores
+PASS 36 map unchanged
+PASS 36 deterministic cache
+PASS 36 complete save and RNG unchanged
+36 preparation 0.9ms
+PASS All 40960 matching mountain overlap pixels join across region edges and world wrap
+PASS Surface F3 beside 2,6 has a long diagonal contour instead of a lightly rounded square step
+PASS Mountain tops remain visibly lighter than the broad front cliff faces
+PASS Exposed mountain rock and ground contacts never acquire an artificial near-black outline
+PASS Meadow grass and moss overlap broken parts of the rock foot, leaving visible stone between them
+PASS Adjacent mountain tiles form continuous rock without internal outlines or transparent seams
+PASS Exposed mountain borders have uneven pixel ledges and cut-back corners
+PASS Secret mountain passages do not change contours, texture or decoration
+PASS Removing mountain terrain invalidates its cached silhouette
+PASS Restoring terrain reconstructs the same mountain without cache residue
+PASS Desert cut-back mountain corners expose warm sand instead of green meadow
+PASS Desert rock feet use overlapping sand instead of meadow-green patches
+PASS Rock beside a paved approach does not grow a meadow fringe across it
+PASS Mountain rock meets its authored walkable foothill without a grass seam
+Passed 249 CPU terrain checks. Previews composite cached terrain with captured foregrounds; they are not fresh GPU captures.

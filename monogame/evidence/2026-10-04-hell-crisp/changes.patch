@@ -1,0 +1,141 @@
+--- a/monogame/Yipe.Desktop/WorldHell.cs
++++ b/monogame/Yipe.Desktop/WorldHell.cs
+@@ -200,8 +200,8 @@
+                 if (y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth] + 1);
+                 if (x > 0 && y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth - 1] + 1.4142f);
+                 if (x + 1 < HellWidth && y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth + 1] + 1.4142f);
+-                var strength = Math.Max(0, 1 - distance[i] / 30);
+-                var light = Math.Max(strength * strength * .18f, glow[i].A / 255f);
++                var strength = Math.Max(0, 1 - distance[i] / 20);
++                var light = Math.Max(strength * strength * .12f, glow[i].A / 255f);
+                 light = MathF.Round((paving[i] ? light * .18f : light) * 32) / 32;
+                 glow[i] = new Color(240, 94, 63) * light;
+             }
+--- a/monogame/Yipe.Desktop/MiniatureEffect.cs
++++ b/monogame/Yipe.Desktop/MiniatureEffect.cs
+@@ -43,7 +43,7 @@
+         };
+     }
+ 
+-    public void Apply(SpriteBatch batch, float focusY, bool strong)
++    public void Apply(SpriteBatch batch, float focusY, bool strong, float blurMix = 1f)
+     {
+         device.SetRenderTarget(enlarged);
+         batch.Begin(blendState: BlendState.Opaque, samplerState: SamplerState.PointClamp);
+@@ -58,7 +58,7 @@
+         // Keep plenty of original detail even in the furthest rows. Preserve the art's colors.
+         for (var y = 0; y < Result.Height; y++)
+         {
+-            var amount = Falloff((y + 0.5f) / PresentationScale, focusY) * (strong ? 0.75f : 0.5f);
++            var amount = Falloff((y + 0.5f) / PresentationScale, focusY) * (strong ? 0.75f : 0.5f) * blurMix;
+             if (amount <= 0) continue;
+             var row = new Rectangle(0, y, Result.Width, 1);
+             batch.Draw(blurred, row, row, Color.White * amount);
+--- a/monogame/Yipe.Desktop/HeatEffect.cs
++++ b/monogame/Yipe.Desktop/HeatEffect.cs
+@@ -27,7 +27,7 @@
+     }
+ 
+     public Texture2D Apply(SpriteBatch batch, Texture2D source, WorldRenderer world,
+-        Vector2 camera, Vector2 hero, double time)
++        Vector2 camera, Vector2 hero, double time, bool crisp = false)
+     {
+         // Enlarge with point sampling first: subpixel refraction should not blur native art.
+         device.SetRenderTarget(enlarged);
+@@ -54,7 +54,9 @@
+         device.RasterizerState = RasterizerState.CullNone;
+         sampling.Texture = enlarged;
+         sampling.CurrentTechnique.Passes[0].Apply();
+-        device.SamplerStates[0] = SamplerState.LinearClamp;
++        // Hell keeps hard pixel edges as the enlarged image ripples. Sampling
++        // at presentation resolution still permits quarter-native-pixel motion.
++        device.SamplerStates[0] = crisp ? SamplerState.PointClamp : SamplerState.LinearClamp;
+         device.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, index / 3);
+         return result;
+ 
+--- a/monogame/Yipe.Desktop/TownGame.cs
++++ b/monogame/Yipe.Desktop/TownGame.cs
+@@ -299,16 +299,18 @@
+         batch.End();
+ 
+         Texture2D? presentedWorld = null;
++        var hell = session.CurrentMap.Id is >= 117 and <= 120;
+         if (miniatureMode != 0)
+         {
+             var focusY = player.VisualPosition.Y * 32 + 12 - cameraPosition.Y;
+-            miniature.Apply(batch, focusY, miniatureMode == 2);
++            // Keep a hint of depth in Hell while preserving its gate and rock detail.
++            miniature.Apply(batch, focusY, miniatureMode == 2, hell ? .25f : 1f);
+             presentedWorld = miniature.Result;
+         }
+         if (session.CurrentMap.Id != TownMap.Id && world.HasHeat)
+             presentedWorld = heat.Apply(batch, presentedWorld ?? canvas, world,
+                 new(MathF.Round(cameraPosition.X), MathF.Round(cameraPosition.Y)),
+-                player.VisualPosition * 32 + new Vector2(16, 12), sceneTime);
++                player.VisualPosition * 32 + new Vector2(16, 12), sceneTime, hell);
+         if (presentedWorld is not null)
+         {
+             GraphicsDevice.SetRenderTarget(canvas);
+--- a/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
+@@ -59,6 +59,13 @@
+                     var first = Refract(1); var repeated = Refract(1); var later = Refract(2);
+                     check(first.SequenceEqual(repeated) && !first.SequenceEqual(later),
+                         $"Map {id} heat freezes at a fixed clock and refracts scenery as time advances");
++                    if (id == 117)
++                    {
++                        var raw = new Color[1280 * 720]; source.GetData(raw);
++                        var colors = raw.Select(p => p.PackedValue).ToHashSet();
++                        check(first.All(p => colors.Contains(p.PackedValue)),
++                            "Hell heat moves existing pixel colors without blending its gate and rock edges");
++                    }
+                     if (id == 1)
+                     {
+                         var raw = new Color[1280 * 720]; source.GetData(raw);
+@@ -112,6 +119,7 @@
+                     player.SnapTo(new(6, 2));
+                     Save(Frame(1), "hell-a4-6-2.png");
+                     Set("scanlines", true); Save(Frame(1), "hell-a4-defaults.png");
++                    Set("miniatureMode", 0); Save(Frame(1), "hell-a4-sharp.png"); Set("miniatureMode", 2);
+                     session.Player.HellGatekeeperState = keeper;
+                     player.SnapTo(new(6, 5)); Set("cameraPosition", new Vector2(48, 86));
+                     Save(Frame(1), "hell-path-defaults.png");
+@@ -199,7 +207,8 @@
+         Color[] Refract(double time)
+         {
+             var target = (Texture2D)apply.Invoke(heat, [batch, source, world, Get("cameraPosition")!,
+-                player.VisualPosition * 32 + new Vector2(16, 12), time])!;
++                player.VisualPosition * 32 + new Vector2(16, 12), time,
++                ((GameSession)Get("session")!).CurrentMap.Id is >= 117 and <= 120])!;
+             game.GraphicsDevice.SetRenderTarget(null);
+             var pixels = new Color[1280 * 720]; target.GetData(pixels); return pixels;
+         }
+--- a/monogame/Yipe.GraphicsChecks/Program.cs
++++ b/monogame/Yipe.GraphicsChecks/Program.cs
+@@ -210,7 +210,7 @@
+         // Uniform input catches dark borders, lost alpha, and non-normalized blur weights.
+         game.GraphicsDevice.SetRenderTarget(world);
+         game.GraphicsDevice.Clear(Color.White);
+-        apply.Invoke(effect, [referenceBatch, 90f, true]);
++        apply.Invoke(effect, [referenceBatch, 90f, true, 1f]);
+         game.GraphicsDevice.SetRenderTarget(null);
+         var flat = new Color[1280 * 720];
+         result.GetData(flat);
+@@ -225,7 +225,7 @@
+             referenceBatch.Begin(samplerState: SamplerState.PointClamp);
+             referenceBatch.Draw(stripe, Vector2.Zero, Color.White);
+             referenceBatch.End();
+-            apply.Invoke(effect, [referenceBatch, 90f, false]);
++            apply.Invoke(effect, [referenceBatch, 90f, false, 1f]);
+             game.GraphicsDevice.SetRenderTarget(null);
+             var gradient = new Color[1280 * 720];
+             result.GetData(gradient);
+@@ -233,7 +233,7 @@
+             Log($"Gradient contrast: edge={contrast[0]}, center={contrast[^1]}, levels={contrast.Distinct().Count()}, max row jump={contrast.Zip(contrast.Skip(1), (a, b) => Math.Abs(a - b)).Max()}");
+             Check(contrast[0] < contrast[^1] && contrast.Distinct().Count() >= 12, "Falloff contains a gradual range of contrast levels");
+             Check(contrast.Zip(contrast.Skip(1), (a, b) => Math.Abs(a - b)).Max() <= 3, "No abrupt contrast boundary between presentation rows");
+-            apply.Invoke(effect, [referenceBatch, 90.25f, false]);
++            apply.Invoke(effect, [referenceBatch, 90.25f, false, 1f]);
+             game.GraphicsDevice.SetRenderTarget(null);
+             var moved = new Color[gradient.Length];
+             result.GetData(moved);

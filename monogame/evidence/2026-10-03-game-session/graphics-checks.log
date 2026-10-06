@@ -1,0 +1,163 @@
+UTC: 2026-10-04T05:09:02.3576610Z
+Runtime: .NET 10.0.8
+OS: macOS 26.7.1
+Graphics session active: True
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Miniature menu advances to Strong
+PASS: Miniature menu advances to Off
+PASS: Miniature menu wraps to Subtle
+PASS: All three strengths render distinct images
+PASS: Stronger settings progressively soften distant terrain detail
+PASS: Focus band and hero stay pixel-sharp at map position 5,5
+PASS: Focus band and hero stay pixel-sharp at map position 4,1
+PASS: Focus band and hero stay pixel-sharp at map position 10,10
+PASS: Blur preserves brightness and fills every border pixel without transparent seams
+Gradient contrast: edge=132, center=160, levels=26, max row jump=2
+PASS: Falloff contains a gradual range of contrast levels
+PASS: No abrupt contrast boundary between presentation rows
+PASS: Subpixel focus movement does not pop between blur bands
+PASS: Opaque pause panel and typography remain untouched by the blur
+PASS: Location message overlay stays sharp
+PASS: No pre-motion trail for {X:1 Y:0}
+PASS: Faint trail appears for {X:1 Y:0}
+PASS: Trail stays within three pixels behind {X:1 Y:0}
+PASS: Trail fades before stopping {X:1 Y:0}
+PASS: Completed step clears trail for {X:1 Y:0}
+PASS: No pre-motion trail for {X:-1 Y:0}
+PASS: Faint trail appears for {X:-1 Y:0}
+PASS: Trail stays within three pixels behind {X:-1 Y:0}
+PASS: Trail fades before stopping {X:-1 Y:0}
+PASS: Completed step clears trail for {X:-1 Y:0}
+PASS: No pre-motion trail for {X:0 Y:1}
+PASS: Faint trail appears for {X:0 Y:1}
+PASS: Trail stays within three pixels behind {X:0 Y:1}
+PASS: Trail fades before stopping {X:0 Y:1}
+PASS: Completed step clears trail for {X:0 Y:1}
+PASS: No pre-motion trail for {X:0 Y:-1}
+PASS: Faint trail appears for {X:0 Y:-1}
+PASS: Trail stays within three pixels behind {X:0 Y:-1}
+PASS: Trail fades before stopping {X:0 Y:-1}
+PASS: Completed step clears trail for {X:0 Y:-1}
+PASS: Facing a blocked direction without moving creates no trail
+PASS: Drawing repeatedly without updates leaves exposure unchanged
+PASS: Loading/resetting mid-step clears the trail
+PASS: Standing creates no footstep particles
+PASS: Paved routes produce sparse low-opacity dust
+PASS: Grass produces green blade disturbance instead of road dust
+PASS: Paused footsteps do not evolve between draws
+PASS: Wooden bridges produce no grass or dust
+PASS: Loading or resetting clears footstep effects
+PASS: River is one connected water surface through both bends and bridges
+PASS: River reaches both map edges and flows beneath both bridges
+PASS: Natural river width varies along the banks
+PASS: Moving ripples and foam remain inside the river and leave banks untouched
+PASS: River animation is deterministic and freezes with scene time
+PASS: Bridge 3,3 reflection faces {X:0 Y:1} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:-1 Y:0} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:1 Y:0} and stays faint and inside water
+PASS: Bridge 3,3 reflection faces {X:0 Y:-1} and stays faint and inside water
+PASS: Bridge 3,3 reflection freezes at a fixed scene time
+PASS: Bridge 3,3 reflection has gentle animated ripples
+PASS: Bridge deck stays opaque over the reflection
+PASS: Part of the character reflection remains visible beyond the bridge deck
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 3, Y = 3 } dir=-1: 0,0,60,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 3, Y = 3 } dir=1: 6,20,58,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Bridge 2,6 reflection faces {X:0 Y:1} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:-1 Y:0} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:1 Y:0} and stays faint and inside water
+PASS: Bridge 2,6 reflection faces {X:0 Y:-1} and stays faint and inside water
+PASS: Bridge 2,6 reflection freezes at a fixed scene time
+PASS: Bridge 2,6 reflection has gentle animated ripples
+PASS: Bridge deck stays opaque over the reflection
+PASS: Part of the character reflection remains visible beyond the bridge deck
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 2, Y = 6 } dir=-1: 0,0,60,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Accepting a step onto a bridge does not pop its reflection onto the previous bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+PASS: Crossing reflection never spills onto the bank
+Reflection alpha MapPosition { X = 2, Y = 6 } dir=1: 0,0,58,71
+PASS: Reflection becomes visible as the character reaches water from either bank
+PASS: Reflection clears after leaving the bridge
+PASS: Load or reset inland clears the reflection immediately
+PASS: Facing a nearby shop changes only its small doorstep cue
+PASS: Entrance cue stays hidden during movement
+PASS: Sign 8 retains its dark bottom outline while swaying
+PASS: Sign 9 retains its dark bottom outline while swaying
+PASS: Sign 10 retains its dark bottom outline while swaying
+PASS: Sign 11 retains its dark bottom outline while swaying
+PASS: Sign 12 retains its dark bottom outline while swaying
+PASS: Hanging shop signs sway with scene time
+PASS: Shop props freeze while paused
+PASS: Authored flowers and foliage leave paved walking routes clear
+PASS: Shop 1 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 1 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 2 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 2 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 0 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 0 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 3 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 3 keeps its hanging board and symbol visible beside the facade
+PASS: Shop 4 windows, doors, and facade stay unobscured by its sign
+PASS: Shop 4 keeps its hanging board and symbol visible beside the facade
+PASS: Cave threshold reaches the last row of its mountain tile, with no gap below
+PASS: Tour stays inside the map
+PASS: Pause freezes motion and environmental time
+PASS: Pause clears buffered movement
+PASS: Resume finishes the pending visual step
+PASS: Session accepts the logical destination before the visual step finishes
+PASS: Saving during animation and loading restores the accepted destination without a stale tween
+PASS: Loading synchronizes the logical session and animated player
+PASS: Game dispatch animates diagonal {X:-1 Y:-1} on both axes
+PASS: Diagonal {X:-1 Y:-1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:1 Y:-1} on both axes
+PASS: Diagonal {X:1 Y:-1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:-1 Y:1} on both axes
+PASS: Diagonal {X:-1 Y:1} lands on its accepted destination after 250 ms
+PASS: Game dispatch animates diagonal {X:1 Y:1} on both axes
+PASS: Diagonal {X:1 Y:1} lands on its accepted destination after 250 ms
+PASS: Cave dispatch retains the preview boundary without changing logical or visual position
+PASS: World-edge dispatch cannot move the session outside the town renderer
+PASS: Session shop request reaches the existing entrance overlay
+PASS: Camera clamps at the north edge
+PASS: Camera clamps at the south edge
+PASS: Camera clamps at the west edge
+PASS: Camera clamps at the east edge
+PASS: Fullscreen activates
+PASS: Windowed 16:9 resolution restores
+PASS: Scanlines toggle on through the menu
+PASS: Scanlines alter the presentation and toggle off again
+PASS: terrain uses its native pixel grid
+PASS: terrain has only palette colors and binary alpha
+PASS: town uses its native pixel grid
+PASS: town has only palette colors and binary alpha
+PASS: hero uses its native pixel grid
+PASS: hero has only palette colors and binary alpha
+PASS: meadow uses its native pixel grid
+PASS: meadow has only palette colors and binary alpha
+PASS: details uses its native pixel grid
+PASS: details has only palette colors and binary alpha
+PASS: Rendering, movement in town, pause and storage do not draw gameplay RNG
+Passed 153 visual integration checks. Rendered 360 tour frames. Recording: disabled.

@@ -1,0 +1,2 @@
+$ dotnet run --project monogame/Yipe.Tests -c Release --no-build -- --player-trace build/monogame-reference/player-csharp.txt
+Passed 84 checks, including 624 town movement cases, 8192 RNG output/state records and 11322 player reference records from C++.

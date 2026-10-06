@@ -1,0 +1,23 @@
+[
+  {
+    "arguments": [
+      "--help"
+    ],
+    "exit_code": 0,
+    "output": "Usage: Yipe.GraphicsChecks [--output DIRECTORY] [--record]\nRequires an active graphical desktop. --record additionally requires ffmpeg on PATH."
+  },
+  {
+    "arguments": [
+      "--output"
+    ],
+    "exit_code": 2,
+    "output": "Usage: Yipe.GraphicsChecks [--output DIRECTORY] [--record]"
+  },
+  {
+    "arguments": [
+      "--unknown"
+    ],
+    "exit_code": 2,
+    "output": "Usage: Yipe.GraphicsChecks [--output DIRECTORY] [--record]"
+  }
+]

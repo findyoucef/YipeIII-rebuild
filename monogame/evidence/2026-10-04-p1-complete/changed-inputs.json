@@ -1,0 +1,278 @@
+{
+  "monogame/SAVE_FORMAT.md": {
+    "status": "modified",
+    "sha256": "f949f4d6a3b4afc53502750b3bc7cc89f152203201c3d85c74a1f53c502a720d"
+  },
+  "monogame/README.md": {
+    "status": "modified",
+    "sha256": "f87d26a7e72ecae354aee9175a74771fa2a0b3a6048976834c9aa6dcf375bec4"
+  },
+  "monogame/PORTING_PLAN.md": {
+    "status": "modified",
+    "sha256": "acdefc9f10bfaea0440172393881ab0f43ab7539f495505892a0b7e61e86af42"
+  },
+  "monogame/Yipe.GraphicsChecks/README.md": {
+    "status": "modified",
+    "sha256": "e7fc94c3da928b39958eb7351f8a9640524eb168457f2401c62ca1195e8f5dde"
+  },
+  "monogame/Yipe.GraphicsChecks/Program.cs": {
+    "status": "modified",
+    "sha256": "eed6f2cb9af142304f221a5f3caba66896cd6bd6971ebea5972eab3e1a2f7ba4"
+  },
+  "monogame/Yipe.Tests/persistence_reference.cpp": {
+    "status": "added",
+    "sha256": "125c129b4c4152206284ff0ecd2166f26096728dadc61cd184e2f736e64b6940"
+  },
+  "monogame/Yipe.Tests/GameSaveChecks.cs": {
+    "status": "modified",
+    "sha256": "cb616ceca44bfde07b7c412211db1ba997ed30ee7eb4586844e99104b48425ef"
+  },
+  "monogame/Yipe.Tests/PlayerChecks.cs": {
+    "status": "modified",
+    "sha256": "8f76e8ea08e5493ef00b5ca2ab504ae0bb7a75aabce31e45461684081c4a75fd"
+  },
+  "monogame/Yipe.Tests/README.md": {
+    "status": "modified",
+    "sha256": "7d239056e5e14671c5eca99cbc981813a9db8e91cbb2112242bf7d172b851f66"
+  },
+  "monogame/Yipe.Tests/SessionChecks.cs": {
+    "status": "modified",
+    "sha256": "981beb6e79b994e9946f7603036b3914eb5ca223d23969fa132cc07f4582850e"
+  },
+  "monogame/Yipe.Tests/PersistenceChecks.cs": {
+    "status": "added",
+    "sha256": "61341bfdff0171a510409df3005f3a74f4db923d71995b58358cd56b5cd1dda4"
+  },
+  "monogame/Yipe.Tests/Yipe.Tests.csproj": {
+    "status": "modified",
+    "sha256": "80d91a45fcbc2c6afd47ba742b366baa10c44e8c10b1ba10681676625b59b086"
+  },
+  "monogame/Yipe.Tests/Program.cs": {
+    "status": "modified",
+    "sha256": "77088f1e38e910f097ac38904146fd781ff6b05d5bed9207846c993b41465302"
+  },
+  "monogame/Yipe.Desktop/GameSaveStore.cs": {
+    "status": "modified",
+    "sha256": "bc064ad32f0ca891e302a8e7fd756ed328bfb8bf34e984a9067291602faf38ae"
+  },
+  "monogame/Yipe.Desktop/TownGame.cs": {
+    "status": "modified",
+    "sha256": "0741a40e5e176c91926711e95e9ba37350b399e135b7900d0601a83a6e6c740d"
+  },
+  "monogame/Yipe.Desktop/Program.cs": {
+    "status": "modified",
+    "sha256": "16e37c50ec4f38f7909f5b50bb9da1f6212f7758b08aa6849aa29506896642fd"
+  },
+  "monogame/Yipe.Core/MapCatalog.cs": {
+    "status": "modified",
+    "sha256": "655e610516be97b0a16ed6ebb558db3c89f3b774c873888c6d2f8d712747ced0"
+  },
+  "monogame/Yipe.Core/GameSession.cs": {
+    "status": "modified",
+    "sha256": "679875554d96e9bf9820949b38b1c4d9b987f1a27b2f250d7263ad0dbf30be0e"
+  },
+  "monogame/Yipe.Core/GeneratedMap.cs": {
+    "status": "added",
+    "sha256": "7a5944b9511bf5f37d706e18de3e1a2ca62fd522b5fdae8b02edc093ad8d257b"
+  },
+  "monogame/Yipe.Core/SaveImporter.cs": {
+    "status": "added",
+    "sha256": "77fe8c3c264d1c76aa86e63db2857ff9bbcc64c91a400b3702b3f5e16a7520eb"
+  },
+  "monogame/Yipe.Core/GameSaveCodec.cs": {
+    "status": "modified",
+    "sha256": "83639493103ca2d75d1a88c99bb27964b860df5b92b50eabb589090b126445d6"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-14.y3r.txt": {
+    "status": "added",
+    "sha256": "4999a75c3acb2d9eeb85859bf14512a23926227845efb4e6d4965a1600622bc0"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-5.y3r.txt": {
+    "status": "added",
+    "sha256": "90dbf217d59f71f4405a5a921b597701370da671f8a0d05873e545adc3d9646e"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-15.y3r.txt": {
+    "status": "added",
+    "sha256": "c481bcc060c85adae2402b3190dafec9f3757565eb1d9d586d48ee11e5ab948a"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-4.y3r.txt": {
+    "status": "added",
+    "sha256": "0de08a75b66ec53b87d93f8b23c6607481013b328e2270bbaa7cdbff0f123555"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-6.y3r.txt": {
+    "status": "added",
+    "sha256": "3af56992cb2caba6213668325078483e6aadf5acc49c708b2fea64728da3fa89"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-14.y3r": {
+    "status": "added",
+    "sha256": "9cf7fde781d79520a4b032f14a9e4ba3adca74c371ed01776be6c3e9ccd5528c"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-5.y3r": {
+    "status": "added",
+    "sha256": "212d15a94d575317445a8914ce34602c0bc87097ed322e68ddb1016dbe91fe3a"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-17.y3r.txt": {
+    "status": "added",
+    "sha256": "5778f8076b2d9d1cfc3ca762e717b6c8fa0493570bf0f28b12eb074db70cf0e5"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-4.y3r": {
+    "status": "added",
+    "sha256": "1b3d60dedf58ed899f6240381839359d11107f4da484fde9f811e972f90a09e2"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-15.y3r": {
+    "status": "added",
+    "sha256": "955af5c3eb44263013422d32cd0465aa93830ef34b2ca0ba0efeaaa3e64c9734"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-17.y3r": {
+    "status": "added",
+    "sha256": "5e3999babab816f5d564b65b9c97f32be8d70eaa9fda40e80a7fdbc3f9389259"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-6.y3r": {
+    "status": "added",
+    "sha256": "320f67707f3b58ea08231919a2aa0f0d2f4fd408081813099d37f97df7b52719"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-7.y3r": {
+    "status": "added",
+    "sha256": "b1fa19b5f3c0da3a49d53a160d6814d77da2f0e0a9728f702913ba6b403c7fa7"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-16.y3r": {
+    "status": "added",
+    "sha256": "f04497857f00a90e6a57bd35f6bb04ef57b9161d635e634006d4d446e4d4e60c"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-12.y3r": {
+    "status": "added",
+    "sha256": "cdbc31702cf6e451f671cae8c92e064c57836a7aedc736dec68cb95a90189bce"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-3.y3r": {
+    "status": "added",
+    "sha256": "6d0d2af7a230fa0bc9d1449986808f0fbab6cfa0613093aec37eaab89b30a342"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-2.y3r": {
+    "status": "added",
+    "sha256": "4409f9089b90758022358ab7cbaf054391452a096873416cb0a0dbe76ee1c7bb"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-13.y3r": {
+    "status": "added",
+    "sha256": "28e5eea78cabeae364282c9e7d0c155c77e29df90d525bae04bdef0bca54e3b5"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-11.y3r": {
+    "status": "added",
+    "sha256": "697f07605a5e57813e1470a6d546a4c21de2c0512d123b7b2b116e9e39b1ac3d"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-7.y3r.txt": {
+    "status": "added",
+    "sha256": "8316fed634645f346e24b56176d31ce34a9954bfa6b169ea893ae3beab7b10b5"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-0.y3r": {
+    "status": "added",
+    "sha256": "6dfa520599efd77d38232de6baab1b877fc1b40ff32be1e9dd53bd10a9154f12"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-16.y3r.txt": {
+    "status": "added",
+    "sha256": "ee32ba7cfd1b86884831a3d8add8f0225bd9563075007c11533ef71840503d3a"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-1.y3r": {
+    "status": "added",
+    "sha256": "a89feb4c2d8577313fb5cdaeb5b3af62a6f19265e013d4eea04bcda23630cf63"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-10.y3r": {
+    "status": "added",
+    "sha256": "bbaaf8fc0552fe6ea07a6b731c3df0940c7e6d0dc21f4da7179136cf574be0b4"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-2.y3r.txt": {
+    "status": "added",
+    "sha256": "13866b30be049938aae340a1ea6711206fbcdf19722e5bbb812877935d6542e4"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-13.y3r.txt": {
+    "status": "added",
+    "sha256": "7700df5d093a8c1d32a1d3f7aa175640c4aeb676e8f02b56165e7ff033cb813d"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-1.yp3.txt": {
+    "status": "added",
+    "sha256": "598f20e2b3dab9b6adbf81c10e91fdfd8719198d39f92c41d58c15fe1e2605c7"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-0.yp3.txt": {
+    "status": "added",
+    "sha256": "278097b42531c70a8a7f09d6c7324ad1ecfc865e52655237aebf38fe71ff5b75"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-2.yp3": {
+    "status": "added",
+    "sha256": "26abe309234465d4861bda4136ba269e05c5a8c341a46918710060f137442283"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-3.yp3": {
+    "status": "added",
+    "sha256": "e495e52da048aa88fb823cad9de1dbede786cdaaa1b1f69109d36996533971a0"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-18.y3r": {
+    "status": "added",
+    "sha256": "e5adfad9bc8495ae5c7b0111bdc140446f85bcbfcfa9fec80ab8ddeee20bdc0b"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-1.yp3": {
+    "status": "added",
+    "sha256": "9daffe354c809c8bffbe5e2e9893dc19d172e8b70569a24bcc14999162828e34"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-9.y3r": {
+    "status": "added",
+    "sha256": "4ae46b63d8e819c5fe25ea26b48edde70bd58daeae0a5a43d93ab130e65870fd"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-3.y3r.txt": {
+    "status": "added",
+    "sha256": "2a3481b1167d757eefb7c9ef29dc52cd7b297901a7614539b4403eaeebe87d69"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-8.y3r": {
+    "status": "added",
+    "sha256": "7c43b38c9f5e0280f1c9b4a011c79b44b1ee3cb3b85f86ee6048d3e5c6b3fb23"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-0.yp3": {
+    "status": "added",
+    "sha256": "fa06ad8c6f34f25e7598ce8830325625625f68f02022b2a56c1ee5a2d4240cf2"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-12.y3r.txt": {
+    "status": "added",
+    "sha256": "ab536913d6f979aa9c12062d30b6fd4512fe1583dfc7d760c3e65e122f3865ba"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-19.y3r": {
+    "status": "added",
+    "sha256": "60057fe9c9a0d71472aac41837e6f31d6d1282faa6d9d0509148959fbc22a131"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-2.yp3.txt": {
+    "status": "added",
+    "sha256": "7c30dc4860eefd598b859e891928b5f0c681f83757f03592ea08d02f46c19685"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-8.y3r.txt": {
+    "status": "added",
+    "sha256": "6ee8a687621b63edd9d632a43095c44b0cbba3ff036ef2ec0c70bea9c56a725e"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-19.y3r.txt": {
+    "status": "added",
+    "sha256": "7912636c71003e09254b9b1e198f69a2126f5c9d3286356f3531faf7c2c5287b"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-10.y3r.txt": {
+    "status": "added",
+    "sha256": "9b78acc2f8b41615c2661a9b43d86e5d3ac76523eb51717580cf634fca41a414"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-1.y3r.txt": {
+    "status": "added",
+    "sha256": "4e1600dbd91c5368186fb8afe5fc3fa152eeff6d69c74c54c58849b0a9e0c85a"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-11.y3r.txt": {
+    "status": "added",
+    "sha256": "1b590001212735e5fdf2bdb257cdae08f751cd942b1788124cc32cf4ead2225f"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-0.y3r.txt": {
+    "status": "added",
+    "sha256": "f4ae8ef515d4df7849f98125382db7313bd03042dc735cf4fa345f466e39f6e0"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/original-3.yp3.txt": {
+    "status": "added",
+    "sha256": "644dc89951454de352c3b365e14e93c812c5f091b9eaa11b8c931f47b517c4fa"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-9.y3r.txt": {
+    "status": "added",
+    "sha256": "40bdac527fb13b8f5e7804f55ee26a6353a36a4af2abb0026208014f943c0922"
+  },
+  "monogame/Yipe.Tests/Fixtures/Persistence/native-18.y3r.txt": {
+    "status": "added",
+    "sha256": "ebc90304b98e14ec6239269a9ae01be2b0809cad06c378cf960d729a98c0875d"
+  }
+}

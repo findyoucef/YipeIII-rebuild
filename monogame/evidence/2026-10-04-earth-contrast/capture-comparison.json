@@ -1,0 +1,3422 @@
+{
+  "desert-wind/frame-000.png": {
+    "before": "0c89566dfabf28fb2a98b5985046e0b085830de7804ea1dc7e54745e11d86801",
+    "after": "0c89566dfabf28fb2a98b5985046e0b085830de7804ea1dc7e54745e11d86801",
+    "unchanged": true
+  },
+  "desert-wind/frame-001.png": {
+    "before": "0c89566dfabf28fb2a98b5985046e0b085830de7804ea1dc7e54745e11d86801",
+    "after": "0c89566dfabf28fb2a98b5985046e0b085830de7804ea1dc7e54745e11d86801",
+    "unchanged": true
+  },
+  "desert-wind/frame-002.png": {
+    "before": "8ef6ca29055028937642d6a6eb260af77ebc809a1a9dc6d4d6bfc956a55a4549",
+    "after": "8ef6ca29055028937642d6a6eb260af77ebc809a1a9dc6d4d6bfc956a55a4549",
+    "unchanged": true
+  },
+  "desert-wind/frame-003.png": {
+    "before": "6689894069ed9e228d74719377765507a856cd0d03f9670e9bcdfd29dbf97e5b",
+    "after": "6689894069ed9e228d74719377765507a856cd0d03f9670e9bcdfd29dbf97e5b",
+    "unchanged": true
+  },
+  "desert-wind/frame-004.png": {
+    "before": "08b0c5d30a282d6951bb1078fb2339c088815cdd1beeb65ee7d6e228d6d4b70a",
+    "after": "08b0c5d30a282d6951bb1078fb2339c088815cdd1beeb65ee7d6e228d6d4b70a",
+    "unchanged": true
+  },
+  "desert-wind/frame-005.png": {
+    "before": "a8f0df2e44344d61213b776e6feafb15617489931cb792e6e58b771053c1763c",
+    "after": "a8f0df2e44344d61213b776e6feafb15617489931cb792e6e58b771053c1763c",
+    "unchanged": true
+  },
+  "desert-wind/frame-006.png": {
+    "before": "bdc813248c1cca9cda4559592ef088729e51638073971d141de5d4e8ac584a60",
+    "after": "bdc813248c1cca9cda4559592ef088729e51638073971d141de5d4e8ac584a60",
+    "unchanged": true
+  },
+  "desert-wind/frame-007.png": {
+    "before": "bdc813248c1cca9cda4559592ef088729e51638073971d141de5d4e8ac584a60",
+    "after": "bdc813248c1cca9cda4559592ef088729e51638073971d141de5d4e8ac584a60",
+    "unchanged": true
+  },
+  "desert-wind/frame-008.png": {
+    "before": "2c00597973323125bd0fbf6a79354c1ff2c4aedcc7c6ca3480f80281283b112a",
+    "after": "2c00597973323125bd0fbf6a79354c1ff2c4aedcc7c6ca3480f80281283b112a",
+    "unchanged": true
+  },
+  "desert-wind/frame-009.png": {
+    "before": "6fb33e64314616ca30e86122d2c79c798ad5723e2bc6da958115849ee7d078bf",
+    "after": "6fb33e64314616ca30e86122d2c79c798ad5723e2bc6da958115849ee7d078bf",
+    "unchanged": true
+  },
+  "desert-wind/frame-010.png": {
+    "before": "2f6acdb15258b40f61f99e375b39aedc180a6c1e0c87c195ce569b0d725d6389",
+    "after": "2f6acdb15258b40f61f99e375b39aedc180a6c1e0c87c195ce569b0d725d6389",
+    "unchanged": true
+  },
+  "desert-wind/frame-011.png": {
+    "before": "67ee1829487a86f7d83e589a6b29d1b951c9e21ed8d9b5542e129e3daa11ab73",
+    "after": "67ee1829487a86f7d83e589a6b29d1b951c9e21ed8d9b5542e129e3daa11ab73",
+    "unchanged": true
+  },
+  "desert-wind/frame-012.png": {
+    "before": "a541c9e09212f9516ac5131d5f7f8ce09b7d9eb74720aa3964449eae190ada2d",
+    "after": "a541c9e09212f9516ac5131d5f7f8ce09b7d9eb74720aa3964449eae190ada2d",
+    "unchanged": true
+  },
+  "desert-wind/frame-013.png": {
+    "before": "a541c9e09212f9516ac5131d5f7f8ce09b7d9eb74720aa3964449eae190ada2d",
+    "after": "a541c9e09212f9516ac5131d5f7f8ce09b7d9eb74720aa3964449eae190ada2d",
+    "unchanged": true
+  },
+  "desert-wind/frame-014.png": {
+    "before": "70a058020e27c6d04c70aeb8eba184c214e8e0de751c24c78c69f8ff5c6fdd07",
+    "after": "70a058020e27c6d04c70aeb8eba184c214e8e0de751c24c78c69f8ff5c6fdd07",
+    "unchanged": true
+  },
+  "desert-wind/frame-015.png": {
+    "before": "d7300a64e608df7c0ed6cd3568a319cebbfb8e5875d606dde1c3e0861fff6763",
+    "after": "d7300a64e608df7c0ed6cd3568a319cebbfb8e5875d606dde1c3e0861fff6763",
+    "unchanged": true
+  },
+  "desert-wind/frame-016.png": {
+    "before": "0e3ee4b4e43f0c17a861142c09dace90ba8c63484998f17c42b7ed8e49229d40",
+    "after": "0e3ee4b4e43f0c17a861142c09dace90ba8c63484998f17c42b7ed8e49229d40",
+    "unchanged": true
+  },
+  "desert-wind/frame-017.png": {
+    "before": "07af3d77852f4eb1420e5ef703b3d3d6755cbdc6f60546728bdaafe8c9c12560",
+    "after": "07af3d77852f4eb1420e5ef703b3d3d6755cbdc6f60546728bdaafe8c9c12560",
+    "unchanged": true
+  },
+  "desert-wind/frame-018.png": {
+    "before": "c4bde88386c3d9ef2c01e3034c98f307c3d18fd4286fc2c0caa5bfca519be5dc",
+    "after": "c4bde88386c3d9ef2c01e3034c98f307c3d18fd4286fc2c0caa5bfca519be5dc",
+    "unchanged": true
+  },
+  "desert-wind/frame-019.png": {
+    "before": "c4bde88386c3d9ef2c01e3034c98f307c3d18fd4286fc2c0caa5bfca519be5dc",
+    "after": "c4bde88386c3d9ef2c01e3034c98f307c3d18fd4286fc2c0caa5bfca519be5dc",
+    "unchanged": true
+  },
+  "desert-wind/frame-020.png": {
+    "before": "0a5b4945652ef8bd7abec7d3a25c9b41817d2b73b7c65d41fa0d9cc866ba3757",
+    "after": "0a5b4945652ef8bd7abec7d3a25c9b41817d2b73b7c65d41fa0d9cc866ba3757",
+    "unchanged": true
+  },
+  "desert-wind/frame-021.png": {
+    "before": "ec3eebe5b2183d3e099784b183d66dd3852a7acec1af4666c6a9204d00009662",
+    "after": "ec3eebe5b2183d3e099784b183d66dd3852a7acec1af4666c6a9204d00009662",
+    "unchanged": true
+  },
+  "desert-wind/frame-022.png": {
+    "before": "c8c8e71c2e29fdb31be27f229f5a7dde4568b00b86ddfaf864f1353abdd25a5f",
+    "after": "c8c8e71c2e29fdb31be27f229f5a7dde4568b00b86ddfaf864f1353abdd25a5f",
+    "unchanged": true
+  },
+  "desert-wind/frame-023.png": {
+    "before": "9d8354edb7097b490463e13a96282da74ae9bea3b21358f16e99310cdc9073cd",
+    "after": "9d8354edb7097b490463e13a96282da74ae9bea3b21358f16e99310cdc9073cd",
+    "unchanged": true
+  },
+  "desert-wind/frame-024.png": {
+    "before": "7707aad34e43f32745ceca64d3c8b7361b27762de04c94e708bf97d5ebc23cd1",
+    "after": "7707aad34e43f32745ceca64d3c8b7361b27762de04c94e708bf97d5ebc23cd1",
+    "unchanged": true
+  },
+  "desert-wind/frame-025.png": {
+    "before": "7707aad34e43f32745ceca64d3c8b7361b27762de04c94e708bf97d5ebc23cd1",
+    "after": "7707aad34e43f32745ceca64d3c8b7361b27762de04c94e708bf97d5ebc23cd1",
+    "unchanged": true
+  },
+  "desert-wind/frame-026.png": {
+    "before": "cc15395bd728afce0a36bf049edb553d190133b3a3a4389da51fac1ecafb86b5",
+    "after": "cc15395bd728afce0a36bf049edb553d190133b3a3a4389da51fac1ecafb86b5",
+    "unchanged": true
+  },
+  "desert-wind/frame-027.png": {
+    "before": "a8040f9b813b25c8ee87185904fd119b234dc0b11189c21ef6bc5d2bf4d1d749",
+    "after": "a8040f9b813b25c8ee87185904fd119b234dc0b11189c21ef6bc5d2bf4d1d749",
+    "unchanged": true
+  },
+  "desert-wind/frame-028.png": {
+    "before": "9dd413cc8785e1fc286e666ed0170deec6b45bae98780abbb8b00437ebe1698c",
+    "after": "9dd413cc8785e1fc286e666ed0170deec6b45bae98780abbb8b00437ebe1698c",
+    "unchanged": true
+  },
+  "desert-wind/frame-029.png": {
+    "before": "2c3da4b5083a788dd6b06173051a862095bb2787c5c4709829c1df053e01e119",
+    "after": "2c3da4b5083a788dd6b06173051a862095bb2787c5c4709829c1df053e01e119",
+    "unchanged": true
+  },
+  "desert-wind/frame-030.png": {
+    "before": "6e0a2aa62e9eba1d66e75eaa2f374ad41eb995dde9cc3292721dc6c50356145e",
+    "after": "6e0a2aa62e9eba1d66e75eaa2f374ad41eb995dde9cc3292721dc6c50356145e",
+    "unchanged": true
+  },
+  "desert-wind/frame-031.png": {
+    "before": "6e0a2aa62e9eba1d66e75eaa2f374ad41eb995dde9cc3292721dc6c50356145e",
+    "after": "6e0a2aa62e9eba1d66e75eaa2f374ad41eb995dde9cc3292721dc6c50356145e",
+    "unchanged": true
+  },
+  "desert-wind/frame-032.png": {
+    "before": "fc0c5441cb353d5819a3b0e4e5a1aced5380d8b92c32d2f38497e389e058ab0a",
+    "after": "fc0c5441cb353d5819a3b0e4e5a1aced5380d8b92c32d2f38497e389e058ab0a",
+    "unchanged": true
+  },
+  "desert-wind/frame-033.png": {
+    "before": "e96d5d0ed4c38ef62c91465fc771ab08aa1cb6cf9db7dcc5d98e61a1ec9388af",
+    "after": "e96d5d0ed4c38ef62c91465fc771ab08aa1cb6cf9db7dcc5d98e61a1ec9388af",
+    "unchanged": true
+  },
+  "desert-wind/frame-034.png": {
+    "before": "eb52f29083a8cc2ef05cb5ec581acde4df86cbd4cf8678bb03a429e112773799",
+    "after": "eb52f29083a8cc2ef05cb5ec581acde4df86cbd4cf8678bb03a429e112773799",
+    "unchanged": true
+  },
+  "desert-wind/frame-035.png": {
+    "before": "b9b7dba5e39b285d865e5fa8df9976bd4d57e20d6a243b5c65435b6748c2129f",
+    "after": "b9b7dba5e39b285d865e5fa8df9976bd4d57e20d6a243b5c65435b6748c2129f",
+    "unchanged": true
+  },
+  "desert-wind/frame-036.png": {
+    "before": "6c9721291652cf8307ddee92e88a69e8e310f257f79368125ae14e430cbb9c22",
+    "after": "6c9721291652cf8307ddee92e88a69e8e310f257f79368125ae14e430cbb9c22",
+    "unchanged": true
+  },
+  "desert-wind/frame-037.png": {
+    "before": "6c9721291652cf8307ddee92e88a69e8e310f257f79368125ae14e430cbb9c22",
+    "after": "6c9721291652cf8307ddee92e88a69e8e310f257f79368125ae14e430cbb9c22",
+    "unchanged": true
+  },
+  "desert-wind/frame-038.png": {
+    "before": "0eebf27f071c43d0927f60cd61f1557125143976eb6f9c34bd06783b7bf77a05",
+    "after": "0eebf27f071c43d0927f60cd61f1557125143976eb6f9c34bd06783b7bf77a05",
+    "unchanged": true
+  },
+  "desert-wind/frame-039.png": {
+    "before": "6e919becd930d5e366515a75865416cc36c144a78b0306b25a8dc376c4b93a7c",
+    "after": "6e919becd930d5e366515a75865416cc36c144a78b0306b25a8dc376c4b93a7c",
+    "unchanged": true
+  },
+  "desert-wind/frame-040.png": {
+    "before": "24527d7bf396002f68ffef504f5f030a488516daf9c3ec0d82d388959989809b",
+    "after": "24527d7bf396002f68ffef504f5f030a488516daf9c3ec0d82d388959989809b",
+    "unchanged": true
+  },
+  "desert-wind/frame-041.png": {
+    "before": "0ec3d75be1ba17041cfcfaff73ee51155148c290beba337e5c3be0dd56746ca8",
+    "after": "0ec3d75be1ba17041cfcfaff73ee51155148c290beba337e5c3be0dd56746ca8",
+    "unchanged": true
+  },
+  "desert-wind/frame-042.png": {
+    "before": "a35d997dc7fd8c03d43444e6659ed91b397641b0f09c8635ab0cfd665145a822",
+    "after": "a35d997dc7fd8c03d43444e6659ed91b397641b0f09c8635ab0cfd665145a822",
+    "unchanged": true
+  },
+  "desert-wind/frame-043.png": {
+    "before": "a35d997dc7fd8c03d43444e6659ed91b397641b0f09c8635ab0cfd665145a822",
+    "after": "a35d997dc7fd8c03d43444e6659ed91b397641b0f09c8635ab0cfd665145a822",
+    "unchanged": true
+  },
+  "desert-wind/frame-044.png": {
+    "before": "ba7da29198ad73678e4c4b0e56a97ab50ccee28c08dd53ee22de238a06bbd42a",
+    "after": "ba7da29198ad73678e4c4b0e56a97ab50ccee28c08dd53ee22de238a06bbd42a",
+    "unchanged": true
+  },
+  "desert-wind/frame-045.png": {
+    "before": "d3fd738f3e94bc86946c0cdb7cc846ba2cd27a7063958fa1607687075508b911",
+    "after": "d3fd738f3e94bc86946c0cdb7cc846ba2cd27a7063958fa1607687075508b911",
+    "unchanged": true
+  },
+  "desert-wind/frame-046.png": {
+    "before": "a90e8da2c28c60ff31c00ef17796362ddfe02668f123f82ec91f1acd2f120407",
+    "after": "a90e8da2c28c60ff31c00ef17796362ddfe02668f123f82ec91f1acd2f120407",
+    "unchanged": true
+  },
+  "desert-wind/frame-047.png": {
+    "before": "513a6fdee55bfa2a89deb08eac4b5fcc6dedd40916a204ffb49767546a583949",
+    "after": "513a6fdee55bfa2a89deb08eac4b5fcc6dedd40916a204ffb49767546a583949",
+    "unchanged": true
+  },
+  "desert-wind/frame-048.png": {
+    "before": "efd7400bd6cb38691853993e0cd2f328debb37fdbd10f060c41ca34973c0cf20",
+    "after": "efd7400bd6cb38691853993e0cd2f328debb37fdbd10f060c41ca34973c0cf20",
+    "unchanged": true
+  },
+  "desert-wind/frame-049.png": {
+    "before": "efd7400bd6cb38691853993e0cd2f328debb37fdbd10f060c41ca34973c0cf20",
+    "after": "efd7400bd6cb38691853993e0cd2f328debb37fdbd10f060c41ca34973c0cf20",
+    "unchanged": true
+  },
+  "desert-wind/frame-050.png": {
+    "before": "275d6ba5bb7cfca62142a93f59249e8d100f89d18dee7089fb1806fc6de6d147",
+    "after": "275d6ba5bb7cfca62142a93f59249e8d100f89d18dee7089fb1806fc6de6d147",
+    "unchanged": true
+  },
+  "desert-wind/frame-051.png": {
+    "before": "c3aa9617dc829203a026117705278c775b9850d4c1a9e61703ad6b9c966f8678",
+    "after": "c3aa9617dc829203a026117705278c775b9850d4c1a9e61703ad6b9c966f8678",
+    "unchanged": true
+  },
+  "desert-wind/frame-052.png": {
+    "before": "3ba55cc21ebf69d1dd2fdae883cdc91d05b501e02c83a1e666818f306018ea1c",
+    "after": "3ba55cc21ebf69d1dd2fdae883cdc91d05b501e02c83a1e666818f306018ea1c",
+    "unchanged": true
+  },
+  "desert-wind/frame-053.png": {
+    "before": "7fb6883c3353c1d6d87b2ec710f88dfb9e7249f2fb76a7b3d99c30943191757a",
+    "after": "7fb6883c3353c1d6d87b2ec710f88dfb9e7249f2fb76a7b3d99c30943191757a",
+    "unchanged": true
+  },
+  "desert-wind/frame-054.png": {
+    "before": "3998f63f67cf6b740f0ebeb03d1b121aa27e14215bf2f37e177a1f98b5e849a6",
+    "after": "3998f63f67cf6b740f0ebeb03d1b121aa27e14215bf2f37e177a1f98b5e849a6",
+    "unchanged": true
+  },
+  "desert-wind/frame-055.png": {
+    "before": "3998f63f67cf6b740f0ebeb03d1b121aa27e14215bf2f37e177a1f98b5e849a6",
+    "after": "3998f63f67cf6b740f0ebeb03d1b121aa27e14215bf2f37e177a1f98b5e849a6",
+    "unchanged": true
+  },
+  "desert-wind/frame-056.png": {
+    "before": "b549fb680cf389ac7290ef128665e3fad8e332c0cacea3231c5c0a3a554bc367",
+    "after": "b549fb680cf389ac7290ef128665e3fad8e332c0cacea3231c5c0a3a554bc367",
+    "unchanged": true
+  },
+  "desert-wind/frame-057.png": {
+    "before": "c37b939f7930e0c482eb54cda714c6fabbb3aa11b9824cecc523a7bb2dab09d1",
+    "after": "c37b939f7930e0c482eb54cda714c6fabbb3aa11b9824cecc523a7bb2dab09d1",
+    "unchanged": true
+  },
+  "desert-wind/frame-058.png": {
+    "before": "0b07acae2b3aacbd9124354bdf2f29d1d0fe92f9f1580d2d665382246fcb8a11",
+    "after": "0b07acae2b3aacbd9124354bdf2f29d1d0fe92f9f1580d2d665382246fcb8a11",
+    "unchanged": true
+  },
+  "desert-wind/frame-059.png": {
+    "before": "738a44166f8bd9f6b7afe2ef12c90bd7a3fceeb235983cec538213e8ddbac987",
+    "after": "738a44166f8bd9f6b7afe2ef12c90bd7a3fceeb235983cec538213e8ddbac987",
+    "unchanged": true
+  },
+  "desert-wind/frame-060.png": {
+    "before": "0ae7e828ad91a43c5a3fce93ee50794c83816586cdc0571ccf502cd2358174e7",
+    "after": "0ae7e828ad91a43c5a3fce93ee50794c83816586cdc0571ccf502cd2358174e7",
+    "unchanged": true
+  },
+  "desert-wind/frame-061.png": {
+    "before": "0ae7e828ad91a43c5a3fce93ee50794c83816586cdc0571ccf502cd2358174e7",
+    "after": "0ae7e828ad91a43c5a3fce93ee50794c83816586cdc0571ccf502cd2358174e7",
+    "unchanged": true
+  },
+  "desert-wind/frame-062.png": {
+    "before": "bc78ea2ea02009c6bc5a102b6d0e55eb3467c304a51714811c4472c0eb722536",
+    "after": "bc78ea2ea02009c6bc5a102b6d0e55eb3467c304a51714811c4472c0eb722536",
+    "unchanged": true
+  },
+  "desert-wind/frame-063.png": {
+    "before": "a85de893ae3bf6f206ca567745f57080edeb0e2cd387b10dcc22d3f047e3105e",
+    "after": "a85de893ae3bf6f206ca567745f57080edeb0e2cd387b10dcc22d3f047e3105e",
+    "unchanged": true
+  },
+  "desert-wind/frame-064.png": {
+    "before": "4ebdbfa24c091b76ca47fefa3686c6cae5c98816d8a675d13e46987fb3d448b9",
+    "after": "4ebdbfa24c091b76ca47fefa3686c6cae5c98816d8a675d13e46987fb3d448b9",
+    "unchanged": true
+  },
+  "desert-wind/frame-065.png": {
+    "before": "5aef9dcbdeb767f4cecf89dc32465fa736eba1801b84bfbdc47a1a7fee3ff62c",
+    "after": "5aef9dcbdeb767f4cecf89dc32465fa736eba1801b84bfbdc47a1a7fee3ff62c",
+    "unchanged": true
+  },
+  "desert-wind/frame-066.png": {
+    "before": "8aefa56fe57e046c2bc06a74581ec608ea97f79823ecafd87c3181bff1674616",
+    "after": "8aefa56fe57e046c2bc06a74581ec608ea97f79823ecafd87c3181bff1674616",
+    "unchanged": true
+  },
+  "desert-wind/frame-067.png": {
+    "before": "8aefa56fe57e046c2bc06a74581ec608ea97f79823ecafd87c3181bff1674616",
+    "after": "8aefa56fe57e046c2bc06a74581ec608ea97f79823ecafd87c3181bff1674616",
+    "unchanged": true
+  },
+  "desert-wind/frame-068.png": {
+    "before": "ced668c13a6adbfb873879d2e04a3b692a9eddace795c0980f2e12ae87cea8ba",
+    "after": "ced668c13a6adbfb873879d2e04a3b692a9eddace795c0980f2e12ae87cea8ba",
+    "unchanged": true
+  },
+  "desert-wind/frame-069.png": {
+    "before": "323eeec4a297dd481f5b6f871158161ed53c6a88908f4fe31012afc146363afd",
+    "after": "323eeec4a297dd481f5b6f871158161ed53c6a88908f4fe31012afc146363afd",
+    "unchanged": true
+  },
+  "desert-wind/frame-070.png": {
+    "before": "a53842462a4cd8a528442b420dddfec25fbb0a104b075ec5140e7b40d153c85f",
+    "after": "a53842462a4cd8a528442b420dddfec25fbb0a104b075ec5140e7b40d153c85f",
+    "unchanged": true
+  },
+  "desert-wind/frame-071.png": {
+    "before": "99ffcb00a681b3d369adc9be4dd8194ca611905a215ca90dd3d70b0069612281",
+    "after": "99ffcb00a681b3d369adc9be4dd8194ca611905a215ca90dd3d70b0069612281",
+    "unchanged": true
+  },
+  "desert-wind/frame-072.png": {
+    "before": "2c752d8062da7ec324ae407707a4059d00fa2a7603c9464a6e01814774d4c742",
+    "after": "2c752d8062da7ec324ae407707a4059d00fa2a7603c9464a6e01814774d4c742",
+    "unchanged": true
+  },
+  "desert-wind/frame-073.png": {
+    "before": "2c752d8062da7ec324ae407707a4059d00fa2a7603c9464a6e01814774d4c742",
+    "after": "2c752d8062da7ec324ae407707a4059d00fa2a7603c9464a6e01814774d4c742",
+    "unchanged": true
+  },
+  "desert-wind/frame-074.png": {
+    "before": "59245102dd7e167f61978f95e885027b8041ecb803b455530ef4e14bbc978aa0",
+    "after": "59245102dd7e167f61978f95e885027b8041ecb803b455530ef4e14bbc978aa0",
+    "unchanged": true
+  },
+  "desert-wind/frame-075.png": {
+    "before": "ac45f12a2e342bf1057c957d9976ec197d3c8b8042aae853a6fe69ca479d78ac",
+    "after": "ac45f12a2e342bf1057c957d9976ec197d3c8b8042aae853a6fe69ca479d78ac",
+    "unchanged": true
+  },
+  "desert-wind/frame-076.png": {
+    "before": "447b2e98de2ca0ea0f6988177af1d6618a41f9f1d04e14b92198845543505b54",
+    "after": "447b2e98de2ca0ea0f6988177af1d6618a41f9f1d04e14b92198845543505b54",
+    "unchanged": true
+  },
+  "desert-wind/frame-077.png": {
+    "before": "2bf39b87ea4ac3421c510f4549ad6546707b5a0557dbaf058d362adabaca18f9",
+    "after": "2bf39b87ea4ac3421c510f4549ad6546707b5a0557dbaf058d362adabaca18f9",
+    "unchanged": true
+  },
+  "desert-wind/frame-078.png": {
+    "before": "87f3c3ac87bf924d34f3b4bc5741f724791cbca2029fe7670fc9ff0b1576eb8f",
+    "after": "87f3c3ac87bf924d34f3b4bc5741f724791cbca2029fe7670fc9ff0b1576eb8f",
+    "unchanged": true
+  },
+  "desert-wind/frame-079.png": {
+    "before": "87f3c3ac87bf924d34f3b4bc5741f724791cbca2029fe7670fc9ff0b1576eb8f",
+    "after": "87f3c3ac87bf924d34f3b4bc5741f724791cbca2029fe7670fc9ff0b1576eb8f",
+    "unchanged": true
+  },
+  "desert-wind/frame-080.png": {
+    "before": "3cf25f3af5d782eb192b95acd55794acefc51a2e1a6904c80ef5b46edcd10b9d",
+    "after": "3cf25f3af5d782eb192b95acd55794acefc51a2e1a6904c80ef5b46edcd10b9d",
+    "unchanged": true
+  },
+  "desert-wind/frame-081.png": {
+    "before": "0ce7f71ed79977c93b85a572a30a1a844a8591e556cf3dd66eaedbad063c768f",
+    "after": "0ce7f71ed79977c93b85a572a30a1a844a8591e556cf3dd66eaedbad063c768f",
+    "unchanged": true
+  },
+  "desert-wind/frame-082.png": {
+    "before": "6fb596453db3f2b4ae3738235c5e27bb59cbd0a3cec10b56a9791efd638ebf82",
+    "after": "6fb596453db3f2b4ae3738235c5e27bb59cbd0a3cec10b56a9791efd638ebf82",
+    "unchanged": true
+  },
+  "desert-wind/frame-083.png": {
+    "before": "00f51c30fd0b7d763503655f6c6220032bd246bb693e7a004fe88c9534ae7bcd",
+    "after": "00f51c30fd0b7d763503655f6c6220032bd246bb693e7a004fe88c9534ae7bcd",
+    "unchanged": true
+  },
+  "desert-wind/frame-084.png": {
+    "before": "dafd386bd790404bcd04eb09defe8005a09a9d78e9dc6eb793ed2a5ea65f7e75",
+    "after": "dafd386bd790404bcd04eb09defe8005a09a9d78e9dc6eb793ed2a5ea65f7e75",
+    "unchanged": true
+  },
+  "desert-wind/frame-085.png": {
+    "before": "dafd386bd790404bcd04eb09defe8005a09a9d78e9dc6eb793ed2a5ea65f7e75",
+    "after": "dafd386bd790404bcd04eb09defe8005a09a9d78e9dc6eb793ed2a5ea65f7e75",
+    "unchanged": true
+  },
+  "desert-wind/frame-086.png": {
+    "before": "162f975f4b947df7fc9ef234efe7526325b3ed8afc8d90c9c894fcb0e5cdd5eb",
+    "after": "162f975f4b947df7fc9ef234efe7526325b3ed8afc8d90c9c894fcb0e5cdd5eb",
+    "unchanged": true
+  },
+  "desert-wind/frame-087.png": {
+    "before": "bd8e61082d3e8f06fa05447b9cde7beb9ec848120118f67e6fb4c5fe950bc334",
+    "after": "bd8e61082d3e8f06fa05447b9cde7beb9ec848120118f67e6fb4c5fe950bc334",
+    "unchanged": true
+  },
+  "desert-wind/frame-088.png": {
+    "before": "8de5a1e0433ee00dd3468e8134389e82e66ebdcfb977434e510ff35b8d88d65e",
+    "after": "8de5a1e0433ee00dd3468e8134389e82e66ebdcfb977434e510ff35b8d88d65e",
+    "unchanged": true
+  },
+  "desert-wind/frame-089.png": {
+    "before": "7e1cc9cd95f21146b103e684b75d3cce14c3af49fd9acb6ea19eeb9ff60793d5",
+    "after": "7e1cc9cd95f21146b103e684b75d3cce14c3af49fd9acb6ea19eeb9ff60793d5",
+    "unchanged": true
+  },
+  "desert-wind/frame-090.png": {
+    "before": "8eac5622698b9852f06d8552f66f45270d8c135b292397c8ea87bf7cb88081fa",
+    "after": "8eac5622698b9852f06d8552f66f45270d8c135b292397c8ea87bf7cb88081fa",
+    "unchanged": true
+  },
+  "desert-wind/frame-091.png": {
+    "before": "8eac5622698b9852f06d8552f66f45270d8c135b292397c8ea87bf7cb88081fa",
+    "after": "8eac5622698b9852f06d8552f66f45270d8c135b292397c8ea87bf7cb88081fa",
+    "unchanged": true
+  },
+  "desert-wind/frame-092.png": {
+    "before": "ff0de7af4267bc6e7ebd7153d1fd73ee89448c75be649656bd01a1c0e2e28c25",
+    "after": "ff0de7af4267bc6e7ebd7153d1fd73ee89448c75be649656bd01a1c0e2e28c25",
+    "unchanged": true
+  },
+  "desert-wind/frame-093.png": {
+    "before": "dcc0fa92c3cf4cf50bf8c3907a1a2f9149c6c01b6b0d774cc68b0b8bc4821aa1",
+    "after": "dcc0fa92c3cf4cf50bf8c3907a1a2f9149c6c01b6b0d774cc68b0b8bc4821aa1",
+    "unchanged": true
+  },
+  "desert-wind/frame-094.png": {
+    "before": "c1b77e64a215f43feadaffd96d8ca55a5e0f96d828b5b9f3d36e45f5cdbc44ef",
+    "after": "c1b77e64a215f43feadaffd96d8ca55a5e0f96d828b5b9f3d36e45f5cdbc44ef",
+    "unchanged": true
+  },
+  "desert-wind/frame-095.png": {
+    "before": "f4a7eca10e2ab86144db5fc9c5beade30b2e4f1b4b699e35b8637d44f2d86ae6",
+    "after": "f4a7eca10e2ab86144db5fc9c5beade30b2e4f1b4b699e35b8637d44f2d86ae6",
+    "unchanged": true
+  },
+  "earth-cave/damp-frame-00.png": {
+    "before": "1e5cecfc5bd5a40c2856760f205ba1292979a92c75d63f5ac96714127d41f8b8",
+    "after": "9ee299342f66df33e3ef3c35f5f8ac49e967a1c832b5c950380876ebc0367bc9",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-01.png": {
+    "before": "9536e743780a1c65fe12926dcee1cdd697058c8c70a39b47356f4b8a3a4398a9",
+    "after": "51772e80abc3042ecfa1c4f933088c226666cde96ef89b76a44c4b7c27cea4f9",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-02.png": {
+    "before": "e79a96ee3c0dc255a739dd2baeffc34126bae5984b0cb59d469b1fe6e6a6f3b4",
+    "after": "1d6cac95a87c07c52e07d3dbbe255bb4efda08754fa84569c12c24de4f3e1468",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-03.png": {
+    "before": "89c36c09a8a651c5c5d813c700c1a17499f5a7103b229a787a376b08b7734507",
+    "after": "8b980ca5b1e6980397adf412445715eab4db9bdda0bbb2b6af1ce9da4326d18d",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-04.png": {
+    "before": "72f49103a5b4fc0340f7bca86cc24dc2b11104ddd10829ad4414b8683d26d364",
+    "after": "3db26b7ff58b0f524c18f750fe3fc14444916a17703b64e79b75d1325b64480d",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-05.png": {
+    "before": "0b52bd9b7aaee3544268a408b9aa8e4c0e8c326012be97db5deb3e2a24f1eb14",
+    "after": "e8837afd6b2e0cadde2b4875b489f217eb1197a78386314a794d5a266cb5e729",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-06.png": {
+    "before": "d7e0713776dcf34bcc113179f02938c4c2a46db02a6fe6d4c609d6e44f4b5462",
+    "after": "83bbee591aea2c9bf9f411c893830931f95b6d34f88302bc6f6df83c29d24150",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-07.png": {
+    "before": "3bb1987dbc0c3c526dfeec3c6fc5263a9e349121b440f8abc874d577a7872048",
+    "after": "e78db1138f26e74918508d3459c9760bff8d93f5162b247a9c80631d2604919d",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-08.png": {
+    "before": "aff555999512026214bd76b3930010d83c845eef20a407b7c84bc74e3fe993eb",
+    "after": "27ba92f6c61f859ca305b2875d23e66a7858c859fe8bf3024c308f41cc0f3b85",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-09.png": {
+    "before": "a25762fb6dd6dc363b319b52280358abde48a96f7cd31ea8b71746341dd62b29",
+    "after": "e2d91db257de614af3d657fbfe519b061e065321e292a195b3a6edc48535fc90",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-10.png": {
+    "before": "ef36e24b12e634ccc6d3ee43da4965684e962c8c6532011545df8117a28cc6bb",
+    "after": "c91dac466db83b6b258e796a49a63ec2f49927419fa0e5d07b46e3f024036f62",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-11.png": {
+    "before": "5894000f788496537ed65a4cebd43cd0d15be91d0753d7bbc6d7b181536c5970",
+    "after": "79b9adeaa7ee3ca56bc890032f8dcaa361ac9fe7f2962bb903bef251ef978ab3",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-12.png": {
+    "before": "1ab6d9416a73fa00c26ba3425d2b623970d339a3c7d00f1dff050d666ef53a49",
+    "after": "bfb2847bab4b559b55f8481948cb1b86a6618d99070d63bc8e82fdea28c17b4f",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-13.png": {
+    "before": "ceef2fd23d2883cd4b63b2311e2ee175beecf7d0945b02ab464ce5d39454d14f",
+    "after": "4bfbf5fbc579799a174ce14411424d46c8988a25ceb637907a48514fde01cd06",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-14.png": {
+    "before": "31ab4c74593f7f17a03c0e2c4191348cbe6b4ada9c9035acde7739aa39419195",
+    "after": "5fdcfa94aecf1a9ae45d88ecaf97061bc72a4063f78498330e10c1076f482eec",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-15.png": {
+    "before": "5ae551dde8855e781b07f65bf9908e3b9e04881c462a390c32cd10f9b0e9b74d",
+    "after": "c02cda07888c8e42ab677d8e6ad1fc7816df4a08c62da0fbb9ce07b020a462fc",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-16.png": {
+    "before": "6258f28d81260fcf1ab3cecd318eefefa68c220009053dd95811f26161f42310",
+    "after": "2d2b67cb13f4624ec1bbe02d2129101173e1fb879ed69015e84ca9277af5b5e8",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-17.png": {
+    "before": "5d8cb99cb6ad446fcf9788e0beb81dfd5652d15314d0d945a4f4c240474c7240",
+    "after": "23fb16949a09286a20a3e6a807b34215e61862958836879204e484ed6064722c",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-18.png": {
+    "before": "e1bc9b598adf1f32abaa294bc72f2f14ef30aa39c45f6faf28ad421c8b3c5180",
+    "after": "393fdf0a11d91cfec0fb1eb3db2c206b0319f01eacd27aea5b57d354082561d4",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-19.png": {
+    "before": "5e73e4b2409e0ee9e583a15efa7e6a41f27fabc0f9938a03379a942ef1e8e5ce",
+    "after": "b2ac3e2863b5d537f29e543acf24482411d0e32943e2d5a60a76c25cbc019d6d",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-20.png": {
+    "before": "2c743c7ec54f27458d1263cfe53764d3602bcd7c366d620e69ebe767b0eaf48c",
+    "after": "55d44e7c8ce53f1b2f5e23dc32a825447eabb5fff2d3d679c2667da6b0d1669b",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-21.png": {
+    "before": "20ccb84b8e830b612526bf74edbd1d6cb0362ab6df8988f9c4bc1eb3687e41d1",
+    "after": "e89947a45157d9bfbbf7ad59a32834cdbeeee1da7e94a56ad14a2dcbb007768a",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-22.png": {
+    "before": "739e9ff19b7f4ffa71d4760c198db795768b3fa81c92a6450c35086054d6aff3",
+    "after": "e904883a3afd564c23e4ea833a276facf11570b479e4d9ece624da146dc210b3",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-23.png": {
+    "before": "8b0ea290eff6fbb0cce9ba070bb0e2772130c0647cdd4ce8eaa9af9bd3e8cba5",
+    "after": "beb71c4d5dad0533c28df695ed6190db5eefde6da6781821dad284b1705926da",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-24.png": {
+    "before": "cc18f46be6b1d1d5bf772279d8d3024710515f53c6eb645b2c74491e7b07ca06",
+    "after": "f042415a73a1b50ae55badd9514a081ce42293dd7677553e87896d151f047033",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-25.png": {
+    "before": "2692e7c0ac073eee5bce9133f390628554bc51b543d62616481e8b7978757957",
+    "after": "bf89ed4f86583cfa8cf1ab5fc9a99f29665419e41bcec60face32d678a320baa",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-26.png": {
+    "before": "58bc5e19d11d5b415ce2257730ddc8f5e721f7d5271123b01febf4823c4e8927",
+    "after": "6a11e55afa2505bb6943a6c272b2b49b1708dbfefcdee3153c800f56c6a157d8",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-27.png": {
+    "before": "e0c0f0cb15f7fb835429e9800930dee33b0c4697f0c6feeaa6c470fd0ee2f9b7",
+    "after": "194c3c0d97ab4430948e915c549f0bdd107e8b4ab7a7c8d2635102aee91c38c0",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-28.png": {
+    "before": "adda3c3aeb7809f78ea85de63dce49db6438b8d793b7af4bc7ffb04440c64a1a",
+    "after": "17bebe1e30f92a5dc7a620ec53d555c6cc538ed52b6452037e980d8e1336a426",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-29.png": {
+    "before": "1ddcceef5409e348bda9c8c89b628937fbbbd07391e35ba0360df9ddf1d42401",
+    "after": "4df7444eb46b1dcd48a167b83d4d9754602dcd0ba395b1d7015b6efa9aae3fa0",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-30.png": {
+    "before": "eac1588e8da40c7535aadf6f0426cd74cb53ca1b712b912fd44c7cef9a074b09",
+    "after": "bdb0994b794324b08edb4dbc80e009696ea27d1728bad1268e5c1a07c18901e2",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-31.png": {
+    "before": "f55c215b81724761b315b13d89b186b0f5c341266a1ee3c3d15f86f7c7aa09e6",
+    "after": "bb6c85392669be7b18ba4eab3c08702a294a0a2af0f366b47b6d2f5b132ee3c7",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-32.png": {
+    "before": "f2223445062c659512e3d9e5fdf2f06d9bda62be1ce40d91aa033f6fbf54a02d",
+    "after": "dac11f68ee39cbfb6d9f6d538d45e17093de8f549723a82e7f63e6dfddff4736",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-33.png": {
+    "before": "9ee9b13279d8f0e7dfe9d68361b7090562ea5520fb22cc4429229f16c755f21b",
+    "after": "b7e39c4378934c953947a9b31902674da0c9b564e631ae225188a3fff0ac035f",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-34.png": {
+    "before": "0d18dd232a3a3e9739ac9c30719208d4a27201dd081f7ccd4c798ce965abcc0b",
+    "after": "7a07a15f59cfd81e17f3b44e4b56b8bcb5dfa7c89d4a4eed6808c03e04b6db85",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-35.png": {
+    "before": "389974a3b80b38741a0f48120df629ba76ed64dc56f2845a5e2e924f0a9e899b",
+    "after": "dae3f7cc9e80c9b49fbf22809dda489bebf01991ea942c8d54df5592fd0bf87b",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-36.png": {
+    "before": "9273cf9cd0234191002e5240eee02270f258102e64344f4bd74cf1077b80e94b",
+    "after": "9c09d3e6a36d0fc7f0a27066599fd776046a5bbfc5cc602ec879652d28753ff9",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-37.png": {
+    "before": "c5efb54ffb5c6330c935589a410880c9f7c11631b42841d72e92fe16d2242469",
+    "after": "612a6be4d23ea251e96697562653d4bdde45368761a875ebfd50a7b0cd9adfd1",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-38.png": {
+    "before": "8369a2c40a0afdec9c5167161e2f89a3ddaaadbf0823b40dcf02628b980a15e3",
+    "after": "e1560544713d98ae264153bc4bb59d912a03961b054779928bb11e48cda587a1",
+    "unchanged": false
+  },
+  "earth-cave/damp-frame-39.png": {
+    "before": "5613ebc8cc7e31d3aaa694d9218eead143592359f7476d24c742b4d78177c8dd",
+    "after": "144141ae271a787951b8e62643b08afd478db11f0097977fc1fe99bc3d1a1f1e",
+    "unchanged": false
+  },
+  "earth-cave/map-103-partial.png": {
+    "before": "3e46fbe35e9ea19dec72c070294aaddc1a84c2d1cbc5cb4f79655c349b1ca6a5",
+    "after": "c1338ba07914b2b9347969ff9e4937f1502e85b557ab34a97ea8dd23a2ffab65",
+    "unchanged": false
+  },
+  "earth-cave/map-103.png": {
+    "before": "dfb125ea01d30d7550c8a550be7ad182f9b00f260a5fa55df6a8fdb58a8c4429",
+    "after": "abab87ad96fc1a6cce60b117dbcc7aece0a0b2057454c800226f86403902965f",
+    "unchanged": false
+  },
+  "earth-cave/map-109-partial.png": {
+    "before": "b89c9db512be9d9f620a94cd74d8fce2ef20910c53f8ea47a73ecc73edcfd62e",
+    "after": "aec9c754066251fc4ad5519820ee03c6f8e0b305a6b3f4290a7b20dd7a99df54",
+    "unchanged": false
+  },
+  "earth-cave/map-109.png": {
+    "before": "aff555999512026214bd76b3930010d83c845eef20a407b7c84bc74e3fe993eb",
+    "after": "27ba92f6c61f859ca305b2875d23e66a7858c859fe8bf3024c308f41cc0f3b85",
+    "unchanged": false
+  },
+  "earth-cave/map-115-partial.png": {
+    "before": "4f0f3c085d40af2d2c3e6520fce4ed16a48e7027c8f1d262a6bc589f91d2cf85",
+    "after": "31451e4a3e2062861aab3957972f9d4296144206f98cfd459bd6fd6b8da908f1",
+    "unchanged": false
+  },
+  "earth-cave/map-115.png": {
+    "before": "fd92bab72f991a121d90b608d411035ce945e87c635015a886835d93dfad9f1d",
+    "after": "f2871bb6ba27130df5ed8ccac4dcb05ca97a11c7ffb33500ef23d1bd33babd0e",
+    "unchanged": false
+  },
+  "earth-cave/map-57-partial.png": {
+    "before": "c260895a9ad4d640f55bad639f932ac56d6e83883da5a3eb2b2aa8e67515cfc1",
+    "after": "cb4ad450b84b92544c35431c1291445cefd8c5933c1ab77a3e8c5ff927006f50",
+    "unchanged": false
+  },
+  "earth-cave/map-57.png": {
+    "before": "3d36221373b35d0897ad5f5889647891f01729195de125e9350d9a6edbaa5978",
+    "after": "6ceb361250bf9b8405c705a3aedf0425162654abcbccb83b224753531d1d2065",
+    "unchanged": false
+  },
+  "earth-cave/map-63-partial.png": {
+    "before": "452d0fd6b2cae683a6d7e7e8a1a654a084434bf7acedd6b02198ecab40f16223",
+    "after": "c9f36edeb5efe441c506d6cac3ea116e8b6022c5cde49bc1a8e9dfdb76a67ab5",
+    "unchanged": false
+  },
+  "earth-cave/map-63.png": {
+    "before": "1395a05d3c1eb7b9c8f66d5e5e4ad07d22c1e697c4a19d7bf80cd86841b075d2",
+    "after": "fa49ccfbea11a204f022170b5f624f716b8c2d668a0e359193ad674843e138f2",
+    "unchanged": false
+  },
+  "earth-cave/map-69-partial.png": {
+    "before": "9e7e860e8690a04980bdf3e43b4ee7820fa3d8592d96eda879b9e00a6db38af1",
+    "after": "bbfd878ef8b57d52bf41096e13787fbe30e545f9bc87491d06abd470b15564f0",
+    "unchanged": false
+  },
+  "earth-cave/map-69.png": {
+    "before": "bcd74ac1b1de8bb88fae2b13aa9d40f5c58df3f89fd64ab602208dfc2551740f",
+    "after": "8975c99d9578ef0f0ff7b77082976ff9398bd47a11993f0788189c1c1cf8c26c",
+    "unchanged": false
+  },
+  "earth-cave/map-75-partial.png": {
+    "before": "9f7a8f7440a3aa52377436afc93a2410d49ec4ee65f01892b828cd985b349b4f",
+    "after": "0080f14e3a7711ceb4c2eb8a947bb50fef2a1500bbf3b38c8d730333f19620c9",
+    "unchanged": false
+  },
+  "earth-cave/map-75.png": {
+    "before": "cfd801b91eb4699f1dfba1eb9fc491331c8731c63871a09873c76276b00f2e70",
+    "after": "ca3f0c59165d72cb517470909a87ce1c7ca84f00eb6dd73c7c45d3830ec055f5",
+    "unchanged": false
+  },
+  "heat/desert/frame-000.png": {
+    "before": "240aaa145be81abefa053e0f5beb0782320e5bd2072e6a06d57096873067b1f8",
+    "after": "240aaa145be81abefa053e0f5beb0782320e5bd2072e6a06d57096873067b1f8",
+    "unchanged": true
+  },
+  "heat/desert/frame-001.png": {
+    "before": "e54f7207254886babb9c536d053f593b3d9117abe0836a5f84003c53d42034df",
+    "after": "e54f7207254886babb9c536d053f593b3d9117abe0836a5f84003c53d42034df",
+    "unchanged": true
+  },
+  "heat/desert/frame-002.png": {
+    "before": "c97bb1ae8dbea66cb37b5a6063cfcdb8341f1906f876d05aad68107ae23f4cde",
+    "after": "c97bb1ae8dbea66cb37b5a6063cfcdb8341f1906f876d05aad68107ae23f4cde",
+    "unchanged": true
+  },
+  "heat/desert/frame-003.png": {
+    "before": "3ecf5aadff7b148a3e132e5127a669f8c1dc85c3a990bd4f458af7301165950a",
+    "after": "3ecf5aadff7b148a3e132e5127a669f8c1dc85c3a990bd4f458af7301165950a",
+    "unchanged": true
+  },
+  "heat/desert/frame-004.png": {
+    "before": "e0cd17ce37282df607142aa607a39ee090cfc2a47087cb135b8f5f37bf0f79a0",
+    "after": "e0cd17ce37282df607142aa607a39ee090cfc2a47087cb135b8f5f37bf0f79a0",
+    "unchanged": true
+  },
+  "heat/desert/frame-005.png": {
+    "before": "3f0132131eba8bb7ce29bfa2f1ad48889e40023bf854203b350ddf4408bde725",
+    "after": "3f0132131eba8bb7ce29bfa2f1ad48889e40023bf854203b350ddf4408bde725",
+    "unchanged": true
+  },
+  "heat/desert/frame-006.png": {
+    "before": "b166be09c8fa583424d9a65cf938f73b735ac2cb9bf492af1c6ba0739873df8a",
+    "after": "b166be09c8fa583424d9a65cf938f73b735ac2cb9bf492af1c6ba0739873df8a",
+    "unchanged": true
+  },
+  "heat/desert/frame-007.png": {
+    "before": "1b6e14de587527f4bf77c2b5ab73bc10b3129cd54e7bfe2ce15040ce9789d75c",
+    "after": "1b6e14de587527f4bf77c2b5ab73bc10b3129cd54e7bfe2ce15040ce9789d75c",
+    "unchanged": true
+  },
+  "heat/desert/frame-008.png": {
+    "before": "d6000b14bd22fc3f888411983cea3eaad7f0a60884f049c4bffbfa04cb6ba8d0",
+    "after": "d6000b14bd22fc3f888411983cea3eaad7f0a60884f049c4bffbfa04cb6ba8d0",
+    "unchanged": true
+  },
+  "heat/desert/frame-009.png": {
+    "before": "f600d4855f95a7c623448a792f99446f7465d565aa8f6509d7e48334a05206b9",
+    "after": "f600d4855f95a7c623448a792f99446f7465d565aa8f6509d7e48334a05206b9",
+    "unchanged": true
+  },
+  "heat/desert/frame-010.png": {
+    "before": "9a79b89dd16d6971d887e9dbea0c813c26c434cc674e2ec62d0e0d6443ec5332",
+    "after": "9a79b89dd16d6971d887e9dbea0c813c26c434cc674e2ec62d0e0d6443ec5332",
+    "unchanged": true
+  },
+  "heat/desert/frame-011.png": {
+    "before": "2578a44fb710b338066b3db798a11e7051c65a4d322d921b43b204142135dcc4",
+    "after": "2578a44fb710b338066b3db798a11e7051c65a4d322d921b43b204142135dcc4",
+    "unchanged": true
+  },
+  "heat/desert/frame-012.png": {
+    "before": "804847d5fbf2c39bb4f1bb46aea1492e350d8b53e733c3156ab304e23c3d0538",
+    "after": "804847d5fbf2c39bb4f1bb46aea1492e350d8b53e733c3156ab304e23c3d0538",
+    "unchanged": true
+  },
+  "heat/desert/frame-013.png": {
+    "before": "75e951830e814152e07ae656a44909bef12f327a494a833012d8fa70b681ef91",
+    "after": "75e951830e814152e07ae656a44909bef12f327a494a833012d8fa70b681ef91",
+    "unchanged": true
+  },
+  "heat/desert/frame-014.png": {
+    "before": "25c0db1d5a2de5a3d4fd75b2c3b2d043f1fba4772b3db8937531d4291426ea2f",
+    "after": "25c0db1d5a2de5a3d4fd75b2c3b2d043f1fba4772b3db8937531d4291426ea2f",
+    "unchanged": true
+  },
+  "heat/desert/frame-015.png": {
+    "before": "3510cd6ff07cd84c34ec7a297dac410519b593d06b49f7937924384568a65a13",
+    "after": "3510cd6ff07cd84c34ec7a297dac410519b593d06b49f7937924384568a65a13",
+    "unchanged": true
+  },
+  "heat/desert/frame-016.png": {
+    "before": "22a493d27cc59a9ff7f8a3505a39535392d7232999053f1e627211b655e1fb63",
+    "after": "22a493d27cc59a9ff7f8a3505a39535392d7232999053f1e627211b655e1fb63",
+    "unchanged": true
+  },
+  "heat/desert/frame-017.png": {
+    "before": "078f14b98680565fe4362e34d8ba0177392e1592db8f310ba68e2c9313495476",
+    "after": "078f14b98680565fe4362e34d8ba0177392e1592db8f310ba68e2c9313495476",
+    "unchanged": true
+  },
+  "heat/desert/frame-018.png": {
+    "before": "9df41efc8f5b61b6c433b317570282967182d144733f944fff6ea45b74cbb3cd",
+    "after": "9df41efc8f5b61b6c433b317570282967182d144733f944fff6ea45b74cbb3cd",
+    "unchanged": true
+  },
+  "heat/desert/frame-019.png": {
+    "before": "ea17ed0b8c041331a599cd1089b5f08a7a32855b0e7ee486905e9dc01320a1df",
+    "after": "ea17ed0b8c041331a599cd1089b5f08a7a32855b0e7ee486905e9dc01320a1df",
+    "unchanged": true
+  },
+  "heat/desert/frame-020.png": {
+    "before": "8f38a2714f5469bb7ddb95ba788ba625711c6e01d816ff1e94c01d1dcb538655",
+    "after": "8f38a2714f5469bb7ddb95ba788ba625711c6e01d816ff1e94c01d1dcb538655",
+    "unchanged": true
+  },
+  "heat/desert/frame-021.png": {
+    "before": "240d2bd511c87284d569efa764d444680bbe9428c161c3c751c283758df02570",
+    "after": "240d2bd511c87284d569efa764d444680bbe9428c161c3c751c283758df02570",
+    "unchanged": true
+  },
+  "heat/desert/frame-022.png": {
+    "before": "f91c5b51ee0e107a9491b0e1ebe45885ac947acc6ead577af2245999d29fd341",
+    "after": "f91c5b51ee0e107a9491b0e1ebe45885ac947acc6ead577af2245999d29fd341",
+    "unchanged": true
+  },
+  "heat/desert/frame-023.png": {
+    "before": "f2a5aec639d978158bf050c84058440d1e411c7f66a1b7d36a853b22e78994e3",
+    "after": "f2a5aec639d978158bf050c84058440d1e411c7f66a1b7d36a853b22e78994e3",
+    "unchanged": true
+  },
+  "heat/desert/frame-024.png": {
+    "before": "fc3ba1ea1cbe113a8ac330c8d6a22cb2e44b112f79b244f8ee6cbf219741bbf2",
+    "after": "fc3ba1ea1cbe113a8ac330c8d6a22cb2e44b112f79b244f8ee6cbf219741bbf2",
+    "unchanged": true
+  },
+  "heat/desert/frame-025.png": {
+    "before": "85dfc516af3bb4baf97d346474e4721e02db02cc23a5ad19f3bfe0df28954e46",
+    "after": "85dfc516af3bb4baf97d346474e4721e02db02cc23a5ad19f3bfe0df28954e46",
+    "unchanged": true
+  },
+  "heat/desert/frame-026.png": {
+    "before": "5675ac6d5320108a94506324c1b04aa367798c1e1564db56656d6ba1869d1a69",
+    "after": "5675ac6d5320108a94506324c1b04aa367798c1e1564db56656d6ba1869d1a69",
+    "unchanged": true
+  },
+  "heat/desert/frame-027.png": {
+    "before": "a21e3314d77919181dbb2ab5ff8c0468ba579ad4331adbea7d9459e2c8882bd6",
+    "after": "a21e3314d77919181dbb2ab5ff8c0468ba579ad4331adbea7d9459e2c8882bd6",
+    "unchanged": true
+  },
+  "heat/desert/frame-028.png": {
+    "before": "4dc98f3d64c0e5702d6f7059db9e2579c69b3e3c64260e021e1ceb0565ed848c",
+    "after": "4dc98f3d64c0e5702d6f7059db9e2579c69b3e3c64260e021e1ceb0565ed848c",
+    "unchanged": true
+  },
+  "heat/desert/frame-029.png": {
+    "before": "b8f2d3f353b473995e246ab62ccf0ab10d924440edb61ecf37695968585d14ef",
+    "after": "b8f2d3f353b473995e246ab62ccf0ab10d924440edb61ecf37695968585d14ef",
+    "unchanged": true
+  },
+  "heat/desert/frame-030.png": {
+    "before": "cb5ce97be3ee1aa6eb017b97c9f8fe992a1e7806ace571fda92e05d01143ede2",
+    "after": "cb5ce97be3ee1aa6eb017b97c9f8fe992a1e7806ace571fda92e05d01143ede2",
+    "unchanged": true
+  },
+  "heat/desert/frame-031.png": {
+    "before": "9d5f9ec31047de031bec6fbecdb50e7fbc0bde7674373e50f8becd0e5df196bc",
+    "after": "9d5f9ec31047de031bec6fbecdb50e7fbc0bde7674373e50f8becd0e5df196bc",
+    "unchanged": true
+  },
+  "heat/desert/frame-032.png": {
+    "before": "152ed93c1ff2b70c5b78f45cf92d8166ed779213ce83721f231ed88610f39c63",
+    "after": "152ed93c1ff2b70c5b78f45cf92d8166ed779213ce83721f231ed88610f39c63",
+    "unchanged": true
+  },
+  "heat/desert/frame-033.png": {
+    "before": "88ae17e0869675e20610e24957b9b47c78f1c5c6512ad2972c2cbbab5def345f",
+    "after": "88ae17e0869675e20610e24957b9b47c78f1c5c6512ad2972c2cbbab5def345f",
+    "unchanged": true
+  },
+  "heat/desert/frame-034.png": {
+    "before": "eddd2570f8a5da6662618b11152049cdef286d378e1eb6fc497fe1cd82fb4731",
+    "after": "eddd2570f8a5da6662618b11152049cdef286d378e1eb6fc497fe1cd82fb4731",
+    "unchanged": true
+  },
+  "heat/desert/frame-035.png": {
+    "before": "f03131af9e82cb6450571e3ca64a5a1b3068f70689edb7ce03f3f953508ae6aa",
+    "after": "f03131af9e82cb6450571e3ca64a5a1b3068f70689edb7ce03f3f953508ae6aa",
+    "unchanged": true
+  },
+  "heat/desert/frame-036.png": {
+    "before": "ee566ad3f83a2d4bc449ce0d9c4d939def9dc53093923b96011dac3d202857a0",
+    "after": "ee566ad3f83a2d4bc449ce0d9c4d939def9dc53093923b96011dac3d202857a0",
+    "unchanged": true
+  },
+  "heat/desert/frame-037.png": {
+    "before": "185540c9c67f438a19750af10350339eb5368c1c4fe4bd7b772c828c2f8b5cb3",
+    "after": "185540c9c67f438a19750af10350339eb5368c1c4fe4bd7b772c828c2f8b5cb3",
+    "unchanged": true
+  },
+  "heat/desert/frame-038.png": {
+    "before": "4794b567a087db082138cfcceb1686493b591855946c243ea55586d6d1cde634",
+    "after": "4794b567a087db082138cfcceb1686493b591855946c243ea55586d6d1cde634",
+    "unchanged": true
+  },
+  "heat/desert/frame-039.png": {
+    "before": "38e30aa80b0441e41da8fd1773bb935bd57cc9041885539c53cd305abb829d7b",
+    "after": "38e30aa80b0441e41da8fd1773bb935bd57cc9041885539c53cd305abb829d7b",
+    "unchanged": true
+  },
+  "heat/desert/frame-040.png": {
+    "before": "a5d01b5d9e2afd6d1cfa761a0f2ccdb03451c32279bfab1e9aa972a9125de404",
+    "after": "a5d01b5d9e2afd6d1cfa761a0f2ccdb03451c32279bfab1e9aa972a9125de404",
+    "unchanged": true
+  },
+  "heat/desert/frame-041.png": {
+    "before": "2eca3a5b5799f11b106adeb74d294d0d09a8c8eb32929dff06794a72440e66c9",
+    "after": "2eca3a5b5799f11b106adeb74d294d0d09a8c8eb32929dff06794a72440e66c9",
+    "unchanged": true
+  },
+  "heat/desert/frame-042.png": {
+    "before": "f83dca38beeb95c450ef78a7ac3a98d1e4fe04a4827127ae8be0ffdce4e4c15f",
+    "after": "f83dca38beeb95c450ef78a7ac3a98d1e4fe04a4827127ae8be0ffdce4e4c15f",
+    "unchanged": true
+  },
+  "heat/desert/frame-043.png": {
+    "before": "af9fd101a0127e6d3d17ae7351b8228a94649fa8bbd00d239639e03d86d405f6",
+    "after": "af9fd101a0127e6d3d17ae7351b8228a94649fa8bbd00d239639e03d86d405f6",
+    "unchanged": true
+  },
+  "heat/desert/frame-044.png": {
+    "before": "b0c0a742a8dbcd8f080eef13e702f3afa115bcd6b19e69039462ac9d7b2cd865",
+    "after": "b0c0a742a8dbcd8f080eef13e702f3afa115bcd6b19e69039462ac9d7b2cd865",
+    "unchanged": true
+  },
+  "heat/desert/frame-045.png": {
+    "before": "6d3dd9af71003d3304399169821eece69ec180f32eb42e4b5bfeecd97f1f724a",
+    "after": "6d3dd9af71003d3304399169821eece69ec180f32eb42e4b5bfeecd97f1f724a",
+    "unchanged": true
+  },
+  "heat/desert/frame-046.png": {
+    "before": "d9b8d7db3813a53eb0f2d9a9742085e5e315df6fac463ab57bd9d7efe591039b",
+    "after": "d9b8d7db3813a53eb0f2d9a9742085e5e315df6fac463ab57bd9d7efe591039b",
+    "unchanged": true
+  },
+  "heat/desert/frame-047.png": {
+    "before": "6b19ed829f2ee36976aec33e0350d9cc6d1f607c5120a401ec334c07c8d18220",
+    "after": "6b19ed829f2ee36976aec33e0350d9cc6d1f607c5120a401ec334c07c8d18220",
+    "unchanged": true
+  },
+  "heat/desert/frame-048.png": {
+    "before": "3ee2c84655023af8230a5c03a8328f550ed7ade389e36e19ae3e60218e072532",
+    "after": "3ee2c84655023af8230a5c03a8328f550ed7ade389e36e19ae3e60218e072532",
+    "unchanged": true
+  },
+  "heat/desert/frame-049.png": {
+    "before": "bb6b7ac6c9957fa7cf01e7137c2667ab36139de59168eac7d19fe0ae8befc8e2",
+    "after": "bb6b7ac6c9957fa7cf01e7137c2667ab36139de59168eac7d19fe0ae8befc8e2",
+    "unchanged": true
+  },
+  "heat/desert/frame-050.png": {
+    "before": "4c451822d4b7229702e5c0aec789c9d604fc4782b83f71ba3b799821e744d45f",
+    "after": "4c451822d4b7229702e5c0aec789c9d604fc4782b83f71ba3b799821e744d45f",
+    "unchanged": true
+  },
+  "heat/desert/frame-051.png": {
+    "before": "7fb65bc916aa45633a5b443ed68e6a0039b08830995bb7de0ef6dbd390486a7e",
+    "after": "7fb65bc916aa45633a5b443ed68e6a0039b08830995bb7de0ef6dbd390486a7e",
+    "unchanged": true
+  },
+  "heat/desert/frame-052.png": {
+    "before": "ee1ca8777f5f48e238ab278c544105c3b7c2d867d7fc2d385e0f51c86e1a6e40",
+    "after": "ee1ca8777f5f48e238ab278c544105c3b7c2d867d7fc2d385e0f51c86e1a6e40",
+    "unchanged": true
+  },
+  "heat/desert/frame-053.png": {
+    "before": "1a093f57fbdcc5834e9ac333ac1669c952d7600e7ee016386664d6d4d8212276",
+    "after": "1a093f57fbdcc5834e9ac333ac1669c952d7600e7ee016386664d6d4d8212276",
+    "unchanged": true
+  },
+  "heat/desert/frame-054.png": {
+    "before": "a7af2a719834a1f6bb560dee84c0368d0b713ec70f48398e934bee1bdcc490ae",
+    "after": "a7af2a719834a1f6bb560dee84c0368d0b713ec70f48398e934bee1bdcc490ae",
+    "unchanged": true
+  },
+  "heat/desert/frame-055.png": {
+    "before": "e0eae51fdbd48cf4d487510604617b073ff08060842f870c38d09c187a270e65",
+    "after": "e0eae51fdbd48cf4d487510604617b073ff08060842f870c38d09c187a270e65",
+    "unchanged": true
+  },
+  "heat/desert/frame-056.png": {
+    "before": "1867346b1be8813ba139972fc08539df53baa4412852e6f51c5811c0f69c69a6",
+    "after": "1867346b1be8813ba139972fc08539df53baa4412852e6f51c5811c0f69c69a6",
+    "unchanged": true
+  },
+  "heat/desert/frame-057.png": {
+    "before": "22d5287fa558884802a12a306135d7a897d943dfae3a3e9edca8143aae49050b",
+    "after": "22d5287fa558884802a12a306135d7a897d943dfae3a3e9edca8143aae49050b",
+    "unchanged": true
+  },
+  "heat/desert/frame-058.png": {
+    "before": "2c283584dc89497acd92041334cdc46d257bbb48abf4a89e01103138e55fba59",
+    "after": "2c283584dc89497acd92041334cdc46d257bbb48abf4a89e01103138e55fba59",
+    "unchanged": true
+  },
+  "heat/desert/frame-059.png": {
+    "before": "170193f40bb54b72ef5b5623911f9f6965b68ed18406d403e0cbf7635161f3a4",
+    "after": "170193f40bb54b72ef5b5623911f9f6965b68ed18406d403e0cbf7635161f3a4",
+    "unchanged": true
+  },
+  "heat/desert/frame-060.png": {
+    "before": "319f99868193f44495e6db297f83aea3bc0acea1f494c8b9d230745053981524",
+    "after": "319f99868193f44495e6db297f83aea3bc0acea1f494c8b9d230745053981524",
+    "unchanged": true
+  },
+  "heat/desert/frame-061.png": {
+    "before": "9bf313a3b7152ed1def698d024d8a4f8a14ca463c6ac245810656ec973cce3e7",
+    "after": "9bf313a3b7152ed1def698d024d8a4f8a14ca463c6ac245810656ec973cce3e7",
+    "unchanged": true
+  },
+  "heat/desert/frame-062.png": {
+    "before": "676e0fd6f0996c447e129803b483038436c292ce6c7228265108388bdb82e49d",
+    "after": "676e0fd6f0996c447e129803b483038436c292ce6c7228265108388bdb82e49d",
+    "unchanged": true
+  },
+  "heat/desert/frame-063.png": {
+    "before": "feb72bf2f63ebf782bf056b4427409123b85be14089e3285885badfe1229fa41",
+    "after": "feb72bf2f63ebf782bf056b4427409123b85be14089e3285885badfe1229fa41",
+    "unchanged": true
+  },
+  "heat/desert/frame-064.png": {
+    "before": "35e3d0affc6b9eeed3c97198dbe1f4cb1a33c3f1b8ea950a5b7e232d69c520f3",
+    "after": "35e3d0affc6b9eeed3c97198dbe1f4cb1a33c3f1b8ea950a5b7e232d69c520f3",
+    "unchanged": true
+  },
+  "heat/desert/frame-065.png": {
+    "before": "7ef8552e023f8bdea57e53d1d56867a0ad91551809172f14376bc24d8956fa42",
+    "after": "7ef8552e023f8bdea57e53d1d56867a0ad91551809172f14376bc24d8956fa42",
+    "unchanged": true
+  },
+  "heat/desert/frame-066.png": {
+    "before": "32915ac8f37d1039774abfb21150d8fc232d79cbd4f7e45631ad143eb1c6150d",
+    "after": "32915ac8f37d1039774abfb21150d8fc232d79cbd4f7e45631ad143eb1c6150d",
+    "unchanged": true
+  },
+  "heat/desert/frame-067.png": {
+    "before": "118f2aa266b9d709367981816618a3b372c93481398648805e9acab944e29f1f",
+    "after": "118f2aa266b9d709367981816618a3b372c93481398648805e9acab944e29f1f",
+    "unchanged": true
+  },
+  "heat/desert/frame-068.png": {
+    "before": "408e9956b53e5b943344817e3378287120d5bb9aa7c2f9db3b5cda14c0e78f2d",
+    "after": "408e9956b53e5b943344817e3378287120d5bb9aa7c2f9db3b5cda14c0e78f2d",
+    "unchanged": true
+  },
+  "heat/desert/frame-069.png": {
+    "before": "f5bef6ed8a9e46aca5413c816488aa4044e284d819e729fabed2b6332fd64835",
+    "after": "f5bef6ed8a9e46aca5413c816488aa4044e284d819e729fabed2b6332fd64835",
+    "unchanged": true
+  },
+  "heat/desert/frame-070.png": {
+    "before": "31ac5d8b0e3169a9f42bba02e4f793e33f8be411283f172279504e600b968c71",
+    "after": "31ac5d8b0e3169a9f42bba02e4f793e33f8be411283f172279504e600b968c71",
+    "unchanged": true
+  },
+  "heat/desert/frame-071.png": {
+    "before": "117a71d7e60fc76e5cc458d252d75e183cc010b27601d8cdd2d7a7a4b588ed43",
+    "after": "117a71d7e60fc76e5cc458d252d75e183cc010b27601d8cdd2d7a7a4b588ed43",
+    "unchanged": true
+  },
+  "heat/desert/frame-072.png": {
+    "before": "d1b7158a9323ec380b98b2c93cd2d68ccea3d64d65a208111c0bf24f5a9af507",
+    "after": "d1b7158a9323ec380b98b2c93cd2d68ccea3d64d65a208111c0bf24f5a9af507",
+    "unchanged": true
+  },
+  "heat/desert/frame-073.png": {
+    "before": "20fdeefdcd4c764b25834849dad444051932abb364d7a5a62d3821bcbd5bc9d8",
+    "after": "20fdeefdcd4c764b25834849dad444051932abb364d7a5a62d3821bcbd5bc9d8",
+    "unchanged": true
+  },
+  "heat/desert/frame-074.png": {
+    "before": "cda17f5736d4f5df2b42b363d89020aa7f1a9d25c40b20b1caf9298544535160",
+    "after": "cda17f5736d4f5df2b42b363d89020aa7f1a9d25c40b20b1caf9298544535160",
+    "unchanged": true
+  },
+  "heat/desert/frame-075.png": {
+    "before": "eed10d42c6745d3ef97e76ab181b73e5113f17c9f74b9f90759ad9c52d338bf8",
+    "after": "eed10d42c6745d3ef97e76ab181b73e5113f17c9f74b9f90759ad9c52d338bf8",
+    "unchanged": true
+  },
+  "heat/desert/frame-076.png": {
+    "before": "c20be6b1faaa5bbabfbf7bb1af959df1e4a59d4f4b929d585038459ba40448f3",
+    "after": "c20be6b1faaa5bbabfbf7bb1af959df1e4a59d4f4b929d585038459ba40448f3",
+    "unchanged": true
+  },
+  "heat/desert/frame-077.png": {
+    "before": "a93bb89a5c3da881e2622788a76cb6c5a4ac84c6975f881c2e9ae91de4d76a8a",
+    "after": "a93bb89a5c3da881e2622788a76cb6c5a4ac84c6975f881c2e9ae91de4d76a8a",
+    "unchanged": true
+  },
+  "heat/desert/frame-078.png": {
+    "before": "a9a49b840ad066ba8d05b613ee6cc33b677fb3eb2f7aed78c33f1e0ae013b267",
+    "after": "a9a49b840ad066ba8d05b613ee6cc33b677fb3eb2f7aed78c33f1e0ae013b267",
+    "unchanged": true
+  },
+  "heat/desert/frame-079.png": {
+    "before": "974d5655797f8f654c094841e04ec52845325883ab199e5a2ef1471fb64bc598",
+    "after": "974d5655797f8f654c094841e04ec52845325883ab199e5a2ef1471fb64bc598",
+    "unchanged": true
+  },
+  "heat/desert/frame-080.png": {
+    "before": "c408b03722561f64cfeaa29cd2eaaadc11cc6ae8abb5a4c5ccad95d34830ca30",
+    "after": "c408b03722561f64cfeaa29cd2eaaadc11cc6ae8abb5a4c5ccad95d34830ca30",
+    "unchanged": true
+  },
+  "heat/desert/frame-081.png": {
+    "before": "43b2664723d575c2819fb7c4ef9350d45fcfbcc3163b710cb58d432cb84e51b7",
+    "after": "43b2664723d575c2819fb7c4ef9350d45fcfbcc3163b710cb58d432cb84e51b7",
+    "unchanged": true
+  },
+  "heat/desert/frame-082.png": {
+    "before": "224c7eb00ab693be0ee5a89400683c8780055de9497f4d4d574a5492dc68e072",
+    "after": "224c7eb00ab693be0ee5a89400683c8780055de9497f4d4d574a5492dc68e072",
+    "unchanged": true
+  },
+  "heat/desert/frame-083.png": {
+    "before": "4c8aacd36fe0fa12813b56a3ad372efb52f258b221debefa9b8ac0dcb4aa3f94",
+    "after": "4c8aacd36fe0fa12813b56a3ad372efb52f258b221debefa9b8ac0dcb4aa3f94",
+    "unchanged": true
+  },
+  "heat/desert/frame-084.png": {
+    "before": "4d2203f1a9a0438fd00fe3f810a66a351cdbe3b084e326129ed16d4f22342c28",
+    "after": "4d2203f1a9a0438fd00fe3f810a66a351cdbe3b084e326129ed16d4f22342c28",
+    "unchanged": true
+  },
+  "heat/desert/frame-085.png": {
+    "before": "d498c3a3f36291d17895858822b1826d444b8b21259d0cf37c5ec30fb790f77a",
+    "after": "d498c3a3f36291d17895858822b1826d444b8b21259d0cf37c5ec30fb790f77a",
+    "unchanged": true
+  },
+  "heat/desert/frame-086.png": {
+    "before": "89399e3560509d8ae15ddaf1654aec7f7fd78b18ba90ec13758421d8c35efe9b",
+    "after": "89399e3560509d8ae15ddaf1654aec7f7fd78b18ba90ec13758421d8c35efe9b",
+    "unchanged": true
+  },
+  "heat/desert/frame-087.png": {
+    "before": "e1c87d105acb883f815c156a27229c88559bea09cb4d89c54c5bae07262c4bbd",
+    "after": "e1c87d105acb883f815c156a27229c88559bea09cb4d89c54c5bae07262c4bbd",
+    "unchanged": true
+  },
+  "heat/desert/frame-088.png": {
+    "before": "8fbc5b098feb67e6f1542ed069e4e19fd26d595241d79ecc3f50b3920e18996a",
+    "after": "8fbc5b098feb67e6f1542ed069e4e19fd26d595241d79ecc3f50b3920e18996a",
+    "unchanged": true
+  },
+  "heat/desert/frame-089.png": {
+    "before": "5a95c8069cd1d35cff0ec05ae1a73663b21571803c0f1f0478bd257ce3e028ac",
+    "after": "5a95c8069cd1d35cff0ec05ae1a73663b21571803c0f1f0478bd257ce3e028ac",
+    "unchanged": true
+  },
+  "heat/desert/frame-090.png": {
+    "before": "d830732cced919e5da165b99457c6317e17f0479429e35355cc3f49ae2aa6af3",
+    "after": "d830732cced919e5da165b99457c6317e17f0479429e35355cc3f49ae2aa6af3",
+    "unchanged": true
+  },
+  "heat/desert/frame-091.png": {
+    "before": "e45db85b06c4a70366e6618702b46372b72caf11e8316a04c9d9e698da167122",
+    "after": "e45db85b06c4a70366e6618702b46372b72caf11e8316a04c9d9e698da167122",
+    "unchanged": true
+  },
+  "heat/desert/frame-092.png": {
+    "before": "ec5cc47cfa656135f96e435efdf1f037cef112ea7d7044fb6c976b49018c4708",
+    "after": "ec5cc47cfa656135f96e435efdf1f037cef112ea7d7044fb6c976b49018c4708",
+    "unchanged": true
+  },
+  "heat/desert/frame-093.png": {
+    "before": "b07c1a0024213992d5aed701957d6767c81a65ee479acce915238d038fceda13",
+    "after": "b07c1a0024213992d5aed701957d6767c81a65ee479acce915238d038fceda13",
+    "unchanged": true
+  },
+  "heat/desert/frame-094.png": {
+    "before": "74a04f247d27a9645bc01bf6591a120a2c3f0ebaf501cfae5e800fa45fd5bafc",
+    "after": "74a04f247d27a9645bc01bf6591a120a2c3f0ebaf501cfae5e800fa45fd5bafc",
+    "unchanged": true
+  },
+  "heat/desert/frame-095.png": {
+    "before": "c173291d723a0c20645ad7f968d9c2efe8228eabd1a9552af868d448562f3f90",
+    "after": "c173291d723a0c20645ad7f968d9c2efe8228eabd1a9552af868d448562f3f90",
+    "unchanged": true
+  },
+  "heat/desert/frame-096.png": {
+    "before": "2f1a7e448f775003aa17f5a225acd1b4c331eb8145695d2d2d7761eda0dff23e",
+    "after": "2f1a7e448f775003aa17f5a225acd1b4c331eb8145695d2d2d7761eda0dff23e",
+    "unchanged": true
+  },
+  "heat/desert/frame-097.png": {
+    "before": "033570070decdf7b0cea213d293ffd2e26a246b7d902cac0731fe8f29bb0e3ae",
+    "after": "033570070decdf7b0cea213d293ffd2e26a246b7d902cac0731fe8f29bb0e3ae",
+    "unchanged": true
+  },
+  "heat/desert/frame-098.png": {
+    "before": "8137bdc5bd02b0f365a5321d9ba005a139ef9ce2d5d069b9c995bd222f052a73",
+    "after": "8137bdc5bd02b0f365a5321d9ba005a139ef9ce2d5d069b9c995bd222f052a73",
+    "unchanged": true
+  },
+  "heat/desert/frame-099.png": {
+    "before": "3d1a76c81a91aeeb9edcdfd3fc654bb1abde2edb2b18a4df9b3d5136a4703d32",
+    "after": "3d1a76c81a91aeeb9edcdfd3fc654bb1abde2edb2b18a4df9b3d5136a4703d32",
+    "unchanged": true
+  },
+  "heat/desert/frame-100.png": {
+    "before": "88bd6abaa4b3a0eb3aaffbb38e9a6f8a89333b1e0a31965882c9bbf8a5748d90",
+    "after": "88bd6abaa4b3a0eb3aaffbb38e9a6f8a89333b1e0a31965882c9bbf8a5748d90",
+    "unchanged": true
+  },
+  "heat/desert/frame-101.png": {
+    "before": "1922355faca6e6ffff2703d178e6729b2ffb4edb0923b6431530f6053caf9582",
+    "after": "1922355faca6e6ffff2703d178e6729b2ffb4edb0923b6431530f6053caf9582",
+    "unchanged": true
+  },
+  "heat/desert/frame-102.png": {
+    "before": "609dbe9ce16cb139f6c2a86204dab8cb34128775474c657f5373a3f99b044641",
+    "after": "609dbe9ce16cb139f6c2a86204dab8cb34128775474c657f5373a3f99b044641",
+    "unchanged": true
+  },
+  "heat/desert/frame-103.png": {
+    "before": "97099108f035f4d382da8ed8f45263b296f17f3116d7767e64240b0fcf8b5115",
+    "after": "97099108f035f4d382da8ed8f45263b296f17f3116d7767e64240b0fcf8b5115",
+    "unchanged": true
+  },
+  "heat/desert/frame-104.png": {
+    "before": "4f6d82f2c65dea7cebab34e9fc9663ec9349d48a64bdd3aabfbd646441cd1abf",
+    "after": "4f6d82f2c65dea7cebab34e9fc9663ec9349d48a64bdd3aabfbd646441cd1abf",
+    "unchanged": true
+  },
+  "heat/desert/frame-105.png": {
+    "before": "20ed501cf4f0ca372b4caf998bb0f7e323cd2c8e718818288a2ecaa39541ca06",
+    "after": "20ed501cf4f0ca372b4caf998bb0f7e323cd2c8e718818288a2ecaa39541ca06",
+    "unchanged": true
+  },
+  "heat/desert/frame-106.png": {
+    "before": "a5dd62f39bb3f9a9a0d3619752ed801b72094cd14993be95cfbf74bf8a1a2d30",
+    "after": "a5dd62f39bb3f9a9a0d3619752ed801b72094cd14993be95cfbf74bf8a1a2d30",
+    "unchanged": true
+  },
+  "heat/desert/frame-107.png": {
+    "before": "691e1da3a081b24c1f2f34865fd010d820b0164974d8c71cee1004f870302ddf",
+    "after": "691e1da3a081b24c1f2f34865fd010d820b0164974d8c71cee1004f870302ddf",
+    "unchanged": true
+  },
+  "heat/desert/frame-108.png": {
+    "before": "8ba87c22eb9026d4e2b4fc004e6c5dbb3fa0b9d57ababbb6b2d2d809c4e8ae0e",
+    "after": "8ba87c22eb9026d4e2b4fc004e6c5dbb3fa0b9d57ababbb6b2d2d809c4e8ae0e",
+    "unchanged": true
+  },
+  "heat/desert/frame-109.png": {
+    "before": "bf8817f43a5dded05d6923dadfc5c5ce1ae48ca83e11d285c64bdc1e05970aca",
+    "after": "bf8817f43a5dded05d6923dadfc5c5ce1ae48ca83e11d285c64bdc1e05970aca",
+    "unchanged": true
+  },
+  "heat/desert/frame-110.png": {
+    "before": "db085c66e8fe7d06445ae8f430dd2cfe51dc6f455b7e5647cbfdf1044b3f55b3",
+    "after": "db085c66e8fe7d06445ae8f430dd2cfe51dc6f455b7e5647cbfdf1044b3f55b3",
+    "unchanged": true
+  },
+  "heat/desert/frame-111.png": {
+    "before": "5b79b70cfd5ec0a47ce3c5fbdc319e49dbbb84af64033fc75be94f86eda70090",
+    "after": "5b79b70cfd5ec0a47ce3c5fbdc319e49dbbb84af64033fc75be94f86eda70090",
+    "unchanged": true
+  },
+  "heat/desert/frame-112.png": {
+    "before": "9663e3b5a8e1602be935c9bbb1b8c91ed06afe724c6c763322d5c180efa477a3",
+    "after": "9663e3b5a8e1602be935c9bbb1b8c91ed06afe724c6c763322d5c180efa477a3",
+    "unchanged": true
+  },
+  "heat/desert/frame-113.png": {
+    "before": "7d04b9a54ffaeb6ea9ce9b1d4100f7796dd82da4a736cabc50b079c0ca3d4402",
+    "after": "7d04b9a54ffaeb6ea9ce9b1d4100f7796dd82da4a736cabc50b079c0ca3d4402",
+    "unchanged": true
+  },
+  "heat/desert/frame-114.png": {
+    "before": "f11cd7a9eb7e3adf65263a4f476f4870e7908ba7c0c96d593357f52f7864a047",
+    "after": "f11cd7a9eb7e3adf65263a4f476f4870e7908ba7c0c96d593357f52f7864a047",
+    "unchanged": true
+  },
+  "heat/desert/frame-115.png": {
+    "before": "4372883df0144837364b7fa174d24e3f737567b311fbc661e2fec92105e1450a",
+    "after": "4372883df0144837364b7fa174d24e3f737567b311fbc661e2fec92105e1450a",
+    "unchanged": true
+  },
+  "heat/desert/frame-116.png": {
+    "before": "ef987ec878e7c0ef521ca705bfbea5018ee5a53fd56ff46d970d4d6e3bd5dd4b",
+    "after": "ef987ec878e7c0ef521ca705bfbea5018ee5a53fd56ff46d970d4d6e3bd5dd4b",
+    "unchanged": true
+  },
+  "heat/desert/frame-117.png": {
+    "before": "bfdc1ff6d96ce088bd952f9435d7c8bcb85bcf1f008e0d881dde8232d897587e",
+    "after": "bfdc1ff6d96ce088bd952f9435d7c8bcb85bcf1f008e0d881dde8232d897587e",
+    "unchanged": true
+  },
+  "heat/desert/frame-118.png": {
+    "before": "b2bc2e9babed38fc9779a354e7f5557d8bf3559ee22abe347c191fa27ae70b05",
+    "after": "b2bc2e9babed38fc9779a354e7f5557d8bf3559ee22abe347c191fa27ae70b05",
+    "unchanged": true
+  },
+  "heat/desert/frame-119.png": {
+    "before": "8bb90dc8b2cdbaf22a4bb39455ae2e47ca8037a52d632ed7d10c70abd65dcbc0",
+    "after": "8bb90dc8b2cdbaf22a4bb39455ae2e47ca8037a52d632ed7d10c70abd65dcbc0",
+    "unchanged": true
+  },
+  "heat/desert/frame-120.png": {
+    "before": "3e26167654bb97773072dc59d05bf52c917266b68c81a3feb611b3876d60d7a0",
+    "after": "3e26167654bb97773072dc59d05bf52c917266b68c81a3feb611b3876d60d7a0",
+    "unchanged": true
+  },
+  "heat/desert/frame-121.png": {
+    "before": "9f1e8764ccd0d9e071cf0725844c52ae28cc0a7de84b8e2091f2657bf0dc5a47",
+    "after": "9f1e8764ccd0d9e071cf0725844c52ae28cc0a7de84b8e2091f2657bf0dc5a47",
+    "unchanged": true
+  },
+  "heat/desert/frame-122.png": {
+    "before": "dbecf3d47a11fad9e605d7903e25d47c602926d9a974f73d78aa2e97471c3bcd",
+    "after": "dbecf3d47a11fad9e605d7903e25d47c602926d9a974f73d78aa2e97471c3bcd",
+    "unchanged": true
+  },
+  "heat/desert/frame-123.png": {
+    "before": "305e4939d0ed073d621654561f7dc0058c077c205f47fe9d3ea69dee1239fbcd",
+    "after": "305e4939d0ed073d621654561f7dc0058c077c205f47fe9d3ea69dee1239fbcd",
+    "unchanged": true
+  },
+  "heat/desert/frame-124.png": {
+    "before": "ea5bc8809214b9606e10dadcfdb8e34a3898affdcaaf5da2b14c4fac77456dff",
+    "after": "ea5bc8809214b9606e10dadcfdb8e34a3898affdcaaf5da2b14c4fac77456dff",
+    "unchanged": true
+  },
+  "heat/desert/frame-125.png": {
+    "before": "6606642737da4f04dbdf0611240c82d365273eca96e27689bef972607557e859",
+    "after": "6606642737da4f04dbdf0611240c82d365273eca96e27689bef972607557e859",
+    "unchanged": true
+  },
+  "heat/desert/frame-126.png": {
+    "before": "a37febfe5875cb1c83158e576cbf9dfddb77d945870be4d879f68b05c4b27ff7",
+    "after": "a37febfe5875cb1c83158e576cbf9dfddb77d945870be4d879f68b05c4b27ff7",
+    "unchanged": true
+  },
+  "heat/desert/frame-127.png": {
+    "before": "45241aa8965ed8cc0e3bd28bb3695362415fd454f79dc684f4e7c3d5428dffc9",
+    "after": "45241aa8965ed8cc0e3bd28bb3695362415fd454f79dc684f4e7c3d5428dffc9",
+    "unchanged": true
+  },
+  "heat/desert/frame-128.png": {
+    "before": "e8459e7659c2a84d0631d477796ff5a3303e690f6d50d640839d291395892815",
+    "after": "e8459e7659c2a84d0631d477796ff5a3303e690f6d50d640839d291395892815",
+    "unchanged": true
+  },
+  "heat/desert/frame-129.png": {
+    "before": "b172878590088429108f2adf8490446b4b60b1c881e09aef27f23f69311cb107",
+    "after": "b172878590088429108f2adf8490446b4b60b1c881e09aef27f23f69311cb107",
+    "unchanged": true
+  },
+  "heat/desert/frame-130.png": {
+    "before": "024fca1cdf84f0970e640e4d369ba7df92a719646538d2cc7d8e323b8b720455",
+    "after": "024fca1cdf84f0970e640e4d369ba7df92a719646538d2cc7d8e323b8b720455",
+    "unchanged": true
+  },
+  "heat/desert/frame-131.png": {
+    "before": "1cfa1fb6f42b92e0a771e51282336afb9e6db9e577e25b3bda45f0d3da842c54",
+    "after": "1cfa1fb6f42b92e0a771e51282336afb9e6db9e577e25b3bda45f0d3da842c54",
+    "unchanged": true
+  },
+  "heat/desert/frame-132.png": {
+    "before": "8a7de7180e3ce27ec6f02db19692163707a927368736befc3b6012b26cdab22e",
+    "after": "8a7de7180e3ce27ec6f02db19692163707a927368736befc3b6012b26cdab22e",
+    "unchanged": true
+  },
+  "heat/desert/frame-133.png": {
+    "before": "7353f2b102a6924c70aac3c69c5f4285f4604dfaa028b5037b29eb866660d116",
+    "after": "7353f2b102a6924c70aac3c69c5f4285f4604dfaa028b5037b29eb866660d116",
+    "unchanged": true
+  },
+  "heat/desert/frame-134.png": {
+    "before": "2898a114d507fd552fce8ce8f1b1a33ee07bc3ed334fc4e77d04a20ee34ecee5",
+    "after": "2898a114d507fd552fce8ce8f1b1a33ee07bc3ed334fc4e77d04a20ee34ecee5",
+    "unchanged": true
+  },
+  "heat/desert/frame-135.png": {
+    "before": "7f17d88ad88244b4991a226cc9c76be4bfe3f847c6fd6fc64f385ae45f4acd61",
+    "after": "7f17d88ad88244b4991a226cc9c76be4bfe3f847c6fd6fc64f385ae45f4acd61",
+    "unchanged": true
+  },
+  "heat/desert/frame-136.png": {
+    "before": "1d2fe2f8b557882264e3d118a990df24c730e9672b14c95b31a5b3db65073ab4",
+    "after": "1d2fe2f8b557882264e3d118a990df24c730e9672b14c95b31a5b3db65073ab4",
+    "unchanged": true
+  },
+  "heat/desert/frame-137.png": {
+    "before": "a2838adde22dca4fe05f879af3448ade277ad5f6cbac2908f6ea8ec1c7e5cbe5",
+    "after": "a2838adde22dca4fe05f879af3448ade277ad5f6cbac2908f6ea8ec1c7e5cbe5",
+    "unchanged": true
+  },
+  "heat/desert/frame-138.png": {
+    "before": "82ce6dd220b6330cf03dc6de2a80e100a57829a2a125efe3407805358ce7d70e",
+    "after": "82ce6dd220b6330cf03dc6de2a80e100a57829a2a125efe3407805358ce7d70e",
+    "unchanged": true
+  },
+  "heat/desert/frame-139.png": {
+    "before": "badd8318c758af9600e9d19a3a15fc62013ecfbd3adff2da948b8485e73ceaf0",
+    "after": "badd8318c758af9600e9d19a3a15fc62013ecfbd3adff2da948b8485e73ceaf0",
+    "unchanged": true
+  },
+  "heat/desert/frame-140.png": {
+    "before": "2825a50ffada89501cd83d322e703e63a902da5af6604d5e6534bfee6a541421",
+    "after": "2825a50ffada89501cd83d322e703e63a902da5af6604d5e6534bfee6a541421",
+    "unchanged": true
+  },
+  "heat/desert/frame-141.png": {
+    "before": "c39b39a5b8c50fccffe3f43e410430028df135f1fe2c103dfce5f94dd6e12d5e",
+    "after": "c39b39a5b8c50fccffe3f43e410430028df135f1fe2c103dfce5f94dd6e12d5e",
+    "unchanged": true
+  },
+  "heat/desert/frame-142.png": {
+    "before": "35e0a62cd8b8b7844784986d09cbcecc022317472339e15295fd7567dd748dd8",
+    "after": "35e0a62cd8b8b7844784986d09cbcecc022317472339e15295fd7567dd748dd8",
+    "unchanged": true
+  },
+  "heat/desert/frame-143.png": {
+    "before": "59d0e936fcd029e7de5ffabcc68299caeed1958f3c09487e4c775aca0b60f8e1",
+    "after": "59d0e936fcd029e7de5ffabcc68299caeed1958f3c09487e4c775aca0b60f8e1",
+    "unchanged": true
+  },
+  "heat/desert-area-map.png": {
+    "before": "2bf2cd0b41296e799b200b697049e3b2a55e0f4cdff1f83ac82a0b030b05745a",
+    "after": "2bf2cd0b41296e799b200b697049e3b2a55e0f4cdff1f83ac82a0b030b05745a",
+    "unchanged": true
+  },
+  "heat/desert-miniature-off.png": {
+    "before": "25f98649a4dd7ca3935c6595ba1393d3aeb8fef0414df35d8400ce97acd6e7df",
+    "after": "25f98649a4dd7ca3935c6595ba1393d3aeb8fef0414df35d8400ce97acd6e7df",
+    "unchanged": true
+  },
+  "heat/earth-057-defaults.png": {
+    "before": "17d8c4b9012653153bd594700bcb175239bb7a052cb1f5ac795caa6ccf982ad9",
+    "after": "6bc6392c809fc97e09eb56b3c77421b6609d5c5037e7c36f023dab6c456c48df",
+    "unchanged": false
+  },
+  "heat/earth-063-defaults.png": {
+    "before": "0642cca180438d9aa15f56a46362542aa075281c92d965b17cd59c7c7fac9c45",
+    "after": "8f95045f4b1e2f9887c82576dade201a27be94966b446198f43a45a1704c72f0",
+    "unchanged": false
+  },
+  "heat/earth-069-defaults.png": {
+    "before": "252f57395677e3b7422184be0ef315ad65e5645934b3bac7228c3161f0a788f2",
+    "after": "3afd235400d5938cb19a93f4a7263cd7a926ee7a142854cbdd49e0df8418a698",
+    "unchanged": false
+  },
+  "heat/earth-075-defaults.png": {
+    "before": "d28f97f41b7c34888ee50d863839204d371eb05b6dd8744b5ecc4dfe5779251b",
+    "after": "58e7bee2474ae3c3657825785dd8d92acdf3b326c3afe907ef3398cbfdcbdd9d",
+    "unchanged": false
+  },
+  "heat/earth-103-defaults.png": {
+    "before": "64d4cf7d3b5333bbe1226878bce70476506a67c8a72f8aab049be0ee7077fa1c",
+    "after": "c2854a70614c8d20f3f5b457a2bd80d7bca767534b13fec1701bac2300de4cc8",
+    "unchanged": false
+  },
+  "heat/earth-109-crisp.png": {
+    "before": "758b6a3762fd47c3b27ab0856ba9ca93a542062387d1ad54e7d01efd591cf5fa",
+    "after": "ca6c872a7418eced70a1253b22f56d16c43f7398800066b251416c536b173201",
+    "unchanged": false
+  },
+  "heat/earth-109-defaults.png": {
+    "before": "7e3465eacae4f6f6c5ff2af86348854b53f4e79bcd8595a80e6e4ab462225f07",
+    "after": "722f633ded4bde330df7ec834fb6386880df6454256c8ebbbf1e94c099676c1f",
+    "unchanged": false
+  },
+  "heat/earth-115-defaults.png": {
+    "before": "058931f8257baf630fc6caec1ab990e0d97a4ebe51e81ab6c2180772e28ddb55",
+    "after": "db1abeae3f6e5e19192e6e4e943e2b0e21d3a50eb08bb6d08718b4753564955a",
+    "unchanged": false
+  },
+  "heat/earth-paused.png": {
+    "before": "65fd7ae31a65d6c506a862876c0839295b982abc89b8753ba715f5b8014c54b9",
+    "after": "944dda3ec7fe5152f8b80c9124c3e992bba88c73014c5a700a3a2e78a68a1f3a",
+    "unchanged": false
+  },
+  "heat/hell/frame-000.png": {
+    "before": "58f7736b7f7b5eee099cb8ee75d104599a2909e6d95460972732b48620267937",
+    "after": "58f7736b7f7b5eee099cb8ee75d104599a2909e6d95460972732b48620267937",
+    "unchanged": true
+  },
+  "heat/hell/frame-001.png": {
+    "before": "2b3195b08ca94bf12e68150087fde7acc2ff70722d715b30e2b870e3bfb9062e",
+    "after": "2b3195b08ca94bf12e68150087fde7acc2ff70722d715b30e2b870e3bfb9062e",
+    "unchanged": true
+  },
+  "heat/hell/frame-002.png": {
+    "before": "c896981f16b3535573fa7bf767bb5f35de6a3406e7fbb79db1b57537f23e4998",
+    "after": "c896981f16b3535573fa7bf767bb5f35de6a3406e7fbb79db1b57537f23e4998",
+    "unchanged": true
+  },
+  "heat/hell/frame-003.png": {
+    "before": "6d093760197c77ab039e8f9f598c207af1a9db6b22158f84ab391f4d71817d83",
+    "after": "6d093760197c77ab039e8f9f598c207af1a9db6b22158f84ab391f4d71817d83",
+    "unchanged": true
+  },
+  "heat/hell/frame-004.png": {
+    "before": "69a958856a97984e48609cbeb74f3894f86d62f8e930fb5d55e16505856d1e70",
+    "after": "69a958856a97984e48609cbeb74f3894f86d62f8e930fb5d55e16505856d1e70",
+    "unchanged": true
+  },
+  "heat/hell/frame-005.png": {
+    "before": "b5e6c94943551cfc9f30e5a416fdef2de229ef271b613928e4300ae4acffac0e",
+    "after": "b5e6c94943551cfc9f30e5a416fdef2de229ef271b613928e4300ae4acffac0e",
+    "unchanged": true
+  },
+  "heat/hell/frame-006.png": {
+    "before": "a3b3f9290006577a0e4648f3d096d401f570c63830f4a7ec9093cf8ebda03367",
+    "after": "a3b3f9290006577a0e4648f3d096d401f570c63830f4a7ec9093cf8ebda03367",
+    "unchanged": true
+  },
+  "heat/hell/frame-007.png": {
+    "before": "f4aae231f81ade0833512b11a56365bb87a850a0cdc96576cf291947e5f3bced",
+    "after": "f4aae231f81ade0833512b11a56365bb87a850a0cdc96576cf291947e5f3bced",
+    "unchanged": true
+  },
+  "heat/hell/frame-008.png": {
+    "before": "2ceb95902793ff8e0dd646341cc762fd757c3a4b3fa4f07d8e5f81bf62df9ac7",
+    "after": "2ceb95902793ff8e0dd646341cc762fd757c3a4b3fa4f07d8e5f81bf62df9ac7",
+    "unchanged": true
+  },
+  "heat/hell/frame-009.png": {
+    "before": "d5a1f58b5ff707bb40ebf5ae44405d2b95c5836659f2bcbbb52b6a2e0df777e3",
+    "after": "d5a1f58b5ff707bb40ebf5ae44405d2b95c5836659f2bcbbb52b6a2e0df777e3",
+    "unchanged": true
+  },
+  "heat/hell/frame-010.png": {
+    "before": "2ca6197729089e251deccd78757876f212a4d9c886cd431cdede4d3dca250b43",
+    "after": "2ca6197729089e251deccd78757876f212a4d9c886cd431cdede4d3dca250b43",
+    "unchanged": true
+  },
+  "heat/hell/frame-011.png": {
+    "before": "be9780a64641e36fa54667bb7654b5b3bfb36de198c11056ae0c2328572611a6",
+    "after": "be9780a64641e36fa54667bb7654b5b3bfb36de198c11056ae0c2328572611a6",
+    "unchanged": true
+  },
+  "heat/hell/frame-012.png": {
+    "before": "499f2234a696a635a68aff47af539c3a1048311d900e36f198e8017d956671d1",
+    "after": "499f2234a696a635a68aff47af539c3a1048311d900e36f198e8017d956671d1",
+    "unchanged": true
+  },
+  "heat/hell/frame-013.png": {
+    "before": "90fdd692a464e6334050cc9553299155f1d3cd3bce4ffabfbb72a2857f1deb49",
+    "after": "90fdd692a464e6334050cc9553299155f1d3cd3bce4ffabfbb72a2857f1deb49",
+    "unchanged": true
+  },
+  "heat/hell/frame-014.png": {
+    "before": "e2022d3759d122c84c0b9fad8db2eed3a8b78f7e1fd3b726cf4f86ca1b6edb98",
+    "after": "e2022d3759d122c84c0b9fad8db2eed3a8b78f7e1fd3b726cf4f86ca1b6edb98",
+    "unchanged": true
+  },
+  "heat/hell/frame-015.png": {
+    "before": "42a17c0df6e5ee876c31ba5eb8d9bfdafb798c29cefe89673b6697dea8ce98f4",
+    "after": "42a17c0df6e5ee876c31ba5eb8d9bfdafb798c29cefe89673b6697dea8ce98f4",
+    "unchanged": true
+  },
+  "heat/hell/frame-016.png": {
+    "before": "50c2e071a3dd997c9f874daca7b66cb7feae17aac4b30b91fa34074a694da02c",
+    "after": "50c2e071a3dd997c9f874daca7b66cb7feae17aac4b30b91fa34074a694da02c",
+    "unchanged": true
+  },
+  "heat/hell/frame-017.png": {
+    "before": "f23da9f6eca64ffa745a41fdd160a0a1e9cfdc9f58846ba39c3e07f800e0c0e3",
+    "after": "f23da9f6eca64ffa745a41fdd160a0a1e9cfdc9f58846ba39c3e07f800e0c0e3",
+    "unchanged": true
+  },
+  "heat/hell/frame-018.png": {
+    "before": "431d55b4b387e2449a4c54bf4319ca0c66cc03247546df59efe24a0c79eab208",
+    "after": "431d55b4b387e2449a4c54bf4319ca0c66cc03247546df59efe24a0c79eab208",
+    "unchanged": true
+  },
+  "heat/hell/frame-019.png": {
+    "before": "0f26e5d7a5d53fa10543930e81cde5e7d7406b1414cc766a51d0c463fea25101",
+    "after": "0f26e5d7a5d53fa10543930e81cde5e7d7406b1414cc766a51d0c463fea25101",
+    "unchanged": true
+  },
+  "heat/hell/frame-020.png": {
+    "before": "98b043ee23ad514f434087f51c1cba6333265ed802300433e08434f2a5953d99",
+    "after": "98b043ee23ad514f434087f51c1cba6333265ed802300433e08434f2a5953d99",
+    "unchanged": true
+  },
+  "heat/hell/frame-021.png": {
+    "before": "db501699929aea437fa73d6d51600653247e2426572cdf59ec2597b6a338985d",
+    "after": "db501699929aea437fa73d6d51600653247e2426572cdf59ec2597b6a338985d",
+    "unchanged": true
+  },
+  "heat/hell/frame-022.png": {
+    "before": "f78857bbafa43b19a6eaf6f7c7a881bf567a3807e9936026676c696ec76c0ccd",
+    "after": "f78857bbafa43b19a6eaf6f7c7a881bf567a3807e9936026676c696ec76c0ccd",
+    "unchanged": true
+  },
+  "heat/hell/frame-023.png": {
+    "before": "81d20b7f87d8a2177c35bf22c5910398bdd1e7babf20ff8b2c449b48363b7008",
+    "after": "81d20b7f87d8a2177c35bf22c5910398bdd1e7babf20ff8b2c449b48363b7008",
+    "unchanged": true
+  },
+  "heat/hell/frame-024.png": {
+    "before": "dfc55f2356f8e27f5aa837653dea368d0c9407180f3fd4a26726289976c93204",
+    "after": "dfc55f2356f8e27f5aa837653dea368d0c9407180f3fd4a26726289976c93204",
+    "unchanged": true
+  },
+  "heat/hell/frame-025.png": {
+    "before": "80588f20352211238dca9fc92985cb41f954960ab23649711e2b8523cc696a20",
+    "after": "80588f20352211238dca9fc92985cb41f954960ab23649711e2b8523cc696a20",
+    "unchanged": true
+  },
+  "heat/hell/frame-026.png": {
+    "before": "34ace5ffd1b5fd6db191efcc811b15cf5220656257da4457d2c1ddff461e27a1",
+    "after": "34ace5ffd1b5fd6db191efcc811b15cf5220656257da4457d2c1ddff461e27a1",
+    "unchanged": true
+  },
+  "heat/hell/frame-027.png": {
+    "before": "743e95a5aabe03bec2fce29f2cc8781ac85414e3b14451ca3187fa45eee66b42",
+    "after": "743e95a5aabe03bec2fce29f2cc8781ac85414e3b14451ca3187fa45eee66b42",
+    "unchanged": true
+  },
+  "heat/hell/frame-028.png": {
+    "before": "503f941bbc7200cd799845dd74f5dc8cb139f2e6d6d984a6d9ed61deae67191a",
+    "after": "503f941bbc7200cd799845dd74f5dc8cb139f2e6d6d984a6d9ed61deae67191a",
+    "unchanged": true
+  },
+  "heat/hell/frame-029.png": {
+    "before": "7efb1298460ed905098b91fcb94f805a4de3b456729bfdda6e8da258d2f873c2",
+    "after": "7efb1298460ed905098b91fcb94f805a4de3b456729bfdda6e8da258d2f873c2",
+    "unchanged": true
+  },
+  "heat/hell/frame-030.png": {
+    "before": "a06bf6b7d941b465883de62208242f4c734bfa5e0307e2ab60e126550b922859",
+    "after": "a06bf6b7d941b465883de62208242f4c734bfa5e0307e2ab60e126550b922859",
+    "unchanged": true
+  },
+  "heat/hell/frame-031.png": {
+    "before": "2dcd497ecb855a9d2c0b47c82cd7bd8fa129195dbbdd5daed9970bb2c373bccf",
+    "after": "2dcd497ecb855a9d2c0b47c82cd7bd8fa129195dbbdd5daed9970bb2c373bccf",
+    "unchanged": true
+  },
+  "heat/hell/frame-032.png": {
+    "before": "d9205c77d3045d67d6490d2ed120b6da95a67dffe5f1717f8d1d1986c69fd105",
+    "after": "d9205c77d3045d67d6490d2ed120b6da95a67dffe5f1717f8d1d1986c69fd105",
+    "unchanged": true
+  },
+  "heat/hell/frame-033.png": {
+    "before": "856283c3decb6675a5be998c31b7e37b6ea54e94a577b4edbfe3cc156d69729d",
+    "after": "856283c3decb6675a5be998c31b7e37b6ea54e94a577b4edbfe3cc156d69729d",
+    "unchanged": true
+  },
+  "heat/hell/frame-034.png": {
+    "before": "da6c96b0a307b766d851ecb492db31ac3eb435467893db99458b5d7e97710e0b",
+    "after": "da6c96b0a307b766d851ecb492db31ac3eb435467893db99458b5d7e97710e0b",
+    "unchanged": true
+  },
+  "heat/hell/frame-035.png": {
+    "before": "90aafbb634b5f3d8ec2b255270176b58d4a1a5658e587e9d5644c5d1b57927b8",
+    "after": "90aafbb634b5f3d8ec2b255270176b58d4a1a5658e587e9d5644c5d1b57927b8",
+    "unchanged": true
+  },
+  "heat/hell/frame-036.png": {
+    "before": "939bf01321b6af73c4f0ec3d890bc7561cbf27f6454794cc1f99c28fd1b1381e",
+    "after": "939bf01321b6af73c4f0ec3d890bc7561cbf27f6454794cc1f99c28fd1b1381e",
+    "unchanged": true
+  },
+  "heat/hell/frame-037.png": {
+    "before": "f3918132b72ee517cf6fe23d95b0cb6b2c096f1d8164637fa52a30b35bd41d96",
+    "after": "f3918132b72ee517cf6fe23d95b0cb6b2c096f1d8164637fa52a30b35bd41d96",
+    "unchanged": true
+  },
+  "heat/hell/frame-038.png": {
+    "before": "9f2b42e29f3711f64ad1c213a010dcc1b487a58c9fb5ec94db53ce49f0a14f91",
+    "after": "9f2b42e29f3711f64ad1c213a010dcc1b487a58c9fb5ec94db53ce49f0a14f91",
+    "unchanged": true
+  },
+  "heat/hell/frame-039.png": {
+    "before": "884041cc715e11ca714b14d50b9354c68b0e41f7a58784cbeed80d8884283117",
+    "after": "884041cc715e11ca714b14d50b9354c68b0e41f7a58784cbeed80d8884283117",
+    "unchanged": true
+  },
+  "heat/hell/frame-040.png": {
+    "before": "5097ed6e5cf37e6b66c8d1a778d04ce6f2c974ad5aa8a63b037ce1ff660a9495",
+    "after": "5097ed6e5cf37e6b66c8d1a778d04ce6f2c974ad5aa8a63b037ce1ff660a9495",
+    "unchanged": true
+  },
+  "heat/hell/frame-041.png": {
+    "before": "64978172fd842d2127cbe401ee45b56c9f4742a23fc5b5fdc7bc47ae30964fe1",
+    "after": "64978172fd842d2127cbe401ee45b56c9f4742a23fc5b5fdc7bc47ae30964fe1",
+    "unchanged": true
+  },
+  "heat/hell/frame-042.png": {
+    "before": "b571b5e00f6a237c3c20a450d6f1e351ca7e92d2b0d44bed4133c74d7ec90ea4",
+    "after": "b571b5e00f6a237c3c20a450d6f1e351ca7e92d2b0d44bed4133c74d7ec90ea4",
+    "unchanged": true
+  },
+  "heat/hell/frame-043.png": {
+    "before": "2260794b58e15fb2e4f7c8a1b589c54b013b37804c7f51e8a97c2de1ed1abd55",
+    "after": "2260794b58e15fb2e4f7c8a1b589c54b013b37804c7f51e8a97c2de1ed1abd55",
+    "unchanged": true
+  },
+  "heat/hell/frame-044.png": {
+    "before": "edcf52ead8acabbac96f554d00f9ce9fcafe1c2978dab58e09b553158e66a930",
+    "after": "edcf52ead8acabbac96f554d00f9ce9fcafe1c2978dab58e09b553158e66a930",
+    "unchanged": true
+  },
+  "heat/hell/frame-045.png": {
+    "before": "34734f590f75e98a8101bf497ef98098ceacdd4a98a2b648b7e71703f277a3bd",
+    "after": "34734f590f75e98a8101bf497ef98098ceacdd4a98a2b648b7e71703f277a3bd",
+    "unchanged": true
+  },
+  "heat/hell/frame-046.png": {
+    "before": "c060a69f9aca5f7b3214cdb06488543e21730e9c95c4b2d56b3176adcbbc5651",
+    "after": "c060a69f9aca5f7b3214cdb06488543e21730e9c95c4b2d56b3176adcbbc5651",
+    "unchanged": true
+  },
+  "heat/hell/frame-047.png": {
+    "before": "8664b2ca1efc1530f265055d64d01387f4be4ec716a44ccf45ddbf30db0adabd",
+    "after": "8664b2ca1efc1530f265055d64d01387f4be4ec716a44ccf45ddbf30db0adabd",
+    "unchanged": true
+  },
+  "heat/hell/frame-048.png": {
+    "before": "55411b27bed97f6ffc462dc0cdf1c936d970c707c098bfbb99b12b27acbc3f21",
+    "after": "55411b27bed97f6ffc462dc0cdf1c936d970c707c098bfbb99b12b27acbc3f21",
+    "unchanged": true
+  },
+  "heat/hell/frame-049.png": {
+    "before": "f2e4d49b657137f1f23fd1471c0c4f99b0bd30a8bacd250fad7aedac51e5adf4",
+    "after": "f2e4d49b657137f1f23fd1471c0c4f99b0bd30a8bacd250fad7aedac51e5adf4",
+    "unchanged": true
+  },
+  "heat/hell/frame-050.png": {
+    "before": "2d0462e2caa02492cba77714c9e32feb8f92307c2f35e7061c10b0daf8664e1b",
+    "after": "2d0462e2caa02492cba77714c9e32feb8f92307c2f35e7061c10b0daf8664e1b",
+    "unchanged": true
+  },
+  "heat/hell/frame-051.png": {
+    "before": "01e4ab076ec62d4ccc125c22fa8611894464e9163e298bfa15a9f636beadf11d",
+    "after": "01e4ab076ec62d4ccc125c22fa8611894464e9163e298bfa15a9f636beadf11d",
+    "unchanged": true
+  },
+  "heat/hell/frame-052.png": {
+    "before": "f9b86d582c7e2a5e9471336725f19a2e2dec7670276061886691cf7d7ea8a0c1",
+    "after": "f9b86d582c7e2a5e9471336725f19a2e2dec7670276061886691cf7d7ea8a0c1",
+    "unchanged": true
+  },
+  "heat/hell/frame-053.png": {
+    "before": "fce11c791a2661b5ef1500d4e683810366bb8c516867a030c9237cab256ce891",
+    "after": "fce11c791a2661b5ef1500d4e683810366bb8c516867a030c9237cab256ce891",
+    "unchanged": true
+  },
+  "heat/hell/frame-054.png": {
+    "before": "0a1fef480bad5532a19a3fd94209e54e099574c8efc32b21c69925cfa95d152a",
+    "after": "0a1fef480bad5532a19a3fd94209e54e099574c8efc32b21c69925cfa95d152a",
+    "unchanged": true
+  },
+  "heat/hell/frame-055.png": {
+    "before": "855aa117fa5f3b599a8edac92a1c8a8b283001e3732720e94bb38369d44d25b8",
+    "after": "855aa117fa5f3b599a8edac92a1c8a8b283001e3732720e94bb38369d44d25b8",
+    "unchanged": true
+  },
+  "heat/hell/frame-056.png": {
+    "before": "dd6a94737b6ea861382a747b882e15a2cc9a3dbe757e4ca7a4f553923cdad406",
+    "after": "dd6a94737b6ea861382a747b882e15a2cc9a3dbe757e4ca7a4f553923cdad406",
+    "unchanged": true
+  },
+  "heat/hell/frame-057.png": {
+    "before": "3a8607a30e267e8dabb56048d19d26ab70a6b92fb59d874f0233fb0f7b97d623",
+    "after": "3a8607a30e267e8dabb56048d19d26ab70a6b92fb59d874f0233fb0f7b97d623",
+    "unchanged": true
+  },
+  "heat/hell/frame-058.png": {
+    "before": "9ed70870a8eefbf861462341919368c628a4e1ff28711625d5395cb20c459ab1",
+    "after": "9ed70870a8eefbf861462341919368c628a4e1ff28711625d5395cb20c459ab1",
+    "unchanged": true
+  },
+  "heat/hell/frame-059.png": {
+    "before": "cb6fee9f00c60de1b3b9d1e685f41b33472413312242567ed8bde043064c4cff",
+    "after": "cb6fee9f00c60de1b3b9d1e685f41b33472413312242567ed8bde043064c4cff",
+    "unchanged": true
+  },
+  "heat/hell/frame-060.png": {
+    "before": "8dec76c5c4ac47942f0c8a538ae99aebb89dda11786872d38a21da092e1a6b0d",
+    "after": "8dec76c5c4ac47942f0c8a538ae99aebb89dda11786872d38a21da092e1a6b0d",
+    "unchanged": true
+  },
+  "heat/hell/frame-061.png": {
+    "before": "b2c2f6332849f342e00ec9e2a6b6f96687aa968b071c5b32f3c38fa3e1477195",
+    "after": "b2c2f6332849f342e00ec9e2a6b6f96687aa968b071c5b32f3c38fa3e1477195",
+    "unchanged": true
+  },
+  "heat/hell/frame-062.png": {
+    "before": "56df3e7b4dd7992ecc349f12de619bf9b5677cb8313621e30314b90d85f26be0",
+    "after": "56df3e7b4dd7992ecc349f12de619bf9b5677cb8313621e30314b90d85f26be0",
+    "unchanged": true
+  },
+  "heat/hell/frame-063.png": {
+    "before": "c91776a5854f254de2dc86d1c4fa24e2b0c78fba79dc909c45f6c0c5538104c0",
+    "after": "c91776a5854f254de2dc86d1c4fa24e2b0c78fba79dc909c45f6c0c5538104c0",
+    "unchanged": true
+  },
+  "heat/hell/frame-064.png": {
+    "before": "acb0d2ce1d9412fb3155f093dab3c4c2eeee6d84907d29396de97551fb2e67a1",
+    "after": "acb0d2ce1d9412fb3155f093dab3c4c2eeee6d84907d29396de97551fb2e67a1",
+    "unchanged": true
+  },
+  "heat/hell/frame-065.png": {
+    "before": "6da2f024bf5023eec6c644711c012654d87e76cecce1c9a2cf3b5efcd233a4af",
+    "after": "6da2f024bf5023eec6c644711c012654d87e76cecce1c9a2cf3b5efcd233a4af",
+    "unchanged": true
+  },
+  "heat/hell/frame-066.png": {
+    "before": "999d04e840c7de44c8cad614827dbc2200113154d18eba7a7ad6aa712ed47b43",
+    "after": "999d04e840c7de44c8cad614827dbc2200113154d18eba7a7ad6aa712ed47b43",
+    "unchanged": true
+  },
+  "heat/hell/frame-067.png": {
+    "before": "e1d12f5306e3caae80c81360e9460599716fb38b3b3f9db8bf7d09ea1d357de3",
+    "after": "e1d12f5306e3caae80c81360e9460599716fb38b3b3f9db8bf7d09ea1d357de3",
+    "unchanged": true
+  },
+  "heat/hell/frame-068.png": {
+    "before": "df533732a658a1b8ab0acd368bffbdabe4487361ed56e47c9f933250d31fd454",
+    "after": "df533732a658a1b8ab0acd368bffbdabe4487361ed56e47c9f933250d31fd454",
+    "unchanged": true
+  },
+  "heat/hell/frame-069.png": {
+    "before": "c976ec44b10968c2726404832b3864231b73f1db203b4eabc7daaedc1dade3cb",
+    "after": "c976ec44b10968c2726404832b3864231b73f1db203b4eabc7daaedc1dade3cb",
+    "unchanged": true
+  },
+  "heat/hell/frame-070.png": {
+    "before": "f4fe4c6805928b630465e2176e7edd3fc8ea4a61b77a48c4989bad02d34dc60c",
+    "after": "f4fe4c6805928b630465e2176e7edd3fc8ea4a61b77a48c4989bad02d34dc60c",
+    "unchanged": true
+  },
+  "heat/hell/frame-071.png": {
+    "before": "99e4e498f951a3c2623fe30e176f9221be86cbd50dca48a59d161a0036d01cff",
+    "after": "99e4e498f951a3c2623fe30e176f9221be86cbd50dca48a59d161a0036d01cff",
+    "unchanged": true
+  },
+  "heat/hell/frame-072.png": {
+    "before": "db0afd968d072159b584288595bbadb0a853a7cca4173121e65c1d571716b074",
+    "after": "db0afd968d072159b584288595bbadb0a853a7cca4173121e65c1d571716b074",
+    "unchanged": true
+  },
+  "heat/hell/frame-073.png": {
+    "before": "33508066475077271de8c8dc6ecba42b529fd8e1e5e6a1ec574c56633aa58b69",
+    "after": "33508066475077271de8c8dc6ecba42b529fd8e1e5e6a1ec574c56633aa58b69",
+    "unchanged": true
+  },
+  "heat/hell/frame-074.png": {
+    "before": "08d73d5acbec7d0e3b554f45925c34ad1b40e8dde1bec1701836c6f56cf9236f",
+    "after": "08d73d5acbec7d0e3b554f45925c34ad1b40e8dde1bec1701836c6f56cf9236f",
+    "unchanged": true
+  },
+  "heat/hell/frame-075.png": {
+    "before": "4ef0fdaf5d9bcda9ad7dc04e34386a6fddd2c4c969db2ccc1f4ffc4ca238795e",
+    "after": "4ef0fdaf5d9bcda9ad7dc04e34386a6fddd2c4c969db2ccc1f4ffc4ca238795e",
+    "unchanged": true
+  },
+  "heat/hell/frame-076.png": {
+    "before": "e8f655487dbe372cf2fb623fc0377612bf6db6b1f2588352bcfb2a49c6762bc1",
+    "after": "e8f655487dbe372cf2fb623fc0377612bf6db6b1f2588352bcfb2a49c6762bc1",
+    "unchanged": true
+  },
+  "heat/hell/frame-077.png": {
+    "before": "9673ed6ef2c4dd14eaa5eb5121569ed14ec92c609685b2130b26d43dd82b8a39",
+    "after": "9673ed6ef2c4dd14eaa5eb5121569ed14ec92c609685b2130b26d43dd82b8a39",
+    "unchanged": true
+  },
+  "heat/hell/frame-078.png": {
+    "before": "6d1f990b459b2e7fcebea9fde33a9dbe0db0283075c3683470f5b5cffc7dff93",
+    "after": "6d1f990b459b2e7fcebea9fde33a9dbe0db0283075c3683470f5b5cffc7dff93",
+    "unchanged": true
+  },
+  "heat/hell/frame-079.png": {
+    "before": "bf881dfe6e861fcac1a789381b0a8924bf4e648d0f3e268af34e85a096ff68c1",
+    "after": "bf881dfe6e861fcac1a789381b0a8924bf4e648d0f3e268af34e85a096ff68c1",
+    "unchanged": true
+  },
+  "heat/hell/frame-080.png": {
+    "before": "9ea8f49cc8b792e9e5fa4e4c325101a69716016b2cdfcd43d41792c7e802ec6b",
+    "after": "9ea8f49cc8b792e9e5fa4e4c325101a69716016b2cdfcd43d41792c7e802ec6b",
+    "unchanged": true
+  },
+  "heat/hell/frame-081.png": {
+    "before": "0a9679ef43933e71781d6f1782bb7b86f871a43f661221573ed31d8121b81d64",
+    "after": "0a9679ef43933e71781d6f1782bb7b86f871a43f661221573ed31d8121b81d64",
+    "unchanged": true
+  },
+  "heat/hell/frame-082.png": {
+    "before": "c8d536bbd4912b588d505f7da530d9f1beb45b6750f3214b912907df8c7b5607",
+    "after": "c8d536bbd4912b588d505f7da530d9f1beb45b6750f3214b912907df8c7b5607",
+    "unchanged": true
+  },
+  "heat/hell/frame-083.png": {
+    "before": "31bbc602e2d41cc817b5f7b65ee7b37c32ac3bf2b5c9fa0d2824989ab8b2537e",
+    "after": "31bbc602e2d41cc817b5f7b65ee7b37c32ac3bf2b5c9fa0d2824989ab8b2537e",
+    "unchanged": true
+  },
+  "heat/hell/frame-084.png": {
+    "before": "47c4e6ba7771432690556e25f7051e3d7c51256fc7325e32dc62c6871199d675",
+    "after": "47c4e6ba7771432690556e25f7051e3d7c51256fc7325e32dc62c6871199d675",
+    "unchanged": true
+  },
+  "heat/hell/frame-085.png": {
+    "before": "f9ae0734275a6235102970d607593626498bad0056442f94f42ea3f48808c0eb",
+    "after": "f9ae0734275a6235102970d607593626498bad0056442f94f42ea3f48808c0eb",
+    "unchanged": true
+  },
+  "heat/hell/frame-086.png": {
+    "before": "c6018b6499d18d5c841e1675561533b3b7810c88d2161d45e6432c14eea471ad",
+    "after": "c6018b6499d18d5c841e1675561533b3b7810c88d2161d45e6432c14eea471ad",
+    "unchanged": true
+  },
+  "heat/hell/frame-087.png": {
+    "before": "ba21a2a47870ec81b5d86c21af4ddb7bd375932f30948a8a5a8d95fe9f662bc7",
+    "after": "ba21a2a47870ec81b5d86c21af4ddb7bd375932f30948a8a5a8d95fe9f662bc7",
+    "unchanged": true
+  },
+  "heat/hell/frame-088.png": {
+    "before": "7a3bc761085234116d5e3ec8924060b87d786bd4aaf5dc4e70d008c7d4505c4b",
+    "after": "7a3bc761085234116d5e3ec8924060b87d786bd4aaf5dc4e70d008c7d4505c4b",
+    "unchanged": true
+  },
+  "heat/hell/frame-089.png": {
+    "before": "1927b089119be22fe1ebd50f91375e435006ccf82496d9c74b7985e1ba05eaf8",
+    "after": "1927b089119be22fe1ebd50f91375e435006ccf82496d9c74b7985e1ba05eaf8",
+    "unchanged": true
+  },
+  "heat/hell/frame-090.png": {
+    "before": "ccb169c02d58c0443fdb8571a7f1f10973fe7c7283848249baba18bffe97a08e",
+    "after": "ccb169c02d58c0443fdb8571a7f1f10973fe7c7283848249baba18bffe97a08e",
+    "unchanged": true
+  },
+  "heat/hell/frame-091.png": {
+    "before": "8ec878e90276fc146a1b2cd3b0992e8f46265a705ea9c5d1bb550cd9ae9dd292",
+    "after": "8ec878e90276fc146a1b2cd3b0992e8f46265a705ea9c5d1bb550cd9ae9dd292",
+    "unchanged": true
+  },
+  "heat/hell/frame-092.png": {
+    "before": "b7f70264de0dcf862357870cf130c79a4a7778981a45ad4a8c63802a4fed2192",
+    "after": "b7f70264de0dcf862357870cf130c79a4a7778981a45ad4a8c63802a4fed2192",
+    "unchanged": true
+  },
+  "heat/hell/frame-093.png": {
+    "before": "bf5e1dfb93d230577ba4b16bc7838e5ed0ce90191a75ae1218426eb95da11678",
+    "after": "bf5e1dfb93d230577ba4b16bc7838e5ed0ce90191a75ae1218426eb95da11678",
+    "unchanged": true
+  },
+  "heat/hell/frame-094.png": {
+    "before": "e0af13962777ca31ca54411a880f116cfc2d3c362cc5f719079fae55c6f2b212",
+    "after": "e0af13962777ca31ca54411a880f116cfc2d3c362cc5f719079fae55c6f2b212",
+    "unchanged": true
+  },
+  "heat/hell/frame-095.png": {
+    "before": "95beafc981cd8241887fc92f80f49cabd6f7c7e8fb1c2ec171e4e06186674fa2",
+    "after": "95beafc981cd8241887fc92f80f49cabd6f7c7e8fb1c2ec171e4e06186674fa2",
+    "unchanged": true
+  },
+  "heat/hell/frame-096.png": {
+    "before": "96cee1eec805ca987e0f35f9540b5ac7a5148863a8f38535534ba3a8a71212ca",
+    "after": "96cee1eec805ca987e0f35f9540b5ac7a5148863a8f38535534ba3a8a71212ca",
+    "unchanged": true
+  },
+  "heat/hell/frame-097.png": {
+    "before": "b00019fc06e52cd24819eacf08e9d72ade5e225a1013397667e610ecb02143f1",
+    "after": "b00019fc06e52cd24819eacf08e9d72ade5e225a1013397667e610ecb02143f1",
+    "unchanged": true
+  },
+  "heat/hell/frame-098.png": {
+    "before": "2d56926367eff9ad153bb13260b784fade1e59e569be2f2859b3e22562aadfab",
+    "after": "2d56926367eff9ad153bb13260b784fade1e59e569be2f2859b3e22562aadfab",
+    "unchanged": true
+  },
+  "heat/hell/frame-099.png": {
+    "before": "a0392a549005ec65253787a46f0f375368cae07b4f9d866ab2ef8d405529afbb",
+    "after": "a0392a549005ec65253787a46f0f375368cae07b4f9d866ab2ef8d405529afbb",
+    "unchanged": true
+  },
+  "heat/hell/frame-100.png": {
+    "before": "858418fd0198bc7e68d4280da5ac33998b0cf8ef1b6082d213862178c10211ea",
+    "after": "858418fd0198bc7e68d4280da5ac33998b0cf8ef1b6082d213862178c10211ea",
+    "unchanged": true
+  },
+  "heat/hell/frame-101.png": {
+    "before": "eeaf4f0121aece5c42bfdf085d6d8e7a0b93817f4c59276b193365797531f2d5",
+    "after": "eeaf4f0121aece5c42bfdf085d6d8e7a0b93817f4c59276b193365797531f2d5",
+    "unchanged": true
+  },
+  "heat/hell/frame-102.png": {
+    "before": "8e393ceb930f462d1a23e924922748f43e46764aafabd6c25cf67d388e1eae90",
+    "after": "8e393ceb930f462d1a23e924922748f43e46764aafabd6c25cf67d388e1eae90",
+    "unchanged": true
+  },
+  "heat/hell/frame-103.png": {
+    "before": "766650420e7ae3c7c8922b2685dace1f481e00fd66b69951c5f3e6600a6301b3",
+    "after": "766650420e7ae3c7c8922b2685dace1f481e00fd66b69951c5f3e6600a6301b3",
+    "unchanged": true
+  },
+  "heat/hell/frame-104.png": {
+    "before": "bf64b53c91d652c59a3528d86ad0d76783d3a152d15ee01f72ad323f87ad27fc",
+    "after": "bf64b53c91d652c59a3528d86ad0d76783d3a152d15ee01f72ad323f87ad27fc",
+    "unchanged": true
+  },
+  "heat/hell/frame-105.png": {
+    "before": "13a37d09998a203ee504b7887dc9b3bbad96803fae0b9cc815c086cd3e03bf99",
+    "after": "13a37d09998a203ee504b7887dc9b3bbad96803fae0b9cc815c086cd3e03bf99",
+    "unchanged": true
+  },
+  "heat/hell/frame-106.png": {
+    "before": "715029e1c074b0d81e2a416698329ee1ef567e8db05983cce9b9b5029646e18e",
+    "after": "715029e1c074b0d81e2a416698329ee1ef567e8db05983cce9b9b5029646e18e",
+    "unchanged": true
+  },
+  "heat/hell/frame-107.png": {
+    "before": "d8482a91569c38ef00940f48e69b132a1f9787a38609b450f0fca4e5ee7e58ec",
+    "after": "d8482a91569c38ef00940f48e69b132a1f9787a38609b450f0fca4e5ee7e58ec",
+    "unchanged": true
+  },
+  "heat/hell/frame-108.png": {
+    "before": "76e9b8a1c3676de12f5ac657f805c884963d580df32545afbafba553058707ce",
+    "after": "76e9b8a1c3676de12f5ac657f805c884963d580df32545afbafba553058707ce",
+    "unchanged": true
+  },
+  "heat/hell/frame-109.png": {
+    "before": "45035de01a1143d9f642f06b64e7702b6552d6a7c5ba361c89c7a5a0c2a849a9",
+    "after": "45035de01a1143d9f642f06b64e7702b6552d6a7c5ba361c89c7a5a0c2a849a9",
+    "unchanged": true
+  },
+  "heat/hell/frame-110.png": {
+    "before": "2d81aba6e10ed2e393dfb20db0efec910dd50c3c31dd8ee1abaa006ebcf0e392",
+    "after": "2d81aba6e10ed2e393dfb20db0efec910dd50c3c31dd8ee1abaa006ebcf0e392",
+    "unchanged": true
+  },
+  "heat/hell/frame-111.png": {
+    "before": "461db4e2ab0e08990414e4ebd83ad281ae69f1c8a8578f8847404510c8bc8524",
+    "after": "461db4e2ab0e08990414e4ebd83ad281ae69f1c8a8578f8847404510c8bc8524",
+    "unchanged": true
+  },
+  "heat/hell/frame-112.png": {
+    "before": "3def64c4fb646a5276ae6366917875e70cc37e6ff4f0e87332aba3bf1d08e102",
+    "after": "3def64c4fb646a5276ae6366917875e70cc37e6ff4f0e87332aba3bf1d08e102",
+    "unchanged": true
+  },
+  "heat/hell/frame-113.png": {
+    "before": "fa3754449d15870bcf5f7455f45633150e9533290457437a2030e0c07ad6e991",
+    "after": "fa3754449d15870bcf5f7455f45633150e9533290457437a2030e0c07ad6e991",
+    "unchanged": true
+  },
+  "heat/hell/frame-114.png": {
+    "before": "337d096b6c9c9a76339fc054e74f710b48fbc89cc5f816080de8d9eb5b862069",
+    "after": "337d096b6c9c9a76339fc054e74f710b48fbc89cc5f816080de8d9eb5b862069",
+    "unchanged": true
+  },
+  "heat/hell/frame-115.png": {
+    "before": "51571ffcc8773a733d30044f01eae4c3bca9faa4addbf47535faf87725248138",
+    "after": "51571ffcc8773a733d30044f01eae4c3bca9faa4addbf47535faf87725248138",
+    "unchanged": true
+  },
+  "heat/hell/frame-116.png": {
+    "before": "8446a45922705230d86b72f763580ec169fa4da8236adf9099f519bb44e86543",
+    "after": "8446a45922705230d86b72f763580ec169fa4da8236adf9099f519bb44e86543",
+    "unchanged": true
+  },
+  "heat/hell/frame-117.png": {
+    "before": "3fa61b2485af3dfb1324ee16ffe587f8b3b8277bcd01ad2767e20e9f6ace6d3e",
+    "after": "3fa61b2485af3dfb1324ee16ffe587f8b3b8277bcd01ad2767e20e9f6ace6d3e",
+    "unchanged": true
+  },
+  "heat/hell/frame-118.png": {
+    "before": "743e191b2a88b38165a68d97d098ed56957168c72b04b794ffa05cfcc70269ea",
+    "after": "743e191b2a88b38165a68d97d098ed56957168c72b04b794ffa05cfcc70269ea",
+    "unchanged": true
+  },
+  "heat/hell/frame-119.png": {
+    "before": "4fb06be4e7c707fcf1c1cc1c674aea3dc2e0e1af4f3cc707979e9724a82431a0",
+    "after": "4fb06be4e7c707fcf1c1cc1c674aea3dc2e0e1af4f3cc707979e9724a82431a0",
+    "unchanged": true
+  },
+  "heat/hell/frame-120.png": {
+    "before": "adad2ac3a5fb37a678e2c4c1811c3e0c0d1d99d5ca1c6ce56c34280505515dfe",
+    "after": "adad2ac3a5fb37a678e2c4c1811c3e0c0d1d99d5ca1c6ce56c34280505515dfe",
+    "unchanged": true
+  },
+  "heat/hell/frame-121.png": {
+    "before": "3e1e0a2520dc31310882b5766d92864d9b0cd54dcd78ec094a0687d389289e33",
+    "after": "3e1e0a2520dc31310882b5766d92864d9b0cd54dcd78ec094a0687d389289e33",
+    "unchanged": true
+  },
+  "heat/hell/frame-122.png": {
+    "before": "bf1a9812b44441a69bb40da2ccaaf3c1ca2abfc6ef010c4bb834544de1337b8d",
+    "after": "bf1a9812b44441a69bb40da2ccaaf3c1ca2abfc6ef010c4bb834544de1337b8d",
+    "unchanged": true
+  },
+  "heat/hell/frame-123.png": {
+    "before": "fa70f87299dab55af9bc7a65f4e8d19dec009db523f04262afa59475da868605",
+    "after": "fa70f87299dab55af9bc7a65f4e8d19dec009db523f04262afa59475da868605",
+    "unchanged": true
+  },
+  "heat/hell/frame-124.png": {
+    "before": "0a05f0639ea5a180f3f75a50a22e8df7d4c0cc43878bb5a8e01285116df5ffc4",
+    "after": "0a05f0639ea5a180f3f75a50a22e8df7d4c0cc43878bb5a8e01285116df5ffc4",
+    "unchanged": true
+  },
+  "heat/hell/frame-125.png": {
+    "before": "05027fb346d0fa6b1510af8fbbe4c2da6b133bbeee6431db4b62e759b1f47cf1",
+    "after": "05027fb346d0fa6b1510af8fbbe4c2da6b133bbeee6431db4b62e759b1f47cf1",
+    "unchanged": true
+  },
+  "heat/hell/frame-126.png": {
+    "before": "14195422111536eb77c4b6338b4fbf537bf7341a2ac33476760353196125ecfe",
+    "after": "14195422111536eb77c4b6338b4fbf537bf7341a2ac33476760353196125ecfe",
+    "unchanged": true
+  },
+  "heat/hell/frame-127.png": {
+    "before": "1940b96ab26d7fddaf1b2d99cbd2a7eeea0c6acbf2a14a50b7bc4138f9a5534e",
+    "after": "1940b96ab26d7fddaf1b2d99cbd2a7eeea0c6acbf2a14a50b7bc4138f9a5534e",
+    "unchanged": true
+  },
+  "heat/hell/frame-128.png": {
+    "before": "5f94f1139f57f3fb3a6b34ca0007666f626bb8503c5d436b6a17b8ed7ff95793",
+    "after": "5f94f1139f57f3fb3a6b34ca0007666f626bb8503c5d436b6a17b8ed7ff95793",
+    "unchanged": true
+  },
+  "heat/hell/frame-129.png": {
+    "before": "333ae5d60120f8bc79e01e8951d103a3f76f461037dde58d4ebff418dae7039e",
+    "after": "333ae5d60120f8bc79e01e8951d103a3f76f461037dde58d4ebff418dae7039e",
+    "unchanged": true
+  },
+  "heat/hell/frame-130.png": {
+    "before": "9ca60ac2438a7b84b56bb3eacd265ed9eea3760fa0b849a38fd37a050106f1b3",
+    "after": "9ca60ac2438a7b84b56bb3eacd265ed9eea3760fa0b849a38fd37a050106f1b3",
+    "unchanged": true
+  },
+  "heat/hell/frame-131.png": {
+    "before": "5858384fb285acf2103ea649aec2a1cebba66296c82686cf41bc2c029ab09a41",
+    "after": "5858384fb285acf2103ea649aec2a1cebba66296c82686cf41bc2c029ab09a41",
+    "unchanged": true
+  },
+  "heat/hell/frame-132.png": {
+    "before": "e11edc97c054eed4bfe4b9cee8ba8cc6570e2c27d69c60fdf9f48cc26e4bded4",
+    "after": "e11edc97c054eed4bfe4b9cee8ba8cc6570e2c27d69c60fdf9f48cc26e4bded4",
+    "unchanged": true
+  },
+  "heat/hell/frame-133.png": {
+    "before": "acd37b28b09058afeaa08d72ea7fe43f5d98fe6cff4177332ab85e18e0d2b433",
+    "after": "acd37b28b09058afeaa08d72ea7fe43f5d98fe6cff4177332ab85e18e0d2b433",
+    "unchanged": true
+  },
+  "heat/hell/frame-134.png": {
+    "before": "37298ca49155ca66ad2b933d681d6aa6032bcb4637215c0baa2af485dcae18ae",
+    "after": "37298ca49155ca66ad2b933d681d6aa6032bcb4637215c0baa2af485dcae18ae",
+    "unchanged": true
+  },
+  "heat/hell/frame-135.png": {
+    "before": "8ae5be67811451864be32b3ea9f04bd2b6f4a6ad2727b4fe0f9e75e395606583",
+    "after": "8ae5be67811451864be32b3ea9f04bd2b6f4a6ad2727b4fe0f9e75e395606583",
+    "unchanged": true
+  },
+  "heat/hell/frame-136.png": {
+    "before": "8a986617eff8a75ec5601f0918a51a17ab292b5e36242bd1ad2f4d9f00fc24cb",
+    "after": "8a986617eff8a75ec5601f0918a51a17ab292b5e36242bd1ad2f4d9f00fc24cb",
+    "unchanged": true
+  },
+  "heat/hell/frame-137.png": {
+    "before": "72558e9b94dceadc55b7e9fd74714cdbde875e2bf64232dab923d7d1d353c373",
+    "after": "72558e9b94dceadc55b7e9fd74714cdbde875e2bf64232dab923d7d1d353c373",
+    "unchanged": true
+  },
+  "heat/hell/frame-138.png": {
+    "before": "d41c8046d401200f68d1f76d59088de28ee51deda68b030ca6523cce17c6949a",
+    "after": "d41c8046d401200f68d1f76d59088de28ee51deda68b030ca6523cce17c6949a",
+    "unchanged": true
+  },
+  "heat/hell/frame-139.png": {
+    "before": "65d9963ad276f9ef1f199f53a3ae25189fbea5d5f35056491b6471c791f60072",
+    "after": "65d9963ad276f9ef1f199f53a3ae25189fbea5d5f35056491b6471c791f60072",
+    "unchanged": true
+  },
+  "heat/hell/frame-140.png": {
+    "before": "e704a422d914f1c7f1d4945b889bf89ec09f2300347e87a89500d7ad46206f32",
+    "after": "e704a422d914f1c7f1d4945b889bf89ec09f2300347e87a89500d7ad46206f32",
+    "unchanged": true
+  },
+  "heat/hell/frame-141.png": {
+    "before": "8ec5877e2106724d056501de61bb3423e6346ec50b19c6715a1a50d1b1d352d0",
+    "after": "8ec5877e2106724d056501de61bb3423e6346ec50b19c6715a1a50d1b1d352d0",
+    "unchanged": true
+  },
+  "heat/hell/frame-142.png": {
+    "before": "8de47cd760ff18496c81468ed64936226cf541d719de6558e5efc700697542ef",
+    "after": "8de47cd760ff18496c81468ed64936226cf541d719de6558e5efc700697542ef",
+    "unchanged": true
+  },
+  "heat/hell/frame-143.png": {
+    "before": "760357b95fd48a4e88eb81c6b6155f05b4dc1bd07e051d91a2bfe855ea4eb0c6",
+    "after": "760357b95fd48a4e88eb81c6b6155f05b4dc1bd07e051d91a2bfe855ea4eb0c6",
+    "unchanged": true
+  },
+  "heat/hell-a4-6-2.png": {
+    "before": "282b35eeab2c02c606c68e1deeac0386f836d3149645e3a23d0a5bb6d6bf2807",
+    "after": "282b35eeab2c02c606c68e1deeac0386f836d3149645e3a23d0a5bb6d6bf2807",
+    "unchanged": true
+  },
+  "heat/hell-a4-6-7-defaults.png": {
+    "before": "0d7dae97013f91655c32f9a7439529acfb6714fb09aa262227f2353891d64cc1",
+    "after": "0d7dae97013f91655c32f9a7439529acfb6714fb09aa262227f2353891d64cc1",
+    "unchanged": true
+  },
+  "heat/hell-a4-defaults.png": {
+    "before": "18b1488115f5c2f7dfd8c436839c4860f454e095e435228872af0d53ecdaa8e9",
+    "after": "18b1488115f5c2f7dfd8c436839c4860f454e095e435228872af0d53ecdaa8e9",
+    "unchanged": true
+  },
+  "heat/hell-east-door-defaults.png": {
+    "before": "ce50b9438b568cc47534993a97e9fb93374fcff045105e339c2b36c2ba8878b5",
+    "after": "ce50b9438b568cc47534993a97e9fb93374fcff045105e339c2b36c2ba8878b5",
+    "unchanged": true
+  },
+  "heat/hell-entrance.png": {
+    "before": "3c5f749d4c290c552c41a819fc001a971e6284b1557992cf8eba03af4640b50f",
+    "after": "3c5f749d4c290c552c41a819fc001a971e6284b1557992cf8eba03af4640b50f",
+    "unchanged": true
+  },
+  "heat/hell-path-defaults.png": {
+    "before": "15e9403a5ce4c3fab82b65ba79a61a8a300b5c32946c8bd675423efebf14ad4c",
+    "after": "15e9403a5ce4c3fab82b65ba79a61a8a300b5c32946c8bd675423efebf14ad4c",
+    "unchanged": true
+  },
+  "heat/map-001.png": {
+    "before": "fc3ba1ea1cbe113a8ac330c8d6a22cb2e44b112f79b244f8ee6cbf219741bbf2",
+    "after": "fc3ba1ea1cbe113a8ac330c8d6a22cb2e44b112f79b244f8ee6cbf219741bbf2",
+    "unchanged": true
+  },
+  "heat/map-007.png": {
+    "before": "4b65a8e64f11073fc607b5bca548664debef31ba26537293e92ab5f9006ad5ac",
+    "after": "4b65a8e64f11073fc607b5bca548664debef31ba26537293e92ab5f9006ad5ac",
+    "unchanged": true
+  },
+  "heat/map-017.png": {
+    "before": "4da4efbcad5995f044c8473678d8868458772e79d7cd7ee93baa16ff2e659d80",
+    "after": "4da4efbcad5995f044c8473678d8868458772e79d7cd7ee93baa16ff2e659d80",
+    "unchanged": true
+  },
+  "heat/map-041.png": {
+    "before": "6aa4f7476375a24e7f83b2b8d2ec199bb29c44908072d67fe493fd216a119f5f",
+    "after": "6aa4f7476375a24e7f83b2b8d2ec199bb29c44908072d67fe493fd216a119f5f",
+    "unchanged": true
+  },
+  "heat/map-117.png": {
+    "before": "dfc55f2356f8e27f5aa837653dea368d0c9407180f3fd4a26726289976c93204",
+    "after": "dfc55f2356f8e27f5aa837653dea368d0c9407180f3fd4a26726289976c93204",
+    "unchanged": true
+  },
+  "heat/map-118.png": {
+    "before": "eb58f28f52c37962043f5a352634e96afe20a3864cb5459be31d95d572f56084",
+    "after": "eb58f28f52c37962043f5a352634e96afe20a3864cb5459be31d95d572f56084",
+    "unchanged": true
+  },
+  "heat/map-119.png": {
+    "before": "0a2632c1887a2ea6efd4b116642cf0d93ba04f915b6a98cac9c079720eb679e8",
+    "after": "0a2632c1887a2ea6efd4b116642cf0d93ba04f915b6a98cac9c079720eb679e8",
+    "unchanged": true
+  },
+  "heat/map-120.png": {
+    "before": "eb78d12fb3c540ff5fe69bada20152eaf5e6691410fbf68b559295e2f1cb70a4",
+    "after": "eb78d12fb3c540ff5fe69bada20152eaf5e6691410fbf68b559295e2f1cb70a4",
+    "unchanged": true
+  },
+  "heat/surface-d4-defaults.png": {
+    "before": "318f19f423fd28b77ccd634ed600d3514ee7292617fe261118abfa4d958200f0",
+    "after": "318f19f423fd28b77ccd634ed600d3514ee7292617fe261118abfa4d958200f0",
+    "unchanged": true
+  },
+  "hell-biome/area-map.png": {
+    "before": "ead689b73e6bd8c05095cb1f34bd634bde3dc2c1aa44fca473b40b180ca77dea",
+    "after": "ead689b73e6bd8c05095cb1f34bd634bde3dc2c1aa44fca473b40b180ca77dea",
+    "unchanged": true
+  },
+  "hell-biome/east-door-area-map.png": {
+    "before": "b324d280462cdd68957dba3baff8f8d9f057c9dcc94886cdc6c7ac8f334f8087",
+    "after": "b324d280462cdd68957dba3baff8f8d9f057c9dcc94886cdc6c7ac8f334f8087",
+    "unchanged": true
+  },
+  "hell-biome/east-door-unexplored.png": {
+    "before": "8144ca75741ab7f3372aaa6c65dcf1c27a005346fa10d0a421b9ee29e19a0e53",
+    "after": "8144ca75741ab7f3372aaa6c65dcf1c27a005346fa10d0a421b9ee29e19a0e53",
+    "unchanged": true
+  },
+  "hell-biome/gatekeeper-waiting.png": {
+    "before": "3d96b8ce5c63b0621cafd7b224926f070b83f64ee5e6ff335d05b75fc8ae307f",
+    "after": "3d96b8ce5c63b0621cafd7b224926f070b83f64ee5e6ff335d05b75fc8ae307f",
+    "unchanged": true
+  },
+  "hell-biome/map-117-seed-1.png": {
+    "before": "7ad3bfd0ae2075b5b51d087bc0f693b9a81b36d3519c9d5d9352358ab3c4f4ed",
+    "after": "7ad3bfd0ae2075b5b51d087bc0f693b9a81b36d3519c9d5d9352358ab3c4f4ed",
+    "unchanged": true
+  },
+  "hell-biome/map-118-seed-1.png": {
+    "before": "4568a8da805c5fe90e04a7acc4dbefa3d7ec0d7e9cd508cba650f99591284c98",
+    "after": "4568a8da805c5fe90e04a7acc4dbefa3d7ec0d7e9cd508cba650f99591284c98",
+    "unchanged": true
+  },
+  "hell-biome/map-118-seed-7.png": {
+    "before": "e4c215cf664a84985e9553bc9c89fb0376d4e0de4461022c3e65e618ed68a9dd",
+    "after": "e4c215cf664a84985e9553bc9c89fb0376d4e0de4461022c3e65e618ed68a9dd",
+    "unchanged": true
+  },
+  "hell-biome/map-118-seed-99.png": {
+    "before": "934ba4bbe415f9eedf1853b3ea6e95b9629c57963f7d6386bf06f9502daf969e",
+    "after": "934ba4bbe415f9eedf1853b3ea6e95b9629c57963f7d6386bf06f9502daf969e",
+    "unchanged": true
+  },
+  "hell-biome/map-119-seed-1.png": {
+    "before": "7c1bc3b5ba7cf010fb787f41b27f1543d6fe1c337fe69bb9b760de230ddd4050",
+    "after": "7c1bc3b5ba7cf010fb787f41b27f1543d6fe1c337fe69bb9b760de230ddd4050",
+    "unchanged": true
+  },
+  "hell-biome/map-119-seed-7.png": {
+    "before": "b8b65387f68d371cbeb1fbcf934340f297368f5a1f0a172a5f1db8b370fcc0f4",
+    "after": "b8b65387f68d371cbeb1fbcf934340f297368f5a1f0a172a5f1db8b370fcc0f4",
+    "unchanged": true
+  },
+  "hell-biome/map-119-seed-99.png": {
+    "before": "7825049108d7130d3740075ec52bb166d3fca6c11379fbf0de27aa347ded112b",
+    "after": "7825049108d7130d3740075ec52bb166d3fca6c11379fbf0de27aa347ded112b",
+    "unchanged": true
+  },
+  "hell-biome/map-120-seed-1.png": {
+    "before": "729367b46e2e2068082b26404e75bed9520505b493941fe807912fbca1cf5e63",
+    "after": "729367b46e2e2068082b26404e75bed9520505b493941fe807912fbca1cf5e63",
+    "unchanged": true
+  },
+  "hell-biome/map-120-seed-7.png": {
+    "before": "95f3f5118c79a4f87cc5488296e1c256c0247b81f52adf7c7b117c5c2fd458a2",
+    "after": "95f3f5118c79a4f87cc5488296e1c256c0247b81f52adf7c7b117c5c2fd458a2",
+    "unchanged": true
+  },
+  "hell-biome/map-120-seed-99.png": {
+    "before": "2adf002ab5d54421cc59c3d56479216b8301e03e27cb6798d3e1f58676e1e02e",
+    "after": "2adf002ab5d54421cc59c3d56479216b8301e03e27cb6798d3e1f58676e1e02e",
+    "unchanged": true
+  },
+  "hell-biome/native-hell-atlas.png": {
+    "before": "f3b4e3eee80cc80c3adf085de827d35ea5eaafcc306a3b501fa3e35983eccb30",
+    "after": "f3b4e3eee80cc80c3adf085de827d35ea5eaafcc306a3b501fa3e35983eccb30",
+    "unchanged": true
+  },
+  "maps/map-001.png": {
+    "before": "e43eb9a5035c910864134e1d9d058e40d3611171532f63e97f4572e92b430e75",
+    "after": "e43eb9a5035c910864134e1d9d058e40d3611171532f63e97f4572e92b430e75",
+    "unchanged": true
+  },
+  "maps/map-002.png": {
+    "before": "04c62d64f46b8df742bfa6c0896b05529bc30c75f31d39c9ca70058da09f1f51",
+    "after": "04c62d64f46b8df742bfa6c0896b05529bc30c75f31d39c9ca70058da09f1f51",
+    "unchanged": true
+  },
+  "maps/map-003.png": {
+    "before": "39a7b5c5c2fbb3f49cbefe8b232647e2b6863c825493f45f98c11f9b785ad508",
+    "after": "39a7b5c5c2fbb3f49cbefe8b232647e2b6863c825493f45f98c11f9b785ad508",
+    "unchanged": true
+  },
+  "maps/map-004.png": {
+    "before": "1fe33786b218b55de916a503d9e18ff1158093ad1ccba2cfbdcd63f94d95cc43",
+    "after": "1fe33786b218b55de916a503d9e18ff1158093ad1ccba2cfbdcd63f94d95cc43",
+    "unchanged": true
+  },
+  "maps/map-005.png": {
+    "before": "1987c9df5c415bb1bb5f95557ebfed441a5e3932e08f0ab82d7aa8e3a4cbb29e",
+    "after": "1987c9df5c415bb1bb5f95557ebfed441a5e3932e08f0ab82d7aa8e3a4cbb29e",
+    "unchanged": true
+  },
+  "maps/map-006.png": {
+    "before": "382ad37936a0caf3d2fd677c351f4f3f6f5beb682e6ee34dfc1b98fc4bff834a",
+    "after": "382ad37936a0caf3d2fd677c351f4f3f6f5beb682e6ee34dfc1b98fc4bff834a",
+    "unchanged": true
+  },
+  "maps/map-007.png": {
+    "before": "b2958e34be85bbf522dd44d437478e260bb01b8ad7e3afc71f1e7ef12eaed103",
+    "after": "b2958e34be85bbf522dd44d437478e260bb01b8ad7e3afc71f1e7ef12eaed103",
+    "unchanged": true
+  },
+  "maps/map-008.png": {
+    "before": "1b2174b3b31180e7b925b8eb19f4020214d4592482e6d2a06a5271f6d4970945",
+    "after": "1b2174b3b31180e7b925b8eb19f4020214d4592482e6d2a06a5271f6d4970945",
+    "unchanged": true
+  },
+  "maps/map-009.png": {
+    "before": "45b2687b14654ecb24e0ca2ff609216859b5adc3d39d864574b1fa952db08665",
+    "after": "45b2687b14654ecb24e0ca2ff609216859b5adc3d39d864574b1fa952db08665",
+    "unchanged": true
+  },
+  "maps/map-010.png": {
+    "before": "d29c15e02ad283aa437d70aba0b287fa4d2debaf4c7f012839f69fb362b83a95",
+    "after": "d29c15e02ad283aa437d70aba0b287fa4d2debaf4c7f012839f69fb362b83a95",
+    "unchanged": true
+  },
+  "maps/map-011.png": {
+    "before": "3410f3dcdee3bf400ad1cece263313b368888818d9ebdf49068dba30b5276d25",
+    "after": "3410f3dcdee3bf400ad1cece263313b368888818d9ebdf49068dba30b5276d25",
+    "unchanged": true
+  },
+  "maps/map-012.png": {
+    "before": "3550996083edc65758576d0fc9abf416047bd0ed5ba7436bee9352e175fe100a",
+    "after": "3550996083edc65758576d0fc9abf416047bd0ed5ba7436bee9352e175fe100a",
+    "unchanged": true
+  },
+  "maps/map-013.png": {
+    "before": "4305cc96f3729184f34981ed66e21c9c8b665a7d21a67e769a4477902a2c25ed",
+    "after": "4305cc96f3729184f34981ed66e21c9c8b665a7d21a67e769a4477902a2c25ed",
+    "unchanged": true
+  },
+  "maps/map-014.png": {
+    "before": "ae6d6597ba66db54db1f1a20035e5b69dcf9b09045f81ca6725136af7dd36b0e",
+    "after": "ae6d6597ba66db54db1f1a20035e5b69dcf9b09045f81ca6725136af7dd36b0e",
+    "unchanged": true
+  },
+  "maps/map-015.png": {
+    "before": "2a5637c40d33dd62ea5f081ce86789100a5918f1cdf3d177bc298f6393886510",
+    "after": "2a5637c40d33dd62ea5f081ce86789100a5918f1cdf3d177bc298f6393886510",
+    "unchanged": true
+  },
+  "maps/map-016.png": {
+    "before": "34184ab8b327a99f2c580d1ddc06cb7fd8d548485b32eaebae2f24557d5a6636",
+    "after": "34184ab8b327a99f2c580d1ddc06cb7fd8d548485b32eaebae2f24557d5a6636",
+    "unchanged": true
+  },
+  "maps/map-017.png": {
+    "before": "3ff124ca163f0523ea7e8378f747dd91f56ad017ff80bb26cc7199c8456a9a14",
+    "after": "3ff124ca163f0523ea7e8378f747dd91f56ad017ff80bb26cc7199c8456a9a14",
+    "unchanged": true
+  },
+  "maps/map-018.png": {
+    "before": "58b257d6e064e34dd82b3004e1a5bce9700371b2984f8b1e51de3a7c5d2c54de",
+    "after": "58b257d6e064e34dd82b3004e1a5bce9700371b2984f8b1e51de3a7c5d2c54de",
+    "unchanged": true
+  },
+  "maps/map-019.png": {
+    "before": "777df149ad35bf04aa06144b7b69be1be600b7ea06d429c5f9c2aad38f73f550",
+    "after": "777df149ad35bf04aa06144b7b69be1be600b7ea06d429c5f9c2aad38f73f550",
+    "unchanged": true
+  },
+  "maps/map-020.png": {
+    "before": "50762f82cd638e8d8ef578ffbf613578cbc44fac801b55179f728ca7f088ec74",
+    "after": "50762f82cd638e8d8ef578ffbf613578cbc44fac801b55179f728ca7f088ec74",
+    "unchanged": true
+  },
+  "maps/map-021.png": {
+    "before": "d023d33a0e26e90c59882e73c02333eddd08665a29d8313445f9bb604546665a",
+    "after": "d023d33a0e26e90c59882e73c02333eddd08665a29d8313445f9bb604546665a",
+    "unchanged": true
+  },
+  "maps/map-022.png": {
+    "before": "21e272de1404af8feb0d45a6d0666137b5f25653249a6699c85e4063628ec7d8",
+    "after": "21e272de1404af8feb0d45a6d0666137b5f25653249a6699c85e4063628ec7d8",
+    "unchanged": true
+  },
+  "maps/map-023.png": {
+    "before": "6c19d4b0ba961f52a500a86907121101603173d7a620c43d538109c502982b87",
+    "after": "6c19d4b0ba961f52a500a86907121101603173d7a620c43d538109c502982b87",
+    "unchanged": true
+  },
+  "maps/map-024.png": {
+    "before": "ff91130a59673c8226f65f39522a39ae8e769d890eb95055f76132013b01c3f5",
+    "after": "ff91130a59673c8226f65f39522a39ae8e769d890eb95055f76132013b01c3f5",
+    "unchanged": true
+  },
+  "maps/map-025.png": {
+    "before": "b33964edcc296aa2b17493d5bed31c0b85b804d01dd5f99e3a9a29ef69532347",
+    "after": "b33964edcc296aa2b17493d5bed31c0b85b804d01dd5f99e3a9a29ef69532347",
+    "unchanged": true
+  },
+  "maps/map-026.png": {
+    "before": "596e6a0a96aa6a0e6b6c8e3138b99f577d656dca56cc6f52013ca2ce9ec27ef7",
+    "after": "596e6a0a96aa6a0e6b6c8e3138b99f577d656dca56cc6f52013ca2ce9ec27ef7",
+    "unchanged": true
+  },
+  "maps/map-027.png": {
+    "before": "a98513dd2d117874d63ba99dd67868853dde16588d153243a2f0bc068557cc54",
+    "after": "a98513dd2d117874d63ba99dd67868853dde16588d153243a2f0bc068557cc54",
+    "unchanged": true
+  },
+  "maps/map-028.png": {
+    "before": "16ccdbba873ee22e799ce2a954bb7c149201e6de6eff1d454f393287e6547537",
+    "after": "16ccdbba873ee22e799ce2a954bb7c149201e6de6eff1d454f393287e6547537",
+    "unchanged": true
+  },
+  "maps/map-029.png": {
+    "before": "65326d37ea967277010914ddc286e277c9435b214768ecc22f85c078665a63d5",
+    "after": "65326d37ea967277010914ddc286e277c9435b214768ecc22f85c078665a63d5",
+    "unchanged": true
+  },
+  "maps/map-030.png": {
+    "before": "1843c617e7d3e507ec64a5ecb5566055c6c89f8f06e05a2ecf671bf1cc0f23a2",
+    "after": "1843c617e7d3e507ec64a5ecb5566055c6c89f8f06e05a2ecf671bf1cc0f23a2",
+    "unchanged": true
+  },
+  "maps/map-031.png": {
+    "before": "3c89289fe484837dc200df1d8f1bf7b07bc661d3aea36cbe93c3f46936a08205",
+    "after": "3c89289fe484837dc200df1d8f1bf7b07bc661d3aea36cbe93c3f46936a08205",
+    "unchanged": true
+  },
+  "maps/map-032.png": {
+    "before": "3410e6c792b98bb627c948fce82010bb15169010bc6b72fcac075f4c967ff428",
+    "after": "3410e6c792b98bb627c948fce82010bb15169010bc6b72fcac075f4c967ff428",
+    "unchanged": true
+  },
+  "maps/map-033.png": {
+    "before": "13a52db3e4ab28285c16a92f572963e3c296764d2916ca953702b29b7a406fb3",
+    "after": "13a52db3e4ab28285c16a92f572963e3c296764d2916ca953702b29b7a406fb3",
+    "unchanged": true
+  },
+  "maps/map-034.png": {
+    "before": "81749b70fb33dd9777930b881735681290804d0d78c605775adfa9b74f28cd60",
+    "after": "81749b70fb33dd9777930b881735681290804d0d78c605775adfa9b74f28cd60",
+    "unchanged": true
+  },
+  "maps/map-035.png": {
+    "before": "57c880cba41926e2dfc2e22befe3f7e886ed66c077d7d98a26846d3126505324",
+    "after": "57c880cba41926e2dfc2e22befe3f7e886ed66c077d7d98a26846d3126505324",
+    "unchanged": true
+  },
+  "maps/map-036.png": {
+    "before": "10bfd9f592773daa5aa27ca7f7da81246bf163a87c89d8ea0d8fbb046f2272b2",
+    "after": "10bfd9f592773daa5aa27ca7f7da81246bf163a87c89d8ea0d8fbb046f2272b2",
+    "unchanged": true
+  },
+  "maps/map-041.png": {
+    "before": "635e16ac6aacd74019e6597b34add5a684de62c2e0ce78f564efb3c3c8c3bd2f",
+    "after": "635e16ac6aacd74019e6597b34add5a684de62c2e0ce78f564efb3c3c8c3bd2f",
+    "unchanged": true
+  },
+  "maps/map-042.png": {
+    "before": "a58b7d12bd097c4eef5dbb97fba4b6f1333d4016bb2c44c19702be110f15606e",
+    "after": "a58b7d12bd097c4eef5dbb97fba4b6f1333d4016bb2c44c19702be110f15606e",
+    "unchanged": true
+  },
+  "maps/map-043.png": {
+    "before": "8983fd31ed58f3a389966e407ea797b7a48b6397c39a66eaf9589e10bdac2a9d",
+    "after": "8983fd31ed58f3a389966e407ea797b7a48b6397c39a66eaf9589e10bdac2a9d",
+    "unchanged": true
+  },
+  "maps/map-044.png": {
+    "before": "d6f9578fcc219ddced8001c726cfddab1cd4077ce514d86900f8f68e59b3bc16",
+    "after": "d6f9578fcc219ddced8001c726cfddab1cd4077ce514d86900f8f68e59b3bc16",
+    "unchanged": true
+  },
+  "maps/map-045.png": {
+    "before": "6e05a39cb6eb6afd833ab160f7c25e12d2ae63d08e9f8ab4e7ac99303e85b62a",
+    "after": "6e05a39cb6eb6afd833ab160f7c25e12d2ae63d08e9f8ab4e7ac99303e85b62a",
+    "unchanged": true
+  },
+  "maps/map-046.png": {
+    "before": "b6ecfc0d5344a562e0bdef7fafd82c628f900c737812217907f960bf2eb49c6d",
+    "after": "b6ecfc0d5344a562e0bdef7fafd82c628f900c737812217907f960bf2eb49c6d",
+    "unchanged": true
+  },
+  "maps/map-047.png": {
+    "before": "7da0831f82a65f2a7a8c5fefe4ab0f423721861bb7940f480d8ee13e82591871",
+    "after": "7da0831f82a65f2a7a8c5fefe4ab0f423721861bb7940f480d8ee13e82591871",
+    "unchanged": true
+  },
+  "maps/map-048.png": {
+    "before": "df5ca2c772dbf9cc2269ad329eeee0a8c787734dfefb06213c84b2f0c11fa4dd",
+    "after": "df5ca2c772dbf9cc2269ad329eeee0a8c787734dfefb06213c84b2f0c11fa4dd",
+    "unchanged": true
+  },
+  "maps/map-049.png": {
+    "before": "12482a6c6dd66d774280fda697cb43cf76edad6b305330f32e68dc9e5cd3d806",
+    "after": "12482a6c6dd66d774280fda697cb43cf76edad6b305330f32e68dc9e5cd3d806",
+    "unchanged": true
+  },
+  "maps/map-050.png": {
+    "before": "7b996fdfde6f6e44a21b69e4c9050c6ca5fc61c717ddff4c9368110a22908246",
+    "after": "7b996fdfde6f6e44a21b69e4c9050c6ca5fc61c717ddff4c9368110a22908246",
+    "unchanged": true
+  },
+  "maps/map-051.png": {
+    "before": "19f235f817c4cc5a368f00c87c9536d7d01fbf6da95a8e18ffe13be35220f0ab",
+    "after": "19f235f817c4cc5a368f00c87c9536d7d01fbf6da95a8e18ffe13be35220f0ab",
+    "unchanged": true
+  },
+  "maps/map-052.png": {
+    "before": "c8951442418f61ce4a6f96b91820a607c3b39ea3da16cd7ad268e0a2f1ad4983",
+    "after": "c8951442418f61ce4a6f96b91820a607c3b39ea3da16cd7ad268e0a2f1ad4983",
+    "unchanged": true
+  },
+  "maps/map-053.png": {
+    "before": "7866be5fa3da8f551ed274675544bc95e406f530a6ecbcf0a05cf7b94dc2f6f0",
+    "after": "7866be5fa3da8f551ed274675544bc95e406f530a6ecbcf0a05cf7b94dc2f6f0",
+    "unchanged": true
+  },
+  "maps/map-054.png": {
+    "before": "b675d305265d1854c18dbbeabcbeb4b567ceed67879612e772181943495cc4ab",
+    "after": "b675d305265d1854c18dbbeabcbeb4b567ceed67879612e772181943495cc4ab",
+    "unchanged": true
+  },
+  "maps/map-055.png": {
+    "before": "edd7171dcb3bc9aebb0672aca5a5a2d8ef3929097649262642390b250709390e",
+    "after": "edd7171dcb3bc9aebb0672aca5a5a2d8ef3929097649262642390b250709390e",
+    "unchanged": true
+  },
+  "maps/map-056.png": {
+    "before": "b1189e5796c0339744bf8cb69e336c4a61da93d959cd5b5adca18b7e42bed1e1",
+    "after": "b1189e5796c0339744bf8cb69e336c4a61da93d959cd5b5adca18b7e42bed1e1",
+    "unchanged": true
+  },
+  "maps/map-057.png": {
+    "before": "3d36221373b35d0897ad5f5889647891f01729195de125e9350d9a6edbaa5978",
+    "after": "6ceb361250bf9b8405c705a3aedf0425162654abcbccb83b224753531d1d2065",
+    "unchanged": false
+  },
+  "maps/map-058.png": {
+    "before": "ad742684e3c7663dfd81e23ddae32ff4133933903dcd5f2a58d05285c0f7d76d",
+    "after": "ad742684e3c7663dfd81e23ddae32ff4133933903dcd5f2a58d05285c0f7d76d",
+    "unchanged": true
+  },
+  "maps/map-059.png": {
+    "before": "e6bccdca35f68ab925729553fe10c8e11d074cf2d9a1d1c208c6216cc14eb18d",
+    "after": "e6bccdca35f68ab925729553fe10c8e11d074cf2d9a1d1c208c6216cc14eb18d",
+    "unchanged": true
+  },
+  "maps/map-060.png": {
+    "before": "95258323abc943842bce289efc6c45e69f03e40255954493b3b10d2dae4e53d6",
+    "after": "95258323abc943842bce289efc6c45e69f03e40255954493b3b10d2dae4e53d6",
+    "unchanged": true
+  },
+  "maps/map-061.png": {
+    "before": "c6b353f624d9804ec13a5b2efefb47829196e2a95074abcc300d0c2914fa3691",
+    "after": "c6b353f624d9804ec13a5b2efefb47829196e2a95074abcc300d0c2914fa3691",
+    "unchanged": true
+  },
+  "maps/map-062.png": {
+    "before": "a78304ba09394109b1371868ce88c1c4734161f735528636a670c213580f8952",
+    "after": "a78304ba09394109b1371868ce88c1c4734161f735528636a670c213580f8952",
+    "unchanged": true
+  },
+  "maps/map-063.png": {
+    "before": "1395a05d3c1eb7b9c8f66d5e5e4ad07d22c1e697c4a19d7bf80cd86841b075d2",
+    "after": "fa49ccfbea11a204f022170b5f624f716b8c2d668a0e359193ad674843e138f2",
+    "unchanged": false
+  },
+  "maps/map-064.png": {
+    "before": "929aa9510d0ebe07f2573714e70c843328f7f1103751bba067f4088e0497df52",
+    "after": "929aa9510d0ebe07f2573714e70c843328f7f1103751bba067f4088e0497df52",
+    "unchanged": true
+  },
+  "maps/map-065.png": {
+    "before": "b90fa1c3079bf1526ccb206796c475ea5f61abb5a0e0dfed32a2d64e68a15ecb",
+    "after": "b90fa1c3079bf1526ccb206796c475ea5f61abb5a0e0dfed32a2d64e68a15ecb",
+    "unchanged": true
+  },
+  "maps/map-066.png": {
+    "before": "cac1af0164143aae514d275dd3411c74f9d5d313c116e8e6d78747be980ee34f",
+    "after": "cac1af0164143aae514d275dd3411c74f9d5d313c116e8e6d78747be980ee34f",
+    "unchanged": true
+  },
+  "maps/map-067.png": {
+    "before": "ebc1f0b49d3dda663c8a9bf4c6a1bf18a362331f2d9374ee11fd3fcdc03fec6b",
+    "after": "ebc1f0b49d3dda663c8a9bf4c6a1bf18a362331f2d9374ee11fd3fcdc03fec6b",
+    "unchanged": true
+  },
+  "maps/map-068.png": {
+    "before": "550290b40eae4235a6be030ed8507f6629b04515a0fd8a685a06ee279454c43d",
+    "after": "550290b40eae4235a6be030ed8507f6629b04515a0fd8a685a06ee279454c43d",
+    "unchanged": true
+  },
+  "maps/map-069.png": {
+    "before": "bcd74ac1b1de8bb88fae2b13aa9d40f5c58df3f89fd64ab602208dfc2551740f",
+    "after": "8975c99d9578ef0f0ff7b77082976ff9398bd47a11993f0788189c1c1cf8c26c",
+    "unchanged": false
+  },
+  "maps/map-070.png": {
+    "before": "48d19a0cbc5943ccd5a5710bde8aebc73adf64af5e561f99307c98fc3c4ef04e",
+    "after": "48d19a0cbc5943ccd5a5710bde8aebc73adf64af5e561f99307c98fc3c4ef04e",
+    "unchanged": true
+  },
+  "maps/map-071.png": {
+    "before": "88fa2f8673d24b1662a9c9098995c06177029ff1e395783ecde51c5974813784",
+    "after": "88fa2f8673d24b1662a9c9098995c06177029ff1e395783ecde51c5974813784",
+    "unchanged": true
+  },
+  "maps/map-072.png": {
+    "before": "a10304e68b6944fb6bcd81fe109f2e3794dbe174b0280e5b8a951ac5b2f25e90",
+    "after": "a10304e68b6944fb6bcd81fe109f2e3794dbe174b0280e5b8a951ac5b2f25e90",
+    "unchanged": true
+  },
+  "maps/map-073.png": {
+    "before": "8b2b94feeee10fe09d8e5bdc46445a431c2fbf67dd0927ad497cc4d3b71c2d9c",
+    "after": "8b2b94feeee10fe09d8e5bdc46445a431c2fbf67dd0927ad497cc4d3b71c2d9c",
+    "unchanged": true
+  },
+  "maps/map-074.png": {
+    "before": "447da0219933cdcb96edf7d5a13b84479c2c7edf5e2d9a6e47f6ec958b7f109b",
+    "after": "447da0219933cdcb96edf7d5a13b84479c2c7edf5e2d9a6e47f6ec958b7f109b",
+    "unchanged": true
+  },
+  "maps/map-075.png": {
+    "before": "cfd801b91eb4699f1dfba1eb9fc491331c8731c63871a09873c76276b00f2e70",
+    "after": "ca3f0c59165d72cb517470909a87ce1c7ca84f00eb6dd73c7c45d3830ec055f5",
+    "unchanged": false
+  },
+  "maps/map-076.png": {
+    "before": "742d9da17ff75fec6e17ea743174d86c22e9475a1507146caa41e9bb68b8bac8",
+    "after": "742d9da17ff75fec6e17ea743174d86c22e9475a1507146caa41e9bb68b8bac8",
+    "unchanged": true
+  },
+  "maps/map-081.png": {
+    "before": "06af37d7d141f0fbcfff3ff372ea5422883ca4bc4e93c67c29512eed6f8f47b2",
+    "after": "06af37d7d141f0fbcfff3ff372ea5422883ca4bc4e93c67c29512eed6f8f47b2",
+    "unchanged": true
+  },
+  "maps/map-082.png": {
+    "before": "82f179fcae23a7dcac13bfaee0e65200a253b29595eedf0bb7f7a8c6cf5ae099",
+    "after": "82f179fcae23a7dcac13bfaee0e65200a253b29595eedf0bb7f7a8c6cf5ae099",
+    "unchanged": true
+  },
+  "maps/map-083.png": {
+    "before": "34d54cc2e8c5b4fa00757a39655e661151cbf4c7b1432afe7152256d46ebd323",
+    "after": "34d54cc2e8c5b4fa00757a39655e661151cbf4c7b1432afe7152256d46ebd323",
+    "unchanged": true
+  },
+  "maps/map-084.png": {
+    "before": "4b86e11055d7ca4228b094e193e4d6144a821c67fe1d9d40aa0d347f7ef49dfc",
+    "after": "4b86e11055d7ca4228b094e193e4d6144a821c67fe1d9d40aa0d347f7ef49dfc",
+    "unchanged": true
+  },
+  "maps/map-085.png": {
+    "before": "247b913915f16ca8916e048ec9ae0182a0425f028600334c7b1caf9532b0e3dc",
+    "after": "247b913915f16ca8916e048ec9ae0182a0425f028600334c7b1caf9532b0e3dc",
+    "unchanged": true
+  },
+  "maps/map-086.png": {
+    "before": "c4b260dd0c4555cf751b4150a6c66e7c6170fffdbf07830dae2c8d6af885a76f",
+    "after": "c4b260dd0c4555cf751b4150a6c66e7c6170fffdbf07830dae2c8d6af885a76f",
+    "unchanged": true
+  },
+  "maps/map-087.png": {
+    "before": "ba3b30ceb3e6b1dbedb85efd27b36647bc33c9a234b765eaa32cff553e46a048",
+    "after": "ba3b30ceb3e6b1dbedb85efd27b36647bc33c9a234b765eaa32cff553e46a048",
+    "unchanged": true
+  },
+  "maps/map-088.png": {
+    "before": "503e9a811a14a4ff672e9b4a49f807d59f2f81704455a9ebe1e29b00c45e4805",
+    "after": "503e9a811a14a4ff672e9b4a49f807d59f2f81704455a9ebe1e29b00c45e4805",
+    "unchanged": true
+  },
+  "maps/map-089.png": {
+    "before": "0eb7a73556ac698997648659f452a19f4dd8f7af4d7a3d337f2d15630b8120dc",
+    "after": "0eb7a73556ac698997648659f452a19f4dd8f7af4d7a3d337f2d15630b8120dc",
+    "unchanged": true
+  },
+  "maps/map-090.png": {
+    "before": "a34bb18420be8b0d7b13f066102d399a74d0d67dd6e54877195f33103ee354ed",
+    "after": "a34bb18420be8b0d7b13f066102d399a74d0d67dd6e54877195f33103ee354ed",
+    "unchanged": true
+  },
+  "maps/map-091.png": {
+    "before": "433beadec559d6a448be3f08e98695bf71fa97f308759cbd72f90abba2863a72",
+    "after": "433beadec559d6a448be3f08e98695bf71fa97f308759cbd72f90abba2863a72",
+    "unchanged": true
+  },
+  "maps/map-092.png": {
+    "before": "d10305b3fea2d3b72e8f6a1f706f70fc561dc585a80c9a975811378d4e7a6f4a",
+    "after": "d10305b3fea2d3b72e8f6a1f706f70fc561dc585a80c9a975811378d4e7a6f4a",
+    "unchanged": true
+  },
+  "maps/map-093.png": {
+    "before": "c24a7b594a6b3bec17d16db3791087149e53f627a65e266ea9d567f180703041",
+    "after": "c24a7b594a6b3bec17d16db3791087149e53f627a65e266ea9d567f180703041",
+    "unchanged": true
+  },
+  "maps/map-094.png": {
+    "before": "1b9a2f8834537d4f66027408c60b566b9f8823ebeaa1cf2dce30e4795d21af5b",
+    "after": "1b9a2f8834537d4f66027408c60b566b9f8823ebeaa1cf2dce30e4795d21af5b",
+    "unchanged": true
+  },
+  "maps/map-095.png": {
+    "before": "6439725d7a6a12bd985f2167fe968b9194774a72b89c851cdd758834b4f15a45",
+    "after": "6439725d7a6a12bd985f2167fe968b9194774a72b89c851cdd758834b4f15a45",
+    "unchanged": true
+  },
+  "maps/map-096.png": {
+    "before": "6cc43df5798370fd71e837bc794675b3db2d08d7fb716ebaf4988849d54327e9",
+    "after": "6cc43df5798370fd71e837bc794675b3db2d08d7fb716ebaf4988849d54327e9",
+    "unchanged": true
+  },
+  "maps/map-097.png": {
+    "before": "51b59d8d4ea65416f3bdb6181a66470aba43812362d20347debc422973738c35",
+    "after": "51b59d8d4ea65416f3bdb6181a66470aba43812362d20347debc422973738c35",
+    "unchanged": true
+  },
+  "maps/map-098.png": {
+    "before": "12c3ed1ace9a1e981ed381fbf43f54affd8bece59a2ec162396aea1ddb9452f6",
+    "after": "12c3ed1ace9a1e981ed381fbf43f54affd8bece59a2ec162396aea1ddb9452f6",
+    "unchanged": true
+  },
+  "maps/map-099.png": {
+    "before": "f2d9edc41dec5405faf0bd599663bf1f61d866b367c786d51d78d1d4c2da5a99",
+    "after": "f2d9edc41dec5405faf0bd599663bf1f61d866b367c786d51d78d1d4c2da5a99",
+    "unchanged": true
+  },
+  "maps/map-100.png": {
+    "before": "c1501e9ebb8ffe6165157ec928638711de75613f755ce483318bc3c887d6ddbc",
+    "after": "c1501e9ebb8ffe6165157ec928638711de75613f755ce483318bc3c887d6ddbc",
+    "unchanged": true
+  },
+  "maps/map-101.png": {
+    "before": "00f425a9b3877d09321f7d68e697c76af5c6c1d75aefd850865cbcb16bc3e064",
+    "after": "00f425a9b3877d09321f7d68e697c76af5c6c1d75aefd850865cbcb16bc3e064",
+    "unchanged": true
+  },
+  "maps/map-102.png": {
+    "before": "fbe41331a462ea846f1170ae61f3aa1c732b35a7824f788907e7d1d17483a282",
+    "after": "fbe41331a462ea846f1170ae61f3aa1c732b35a7824f788907e7d1d17483a282",
+    "unchanged": true
+  },
+  "maps/map-103.png": {
+    "before": "dfb125ea01d30d7550c8a550be7ad182f9b00f260a5fa55df6a8fdb58a8c4429",
+    "after": "abab87ad96fc1a6cce60b117dbcc7aece0a0b2057454c800226f86403902965f",
+    "unchanged": false
+  },
+  "maps/map-104.png": {
+    "before": "76b3e99f02ecf2d42810de8bf4314f7f770b7173408e75a3f958c202e6cc9b69",
+    "after": "76b3e99f02ecf2d42810de8bf4314f7f770b7173408e75a3f958c202e6cc9b69",
+    "unchanged": true
+  },
+  "maps/map-105.png": {
+    "before": "450b473bdf1520ac212eef9f0c0b955c7809f2e18d20b059f2057d9844562299",
+    "after": "450b473bdf1520ac212eef9f0c0b955c7809f2e18d20b059f2057d9844562299",
+    "unchanged": true
+  },
+  "maps/map-106.png": {
+    "before": "09ec3dc00ccd271513c6d1d1a901e3b1280075453179c4ab508066ae2e2c5f05",
+    "after": "09ec3dc00ccd271513c6d1d1a901e3b1280075453179c4ab508066ae2e2c5f05",
+    "unchanged": true
+  },
+  "maps/map-107.png": {
+    "before": "9cc48f3d655af1b25915bc2ad6a3a9efd78e04f744dc908a716a90eb80025cf3",
+    "after": "9cc48f3d655af1b25915bc2ad6a3a9efd78e04f744dc908a716a90eb80025cf3",
+    "unchanged": true
+  },
+  "maps/map-108.png": {
+    "before": "00775f672d51af1952bf2ac73ac553e4ea8bccf648146e034d7f0b0738a00944",
+    "after": "00775f672d51af1952bf2ac73ac553e4ea8bccf648146e034d7f0b0738a00944",
+    "unchanged": true
+  },
+  "maps/map-109.png": {
+    "before": "aff555999512026214bd76b3930010d83c845eef20a407b7c84bc74e3fe993eb",
+    "after": "27ba92f6c61f859ca305b2875d23e66a7858c859fe8bf3024c308f41cc0f3b85",
+    "unchanged": false
+  },
+  "maps/map-110.png": {
+    "before": "60fa8e0a8cfee0611ce09d6c859bb036b5be5f9f58e5d7c287920a4f1736e698",
+    "after": "60fa8e0a8cfee0611ce09d6c859bb036b5be5f9f58e5d7c287920a4f1736e698",
+    "unchanged": true
+  },
+  "maps/map-111.png": {
+    "before": "ecb68d96049cc7646f485b326d8fb366c1cd164416abd80ddaec30edba081201",
+    "after": "ecb68d96049cc7646f485b326d8fb366c1cd164416abd80ddaec30edba081201",
+    "unchanged": true
+  },
+  "maps/map-112.png": {
+    "before": "09d225b754298b7232218dcbfdb3a12ba84a58a61908cf5b7dd25b45da3434a2",
+    "after": "09d225b754298b7232218dcbfdb3a12ba84a58a61908cf5b7dd25b45da3434a2",
+    "unchanged": true
+  },
+  "maps/map-113.png": {
+    "before": "32a2656e858ed8d6527deeb949321a020a7ffa74f0051d6e1d0e90857c64fe32",
+    "after": "32a2656e858ed8d6527deeb949321a020a7ffa74f0051d6e1d0e90857c64fe32",
+    "unchanged": true
+  },
+  "maps/map-114.png": {
+    "before": "532167eace8ea4357ef784a08fd248012a0fb7cf2f1fd641f07c956cda077e4d",
+    "after": "532167eace8ea4357ef784a08fd248012a0fb7cf2f1fd641f07c956cda077e4d",
+    "unchanged": true
+  },
+  "maps/map-115.png": {
+    "before": "fd92bab72f991a121d90b608d411035ce945e87c635015a886835d93dfad9f1d",
+    "after": "f2871bb6ba27130df5ed8ccac4dcb05ca97a11c7ffb33500ef23d1bd33babd0e",
+    "unchanged": false
+  },
+  "maps/map-116.png": {
+    "before": "01844a1db473c782a69c6ef7845dfe63a7e639dd8114338ec349e2d545ec4a0c",
+    "after": "01844a1db473c782a69c6ef7845dfe63a7e639dd8114338ec349e2d545ec4a0c",
+    "unchanged": true
+  },
+  "maps/map-117.png": {
+    "before": "edf8acdfcdb03f2b27c0aba636cf92f04013db9d17e692b262811197ee6ce05f",
+    "after": "edf8acdfcdb03f2b27c0aba636cf92f04013db9d17e692b262811197ee6ce05f",
+    "unchanged": true
+  },
+  "maps/map-118.png": {
+    "before": "a3dc5f29417503554554580d3c8f748584576d938f2d4aa8f2ea2f6cd604a5d1",
+    "after": "a3dc5f29417503554554580d3c8f748584576d938f2d4aa8f2ea2f6cd604a5d1",
+    "unchanged": true
+  },
+  "maps/map-119.png": {
+    "before": "b96d6f397bcc06ced747561aa659a69a972ba43d1d0248555083defc29ae068c",
+    "after": "b96d6f397bcc06ced747561aa659a69a972ba43d1d0248555083defc29ae068c",
+    "unchanged": true
+  },
+  "maps/map-120.png": {
+    "before": "c40bc66b1f12d2d7d5e6819a8b728d5f3b113b5518a008e88e3a0be34ebe58b6",
+    "after": "c40bc66b1f12d2d7d5e6819a8b728d5f3b113b5518a008e88e3a0be34ebe58b6",
+    "unchanged": true
+  },
+  "maps/map-121.png": {
+    "before": "97479be9781a19fdee0641b523ed63b78cddb351fe1343b6575923baeb9eed8b",
+    "after": "97479be9781a19fdee0641b523ed63b78cddb351fe1343b6575923baeb9eed8b",
+    "unchanged": true
+  },
+  "maps/map-127.png": {
+    "before": "1f2fccf2226c498774065b48f69fb1929925e2213d955a19b77809d7240cab81",
+    "after": "1f2fccf2226c498774065b48f69fb1929925e2213d955a19b77809d7240cab81",
+    "unchanged": true
+  },
+  "maps/map-133.png": {
+    "before": "c3a38f16568f5cb64e4e3dd7ac76c2ef585fe45b888360ba2120573caec75a65",
+    "after": "c3a38f16568f5cb64e4e3dd7ac76c2ef585fe45b888360ba2120573caec75a65",
+    "unchanged": true
+  },
+  "maps/reflection-011-3-5.png": {
+    "before": "a87fcc3740dcf5ec65d5fb14e9e99b78e5830ea1343523ce07cbec5ed63d0dab",
+    "after": "a87fcc3740dcf5ec65d5fb14e9e99b78e5830ea1343523ce07cbec5ed63d0dab",
+    "unchanged": true
+  },
+  "maps/reflection-017-2-6.png": {
+    "before": "abffcfa6f4a04a92c81d9afa1bba3c757b71525b78124520d4573d81104a6ce1",
+    "after": "abffcfa6f4a04a92c81d9afa1bba3c757b71525b78124520d4573d81104a6ce1",
+    "unchanged": true
+  },
+  "maps/reflection-017-3-3.png": {
+    "before": "87a136cc6ffb4955fe33e7a0146d2feee55d6064c31e33be5e92c8718a422800",
+    "after": "87a136cc6ffb4955fe33e7a0146d2feee55d6064c31e33be5e92c8718a422800",
+    "unchanged": true
+  },
+  "maps/reflection-023-2-5.png": {
+    "before": "94150d5805401ae5fb853f70350cbdb6b8809553cab8ab2186757da7e3627113",
+    "after": "94150d5805401ae5fb853f70350cbdb6b8809553cab8ab2186757da7e3627113",
+    "unchanged": true
+  },
+  "maps/reflection-033-9-3.png": {
+    "before": "a49e6b4fafe14086f818c593f3b343ab782e68bca76478de790060a468121bbd",
+    "after": "a49e6b4fafe14086f818c593f3b343ab782e68bca76478de790060a468121bbd",
+    "unchanged": true
+  },
+  "native-heroes-1.png": {
+    "before": "dcfd0703bc4df51db61684eef30c0145390bba38e59b3ce710c284ee2478d8e0",
+    "after": "dcfd0703bc4df51db61684eef30c0145390bba38e59b3ce710c284ee2478d8e0",
+    "unchanged": true
+  },
+  "native-heroes-2.png": {
+    "before": "e6c74757c0c93a4d1bbcaa12fc7e2ae858966f998d347ddb043b18aff2d88062",
+    "after": "e6c74757c0c93a4d1bbcaa12fc7e2ae858966f998d347ddb043b18aff2d88062",
+    "unchanged": true
+  },
+  "native-heroes-3.png": {
+    "before": "1de2fac4b9a8facba9963fd3b8a0329016bb51ebd1f0149ac8ac62cd8226def4",
+    "after": "1de2fac4b9a8facba9963fd3b8a0329016bb51ebd1f0149ac8ac62cd8226def4",
+    "unchanged": true
+  },
+  "native-heroes-4.png": {
+    "before": "57d7685c8164aeb6855be4528497b742d1f9f79b9676f32580f28e81f2b7523d",
+    "after": "57d7685c8164aeb6855be4528497b742d1f9f79b9676f32580f28e81f2b7523d",
+    "unchanged": true
+  },
+  "yipe-casino-darts.png": {
+    "before": "b98be33bc6952de8f1f3c68d86f6571cdd67857722cc4dbc2aa5515198a04174",
+    "after": "b98be33bc6952de8f1f3c68d86f6571cdd67857722cc4dbc2aa5515198a04174",
+    "unchanged": true
+  },
+  "yipe-casino-racing.png": {
+    "before": "4b7201795fe877491ca3fcbe95e2c71a71eb8d00df4e63f12c57794277647a59",
+    "after": "4b7201795fe877491ca3fcbe95e2c71a71eb8d00df4e63f12c57794277647a59",
+    "unchanged": true
+  },
+  "yipe-casino-slots.png": {
+    "before": "b7f0191f853765dbb9e900080edc25728eed0e5b121f73f12adbd755b56b2f64",
+    "after": "b7f0191f853765dbb9e900080edc25728eed0e5b121f73f12adbd755b56b2f64",
+    "unchanged": true
+  },
+  "yipe-castle-simplified.png": {
+    "before": "8cd681bcddc079f34bb665bc7745f69a650bf7a1462031a55df0459d1311ca91",
+    "after": "8cd681bcddc079f34bb665bc7745f69a650bf7a1462031a55df0459d1311ca91",
+    "unchanged": true
+  },
+  "yipe-cave-entry.png": {
+    "before": "da6bbcef554639f2aae87d4f897544b795b96778d0cf96b9963088127bd38c2c",
+    "after": "53b16f9417a3818e1bd2d2dcf055e103e449699a9ee712427ca66657165ae019",
+    "unchanged": false
+  },
+  "yipe-character-1.png": {
+    "before": "3f1f79612d54784398c3ea6792395e46a7a988541d5c15e8ecf00e92a3c2daf0",
+    "after": "3f1f79612d54784398c3ea6792395e46a7a988541d5c15e8ecf00e92a3c2daf0",
+    "unchanged": true
+  },
+  "yipe-character-10.png": {
+    "before": "b5a428ac8a2a46804557c4d1b1f321ad20334fc7624aaa6f649a365a05ecbfe0",
+    "after": "b5a428ac8a2a46804557c4d1b1f321ad20334fc7624aaa6f649a365a05ecbfe0",
+    "unchanged": true
+  },
+  "yipe-character-11.png": {
+    "before": "14a87b8f9f0f3b6dcb93dc32b72e62a9f066db995cb0f1615feb93f593c7f6bb",
+    "after": "14a87b8f9f0f3b6dcb93dc32b72e62a9f066db995cb0f1615feb93f593c7f6bb",
+    "unchanged": true
+  },
+  "yipe-character-12.png": {
+    "before": "d16703563ed7851bc9442246ed2b6dd85720ae6f61e49dfdf84dc48ae7956c07",
+    "after": "d16703563ed7851bc9442246ed2b6dd85720ae6f61e49dfdf84dc48ae7956c07",
+    "unchanged": true
+  },
+  "yipe-character-2.png": {
+    "before": "4e7831251f573da64a6fbaf0a7ee02fcb9849f845b471cd9815209c8eb30c5ff",
+    "after": "4e7831251f573da64a6fbaf0a7ee02fcb9849f845b471cd9815209c8eb30c5ff",
+    "unchanged": true
+  },
+  "yipe-character-3.png": {
+    "before": "6602c7d201f96756efee2916b1a6d0d5c3f222bb84c82ec7ac001245b20b0267",
+    "after": "6602c7d201f96756efee2916b1a6d0d5c3f222bb84c82ec7ac001245b20b0267",
+    "unchanged": true
+  },
+  "yipe-character-4.png": {
+    "before": "9505c30ccc4d4439f300d44b66c7d7eb5bf34d3e5740fb6c73dff250b0d4f241",
+    "after": "9505c30ccc4d4439f300d44b66c7d7eb5bf34d3e5740fb6c73dff250b0d4f241",
+    "unchanged": true
+  },
+  "yipe-character-5.png": {
+    "before": "453818b941c7e7cbde1ec0c4b881afea1431451b684ed19bd41e58145e0251c3",
+    "after": "453818b941c7e7cbde1ec0c4b881afea1431451b684ed19bd41e58145e0251c3",
+    "unchanged": true
+  },
+  "yipe-character-6.png": {
+    "before": "a6a4cf9e05c234f8ec5136c1f75eadf821c51de6b543c798f9cd201bf3dcdc5d",
+    "after": "a6a4cf9e05c234f8ec5136c1f75eadf821c51de6b543c798f9cd201bf3dcdc5d",
+    "unchanged": true
+  },
+  "yipe-character-7.png": {
+    "before": "9f8dcb0d96433c1465710d1acfe84f1c8cf3b57128209f25a63924f103c9aba0",
+    "after": "9f8dcb0d96433c1465710d1acfe84f1c8cf3b57128209f25a63924f103c9aba0",
+    "unchanged": true
+  },
+  "yipe-character-8.png": {
+    "before": "9470e203732b25584637159812faef82bb91f2a75a344157297efe9624635a51",
+    "after": "9470e203732b25584637159812faef82bb91f2a75a344157297efe9624635a51",
+    "unchanged": true
+  },
+  "yipe-character-9.png": {
+    "before": "f7a4944db9228a4ef598bc220533d2b7b1d504df0b96edc07510124952be0454",
+    "after": "f7a4944db9228a4ef598bc220533d2b7b1d504df0b96edc07510124952be0454",
+    "unchanged": true
+  },
+  "yipe-creation-intro.png": {
+    "before": "839af12b914c0435800993faf23763b7cc96c40f1ead8112a6a56d1806bacb14",
+    "after": "839af12b914c0435800993faf23763b7cc96c40f1ead8112a6a56d1806bacb14",
+    "unchanged": true
+  },
+  "yipe-defaults-menu.png": {
+    "before": "e90d965ff3c9fa7fe4d6994aa2432edd435ab80f310840a10ade3f1245ec8c98",
+    "after": "e90d965ff3c9fa7fe4d6994aa2432edd435ab80f310840a10ade3f1245ec8c98",
+    "unchanged": true
+  },
+  "yipe-defaults-play.png": {
+    "before": "8548b7883c10516ca0b65d9dbc0e2681ba75a7369d4e26da3f55978c73bc0eb1",
+    "after": "8548b7883c10516ca0b65d9dbc0e2681ba75a7369d4e26da3f55978c73bc0eb1",
+    "unchanged": true
+  },
+  "yipe-diagonal-step.png": {
+    "before": "ae1f167d4f347b7d880135592d7988bc9efc36a540d2eb98401f92bd27ad695f",
+    "after": "ae1f167d4f347b7d880135592d7988bc9efc36a540d2eb98401f92bd27ad695f",
+    "unchanged": true
+  },
+  "yipe-earth-cave.png": {
+    "before": "3436f732c6fb248ae0f8df5e35042c816258d26d5febd8b18314dfd758d21b66",
+    "after": "738de0175e0fb7fe988f5c5442e248743c46b79e86c8fa681c1ef26224f8588d",
+    "unchanged": false
+  },
+  "yipe-fire-route-rescued.png": {
+    "before": "fbc9b9a71081b3f3ef7ac161df7016ba0ff2dd9d9508f598bffa42fd78e69fa2",
+    "after": "fbc9b9a71081b3f3ef7ac161df7016ba0ff2dd9d9508f598bffa42fd78e69fa2",
+    "unchanged": true
+  },
+  "yipe-general-store.png": {
+    "before": "8388d1a3dc7923e36dfa4f23b41b5ed14e2c12b490fb841c126888c92ea059d3",
+    "after": "8388d1a3dc7923e36dfa4f23b41b5ed14e2c12b490fb841c126888c92ea059d3",
+    "unchanged": true
+  },
+  "yipe-generated-map.png": {
+    "before": "3fe5ea8872e17be001ed4085d539e384a11a17d36d68790a4320672d3d3d6fc0",
+    "after": "3fe5ea8872e17be001ed4085d539e384a11a17d36d68790a4320672d3d3d6fc0",
+    "unchanged": true
+  },
+  "yipe-map-area-cave.png": {
+    "before": "8b06cd49b9353481a1c93defaee1a7e24628aa5928f204d1039860ab871cdb2a",
+    "after": "8b06cd49b9353481a1c93defaee1a7e24628aa5928f204d1039860ab871cdb2a",
+    "unchanged": true
+  },
+  "yipe-map-area-generated.png": {
+    "before": "7b323b3d670cab0fc9112706000507165a031caf77b5e8233f499de44f4f1d5c",
+    "after": "7b323b3d670cab0fc9112706000507165a031caf77b5e8233f499de44f4f1d5c",
+    "unchanged": true
+  },
+  "yipe-map-area-village.png": {
+    "before": "0237a2c3cbd6dbaf6f7bb086f2f4aaadf9f83d990501c323a5c8c6256e98eb3d",
+    "after": "0237a2c3cbd6dbaf6f7bb086f2f4aaadf9f83d990501c323a5c8c6256e98eb3d",
+    "unchanged": true
+  },
+  "yipe-map-controller.png": {
+    "before": "646d1bf268bb874efed1e2126df8ef6eff8c314bddd463e742c6272f0682b985",
+    "after": "646d1bf268bb874efed1e2126df8ef6eff8c314bddd463e742c6272f0682b985",
+    "unchanged": true
+  },
+  "yipe-map-world-caves.png": {
+    "before": "992120fe57488c90b29d86c7b7d6ef50ceb7b2ceacd5eeb40887028c773dcd40",
+    "after": "992120fe57488c90b29d86c7b7d6ef50ceb7b2ceacd5eeb40887028c773dcd40",
+    "unchanged": true
+  },
+  "yipe-map-world-explored.png": {
+    "before": "80c705227e0e2ef0ad748d009a16d32b6459693df4c92ad20268776bcbe31cdd",
+    "after": "80c705227e0e2ef0ad748d009a16d32b6459693df4c92ad20268776bcbe31cdd",
+    "unchanged": true
+  },
+  "yipe-map-world-hell.png": {
+    "before": "453fbd4793583baa2f501f7f0089a65bf51dea180d0783ebff2108f81f2390c4",
+    "after": "453fbd4793583baa2f501f7f0089a65bf51dea180d0783ebff2108f81f2390c4",
+    "unchanged": true
+  },
+  "yipe-map-world-new-adventure.png": {
+    "before": "2c70f82567187e13b87abfd9320ee27f739c9512ff45f76af9e7cb5af44daa48",
+    "after": "2c70f82567187e13b87abfd9320ee27f739c9512ff45f76af9e7cb5af44daa48",
+    "unchanged": true
+  },
+  "yipe-monster-history.png": {
+    "before": "5c26673461e00bdaaebfdaf1258b130e6517a906f834a234db21d65e09e2ba5d",
+    "after": "5c26673461e00bdaaebfdaf1258b130e6517a906f834a234db21d65e09e2ba5d",
+    "unchanged": true
+  },
+  "yipe-platform-reopened.png": {
+    "before": "7445523577369d7c3040ca2c1343ab1873fcce13a24d303d9802b841cfe89886",
+    "after": "7445523577369d7c3040ca2c1343ab1873fcce13a24d303d9802b841cfe89886",
+    "unchanged": true
+  },
+  "yipe-platform-rescued.png": {
+    "before": "11b13b29a1d1411cca94b1fd9beed46ff497064b894296ed6b544decd29ca0bf",
+    "after": "11b13b29a1d1411cca94b1fd9beed46ff497064b894296ed6b544decd29ca0bf",
+    "unchanged": true
+  },
+  "yipe-portrait-selection-1.png": {
+    "before": "2db85206dc5260a92d5b1bc49134afeccfb72c9ced182fe85b8650fe1a6b5255",
+    "after": "2db85206dc5260a92d5b1bc49134afeccfb72c9ced182fe85b8650fe1a6b5255",
+    "unchanged": true
+  },
+  "yipe-portrait-selection-9.png": {
+    "before": "c134509cfa959882a1af74309b20747a7d61da10a19b138874a88d5605b627e9",
+    "after": "c134509cfa959882a1af74309b20747a7d61da10a19b138874a88d5605b627e9",
+    "unchanged": true
+  },
+  "yipe-reflection-bridge-2-6.png": {
+    "before": "dc35990025cd9e131e491b9798ed42bde847785bc478089645e3810d588cf04c",
+    "after": "dc35990025cd9e131e491b9798ed42bde847785bc478089645e3810d588cf04c",
+    "unchanged": true
+  },
+  "yipe-reflection-bridge-3-3.png": {
+    "before": "0acf241442ce1b910592944380ec2e44793ca750dcf704e785ef9fe4bc387900",
+    "after": "0acf241442ce1b910592944380ec2e44793ca750dcf704e785ef9fe4bc387900",
+    "unchanged": true
+  },
+  "yipe-reflection-sharp-2-6.png": {
+    "before": "cd642c78c0f66305576f8783fb58cf4ec29173bcb2e6a73ea6ed34bf95e6aeb0",
+    "after": "cd642c78c0f66305576f8783fb58cf4ec29173bcb2e6a73ea6ed34bf95e6aeb0",
+    "unchanged": true
+  },
+  "yipe-reflection-sharp-3-3.png": {
+    "before": "1e58078bd251908a8a5e1ccf1baac3dca37589a40475c8649b9cf0582634e4ca",
+    "after": "1e58078bd251908a8a5e1ccf1baac3dca37589a40475c8649b9cf0582634e4ca",
+    "unchanged": true
+  },
+  "yipe-score-code.png": {
+    "before": "9e6e8e4da494672667a8ca0e0467f9d00fe7314e5cf1fdd26e6c1bc5da1a5970",
+    "after": "9e6e8e4da494672667a8ca0e0467f9d00fe7314e5cf1fdd26e6c1bc5da1a5970",
+    "unchanged": true
+  },
+  "yipe-sign-spacing-10-10.png": {
+    "before": "fe3e8b1cbaf0b94891ae0e2683ec6b18ca24a29c3e46a0417cd7cc6d2c14dd75",
+    "after": "fe3e8b1cbaf0b94891ae0e2683ec6b18ca24a29c3e46a0417cd7cc6d2c14dd75",
+    "unchanged": true
+  },
+  "yipe-sign-spacing-6-7.png": {
+    "before": "d3460fae1b6c5ce1c68ea6a4a80455dc12050593d26265ee50459064133c2350",
+    "after": "d3460fae1b6c5ce1c68ea6a4a80455dc12050593d26265ee50459064133c2350",
+    "unchanged": true
+  },
+  "yipe-sign-spacing-7-6.png": {
+    "before": "aa4b8dce5a9096de70d150b123b803aedade10aa780c99ddfff0a8076a316993",
+    "after": "aa4b8dce5a9096de70d150b123b803aedade10aa780c99ddfff0a8076a316993",
+    "unchanged": true
+  },
+  "yipe-sign-spacing-7-7.png": {
+    "before": "190d89bd6302c2b424cfd5ccf986c4d71838a98ffe75b0184bd0fffa9c54ced4",
+    "after": "190d89bd6302c2b424cfd5ccf986c4d71838a98ffe75b0184bd0fffa9c54ced4",
+    "unchanged": true
+  },
+  "yipe-surface-edge.png": {
+    "before": "9c2413a99c195d7e1b13503dd3736dc2d124f9a94015bea0da2a1df678f88864",
+    "after": "9c2413a99c195d7e1b13503dd3736dc2d124f9a94015bea0da2a1df678f88864",
+    "unchanged": true
+  },
+  "yipe-village-east.png": {
+    "before": "d7112ebe58750d37b905f04c701a86009c6906901ba8652d28e9613e7dfaf5d4",
+    "after": "d7112ebe58750d37b905f04c701a86009c6906901ba8652d28e9613e7dfaf5d4",
+    "unchanged": true
+  },
+  "yipe-village-entire-town.png": {
+    "before": "86237e189324346e860e22369261e17c901053ec7c0c36359d835eab55b7687c",
+    "after": "86237e189324346e860e22369261e17c901053ec7c0c36359d835eab55b7687c",
+    "unchanged": true
+  },
+  "yipe-village-focus-10-10.png": {
+    "before": "f7bd034d787b56614e77b76db4e791e06436d3b60c0400bf7ab95e9394d72f0f",
+    "after": "f7bd034d787b56614e77b76db4e791e06436d3b60c0400bf7ab95e9394d72f0f",
+    "unchanged": true
+  },
+  "yipe-village-focus-4-1.png": {
+    "before": "ee42a7243eddeae70d191f84c59a4114ce1a70224d2e0458c79b0d587f346ee7",
+    "after": "ee42a7243eddeae70d191f84c59a4114ce1a70224d2e0458c79b0d587f346ee7",
+    "unchanged": true
+  },
+  "yipe-village-focus-5-5.png": {
+    "before": "0e48bd5f5e358d0464b7a2505652b35bb7c493116085f9fe3b648f11d4607f57",
+    "after": "0e48bd5f5e358d0464b7a2505652b35bb7c493116085f9fe3b648f11d4607f57",
+    "unchanged": true
+  },
+  "yipe-village-frame-120.png": {
+    "before": "3ffd3c749edcfd2e71004a023428ece6de52532151e957220e6febe2c89d3b4c",
+    "after": "3ffd3c749edcfd2e71004a023428ece6de52532151e957220e6febe2c89d3b4c",
+    "unchanged": true
+  },
+  "yipe-village-frame-2.png": {
+    "before": "6eb5638140270f00b0d63a4920219a29d93279e304491f2f50c43f67f1269cef",
+    "after": "6eb5638140270f00b0d63a4920219a29d93279e304491f2f50c43f67f1269cef",
+    "unchanged": true
+  },
+  "yipe-village-frame-30.png": {
+    "before": "2f860ae80545479a83faec595fa037a584f83d3189e2392727efdb8357c27ac2",
+    "after": "2f860ae80545479a83faec595fa037a584f83d3189e2392727efdb8357c27ac2",
+    "unchanged": true
+  },
+  "yipe-village-frame-80.png": {
+    "before": "713f915ac211aa8a6360417092b3e0858d7ee72463b63f3d3e7af4b5ad65c1b2",
+    "after": "713f915ac211aa8a6360417092b3e0858d7ee72463b63f3d3e7af4b5ad65c1b2",
+    "unchanged": true
+  },
+  "yipe-village-fullscreen.png": {
+    "before": "d104129564293684b440675e44648a19beb8931cdf62e148489109db8402c2d4",
+    "after": "d104129564293684b440675e44648a19beb8931cdf62e148489109db8402c2d4",
+    "unchanged": true
+  },
+  "yipe-village-menu.png": {
+    "before": "1f6593613064f92ae2e11b6291cdb78ce1134a5156fb7359132f1e77f4941e51",
+    "after": "1f6593613064f92ae2e11b6291cdb78ce1134a5156fb7359132f1e77f4941e51",
+    "unchanged": true
+  },
+  "yipe-village-message.png": {
+    "before": "8199f12c2d934b9312af899f080cda8cd73af362dc9688a62fd2641bb272b9d1",
+    "after": "8199f12c2d934b9312af899f080cda8cd73af362dc9688a62fd2641bb272b9d1",
+    "unchanged": true
+  },
+  "yipe-village-moving.png": {
+    "before": "9098615f41a3780b30febb73dc5c594c9adca7a309767f679a12b1ac5fafb858",
+    "after": "9098615f41a3780b30febb73dc5c594c9adca7a309767f679a12b1ac5fafb858",
+    "unchanged": true
+  },
+  "yipe-village-native-details.png": {
+    "before": "89204a34dcfa64ab1c263787da02093e3800bb340b76357783755eb679276148",
+    "after": "89204a34dcfa64ab1c263787da02093e3800bb340b76357783755eb679276148",
+    "unchanged": true
+  },
+  "yipe-village-native-hero.png": {
+    "before": "ae1f6c2cfc7a2f57bb92545561d23cf86b5153cef240a7d35e1e1e2cf2bbed2b",
+    "after": "ae1f6c2cfc7a2f57bb92545561d23cf86b5153cef240a7d35e1e1e2cf2bbed2b",
+    "unchanged": true
+  },
+  "yipe-village-native-meadow.png": {
+    "before": "e02eed274e7dc49fab830e53d10c1d68daad7babe4de3bbedac3bdab4596f03d",
+    "after": "e02eed274e7dc49fab830e53d10c1d68daad7babe4de3bbedac3bdab4596f03d",
+    "unchanged": true
+  },
+  "yipe-village-native-terrain.png": {
+    "before": "8545003bd9320e4934ec7cea7c6f3c8f3a73f5c68c09d524061f3316015708c2",
+    "after": "8545003bd9320e4934ec7cea7c6f3c8f3a73f5c68c09d524061f3316015708c2",
+    "unchanged": true
+  },
+  "yipe-village-native-town.png": {
+    "before": "3916ebcdb514015141e8b99d77eaab17c6fd6c8136e0c72f5f983d9c0aa30023",
+    "after": "3916ebcdb514015141e8b99d77eaab17c6fd6c8136e0c72f5f983d9c0aa30023",
+    "unchanged": true
+  },
+  "yipe-village-north.png": {
+    "before": "d9f31671ac320ffa74cd702678c53d65eef9c993323a8d91e02bffd8db488f57",
+    "after": "d9f31671ac320ffa74cd702678c53d65eef9c993323a8d91e02bffd8db488f57",
+    "unchanged": true
+  },
+  "yipe-village-off.png": {
+    "before": "f267b9e1da05d14e19d9443dc8d66f80719daa6161aac56420228a7e25594dfc",
+    "after": "f267b9e1da05d14e19d9443dc8d66f80719daa6161aac56420228a7e25594dfc",
+    "unchanged": true
+  },
+  "yipe-village-pause.png": {
+    "before": "93d391ab78d175c59a97efab39474dd22c5a180b7d6d099a1c26ca6f53d81d69",
+    "after": "93d391ab78d175c59a97efab39474dd22c5a180b7d6d099a1c26ca6f53d81d69",
+    "unchanged": true
+  },
+  "yipe-village-play.png": {
+    "before": "483d5c7c3e77ea19e3912d45d402763396e69271690557f7bd29a86a83e6a262",
+    "after": "483d5c7c3e77ea19e3912d45d402763396e69271690557f7bd29a86a83e6a262",
+    "unchanged": true
+  },
+  "yipe-village-scanlines.png": {
+    "before": "f0b4ebf3a1f0eea9444f12502ba405c6a406ddaec16a91f5388e8f57f72c91b3",
+    "after": "f0b4ebf3a1f0eea9444f12502ba405c6a406ddaec16a91f5388e8f57f72c91b3",
+    "unchanged": true
+  },
+  "yipe-village-south.png": {
+    "before": "49bc485e456801e9b218099e8a326a1b5dee49ff98293e9aa251e52b33128d79",
+    "after": "49bc485e456801e9b218099e8a326a1b5dee49ff98293e9aa251e52b33128d79",
+    "unchanged": true
+  },
+  "yipe-village-strong.png": {
+    "before": "0e48bd5f5e358d0464b7a2505652b35bb7c493116085f9fe3b648f11d4607f57",
+    "after": "0e48bd5f5e358d0464b7a2505652b35bb7c493116085f9fe3b648f11d4607f57",
+    "unchanged": true
+  },
+  "yipe-village-subtle.png": {
+    "before": "483d5c7c3e77ea19e3912d45d402763396e69271690557f7bd29a86a83e6a262",
+    "after": "483d5c7c3e77ea19e3912d45d402763396e69271690557f7bd29a86a83e6a262",
+    "unchanged": true
+  },
+  "yipe-village-west.png": {
+    "before": "f4b3976104a0aeb1e638d26650dbb59d072ad5434f2756ca2290c390d05346d0",
+    "after": "f4b3976104a0aeb1e638d26650dbb59d072ad5434f2756ca2290c390d05346d0",
+    "unchanged": true
+  },
+  "yipe-world-monsters-1.png": {
+    "before": "4a7b590d689a00e82ddf5e815b307b43e902fa643b465d0df7a74d40952a3d9c",
+    "after": "4a7b590d689a00e82ddf5e815b307b43e902fa643b465d0df7a74d40952a3d9c",
+    "unchanged": true
+  },
+  "yipe-world-monsters-2.png": {
+    "before": "5344e1dc8d11fda464e3fb11b47dea67ee7202ae1a2e1e3f6606135131801582",
+    "after": "5344e1dc8d11fda464e3fb11b47dea67ee7202ae1a2e1e3f6606135131801582",
+    "unchanged": true
+  },
+  "yipe-world-monsters-3.png": {
+    "before": "220787ce509c8c476ef296d1a49fd160ddc988369f8db8fef9e920f6ff78609c",
+    "after": "220787ce509c8c476ef296d1a49fd160ddc988369f8db8fef9e920f6ff78609c",
+    "unchanged": true
+  },
+  "yipe-world-monsters-4.png": {
+    "before": "50b6c6b64bdd4b0b60e562e966d91f1763982f6328f5566b219f8f4b18617944",
+    "after": "50b6c6b64bdd4b0b60e562e966d91f1763982f6328f5566b219f8f4b18617944",
+    "unchanged": true
+  },
+  "yipe-world-monsters-5.png": {
+    "before": "14ae200f21a37285640780de584bae09871c9cce60da38e61d6d8d70406262ef",
+    "after": "14ae200f21a37285640780de584bae09871c9cce60da38e61d6d8d70406262ef",
+    "unchanged": true
+  },
+  "yipe-world-monsters-6.png": {
+    "before": "a23db5bdf4f4cd75a7244fda14da6d6dda31cdb5fed9669cfe26f724eb73cfe5",
+    "after": "a23db5bdf4f4cd75a7244fda14da6d6dda31cdb5fed9669cfe26f724eb73cfe5",
+    "unchanged": true
+  }
+}

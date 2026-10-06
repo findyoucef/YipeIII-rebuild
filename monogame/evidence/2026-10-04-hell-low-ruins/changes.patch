@@ -1,0 +1,80 @@
+--- before/monogame/Yipe.Desktop/WorldHell.cs
++++ after/monogame/Yipe.Desktop/WorldHell.cs
+@@ -220,16 +220,6 @@
+             }
+         var tint = Color.Lerp(Color.White, new Color(255, 174, 128), warmth);
+         batch.Draw(hellProps, feet, Cell(index, 4, 48), tint, 0, hellOrigins[index], scale, SpriteEffects.None, 0);
+-        if (index != 3) return;
+-        // Rubble overlaps the foot of each ruined pillar.
+-        for (var chip = 0; chip < 6; chip++)
+-        {
+-            var seed = HellSeed((int)feet.X + chip, (int)feet.Y, index);
+-            var x = (int)feet.X - 17 + chip * 6 + seed % 3;
+-            var y = (int)feet.Y - 2 + seed % 4;
+-            batch.Draw(pixel, new Rectangle(x, y, 3 + seed % 3, 2), RetroArt.Palette[1]);
+-            batch.Draw(pixel, new Rectangle(x + 1, y, 2, 1), Color.Lerp(RetroArt.Palette[2], RetroArt.Palette[14], warmth));
+-        }
+     }
+ 
+     private void DrawHellScenery(SpriteBatch batch, Map map, MapPosition cell, double time)
+@@ -241,11 +231,25 @@
+         {
+             feet += new Vector2(seed % 7 - 3, -5 + seed % 4);
+             var foundation = map.Id == 117 && cell.X is >= 5 and <= 7 && cell.Y <= 1;
+-            var pillar = map.Id == 117 && cell.X is 4 or 8 && cell.Y == 8;
+             var chain = map.Id == 117 && cell.X is 4 or 8 && cell.Y == 10;
+             var brazier = map.Id == 117 && cell.X is 4 or 8 && cell.Y == 6;
+-            if (pillar || chain || brazier)
+-                DrawHellSprite(batch, pillar ? 3 : chain ? 6 : 7, feet, warmth);
++            if (chain || brazier)
++                DrawHellSprite(batch, chain ? 6 : 7, feet, warmth);
++            // Low broken masonry stays inside the wall cell, clear of the
++            // monsters standing immediately north of these two ruins.
++            if (map.Id == 117 && cell.X is 4 or 8 && cell.Y == 8)
++                for (var chip = 0; chip < 5; chip++)
++                {
++                    var stone = HellSeed(cell.X * 5 + chip, cell.Y, map.Id);
++                    var x = cell.X * 32 + 3 + chip * 5 + stone % 2;
++                    var y = cell.Y * 32 + 13 + stone / 11 % 6;
++                    var width = 4 + stone % 4; var height = 3 + stone / 7 % 3;
++                    batch.Draw(pixel, new Rectangle(x, y + height, width + 1, 1), new Color(10, 9, 14) * .35f);
++                    batch.Draw(pixel, new Rectangle(x, y + 1, width, height), new Color(49, 30, 36));
++                    batch.Draw(pixel, new Rectangle(x + 1, y, width - 2, height - 1), new Color(80, 49, 49));
++                    batch.Draw(pixel, new Rectangle(x + 1, y, width - 3, 1),
++                        Color.Lerp(new Color(105, 66, 61), new Color(153, 81, 53), warmth));
++                }
+             // Every original fire-wall cell retains a visible hot hazard, even under rock.
+             var flameFeet = feet - new Vector2(seed % 9 - 4, brazier ? 12 : 2);
+             DrawHellFlame(batch, flameFeet, seed, time, foundation ? 5 : 6 + seed % 3);
+--- before/monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs
+@@ -102,6 +102,18 @@
+                 check(molten.Length > 100 && molten.All(i => game.Map.Tile(new(i % lava.Width % 416 / 32, i / lava.Width % 384 / 32)) == 0x24),
+                     $"Hell {id} seed {seed}: every lava frame stays strictly within original fire-wall cells");
+                 if (id != 117 || seed != 1) continue;
++                var monster = type.GetMethod("DrawWorldMonster", flags)!;
++                foreach (var x in new[] { 4, 8 })
++                {
++                    var placement = game.ActivePlacements.Single(p => p.Position == new MapPosition(x, 7));
++                    var sprite = Layer(() => monster.Invoke(world, [batch, placement.TypeId, placement.Position, 1]));
++                    var body = Enumerable.Range(0, sprite.Length).Where(i => sprite[i].A == 255).ToArray();
++                    check(body.Length > 0 && body.All(i => first[i] == sprite[i]),
++                        $"Hell A4 monster at {x},7 keeps its complete silhouette beside the low ruins");
++                    var ruin = Layer(() => scenery.Invoke(world, [batch, game.Map, new MapPosition(x, 8), 1d]));
++                    check(ruin.Any(p => p.A > 0) && ruin.Take(8 * 32 * 416).All(p => p.A == 0),
++                        $"Hell A4 ruin at {x},8 stays below the neighboring monster's feet");
++                }
+                 var flame = type.GetMethod("DrawHellFlame", flags)!;
+                 Color[] Flame(int phase, double time, int size) => Layer(() => flame.Invoke(world, [batch, new Vector2(100, 100), phase, time, size]));
+                 var fire = Flame(23, 1, 14);
+--- before/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
+@@ -109,6 +109,8 @@
+                     session.Player.HellGatekeeperState = keeper;
+                     player.SnapTo(new(6, 5)); Set("cameraPosition", new Vector2(48, 86));
+                     Save(Frame(1), "hell-path-defaults.png");
++                    player.SnapTo(new(6, 7)); Set("cameraPosition", new Vector2(48, 150));
++                    Save(Frame(1), "hell-a4-6-7-defaults.png");
+                     var doorway = new Adventure(new GameSession(catalog, location: new()
+                     { MapId = 117, AlternateMapSet = true, RegionX = -4, RegionY = -1, Position = new(9, 5) }));
+                     Set("session", doorway.Session); Set("adventure", doorway);

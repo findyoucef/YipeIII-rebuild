@@ -1,0 +1,19 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+**Draft**
+
+The proposal is likely the smallest correct change:
+
+- Add a per-call `blurMix = 1f` to `MiniatureEffect.Apply` and multiply only the final composite `amount` by it. Passing `0.3f` for maps 117–120 preserves the existing blur shape/radius—and therefore miniature depth—while restoring more original detail.
+- Add a per-call final sampler choice to `HeatEffect.Apply`, using `PointClamp` only in Hell. Keep the initial enlargement and all non-Hell defaults unchanged.
+
+**Correctness pitfalls**
+
+- Do not multiply blur radius instead: smaller fractional radii sampled with `LinearClamp` can soften broadly without producing equivalent depth, and change both blur passes.
+- `PointClamp` quantizes refraction. Because the source is already enlarged 4×, motion steps are quarter-native-pixel rather than whole-pixel, but subtle shimmer/stepping remains possible.
+- Select the sampler before `DrawUserPrimitives`; changing SpriteBatch state does not affect the `BasicEffect` draw.
+- Ensure every call derives both options from the same current-map check. Cached biome state could be stale during map transitions.
+- Preserve exact defaults (`blurMix = 1f`, `LinearClamp`) and avoid changing render-target formats, blend state, blur generation, or non-Hell call arguments.
+
+No clearly better equally small approach is warranted. Retaining linear heat sampling and reducing displacement would weaken motion but would not remove its interpolation softness. The proposed 4× point-sampled refraction is the better crispness/motion compromise.
+
+**Missing context:** the `TownGame` call sites, map identifier API, and effect ordering are required to verify wiring and transition timing.

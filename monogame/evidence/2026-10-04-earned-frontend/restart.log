@@ -1,0 +1,8 @@
+UTC: 2026-10-04T12:29:38.5494940Z
+Runtime: .NET 10.0.8
+OS: macOS 26.7.1
+PASS frontend checkpoint 39.y3r: map 109, level 9, gold 794, RNG 2541285795
+PASS frontend checkpoint 40.y3r: map 109, level 9, gold 1378, RNG 1031425364
+PASS frontend checkpoint 41.y3r: map 109, level 10, gold 1738, RNG 388035828
+PASS frontend checkpoint king-return.y3r: map 17, level 10, gold 2238, RNG 3906560132
+PASS earned frontend opening fresh-process continuation: 42 C++ checkpoints + King return; 116 victories, 14 chests, 2 rescues; 135 rendered frames; pause-menu save verified. Only default/selected portrait metadata is normalized in the expected fixtures.

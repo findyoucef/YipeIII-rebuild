@@ -1,0 +1,2 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+No findings. The diff preserves cached geometry generation, quantizes terrain/lava colors, clusters the sampled rock texture at 2px, steps glow/smoke animation, and retains per-pixel smoke visibility clipping.

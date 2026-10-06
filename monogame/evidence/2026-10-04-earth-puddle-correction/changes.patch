@@ -1,0 +1,152 @@
+--- a/monogame/Yipe.Desktop/WorldEarth.cs
++++ b/monogame/Yipe.Desktop/WorldEarth.cs
+@@ -281,30 +281,37 @@
+ 
+     private void AddEarthPuddles(Map map)
+     {
+-        // Broad enough to walk across and see a full reflection. These are visual
+-        // shallows on existing floor; stairs, chests and narrow passages stay clear.
++        // Small hollows in the earth, with an uneven basin, a shallow finger and
++        // a bite of dry ground. The existing floor remains freely walkable.
+         (MapPosition Cell, Point Radius)[] pools = map.Id switch
+         {
+-            57 => [(new(3, 4), new(38, 24)), (new(8, 8), new(38, 24))],
+-            63 => [(new(5, 5), new(42, 25)), (new(9, 3), new(30, 20))],
+-            69 => [(new(8, 6), new(36, 24)), (new(4, 2), new(37, 23))],
+-            75 => [(new(7, 6), new(35, 23)), (new(8, 2), new(33, 21))],
+-            103 => [(new(6, 5), new(44, 25)), (new(8, 8), new(37, 23))],
+-            109 => [(new(7, 5), new(32, 25)), (new(7, 1), new(34, 23))],
+-            115 => [(new(4, 8), new(35, 24)), (new(8, 2), new(32, 21))],
++            57 => [(new(3, 4), new(24, 16)), (new(8, 8), new(21, 14))],
++            63 => [(new(5, 5), new(23, 15)), (new(9, 3), new(18, 13))],
++            69 => [(new(8, 6), new(21, 16)), (new(4, 2), new(24, 14))],
++            75 => [(new(7, 6), new(20, 14)), (new(8, 2), new(22, 15))],
++            103 => [(new(6, 5), new(24, 16)), (new(8, 8), new(20, 14))],
++            109 => [(new(7, 5), new(21, 15)), (new(7, 1), new(23, 14))],
++            115 => [(new(4, 8), new(23, 16)), (new(8, 2), new(19, 13))],
+             _ => [],
+         };
+         foreach (var (cell, radius) in pools)
+         {
+             var center = new Point(cell.X * 32 + 16, cell.Y * 32 + 32);
++            var seed = EarthSeed(cell.X, cell.Y, map.Id);
+             for (var y = Math.Max(0, center.Y - radius.Y - 2); y <= Math.Min(EarthHeight - 1, center.Y + radius.Y + 2); y++)
+-                for (var x = Math.Max(0, center.X - radius.X - 2); x <= Math.Min(EarthWidth - 1, center.X + radius.X + 2); x++)
++                for (var x = Math.Max(0, center.X - radius.X - 4); x <= Math.Min(EarthWidth - 1, center.X + radius.X + 4); x++)
+                 {
+                     // Secret floor has the same appearance as ordinary floor.
+                     if (map.Tile(new(x / 32, y / 32)) is not (0x27 or 0x47)) continue;
+-                    var dx = (x - center.X) / (float)radius.X; var dy = (y - center.Y) / (float)radius.Y;
+-                    var rim = 1 + .055f * MathF.Sin(x * .27f + y * .16f) + .035f * MathF.Sin(x * .13f - y * .31f);
+-                    if (dx * dx + dy * dy < rim) waterMask[y * WaterWidth + x] = true;
++                    var dx = (x - center.X) / (float)radius.X * (seed % 2 == 0 ? 1 : -1);
++                    var dy = (y - center.Y) / (float)radius.Y;
++                    var basinX = dx + .18f + dy * .24f;
++                    var basin = basinX * basinX / .78f + dy * dy;
++                    var finger = (dx - .65f) * (dx - .65f) / .22f + (dy - .25f) * (dy - .25f) / .28f;
++                    var bite = (dx - .55f) * (dx - .55f) / .18f + (dy + .65f) * (dy + .65f) / .26f;
++                    var rim = .84f + .16f * MathF.Sin(x * .39f + y * .23f + seed % 17)
++                        + .1f * MathF.Sin(x * .21f - y * .48f);
++                    if (Math.Min(basin, finger) < rim && bite > 1) waterMask[y * WaterWidth + x] = true;
+                 }
+         }
+     }
+--- a/monogame/Yipe.Desktop/WorldWater.cs
++++ b/monogame/Yipe.Desktop/WorldWater.cs
+@@ -98,7 +98,18 @@
+                     waterMask[index] = false;
+                     continue;
+                 }
+-                if (depth <= 1) color = RetroArt.Palette[28];
++                if (puddles)
++                {
++                    // Still cave water reflects brown rock, with broad quiet
++                    // patches instead of the river's dense blue wave texture.
++                    var stone = EarthNoise(x / 17f, y / 8f, map.Id + 31);
++                    color = stone > .6f ? new Color(76, 67, 54) : new Color(59, 52, 45);
++                    if (stone > .77f) color = new Color(91, 80, 62);
++                    if (depth < 2) color = RetroArt.Palette[14];
++                    if (depth < 2 && y > 0 && !waterMask[index - WaterWidth]
++                        && (x / 4 + y / 2) % 3 == 0) color = new Color(145, 128, 97);
++                }
++                else if (depth <= 1) color = RetroArt.Palette[28];
+                 else if (depth < 3 && (x + y * 3) % 5 == 0) color = RetroArt.Palette[29];
+                 waterPixels[index] = color;
+             }
+@@ -114,7 +125,8 @@
+                 var color = surface
+                     ? RetroArt.Palette[distance < 1.5f ? 16 : (x / 3 + y / 4) % 3 == 0 ? 10 : 9]
+                     : RetroArt.Palette[0] * (distance < 1.5f ? .45f : .2f);
+-                if (distance < 2 && (x * 13 + y * 7) % 37 == 0) color = RetroArt.Palette[surface ? 3 : 2];
++                if (puddles) color = RetroArt.Palette[14] * (distance < 1.5f ? .55f : .2f);
++                else if (distance < 2 && (x * 13 + y * 7) % 37 == 0) color = RetroArt.Palette[surface ? 3 : 2];
+                 waterPixels[index] = color;
+             }
+         water.SetData(waterPixels);
+@@ -151,7 +163,8 @@
+         batch.Draw(water, bounds, bounds, Color.White);
+         var tile = WaterTile(waterTiles[bounds.Y / 32 * Map.Width + bounds.X / 32]);
+         if (tile == 0 && !HasPuddles) return;
+-        var tick = (int)(time * 6);
++        var puddles = HasPuddles;
++        var tick = (int)(time * (puddles ? 3 : 6));
+         var seed = bounds.X / 32 * 13 + bounds.Y / 32 * 7;
+         for (var i = 0; i < 2; i++)
+         {
+@@ -165,7 +178,8 @@
+             };
+             var horizontal = tile != 0x11;
+             var wave = new Rectangle(bounds.X + point.X, bounds.Y + point.Y, horizontal ? 4 : 1, horizontal ? 1 : 4);
+-            if (Fits(wave)) batch.Draw(pixel, wave, RetroArt.Palette[29] * .6f);
++            if (Fits(wave)) batch.Draw(pixel, wave, RetroArt.Palette[puddles ? 18 : 29] * (puddles ? .25f : .6f));
++            if (puddles) continue;
+             if ((seed + i) % 3 != 0) continue;
+             var foam = new Rectangle(wave.X + 4, wave.Y + 3, 2, 1);
+             if (Fits(foam)) batch.Draw(pixel, foam, RetroArt.Palette[30] * .4f);
+--- a/monogame/Yipe.Desktop/TownScenery.cs
++++ b/monogame/Yipe.Desktop/TownScenery.cs
+@@ -176,6 +176,7 @@
+         if (strength <= 0) return;
+ 
+         var source = HeroFrame(player, time);
++        var tint = Palette[renderer?.HasPuddles == true ? 18 : 30];
+         var tick = (int)(time * 6);
+         for (var row = 0; row < 20; row++)
+         {
+@@ -193,7 +194,7 @@
+                 while (column < 32 && Water(left + column, y)) column++;
+                 if (column > start)
+                     batch.Draw(HeroTexture, new Vector2(left + start, y),
+-                        new Rectangle(source.X + start, sourceY, column - start, 1), Palette[30] * opacity);
++                        new Rectangle(source.X + start, sourceY, column - start, 1), tint * opacity);
+             }
+         }
+     }
+--- a/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
+@@ -66,20 +66,18 @@
+             var mask = (bool[])((bool[])type.GetField("waterMask", flags)!.GetValue(world)!).Clone();
+             var wet = Enumerable.Range(0, mask.Length).Where(i => mask[i]).ToArray();
+             var wetTiles = wet.Select(i => new MapPosition(i % 416 / 32, i / 416 / 32)).Distinct().ToArray();
+-            check(wet.Length > 2500 && wetTiles.All(p => game.Map.Tile(p) is 0x27 or 0x47
++            check(wet.Length is > 500 and < 2500 && wetTiles.All(p => game.Map.Tile(p) is 0x27 or 0x47
+                 && game.Map.Move(new(p.X - 1, p.Y), 1, 0).Moved),
+-                $"Earth {id} puddles cover only ordinary walkable floor and need no water equipment");
++                $"Earth {id} small puddles cover only ordinary walkable floor and need no water equipment");
+             check(wetTiles.All(p => !game.Map.Events.Chests.Contains(p)
+                 && !game.Map.Events.Depth.Any(d => d.HasPosition && d.Position == p)
+                 && (!game.Map.Events.Princess.HasPosition || game.Map.Events.Princess.Position != p)),
+                 $"Earth {id} puddles leave treasure, stairs and rescue positions dry");
+             var water = (Texture2D)type.GetField("water", flags)!.GetValue(world)!;
+             var waterPixels = new Color[mask.Length]; water.GetData(waterPixels);
+-            var pattern = (Color[])type.GetField("waterPattern", flags)!.GetValue(world)!;
+-            var interiors = wet.Where(i => i % 416 is > 3 and < 412 && i / 416 is > 3 and < 380
+-                && Enumerable.Range(-3, 7).All(dy => Enumerable.Range(-3, 7).All(dx => mask[i + dy * 416 + dx]))).ToArray();
+-            check(interiors.Length > 1000 && interiors.All(i => waterPixels[i] == pattern[i / 416 % 32 * 32 + i % 416 % 32]),
+-                $"Earth {id} puddles reuse the exact village river texture inside their shorelines");
++            check(wet.All(i => waterPixels[i].R > waterPixels[i].G && waterPixels[i].G > waterPixels[i].B)
++                && wet.Select(i => waterPixels[i]).Distinct().Count() is >= 2 and <= 5,
++                $"Earth {id} still water uses a small warm palette with discrete shades");
+             var waterFirst = WaterFrame(1); var waterLater = WaterFrame(2);
+             check(waterFirst.SequenceEqual(WaterFrame(1)) && !waterFirst.SequenceEqual(waterLater)
+                 && Enumerable.Range(0, mask.Length).All(i => waterFirst[i] == waterLater[i] || mask[i]),

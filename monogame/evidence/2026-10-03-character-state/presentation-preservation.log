@@ -1,0 +1,5 @@
+Compared all 39 inputs in the preceding port-baseline source manifest.
+Only Yipe.Tests/Program.cs changed among those inputs.
+The desktop renderer, input, walking speed, town rules, art, graphics runner and build dependencies retain their recorded hashes.
+The new Player model is used by the checks; the desktop preview does not use it yet.
+Graphics were not rerun for this core-only addition. The prior 139-check results remain historical evidence.

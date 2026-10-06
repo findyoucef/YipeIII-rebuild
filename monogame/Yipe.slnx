@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Yipe.Core/Yipe.Core.csproj" />
+  <Project Path="Yipe.Desktop/Yipe.Desktop.csproj" />
+  <Project Path="Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj" />
+  <Project Path="Yipe.Tests/Yipe.Tests.csproj" />
+</Solution>

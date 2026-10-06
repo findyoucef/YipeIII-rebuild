@@ -1,0 +1,5 @@
+C++ and C# session traces match byte for byte.
+Records: 21511
+Bytes: 10118050
+SHA-256: d6dfac953ba7eedfb9435a85f8e342a111512226fd788bb53834f60e618f1602
+C++: Apple Clang, C++20, -Wall -Wextra -Werror, undefined-behavior sanitizer; no diagnostics.

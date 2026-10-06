@@ -2,6 +2,18 @@
 
 This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1.1.6.0 from the supplied 2003 Windows executable. The original binary is an input and reference; generated decompiler output is evidence, not compilable source.
 
+The [C# / MonoGame desktop port](monogame/README.md) now plays the complete
+campaign with 16:9 retro graphics, overlay menus, keyboard/controller navigation
+and full-state saves. P1–P4 are complete, including an independently compared
+earned ending and fresh-process restarts. Desktop polish, release verification
+and eventual official console integration remain. The C++ reconstruction
+described below remains the gameplay reference; its release packages are separate
+from the MonoGame port.
+
+The [MonoGame port plan and progress tracker](monogame/PORTING_PLAN.md) records
+the faithful-port scope, milestones, verification evidence, and exact next steps
+for resuming implementation in a later session.
+
 Download the macOS preview from [Releases](https://github.com/findyoucef/YipeIII-rebuild/releases).
 Choose the `.tar.gz` asset, extract it, and open `Yipe III.app` or move it to
 Applications. It requires an Apple Silicon Mac running macOS 26 or newer.

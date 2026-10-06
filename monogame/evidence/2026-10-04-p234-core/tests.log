@@ -1,0 +1,10 @@
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+The desktop preview can currently display Maynard only. See SAVE_FORMAT.md for import limits.
+Import failed: The import is truncated or contains invalid data.
+Passed 488 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.

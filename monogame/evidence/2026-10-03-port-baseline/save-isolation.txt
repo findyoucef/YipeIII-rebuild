@@ -1,0 +1,2 @@
+Existing desktop town save fingerprint was identical before and after both graphics runs.
+Each runner used its own output-directory/test-saves/position.json.

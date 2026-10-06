@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Fixtures/Opening/**/*" Link="Content/Opening/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Fixtures/Persistence/*" Link="Content/Persistence/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../Yipe.Desktop/Yipe.Desktop.csproj" />
+    <Content Include="Fixtures/full-save-v1.y3m" Link="Content/full-save-v1.y3m" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

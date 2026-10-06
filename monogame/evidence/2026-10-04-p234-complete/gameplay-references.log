@@ -1,0 +1,122 @@
+  Yipe.Core -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/bin/Release/net8.0/Yipe.Core.dll
+  Yipe.Desktop -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll
+  Yipe.GraphicsChecks -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll
+  Yipe.Tests -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.32
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-abb89af5e700452ca37f673b9be5ab06/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-abb89af5e700452ca37f673b9be5ab06/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-63ce6eb8a15c4082a93252a479ed588e/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-63ce6eb8a15c4082a93252a479ed588e/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-ba55f2c8015145689d51ad5ef2198849/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-ba55f2c8015145689d51ad5ef2198849/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-652052a8adb342bcbd48328b76cbb60a/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-652052a8adb342bcbd48328b76cbb60a/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-ba29264ec26e496b824b68782a2cea17/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-ba29264ec26e496b824b68782a2cea17/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-3860e9381c784f458d2fe9076c92554a/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-3860e9381c784f458d2fe9076c92554a/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-3c4726a2ebb74fe8a55dff702ecb1611/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-3c4726a2ebb74fe8a55dff702ecb1611/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 502 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.

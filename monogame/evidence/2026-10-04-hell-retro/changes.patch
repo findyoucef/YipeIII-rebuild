@@ -1,0 +1,118 @@
+--- a/monogame/Yipe.Desktop/WorldHell.cs
++++ b/monogame/Yipe.Desktop/WorldHell.cs
+@@ -52,6 +52,15 @@
+         var glow = new Color[ground.Length];
+         var distance = new float[ground.Length];
+         var paving = new bool[ground.Length];
++        // Keep the approved ember-red/ash balance, with a few deliberate shades
++        // instead of hundreds of blended colors between rock, soot and fire.
++        Color[] shades =
++        [
++            new(40, 22, 29), new(56, 26, 33), new(72, 34, 39), new(90, 41, 46),
++            new(113, 49, 49), new(143, 59, 55), new(174, 70, 58), new(205, 90, 64),
++            RetroArt.Palette[23], RetroArt.Palette[6],
++            new(55, 47, 54), new(78, 73, 80), new(94, 89, 95), new(116, 108, 111),
++        ];
+         var terrain = new Color[floors.Width * floors.Height]; floors.GetData(terrain);
+         for (var y = 0; y < HellHeight; y++)
+             for (var x = 0; x < HellWidth; x++)
+@@ -86,7 +95,8 @@
+                 }
+                 var weathering = 2 * MathF.Sin(x * .21f + y * .13f) + MathF.Sin(y * .43f - x * .17f);
+                 var scorch = MathHelper.SmoothStep(0, 1, Math.Clamp(((wall ? edge : -edge) + weathering + 9) / 23, 0, 1));
+-                var grain = (x * 13 + y * 19 + x * y * 3) % 101;
++                var gx = x / 2; var gy = y / 2;
++                var grain = (gx * 13 + gy * 19 + gx * gy * 3) % 101;
+                 // Deep ember reds keep the floor warm without losing its midtones.
+                 var color = new Color(72, 36, 39);
+                 var nearest = float.MaxValue; var second = float.MaxValue;
+@@ -154,7 +164,7 @@
+                     else if (edge < bank + 1.3f) color = Color.Lerp(color, new Color(149, 78, 62), .25f);
+                     glow[i] = Color.Transparent;
+                 }
+-                ground[i] = color;
++                ground[i] = Shade(color);
+                 // The recessed arch ends at y=62; row 2 belongs to the fire wall.
+                 var foundation = map.Id == 117 && tx is >= 5 and <= 7 && ty <= 1;
+                 // Animate the fissures already painted into the basalt, so the lava
+@@ -168,10 +178,11 @@
+                     var phase = frame * MathF.Tau / 8;
+                     var flow = MathF.Sin(x * .12f - y * .07f - phase);
+                     var hot = Color.Lerp(new Color(205, 62, 39), RetroArt.Palette[23], .45f + flow * .35f);
+-                    lava[(frame / 4 * HellHeight + y) * HellWidth * 4 + frame % 4 * HellWidth + x] = Color.Lerp(color, hot, front ? .45f : .8f);
+-                }
+-            }
+-        // A cached distance field gives nearby floor and crags a broad, seamless firelight falloff.
++                    lava[(frame / 4 * HellHeight + y) * HellWidth * 4 + frame % 4 * HellWidth + x] = Shade(Color.Lerp(color, hot, front ? .45f : .8f));
++                }
++            }
++        // The distance field still joins adjacent walls; restrained light bands
++        // replace the continuous airbrushed falloff without obscuring the path.
+         for (var y = 0; y < HellHeight; y++)
+             for (var x = 0; x < HellWidth; x++)
+             {
+@@ -191,9 +202,23 @@
+                 if (x + 1 < HellWidth && y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth + 1] + 1.4142f);
+                 var strength = Math.Max(0, 1 - distance[i] / 30);
+                 var light = Math.Max(strength * strength * .18f, glow[i].A / 255f);
+-                glow[i] = new Color(240, 94, 63) * (paving[i] ? light * .18f : light);
++                light = MathF.Round((paving[i] ? light * .18f : light) * 32) / 32;
++                glow[i] = new Color(240, 94, 63) * light;
+             }
+         hellGround.SetData(ground); hellLava.SetData(lava); hellGlow.SetData(glow);
++
++        Color Shade(Color color)
++        {
++            var closest = shades[0]; var best = int.MaxValue;
++            foreach (var candidate in shades)
++            {
++                var dr = color.R - candidate.R; var dg = color.G - candidate.G; var db = color.B - candidate.B;
++                var difference = dr * dr + dg * dg + db * db;
++                if (difference >= best) continue;
++                best = difference; closest = candidate;
++            }
++            return closest;
++        }
+     }
+ 
+     private void DrawHellGround(SpriteBatch batch, Rectangle bounds, double time)
+@@ -202,7 +227,8 @@
+         var source = new Rectangle(bounds.X + frame % 4 * HellWidth, bounds.Y + frame / 4 * HellHeight, 32, 32);
+         batch.Draw(hellGround, bounds, bounds, Color.White);
+         batch.Draw(hellLava, bounds, source, Color.White);
+-        var light = .82f + .10f * MathF.Sin((float)time * 3.7f) + .08f * MathF.Sin((float)time * 6.1f);
++        var t = (float)(Math.Floor(time * 8) / 8);
++        var light = .82f + .10f * MathF.Sin(t * 3.7f) + .08f * MathF.Sin(t * 6.1f);
+         batch.Draw(hellGlow, bounds, bounds, Color.White * light);
+     }
+ 
+@@ -329,10 +355,12 @@
+                 for (var dy = -r; dy <= r; dy++)
+                     for (var dx = -r; dx <= r; dx++)
+                     {
+-                        var density = 1 - (dx * dx + dy * dy) / (float)(r * r);
++                        var cx = dx / 2 * 2; var cy = dy / 2 * 2;
++                        var density = 1 - (cx * cx + cy * cy) / (float)(r * r);
+                         var wx = sx + dx; var wy = sy + dy;
+                         if (density <= 0 || wx < 0 || wy < 0 || !game.Visibility.Contains(new(wx / 32, wy / 32))) continue;
+-                        batch.Draw(pixel, new Rectangle(wx, wy, 1, 1), RetroArt.Palette[3] * (density * .10f * (1 - smoke / 40)));
++                        var fade = MathF.Ceiling((1 - smoke / 40) * 4) / 4;
++                        batch.Draw(pixel, new Rectangle(wx, wy, 1, 1), RetroArt.Palette[3] * ((density > .55f ? .08f : .04f) * fade));
+                     }
+             }
+         for (var i = 0; i < 20; i++)
+--- a/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
+@@ -97,6 +97,12 @@
+                     }
+                 }
+                 check(GameSaveCodec.Encode(session, catalog).SequenceEqual(snapshot), $"Heat rendering map {id} preserves the complete gameplay state and RNG");
++                if (id is >= 117 and <= 120)
++                {
++                    Set("scanlines", true); Save(Frame(1), $"hell-{id}-defaults.png");
++                    Set("scanlines", false); Set("miniatureMode", 0); Save(Frame(1), $"hell-{id}-crisp.png");
++                    Set("miniatureMode", 2);
++                }
+                 if (id == 117)
+                 {
+                     var keeper = session.Player.HellGatekeeperState;

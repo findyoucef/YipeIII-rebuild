@@ -1,0 +1,13 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+Smallest safe revision:
+
+- In `PrepareHell`, preserve all geometry inputs unchanged: `edge`, `weathering`, `scorch`, `bank`, `rock`, `front`, `foundation`, `paving`, and `molten`.
+- Cluster only the wall-top texture lookup: derive even coordinates such as `sampleX = x & ~1`, `sampleY = y & ~1` for `terrain[(32 + sampleY % 32) * floors.Width + 32 + sampleX % 32]`. Keep per-pixel `edge`/`front` tests so 2×2 sampling does not square off rounded walls.
+- Quantize `ground[i]` after every floor/path/rock blend. Quantize each populated `lava[...]` value after its hot-color blend. Use separate small ramps for charcoal/ash ground, readable flagstones, and ember/lava reds.
+- Keep `molten` classification based on the original `stone`, not a quantized color. Otherwise palette changes can expand fissures or remove them. Retain `rock && !foundation`; never infer molten pixels from red ground, `glow`, or proximity.
+- Protect path contrast: a shared nearest-color palette could collapse `flagstone`, `joint`, and surrounding ground together. Reserve at least distinct joint, slab, and adjacent-ground values; keep `glow[i] = Color.Transparent` and the later `paving[i] ? light * .18f` suppression.
+- Step low-opacity light without changing the distance field: quantize `light`/alpha into a few levels when writing `glow[i]`, then quantize the `DrawHellGround` animation multiplier `light` to matching discrete levels. Do not step `distance`, which would reshape the falloff.
+- Cache behavior remains map-driven through `changed`. If palette/retro mode can change at runtime, `PrepareHell` needs an explicit dirty/version input; none is shown.
+- Verify transparent entries in the eight-frame `lava` atlas remain transparent for non-`molten` pixels.
+
+Missing: actual `RetroArt.Palette[22]`/`[23]` values and the intended new palette, so exact color assignments cannot be safely specified.

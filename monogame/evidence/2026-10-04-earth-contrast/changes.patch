@@ -1,0 +1,123 @@
+--- before/monogame/Yipe.Desktop/WorldEarth.cs
++++ after/monogame/Yipe.Desktop/WorldEarth.cs
+@@ -54,6 +54,7 @@
+             57 => new Vector2(48, 48), 63 => new(300, 225), 69 => new(144, 144),
+             75 => new(112, 185), 103 => new(285, 35), 109 => new(245, 190), _ => new(110, 240),
+         };
++        ReadOnlySpan<int> dither = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+         for (var y = 0; y < EarthHeight; y++)
+             for (var x = 0; x < EarthWidth; x++)
+             {
+@@ -83,38 +84,42 @@
+                 var dust = EarthNoise(x / 34f, y / 39f, map.Id + 17);
+                 var damp = Math.Clamp((EarthNoise(x / 69f, y / 57f, map.Id + 41) - .58f) * 3, 0, 1);
+                 if (map.Id != 109) damp *= .35f;
+-                var floor = Color.Lerp(new Color(91, 66, 45), new Color(125, 94, 62), MathF.Round(broad * 7) / 7);
+-                floor = Color.Lerp(floor, new Color(146, 116, 78), Math.Max(0, dust - .48f) * .45f);
+-                floor = Color.Lerp(floor, new Color(67, 77, 64), damp * .7f);
+-                if (deep) floor = Color.Lerp(floor, new Color(76, 77, 66), .23f);
+-                // Sparse, clustered grains leave broad quiet patches between gravel beds.
+-                if (grain % 83 < 3 && dust > .43f) floor = Color.Lerp(floor, new Color(163, 132, 91), .22f);
+-                if (grain % 97 == 0) floor = Color.Lerp(floor, new Color(53, 43, 34), .24f);
+-                var shade = MathF.Exp(-Math.Max(0, edge) / 5) * (wall ? .08f : .28f);
+-                floor = Color.Lerp(floor, new Color(35, 32, 28), shade);
++                // Solid palette steps and small pixel clusters keep the floor earthy
++                // without the blended brown gradients that flattened the cave.
++                var threshold = (dither[(y & 3) * 4 + (x & 3)] + .5f) / 16f;
++                var floor = broad + (threshold - .5f) * .10f < (deep ? .48f : .36f) ? 15 : 38;
++                if (damp > (map.Id == 109 ? .28f : .32f) + threshold * .12f) floor = damp > .72f ? 8 : 9;
++                var cluster = EarthSeed(x / 3, y / 2, map.Id + 71);
++                if (cluster % 19 == 0 && dust > .43f && x % 3 != 2) floor = 16;
++                if (grain % 113 == 0) floor = 14;
++                if (edge < 2.5f) floor = 14;
++                else if (edge < 5 && threshold < .5f) floor = 15;
+                 var bank = 2.5f + 1.1f * MathF.Sin(x * .14f + y * .09f) + .6f * MathF.Sin(y * .31f - x * .17f);
+                 stone[index] = wall && edge > bank;
+-                var color = floor;
++                var shade = floor;
+                 if (stone[index])
+                 {
+-                    // Sediment runs across the formation, independent of tile boundaries.
++                    // Broken rock facets use a brighter ramp than the walkable earth.
++                    // Sediment crosses tiles, but no longer shades them like smooth wood.
+                     var strata = y + 8 * MathF.Sin(x * .021f) + 3 * MathF.Sin(x * .067f + map.Id);
+-                    var band = (.5f + .5f * MathF.Sin(strata * .23f)) * .6f + broad * .4f;
+-                    color = Color.Lerp(new Color(96, 68, 47), new Color(155, 117, 76), MathF.Round(band * 6) / 6);
+-                    if (deep) color = Color.Lerp(color, new Color(86, 94, 79), .25f);
+-                    if (map.Id == 63 && MathF.Sin(strata * .12f) > .82f)
+-                        color = Color.Lerp(color, new Color(185, 139, 84), .3f);
++                    var facet = EarthNoise((x / 2 * 2) / 14f, (y / 2 * 2) / 12f, map.Id + 19);
++                    shade = facet < .36f ? 16 : 17;
++                    if (facet > .75f) shade = 18;
++                    if (map.Id == 63 && MathF.Sin(strata * .17f) > .82f) shade = 16;
+                     var fissure = EarthNoise(x / 27f, y / 23f, map.Id + 5);
+-                    if (fissure is > .485f and < .505f) color = Color.Lerp(color, new Color(54, 42, 33), .38f);
++                    if (fissure is > .485f and < .505f) shade = 15;
+                     var front = !EarthWall(map, tx, ty + 1) && 32 - y % 32 < 9 + bank;
+-                    if (front) color = Color.Lerp(color, new Color(54, 40, 30), .48f);
+-                    else if (edge < bank + 1.6f) color = Color.Lerp(color, new Color(189, 147, 95), .36f);
+-                    if (grain % 71 == 0) color = Color.Lerp(color, new Color(188, 158, 115), .16f);
++                    if (front) shade = facet < .4f ? 15 : 16;
++                    if (edge < bank + 1.2f) shade = 14;
++                    else if (!front && edge < bank + 2.4f) shade = 18;
++                    if (!front && grain % 71 == 0) shade = 18;
+                 }
+                 var distance = Vector2.DistanceSquared(new(x, y), light);
+                 var illumination = MathF.Exp(-distance / (map.Id == 57 ? 11000 : 4300));
+-                color = Color.Lerp(color, deep ? new Color(117, 152, 128) : new Color(204, 156, 90), illumination * .12f);
+-                data[index] = color;
++                // Local light promotes a palette step with sparse dithering, not a wash.
++                if (threshold < illumination * .22f && edge > 5)
++                    shade = shade switch { 15 => 38, 16 => 17, _ => shade };
++                data[index] = RetroArt.Palette[shade];
+             }
+ 
+         // Paint details into the cached terrain. They cannot rise over actors or
+@@ -219,7 +224,17 @@
+         {
+             if (x < 0 || y < 0 || x >= EarthWidth || y >= EarthHeight) return;
+             var index = y * EarthWidth + x;
+-            if (!wallOnly || stone[index]) data[index] = color;
++            if (wallOnly && !stone[index]) return;
++            // Detail colors follow the same palette contract as the sprite atlases.
++            var bestDistance = int.MaxValue;
++            foreach (var candidate in RetroArt.Palette)
++            {
++                var dr = color.R - candidate.R; var dg = color.G - candidate.G; var db = color.B - candidate.B;
++                var distance = dr * dr + dg * dg + db * db;
++                if (distance >= bestDistance) continue;
++                bestDistance = distance; data[index] = candidate;
++                if (distance == 0) break;
++            }
+         }
+         void Line(int x, int y, int endX, int endY, Color color, bool wallOnly = false)
+         {
+--- before/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
+@@ -18,6 +18,7 @@
+         var prepare = type.GetMethod("PrepareEarth", flags)!;
+         var atmosphere = type.GetMethod("DrawEarthAtmosphere", flags)!;
+         var texture = (Texture2D)type.GetField("earthGround", flags)!.GetValue(world)!;
++        var palette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+         var directory = Path.Combine(output, "earth-cave"); Directory.CreateDirectory(directory);
+         using var target = new RenderTarget2D(device, 416, 384);
+         using var batch = new SpriteBatch(device);
+@@ -32,6 +33,18 @@
+             Console.WriteLine($"Earth {id} terrain preparation: {clock.Elapsed.TotalMilliseconds:F1} ms");
+             var original = Ground();
+             check(original.All(p => p.A == 255), $"Earth {id} terrain fills every native pixel without gaps");
++            check(original.All(p => palette.Contains(p)), $"Earth {id} terrain and landmarks use only the shared retro palette");
++            var wallLight = new List<double>(); var floorLight = new List<double>();
++            for (var y = 0; y < 384; y++)
++                for (var x = 0; x < 416; x++)
++                {
++                    if (x % 32 is < 8 or > 23 || y % 32 is < 6 or > 18) continue;
++                    var pixel = original[y * 416 + x]; var tile = game.Map.Tile(new(x / 32, y / 32));
++                    (tile is 0x22 or 0x43 ? wallLight : floorLight).Add(pixel.R * .2126 + pixel.G * .7152 + pixel.B * .0722);
++                }
++            var contrast = wallLight.Average() - floorLight.Average();
++            Console.WriteLine($"Earth {id} wall/floor luminance separation: {contrast:F1}/255");
++            check(contrast >= 30, $"Earth {id} wall tops remain clearly brighter than the walkable floor");
+             clock.Restart(); for (var repeat = 0; repeat < 100; repeat++) prepare.Invoke(world, [game.Map]); clock.Stop();
+             Console.WriteLine($"Earth {id} 100 cached preparations: {clock.Elapsed.TotalMilliseconds:F1} ms");
+             check(original.SequenceEqual(Ground()), $"Earth {id} cached preparation is deterministic");

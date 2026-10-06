@@ -1,0 +1,4 @@
+All 1 pre-existing user save-directory files retain their SHA-256 fingerprints.
+Private paths and fingerprints are excluded from repository evidence.
+Core/CLI tests used unique OS temporary directories; graphics used its artifact test-saves directory.
+No personal save was imported.

@@ -1,0 +1,9 @@
+{
+  "file": "monogame/Yipe.Tests/Fixtures/full-save-v1.y3m",
+  "bytes": 854,
+  "version": 1,
+  "payload_bytes": 808,
+  "sha256": "6a2eba9d869611eaaf87e30652c680ac09cd2ded0fcead419ab31101fcdb6229",
+  "payload_sha256": "6cc17672474cbb9a6b8c4c6ad4e3ccb6386c235098566e63fd132fadacf49663",
+  "magic_hex": "59495045334d4700"
+}

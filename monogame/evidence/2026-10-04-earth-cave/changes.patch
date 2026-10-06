@@ -1,0 +1,520 @@
+--- before/monogame/Yipe.Desktop/WorldRenderer.cs
++++ after/monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -53,6 +53,7 @@
+         hellGround = new Texture2D(device, HellWidth, HellHeight);
+         hellLava = new Texture2D(device, HellWidth * 4, HellHeight * 2);
+         hellGlow = new Texture2D(device, HellWidth, HellHeight);
++        earthGround = new Texture2D(device, EarthWidth, EarthHeight);
+     }
+ 
+     private static Rectangle Cell(int index, int columns, int size) => new(index % columns * size, index / columns * size, size, size);
+@@ -95,6 +96,7 @@
+         PrepareWater(map);
+         PrepareDesert(map);
+         PrepareHell(map);
++        PrepareEarth(map);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+             {
+@@ -106,6 +108,7 @@
+ 
+         DrawDesertWind(batch, game, time);
+         DrawHellAtmosphere(batch, game, time);
++        DrawEarthAtmosphere(batch, game, time);
+         town.DrawWorldReflection(batch, hero, time, game, this);
+         // Water and reflections precede every deck, so they cannot cover its planks.
+         for (var y = 0; y < Map.Height; y++)
+@@ -163,6 +166,7 @@
+         PrepareWater(map);
+         PrepareDesert(map);
+         PrepareHell(map);
++        PrepareEarth(map);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+                 if (seen[x * Map.Height + y]) DrawGround(batch, map, new(x, y), time);
+@@ -231,5 +235,6 @@
+         foreach (var atlas in monsters) atlas.Dispose();
+         foreach (var atlas in heroes) atlas.Dispose();
+         hellProps.Dispose(); hellGround.Dispose(); hellLava.Dispose(); hellGlow.Dispose();
++        earthGround.Dispose();
+     }
+ }
+--- before/monogame/Yipe.Desktop/WorldTerrain.cs
++++ after/monogame/Yipe.Desktop/WorldTerrain.cs
+@@ -18,6 +18,7 @@
+         if (!HasArtwork(tile)) throw new InvalidDataException($"No world artwork for tile {tile:x} in map {map.Id}.");
+         var bounds = new Rectangle(cell.X * 32, cell.Y * 32, 32, 32);
+         if (IsHell(map)) { DrawHellGround(batch, bounds, time); return; }
++        if (IsEarth(map)) { batch.Draw(earthGround, bounds, bounds, Color.White); return; }
+         var surface = map.Id < 41;
+         var floor = (Math.Clamp(map.Environment, 1, 7) - 1) * 2;
+         batch.Draw(surface ? meadow : floors, bounds,
+--- before/monogame/Yipe.Desktop/WorldEarth.cs
++++ after/monogame/Yipe.Desktop/WorldEarth.cs
+@@ -0,0 +1,317 @@
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++
++namespace Yipe.Desktop;
++
++internal sealed partial class WorldRenderer
++{
++    private const int EarthWidth = Map.Width * 32, EarthHeight = Map.Height * 32;
++    private readonly Texture2D earthGround;
++    private readonly ushort[] earthTiles = new ushort[Map.TileCount];
++    private readonly List<Point> earthFungi = new(), earthDrips = new();
++    private Map? earthMap;
++
++    private static bool IsEarth(Map map) => map.Id is >= 41 and < 117 && map.Environment == 1;
++    // Secret walls have precisely the same silhouette and decoration as ordinary rock.
++    private static bool EarthWall(Map map, int x, int y) =>
++        map.Tile(new(Math.Clamp(x, 0, Map.Width - 1), Math.Clamp(y, 0, Map.Height - 1))) is 0x22 or 0x43;
++
++    private static int EarthSeed(int x, int y, int seed)
++    {
++        var bits = unchecked((uint)(x * 374761393 + y * 668265263 + seed * 144269));
++        bits = unchecked((bits ^ bits >> 13) * 1274126177);
++        return (int)((bits ^ bits >> 16) & 0x7fffffff);
++    }
++
++    private static float EarthNoise(float x, float y, int seed)
++    {
++        var ix = (int)MathF.Floor(x); var iy = (int)MathF.Floor(y);
++        var fx = x - ix; var fy = y - iy;
++        fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
++        float Sample(int dx, int dy) => EarthSeed(ix + dx, iy + dy, seed) % 1024 / 1023f;
++        return MathHelper.Lerp(MathHelper.Lerp(Sample(0, 0), Sample(1, 0), fx),
++            MathHelper.Lerp(Sample(0, 1), Sample(1, 1), fx), fy);
++    }
++
++    private void PrepareEarth(Map map)
++    {
++        if (!IsEarth(map)) return;
++        var changed = !ReferenceEquals(earthMap, map);
++        for (var y = 0; y < Map.Height; y++)
++            for (var x = 0; x < Map.Width; x++)
++            {
++                var tile = map.Tile(new(x, y)); var index = y * Map.Width + x;
++                changed |= earthTiles[index] != tile; earthTiles[index] = tile;
++            }
++        if (!changed) return;
++        earthMap = map; earthFungi.Clear(); earthDrips.Clear();
++        var data = new Color[EarthWidth * EarthHeight];
++        var stone = new bool[data.Length];
++        var deep = map.Id > 80;
++        var light = map.Id switch
++        {
++            57 => new Vector2(48, 48), 63 => new(300, 225), 69 => new(144, 144),
++            75 => new(112, 185), 103 => new(285, 35), 109 => new(245, 190), _ => new(110, 240),
++        };
++        for (var y = 0; y < EarthHeight; y++)
++            for (var x = 0; x < EarthWidth; x++)
++            {
++                var index = y * EarthWidth + x; var tx = x / 32; var ty = y / 32;
++                var wall = EarthWall(map, tx, ty);
++                var edge = 32f;
++                for (var cy = ty - 1; cy <= ty + 1; cy++)
++                    for (var cx = tx - 1; cx <= tx + 1; cx++)
++                    {
++                        if (EarthWall(map, cx, cy) == wall) continue;
++                        var dx = Math.Max(0, Math.Abs(x + .5f - (cx * 32 + 16)) - 16);
++                        var dy = Math.Max(0, Math.Abs(y + .5f - (cy * 32 + 16)) - 16);
++                        edge = Math.Min(edge, MathF.Sqrt(dx * dx + dy * dy));
++                    }
++                if (wall)
++                    for (var sy = -1; sy <= 1; sy += 2)
++                        for (var sx = -1; sx <= 1; sx += 2)
++                        {
++                            if (EarthWall(map, tx + sx, ty) || EarthWall(map, tx, ty + sy)) continue;
++                            const float radius = 9;
++                            var dx = Math.Max(0, radius - (sx < 0 ? x % 32 + .5f : 31.5f - x % 32));
++                            var dy = Math.Max(0, radius - (sy < 0 ? y % 32 + .5f : 31.5f - y % 32));
++                            edge = Math.Min(edge, radius - MathF.Sqrt(dx * dx + dy * dy));
++                        }
++                var broad = EarthNoise(x / 91f, y / 83f, map.Id);
++                var grain = EarthSeed(x, y, map.Id);
++                var dust = EarthNoise(x / 34f, y / 39f, map.Id + 17);
++                var damp = Math.Clamp((EarthNoise(x / 69f, y / 57f, map.Id + 41) - .58f) * 3, 0, 1);
++                if (map.Id != 109) damp *= .35f;
++                var floor = Color.Lerp(new Color(91, 66, 45), new Color(125, 94, 62), MathF.Round(broad * 7) / 7);
++                floor = Color.Lerp(floor, new Color(146, 116, 78), Math.Max(0, dust - .48f) * .45f);
++                floor = Color.Lerp(floor, new Color(67, 77, 64), damp * .7f);
++                if (deep) floor = Color.Lerp(floor, new Color(76, 77, 66), .23f);
++                // Sparse, clustered grains leave broad quiet patches between gravel beds.
++                if (grain % 83 < 3 && dust > .43f) floor = Color.Lerp(floor, new Color(163, 132, 91), .22f);
++                if (grain % 97 == 0) floor = Color.Lerp(floor, new Color(53, 43, 34), .24f);
++                var shade = MathF.Exp(-Math.Max(0, edge) / 5) * (wall ? .08f : .28f);
++                floor = Color.Lerp(floor, new Color(35, 32, 28), shade);
++                var bank = 2.5f + 1.1f * MathF.Sin(x * .14f + y * .09f) + .6f * MathF.Sin(y * .31f - x * .17f);
++                stone[index] = wall && edge > bank;
++                var color = floor;
++                if (stone[index])
++                {
++                    // Sediment runs across the formation, independent of tile boundaries.
++                    var strata = y + 8 * MathF.Sin(x * .021f) + 3 * MathF.Sin(x * .067f + map.Id);
++                    var band = (.5f + .5f * MathF.Sin(strata * .23f)) * .6f + broad * .4f;
++                    color = Color.Lerp(new Color(96, 68, 47), new Color(155, 117, 76), MathF.Round(band * 6) / 6);
++                    if (deep) color = Color.Lerp(color, new Color(86, 94, 79), .25f);
++                    if (map.Id == 63 && MathF.Sin(strata * .12f) > .82f)
++                        color = Color.Lerp(color, new Color(185, 139, 84), .3f);
++                    var fissure = EarthNoise(x / 27f, y / 23f, map.Id + 5);
++                    if (fissure is > .485f and < .505f) color = Color.Lerp(color, new Color(54, 42, 33), .38f);
++                    var front = !EarthWall(map, tx, ty + 1) && 32 - y % 32 < 9 + bank;
++                    if (front) color = Color.Lerp(color, new Color(54, 40, 30), .48f);
++                    else if (edge < bank + 1.6f) color = Color.Lerp(color, new Color(189, 147, 95), .36f);
++                    if (grain % 71 == 0) color = Color.Lerp(color, new Color(188, 158, 115), .16f);
++                }
++                var distance = Vector2.DistanceSquared(new(x, y), light);
++                var illumination = MathF.Exp(-distance / (map.Id == 57 ? 11000 : 4300));
++                color = Color.Lerp(color, deep ? new Color(117, 152, 128) : new Color(204, 156, 90), illumination * .12f);
++                data[index] = color;
++            }
++
++        // Paint details into the cached terrain. They cannot rise over actors or
++        // spill into a neighboring fog tile, and never select by a secret tile ID.
++        for (var y = 0; y < Map.Height; y++)
++            for (var x = 0; x < Map.Width; x++)
++            {
++                var seed = EarthSeed(x, y, map.Id);
++                if (EarthWall(map, x, y))
++                {
++                    if (seed % (map.Id == 57 ? 3 : 7) == 0)
++                        Root(x * 32 + 8 + seed % 15, y * 32 + 2, 16 + seed % 22, seed);
++                    if (!EarthWall(map, x, y + 1) && seed % 6 == 0 && earthFungi.Count < 5)
++                    {
++                        var point = new Point(x * 32 + 12 + seed % 8, y * 32 + 24);
++                        earthFungi.Add(point);
++                        for (var cap = 0; cap < 3; cap++)
++                        {
++                            var px = point.X + cap * 4 - 4; var py = point.Y + cap % 2 * 2;
++                            Line(px, py, px, py + 4, new Color(138, 144, 106), wallOnly: true);
++                            Line(px - 2, py, px + 2, py, new Color(99, 145, 116), wallOnly: true);
++                            Line(px - 1, py - 1, px + 1, py - 1, new Color(145, 172, 125), wallOnly: true);
++                        }
++                    }
++                }
++                else
++                {
++                    // Loose stones sit at the wall foot, never in the lane's center.
++                    if (EarthWall(map, x, y - 1) && seed % 3 == 0)
++                        for (var chip = 0; chip < 3; chip++)
++                        {
++                            var scatter = EarthSeed(x * 3 + chip, y, map.Id);
++                            var px = x * 32 + 3 + scatter % 25; var py = y * 32 + 2 + scatter / 17 % 7;
++                            var width = 1 + scatter % 3;
++                            Line(px - 1, py + 1, px + width + 1, py + 1, new Color(54, 43, 33));
++                            Line(px, py, px + width, py, new Color(133, 109, 76));
++                            if (width == 3) Line(px + 1, py - 1, px + 2, py - 1, new Color(148, 122, 83));
++                        }
++                    if (earthDrips.Count < (map.Id == 109 ? 5 : 2) && seed % 11 == 0 && EarthWall(map, x, y - 1))
++                    {
++                        var point = new Point(x * 32 + 16, y * 32 + 12);
++                        earthDrips.Add(point);
++                        for (var dy = -3; dy <= 3; dy++)
++                            for (var dx = -9; dx <= 9; dx++)
++                            {
++                                var oval = dx * dx / 81f + dy * dy / 9f;
++                                if (oval < 1) Put(point.X + dx, point.Y + dy,
++                                    Color.Lerp(data[(point.Y + dy) * EarthWidth + point.X + dx], new Color(68, 87, 76), (1 - oval) * .65f));
++                            }
++                    }
++                }
++            }
++
++        // Authored landmarks give each room an identity without adding obstacles.
++        if (map.Id == 57)
++        {
++            Root(173, 2, 113, 17); Root(23, 1, 88, 31); Root(301, 2, 81, 53);
++        }
++        if (map.Id == 69)
++        {
++            Fossil(146, 144, 11); Fossil(176, 272, 8);
++        }
++        if (map.Id is 75 or 115)
++        {
++            var start = map.Id == 75 ? new Point(42, 170) : new Point(63, 169);
++            for (var block = 0; block < 6; block++)
++            {
++                var px = start.X + block * 18; var py = start.Y + (block % 3 - 1) * 2;
++                for (var dy = 0; dy < 12; dy++)
++                    for (var dx = 0; dx < 16; dx++)
++                        if (EarthSeed(dx, dy, block + map.Id) % 13 != 0)
++                            Put(px + dx, py + dy, dy == 0 ? new Color(165, 139, 102) : new Color(119, 108, 84), true);
++                Line(px + 2, py + 11, px + 13, py + 11, new Color(70, 62, 47), true);
++            }
++            if (map.Id == 115) Fossil(207, 111, 9);
++        }
++        if (map.Id == 103)
++        {
++            foreach (var (origin, length) in new[] { (new Point(175, 17), 114), (new Point(13, 170), 93), (new Point(310, 176), 83) })
++                for (var step = 0; step < length; step++)
++                {
++                    var x = origin.X + step;
++                    var y = origin.Y + (int)(6 * MathF.Sin(step * .049f + origin.X) + 2 * MathF.Sin(step * .27f));
++                    Put(x, y + 1, new Color(47, 69, 54), true);
++                    Put(x, y, new Color(102, 142, 112), true);
++                    if (step % 23 == 7)
++                    {
++                        var direction = step % 2 == 0 ? 1 : -1;
++                        Line(x, y, x + 8, y + direction * 5, new Color(99, 126, 90), true);
++                        Line(x + 8, y + direction * 5, x + 13, y + direction * 6, new Color(129, 152, 108), true);
++                    }
++                    if (step % 29 < 3)
++                    {
++                        Put(x, y - 1, new Color(149, 166, 124), true);
++                        Put(x + 1, y - 2, new Color(172, 181, 140), true);
++                    }
++                }
++        }
++        earthGround.SetData(data);
++
++        void Put(int x, int y, Color color, bool wallOnly = false)
++        {
++            if (x < 0 || y < 0 || x >= EarthWidth || y >= EarthHeight) return;
++            var index = y * EarthWidth + x;
++            if (!wallOnly || stone[index]) data[index] = color;
++        }
++        void Line(int x, int y, int endX, int endY, Color color, bool wallOnly = false)
++        {
++            var steps = Math.Max(Math.Abs(endX - x), Math.Abs(endY - y));
++            for (var step = 0; step <= steps; step++)
++            {
++                var t = steps == 0 ? 0 : step / (float)steps;
++                Put((int)MathF.Round(MathHelper.Lerp(x, endX, t)), (int)MathF.Round(MathHelper.Lerp(y, endY, t)), color, wallOnly);
++            }
++        }
++        void Root(int startX, int startY, int length, int seed)
++        {
++            var previousX = startX; var previousY = startY;
++            for (var step = 1; step < length; step++)
++            {
++                var x = startX + (int)(5 * MathF.Sin(step * .065f + seed) + step * .035f);
++                var y = startY + step;
++                var width = step < length / 3 ? 5 : step < length * 2 / 3 ? 3 : 1;
++                for (var dx = -1; dx < width + 1; dx++) Line(previousX + dx, previousY + 1, x + dx, y + 1, new Color(46, 39, 27), true);
++                for (var dx = 0; dx < width; dx++) Line(previousX + dx, previousY, x + dx, y, new Color(101, 81, 45), true);
++                if (width > 1) Line(previousX + 1, previousY, x + 1, y, new Color(157, 129, 75), true);
++                if (step % 19 == 7)
++                {
++                    var direction = step % 2 == 0 ? 1 : -1;
++                    Line(x, y, x + direction * 11, y + 8, new Color(46, 39, 27), true);
++                    Line(x, y, x + direction * 9, y + 7, new Color(137, 112, 64), true);
++                    Line(x + direction * 9, y + 7, x + direction * 11, y + 14, new Color(100, 82, 46), true);
++                }
++                previousX = x; previousY = y;
++            }
++        }
++        void Fossil(int x, int y, int radius)
++        {
++            for (var step = 0; step < 120; step++)
++            {
++                var angle = step * .14f; var r = radius * (1 - step / 130f);
++                var px = x + (int)(MathF.Cos(angle) * r); var py = y + (int)(MathF.Sin(angle) * r * .8f);
++                Put(px, py + 1, new Color(67, 53, 38), true);
++                Put(px, py, new Color(178, 153, 112), true);
++                if (step % 9 == 0) Line(px, py, x + (int)(MathF.Cos(angle) * (r + 2)), y + (int)(MathF.Sin(angle) * (r + 2) * .8f), new Color(147, 125, 90), true);
++            }
++        }
++    }
++
++    private void DrawEarthAtmosphere(SpriteBatch batch, Adventure game, double time)
++    {
++        if (!IsEarth(game.Map)) return;
++        var t = Math.Floor(time * 8) / 8;
++        for (var i = 0; i < earthFungi.Count; i++)
++        {
++            var point = earthFungi[i];
++            var breath = .75f + .25f * MathF.Sin((float)t * .65f + i * 2);
++            for (var dy = -9; dy <= 9; dy++)
++                for (var dx = -11; dx <= 11; dx++)
++                {
++                    var falloff = 1 - dx * dx / 121f - dy * dy / 81f;
++                    if (falloff > 0) Pixel(point.X + dx, point.Y + dy, new Color(129, 183, 135) * (falloff * falloff * breath * .13f));
++                }
++        }
++        for (var i = 0; i < earthDrips.Count; i++)
++        {
++            var point = earthDrips[i]; var phase = (t + i * 1.37) % 4.7;
++            if (phase < .65)
++            {
++                var y = point.Y - 17 + (int)(phase / .65 * 17);
++                Pixel(point.X, y, new Color(143, 169, 145) * .55f);
++                Pixel(point.X, y - 1, new Color(143, 169, 145) * .25f);
++            }
++            else if (phase < 1.65)
++            {
++                var radius = (float)(phase - .65) * 8;
++                for (var step = 0; step < 20; step++)
++                {
++                    var angle = step * MathF.Tau / 20;
++                    Pixel(point.X + (int)(MathF.Cos(angle) * radius), point.Y + (int)(MathF.Sin(angle) * radius * .35f),
++                        new Color(148, 166, 137) * (float)((1.65 - phase) * .28));
++                }
++            }
++        }
++        for (var mote = 0; mote < 12; mote++)
++        {
++            var seed = EarthSeed(mote, 23, game.Map.Id);
++            var phase = (t + seed % 79) % 9;
++            if (phase > 3) continue;
++            var x = 8 + seed % (EarthWidth - 16) + (int)(Math.Sin(t + mote) * 2);
++            var y = 12 + seed / 17 % (EarthHeight - 48) + (int)(phase * 7);
++            Pixel(x, y, new Color(187, 158, 109) * (float)(Math.Sin(phase / 3 * Math.PI) * .35));
++        }
++        void Pixel(int x, int y, Color color)
++        {
++            if (x >= 0 && y >= 0 && x < EarthWidth && y < EarthHeight && game.Visibility.Contains(new(x / 32, y / 32)))
++                batch.Draw(pixel, new Rectangle(x, y, 1, 1), color);
++        }
++    }
++}
+--- before/monogame/Yipe.GraphicsChecks/Program.cs
++++ after/monogame/Yipe.GraphicsChecks/Program.cs
+@@ -859,6 +859,7 @@
+         }
+         WorldPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+         HellPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
++        EarthPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+         HeatPresentationChecks.Run(game, outputDirectory, Check);
+         restore.Invoke(game, [new MapPosition(5, 5)]);
+         Set("paused", true);
+--- before/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs
+@@ -0,0 +1,100 @@
++using System.Diagnostics;
++using System.Reflection;
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++using Yipe.Desktop;
++
++namespace Yipe.GraphicsChecks;
++
++internal static class EarthPresentationChecks
++{
++    public static void Run(GraphicsDevice device, object world, object town, MapCatalog catalog, string output, Action<bool, string> check)
++    {
++        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
++        var type = world.GetType();
++        var draw = type.GetMethod("Draw")!;
++        var drawMap = type.GetMethod("DrawMap", flags)!;
++        var prepare = type.GetMethod("PrepareEarth", flags)!;
++        var atmosphere = type.GetMethod("DrawEarthAtmosphere", flags)!;
++        var texture = (Texture2D)type.GetField("earthGround", flags)!.GetValue(world)!;
++        var directory = Path.Combine(output, "earth-cave"); Directory.CreateDirectory(directory);
++        using var target = new RenderTarget2D(device, 416, 384);
++        using var batch = new SpriteBatch(device);
++        foreach (var id in new[] { 57, 63, 69, 75, 103, 109, 115 })
++        {
++            var layer = (id - 1) / 40; var cell = id - layer * 40 - 1;
++            var session = new GameSession(catalog, location: new()
++            { MapId = id, MapLayer = layer, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = new(1, 1) });
++            var game = new Adventure(session);
++            var snapshot = GameSaveCodec.Encode(session, catalog);
++            var clock = Stopwatch.StartNew(); prepare.Invoke(world, [game.Map]); clock.Stop();
++            Console.WriteLine($"Earth {id} terrain preparation: {clock.Elapsed.TotalMilliseconds:F1} ms");
++            var original = Ground();
++            check(original.All(p => p.A == 255), $"Earth {id} terrain fills every native pixel without gaps");
++            clock.Restart(); for (var repeat = 0; repeat < 100; repeat++) prepare.Invoke(world, [game.Map]); clock.Stop();
++            Console.WriteLine($"Earth {id} 100 cached preparations: {clock.Elapsed.TotalMilliseconds:F1} ms");
++            check(original.SequenceEqual(Ground()), $"Earth {id} cached preparation is deterministic");
++            var partialAir = Layer(() => atmosphere.Invoke(world, [batch, game, 1d]));
++            check(Enumerable.Range(0, partialAir.Length).All(i => partialAir[i].A == 0
++                || game.Visibility.Contains(new(i % 416 / 32, i / 416 / 32))),
++                $"Earth {id} ambient effects never reveal unexplored tiles");
++            var seen = Enumerable.Range(0, Map.TileCount).Select(i => game.Visibility.Contains(new(i / Map.Height, i % Map.Height))).ToArray();
++            Layer(() => drawMap.Invoke(world, [batch, game.Map, seen, 1d])); Save($"map-{id}-partial.png");
++            for (var y = 0; y < Map.Height; y++)
++                for (var x = 0; x < Map.Width; x++) game.Visibility.RevealFrom(game.Map, new(x, y));
++            var first = Frame(1); var repeatFrame = Frame(1); var later = Frame(1.75);
++            check(first.SequenceEqual(repeatFrame) && !first.SequenceEqual(later),
++                $"Earth {id} animation freezes at a fixed clock and advances with scene time");
++            Frame(1); Save($"map-{id}.png");
++            var air = Layer(() => atmosphere.Invoke(world, [batch, game, 1d]));
++            check(air.Count(p => p.A > 0) is > 0 and < 5000, $"Earth {id} ambient animation stays sparse");
++            var floors = (from y in Enumerable.Range(0, Map.Height) from x in Enumerable.Range(0, Map.Width)
++                where game.Map.Tile(new(x, y)) == 0x27
++                select string.Join(',', from py in Enumerable.Range(0, 32) from px in Enumerable.Range(0, 32)
++                    select original[(y * 32 + py) * 416 + x * 32 + px].PackedValue)).ToArray();
++            check(floors.Distinct().Count() > floors.Length * .9, $"Earth {id} open terrain has distinct patches rather than repeated tiles");
++            var secret = new List<(MapPosition Position, ushort Tile)>();
++            for (var y = 0; y < Map.Height; y++)
++                for (var x = 0; x < Map.Width; x++)
++                {
++                    var position = new MapPosition(x, y); var tile = game.Map.Tile(position);
++                    if (tile is not (0x43 or 0x47)) continue;
++                    secret.Add((position, tile)); game.Map.RestoreTile(position, tile == 0x43 ? (ushort)0x22 : (ushort)0x27);
++                }
++            prepare.Invoke(world, [game.Map]);
++            check(original.SequenceEqual(Ground()) && air.SequenceEqual(Layer(() => atmosphere.Invoke(world, [batch, game, 1d]))),
++                $"Earth {id} secret terrain and ambient details are visually identical to ordinary terrain");
++            foreach (var entry in secret) game.Map.RestoreTile(entry.Position, entry.Tile);
++            prepare.Invoke(world, [game.Map]);
++            var wall = new MapPosition(0, 0);
++            game.Map.RestoreTile(wall, 0x27); prepare.Invoke(world, [game.Map]);
++            check(!original.SequenceEqual(Ground()), $"Earth {id} changed terrain invalidates the cached formation");
++            game.Map.RestoreTile(wall, 0x22); prepare.Invoke(world, [game.Map]);
++            check(original.SequenceEqual(Ground()) && GameSaveCodec.Encode(session, catalog).SequenceEqual(snapshot),
++                $"Earth {id} rendering and cache restoration preserve the full gameplay snapshot and RNG");
++            if (id == 109)
++                for (var frame = 0; frame < 40; frame++) { Frame(frame / 8d); Save($"damp-frame-{frame:D2}.png"); }
++
++            Color[] Frame(double time) => Layer(() => draw.Invoke(world,
++                [batch, game, new PlayerMotion(new MapPosition(1, 1)), town, time, false]));
++        }
++        foreach (var id in new[] { 17, 41, 117 })
++        {
++            var game = new Adventure(new GameSession(catalog, location: new() { MapId = id, Position = new(1, 1) }));
++            check(Layer(() => atmosphere.Invoke(world, [batch, game, 1d])).All(p => p.A == 0),
++                $"Earth effects are absent from other biome {id}");
++        }
++        Color[] Ground() { var data = new Color[416 * 384]; texture.GetData(data); return data; }
++        Color[] Layer(Action render)
++        {
++            device.SetRenderTarget(target); device.Clear(Color.Transparent);
++            batch.Begin(samplerState: SamplerState.PointClamp); render(); batch.End(); device.SetRenderTarget(null);
++            var data = new Color[416 * 384]; target.GetData(data); return data;
++        }
++        void Save(string name)
++        {
++            using var file = File.Create(Path.Combine(directory, name)); target.SaveAsPng(file, 416, 384);
++        }
++    }
++}
+--- before/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/HeatPresentationChecks.cs
+@@ -131,6 +131,33 @@
+             Set("scanlines", true); Save(Frame(1), "surface-d4-defaults.png");
+             check(GameSaveCodec.Encode(d4, catalog).SequenceEqual(d4Snapshot),
+                 "Surface D4 at 5,6 renders the grounded monsters without changing gameplay state or RNG");
++            foreach (var (id, entry) in new (int, MapPosition)[]
++                { (57, new(3, 4)), (63, new(5, 5)), (69, new(8, 6)), (75, new(7, 6)),
++                  (103, new(6, 5)), (109, new(7, 5)), (115, new(5, 8)) })
++            {
++                var layer = (id - 1) / 40; var cell = id - layer * 40 - 1;
++                var earth = new GameSession(catalog, location: new()
++                { MapId = id, MapLayer = layer, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = entry });
++                var adventure = new Adventure(earth);
++                var snapshot = GameSaveCodec.Encode(earth, catalog);
++                for (var x = 0; x < Map.Width; x++)
++                    for (var y = 0; y < Map.Height; y++) adventure.Visibility.RevealFrom(adventure.Map, new(x, y));
++                Set("session", earth); Set("adventure", adventure); player.SnapTo(entry);
++                Set("cameraPosition", new Vector2(Math.Clamp(entry.X * 32 - 144, 0, 96), Math.Clamp(entry.Y * 32 - 74, 0, 204)));
++                Save(Frame(1), $"earth-{id:D3}-defaults.png");
++                if (id == 109)
++                {
++                    Set("miniatureMode", 0); Save(Frame(1), "earth-109-crisp.png"); Set("miniatureMode", 2);
++                    Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", (int)Get("selected")! * 11f);
++                    var paused = Frame(1);
++                    update.Invoke(game, [new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2))]);
++                    check((double)Get("sceneTime")! == 1 && paused.SequenceEqual(Frame(1)),
++                        "Pausing Earth Cave freezes its ambience, camera and presentation together");
++                    Save(paused, "earth-paused.png"); Set("paused", false); Set("pauseAmount", 0f);
++                }
++                check(GameSaveCodec.Encode(earth, catalog).SequenceEqual(snapshot),
++                    $"Earth Cave {id} default-effects view preserves complete gameplay state and RNG");
++            }
+         }
+         finally
+         {

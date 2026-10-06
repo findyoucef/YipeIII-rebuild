@@ -1,0 +1,24 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/graphics-checks/yipe-graphics-20261005-222803-50fc6e5a
+2026-10-05 16:28:03.254 dotnet[10622:5751846] Failure on line 688 in function id scheduleApplicationNotification(LSNotificationCode, NSWorkspaceNotificationCenter *): noErr == _LSModifyNotification(notificationID, 1, &code, 0, NULL, NULL, NULL)
+2026-10-05 16:28:03.485 dotnet[10622:5751885] Connection Invalid error for service com.apple.hiservices-xpcservice.
+2026-10-05 16:28:03.485 dotnet[10622:5751846] Error received in message reply handler: Connection invalid
+Microsoft.Xna.Framework.Graphics.NoSuitableGraphicsDeviceException: Failed to create graphics device!
+ ---> System.NullReferenceException: Object reference not set to an instance of an object.
+   at MonoGame.OpenGL.GL.GetString(StringName name)
+   at MonoGame.OpenGL.GL.LoadExtensions()
+   at MonoGame.OpenGL.GL.LoadEntryPoints()
+   at MonoGame.OpenGL.GraphicsContext..ctor(IWindowInfo info)
+   at MonoGame.OpenGL.GL.PlatformCreateContext(IWindowInfo info)
+   at MonoGame.OpenGL.GL.CreateContext(IWindowInfo info)
+   at Microsoft.Xna.Framework.Graphics.GraphicsDevice.PlatformSetup()
+   at Microsoft.Xna.Framework.Graphics.GraphicsDevice.Setup()
+   at Microsoft.Xna.Framework.Graphics.GraphicsDevice..ctor(GraphicsAdapter adapter, GraphicsProfile graphicsProfile, Boolean preferHalfPixelOffset, PresentationParameters presentationParameters)
+   at Microsoft.Xna.Framework.GraphicsDeviceManager.CreateDevice(GraphicsDeviceInformation gdi)
+   at Microsoft.Xna.Framework.GraphicsDeviceManager.CreateDevice()
+   --- End of inner exception stack trace ---
+   at Microsoft.Xna.Framework.GraphicsDeviceManager.CreateDevice()
+   at Microsoft.Xna.Framework.GraphicsDeviceManager.Microsoft.Xna.Framework.IGraphicsDeviceManager.CreateDevice()
+   at Microsoft.Xna.Framework.Game.DoInitialize()
+   at Microsoft.Xna.Framework.Game.RunOneFrame()
+   at Yipe.GraphicsChecks.Program.RunChecks(String outputDirectory, Boolean record, StreamWriter log) in /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/Program.cs:line 131
+   at Yipe.GraphicsChecks.Program.Main(String[] args) in /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/Program.cs:line 75

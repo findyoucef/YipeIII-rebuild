@@ -1,0 +1,59 @@
+{
+  "records": 11322,
+  "trace_bytes": 9525064,
+  "sha256": "60af5f35b604f8a99c8031abbb7bab2808de7b37e0a067268af02106a2541f60",
+  "sections": {
+    "defaults": {
+      "records": 3,
+      "sha256": "4c528861411d708114a4a408659306989ff372967a2ddc038677b97ac946f886"
+    },
+    "rerolls": {
+      "records": 512,
+      "sha256": "ea25157da8ff246f602b9eb57596fb23f85886340d3c4a3033926a7964deb4a7"
+    },
+    "health": {
+      "records": 25,
+      "sha256": "81c4daafba0bf0fa881063e5ecbd22b6605ae829ba0699280cf6f04fd8c95387"
+    },
+    "thresholds": {
+      "records": 105,
+      "sha256": "5c9168d116d34d4708984cdd57f1b76f7faf38f4e43add127d882a88bbbe7fe4"
+    },
+    "growth": {
+      "records": 7200,
+      "sha256": "9e80b54d0ebe69fb25614beacf28b1d802f5921a995d5fc541813f276a246b4a"
+    },
+    "caps": {
+      "records": 45,
+      "sha256": "83226842cc6ad52308baf3b5378997fc933e6aa9c8708742fe697ac16f0772a5"
+    },
+    "stat_items": {
+      "records": 45,
+      "sha256": "14f3b81a5499f8f6119d6dd618e26674de9ecd4e39f9a93dc795ec6ed96093df"
+    },
+    "items": {
+      "records": 3120,
+      "sha256": "035f4e136648aa28f1ae022d6060c0e4500b982daf442834f135da4d834d989b"
+    },
+    "relocation": {
+      "records": 16,
+      "sha256": "1f23e26c572181fc12666e06654d16e729820ef678de5674b76ce89925d37cac"
+    },
+    "repellent": {
+      "records": 10,
+      "sha256": "a3c44bb5e18ee06cf00dfdb4f6735ee120c89cc7dc06f8f9fcf322971e8a4ad9"
+    },
+    "rescues": {
+      "records": 181,
+      "sha256": "909e89378a274dac4e3d2c9c15ff9f6f9e8c8d10a37432d96670bbb63813c15e"
+    },
+    "defeats": {
+      "records": 57,
+      "sha256": "fdca9053b02720431f067c71a58871f05db22f948712e705b30cbb2f36cf62ca"
+    },
+    "invalid_slots": {
+      "records": 3,
+      "sha256": "6d2c41a5deb2d1d2a374ac706802cf77395f0a6fc351b9e070a04ffb19f72c84"
+    }
+  }
+}

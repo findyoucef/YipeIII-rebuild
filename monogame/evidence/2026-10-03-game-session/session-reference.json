@@ -1,0 +1,23 @@
+{
+  "entry": {
+    "records": 19264,
+    "sha256": "7193b87ebcf938edfedfc12f95affe6c17b8f5abd7b61365ce67e2c008d7da84"
+  },
+  "action": {
+    "records": 2058,
+    "sha256": "16b202f935c504640710d5bcaeae99785e82bf46e1f1105d0fc08296ea199222"
+  },
+  "restore": {
+    "records": 45,
+    "sha256": "2425d1b06827aa6c87cf93b1530cf4140da530a9a66c35a60c4f960e31ddfff7"
+  },
+  "fire": {
+    "records": 144,
+    "sha256": "86c070629fc54c8fc60a3fcd89c7055b75f414f019fc58545c3fd179c82b31d2"
+  },
+  "total": {
+    "records": 21511,
+    "bytes": 10118050,
+    "sha256": "d6dfac953ba7eedfb9435a85f8e342a111512226fd788bb53834f60e618f1602"
+  }
+}

@@ -1,0 +1,4 @@
+All pre-existing user save-directory file names and SHA-256 fingerprints are unchanged.
+No game.y3m was created in the user save directory by tests.
+Graphics tests used a unique test-saves/game.y3m; core tests used unique temporary directories.
+No preview, C++ .y3r or original .yp3 file was written.

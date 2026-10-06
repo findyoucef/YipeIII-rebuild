@@ -1,0 +1,20 @@
+{
+  "changed_since_character_baseline": [
+    "monogame/Yipe.Core/Player.cs",
+    "monogame/Yipe.Core/TownMap.cs",
+    "monogame/Yipe.Desktop/GameInput.cs",
+    "monogame/Yipe.Desktop/PlayerMotion.cs",
+    "monogame/Yipe.Desktop/TownGame.cs",
+    "monogame/Yipe.GraphicsChecks/Program.cs",
+    "monogame/Yipe.Tests/Program.cs"
+  ],
+  "added_to_manifest": [
+    "monogame/Yipe.Core/Map.cs",
+    "monogame/Yipe.Core/MapCatalog.cs",
+    "monogame/Yipe.Core/WorldLocation.cs",
+    "monogame/Yipe.Tests/MapChecks.cs",
+    "monogame/Yipe.Tests/map_reference.cpp",
+    "src/map.cpp",
+    "src/generated/original_maps.cpp"
+  ]
+}

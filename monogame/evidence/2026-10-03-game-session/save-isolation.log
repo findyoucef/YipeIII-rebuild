@@ -1,0 +1,4 @@
+Existing user town-preview.json existence and SHA-256 unchanged.
+Graphics storage used the runner's unique test-saves/position.json.
+Core save tests used isolated temporary directories.
+No C++ .y3r or original .yp3 files were written.

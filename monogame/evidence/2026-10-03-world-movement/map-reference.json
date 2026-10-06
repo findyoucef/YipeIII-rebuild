@@ -1,0 +1,43 @@
+{
+  "records": 311728,
+  "trace_bytes": 9717008,
+  "sha256": "96a2974d0d88816e208a235d2cd57480a51df72db3bc53ad08c685aab7ef951f",
+  "sections": {
+    "catalog": {
+      "records": 136,
+      "sha256": "9776dedcda71b14f0d97d3fcd6f08f9894f29acd8c1b73a2f3cdaa9554ccaab0"
+    },
+    "chests": {
+      "records": 136,
+      "sha256": "f91d9b6038a589195f00c7712fcf225354e9d0638d0445dea684cab43e6a4dd0"
+    },
+    "moves": {
+      "records": 279552,
+      "sha256": "540f06a4d075debee7e9aed8baf1406ea378d22f0be7c1ef780fe6b8ffcdaa06"
+    },
+    "tiles": {
+      "records": 12384,
+      "sha256": "d7a153b1a86c1ed72a9ecf9e35136ae5f2c64811923f2ea9cd63c9f419f0297f"
+    },
+    "mutations": {
+      "records": 784,
+      "sha256": "5f3f15786c4dce411e8a53e1d460cee9f0b2feb247be650ecce08b6ad4b65f91"
+    },
+    "overlays": {
+      "records": 1120,
+      "sha256": "cc091495516f4b8d3ff35439509c0c5c797f3a973d3c6c37a47a59bf9de5b902"
+    },
+    "world": {
+      "records": 17496,
+      "sha256": "22942b9133979b44d780d173ff97b21550d406fd713632374492ae566c2a58c7"
+    },
+    "relocations": {
+      "records": 112,
+      "sha256": "32212015dc028ebd2ca997b5ea0445764200eb03e9a833f74cd2bb0c076c51e5"
+    },
+    "hell": {
+      "records": 8,
+      "sha256": "57bde0f55777de72c3942f3722aa387464b557a94b9f30dfe93604b1c41b00b5"
+    }
+  }
+}

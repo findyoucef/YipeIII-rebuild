@@ -1,0 +1,152 @@
+{
+  "monogame/Yipe.Core/WorldLocation.cs": {
+    "before": "43f9b67f1adbbd5772ec3388f84e3a1a9c7c23a29ecc3e229406de5c3fbcee80",
+    "after": "43f9b67f1adbbd5772ec3388f84e3a1a9c7c23a29ecc3e229406de5c3fbcee80",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Exploration.cs": {
+    "before": "d2d299dc8fa0c615207d7a8b8883997bad72d4608144ca1458913ca9e262dc6a",
+    "after": "d2d299dc8fa0c615207d7a8b8883997bad72d4608144ca1458913ca9e262dc6a",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Combat.cs": {
+    "before": "3043fa8c78368bf8e67651e995cb485b3af96bf26bac5ff0ee7c57ebe429374a",
+    "after": "3043fa8c78368bf8e67651e995cb485b3af96bf26bac5ff0ee7c57ebe429374a",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Quests.cs": {
+    "before": "07e5d10363e3f624910d1efe3e8a707c401e1c7ea6b88c747eda913cc04109d2",
+    "after": "07e5d10363e3f624910d1efe3e8a707c401e1c7ea6b88c747eda913cc04109d2",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Adventure.cs": {
+    "before": "6559b61ba91d251c9cd2dd36ecf38a739a32e1b3d0e226160c33573dbd906446",
+    "after": "6559b61ba91d251c9cd2dd36ecf38a739a32e1b3d0e226160c33573dbd906446",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/MapCatalog.cs": {
+    "before": "655e610516be97b0a16ed6ebb558db3c89f3b774c873888c6d2f8d712747ced0",
+    "after": "655e610516be97b0a16ed6ebb558db3c89f3b774c873888c6d2f8d712747ced0",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Casino.cs": {
+    "before": "1e8f63290ae1a5c2b2d2b9fad52411bed748e02d72ff6285aa9a31e8e0749c46",
+    "after": "1e8f63290ae1a5c2b2d2b9fad52411bed748e02d72ff6285aa9a31e8e0749c46",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/ItemNames.cs": {
+    "before": "3ea8cb24eaa55b23bec44274b975417616c72e76bb8e877f63de3399ce328d24",
+    "after": "3ea8cb24eaa55b23bec44274b975417616c72e76bb8e877f63de3399ce328d24",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Spells.cs": {
+    "before": "8674e3674fa3a0157192611fdf4416be9975b1a2384756e358318219c7b6ebe6",
+    "after": "8674e3674fa3a0157192611fdf4416be9975b1a2384756e358318219c7b6ebe6",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/WorldActions.cs": {
+    "before": "ea0a8541cf8964092578a7cc288e83dd12066ab03035f0ea64e20a1135f0ffa0",
+    "after": "ea0a8541cf8964092578a7cc288e83dd12066ab03035f0ea64e20a1135f0ffa0",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/GameSession.cs": {
+    "before": "35f9c21bf5dcdc3f6ef092e085646736233b3106661751f4d4aae2fdfaa90d4b",
+    "after": "35f9c21bf5dcdc3f6ef092e085646736233b3106661751f4d4aae2fdfaa90d4b",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/CombatModels.cs": {
+    "before": "7f8b1009b4d8d57cbbeaf72859c232f2604e459815e4b7b11a07cfa9a89217b8",
+    "after": "7f8b1009b4d8d57cbbeaf72859c232f2604e459815e4b7b11a07cfa9a89217b8",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/CombatCatalog.cs": {
+    "before": "dfe546df6da24b1e0ad63a344a024741a414c93d8f74e48a0fdfda7c462e06aa",
+    "after": "dfe546df6da24b1e0ad63a344a024741a414c93d8f74e48a0fdfda7c462e06aa",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/GeneratedMap.cs": {
+    "before": "7a5944b9511bf5f37d706e18de3e1a2ca62fd522b5fdae8b02edc093ad8d257b",
+    "after": "7a5944b9511bf5f37d706e18de3e1a2ca62fd522b5fdae8b02edc093ad8d257b",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/HighScores.cs": {
+    "before": "c7fb2f6b74ede8628675eabef6cac02ce0cbe7274fbc2114a67e9f4548b4a2ec",
+    "after": "c7fb2f6b74ede8628675eabef6cac02ce0cbe7274fbc2114a67e9f4548b4a2ec",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Shops.cs": {
+    "before": "0165f2185bcc6889a1c7ac34ca6b4554d6a2c86bac8b73f2134a5ea85a0c47dc",
+    "after": "0165f2185bcc6889a1c7ac34ca6b4554d6a2c86bac8b73f2134a5ea85a0c47dc",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/AudioCatalog.cs": {
+    "before": "8fecc84bd5cc090248c1d28f2cfceeb72067b91012b7e6f334bf32393549bacc",
+    "after": "8fecc84bd5cc090248c1d28f2cfceeb72067b91012b7e6f334bf32393549bacc",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/MonsterPlacements.cs": {
+    "before": "0e4950ea18bb1d40294833f65649da4c9a69b38b2db13dc96f8a00e79dba8620",
+    "after": "0e4950ea18bb1d40294833f65649da4c9a69b38b2db13dc96f8a00e79dba8620",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Encounters.cs": {
+    "before": "9475fc4059b46da0d6506fee26a235d8903f3a72a333a79bf6c693cedd71d0ff",
+    "after": "9475fc4059b46da0d6506fee26a235d8903f3a72a333a79bf6c693cedd71d0ff",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Map.cs": {
+    "before": "321fa622b7301aed964773fea5c8a87633eac60aca43271691955a489335bd41",
+    "after": "321fa622b7301aed964773fea5c8a87633eac60aca43271691955a489335bd41",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/SaveImporter.cs": {
+    "before": "77fe8c3c264d1c76aa86e63db2857ff9bbcc64c91a400b3702b3f5e16a7520eb",
+    "after": "77fe8c3c264d1c76aa86e63db2857ff9bbcc64c91a400b3702b3f5e16a7520eb",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/GameSaveCodec.cs": {
+    "before": "83639493103ca2d75d1a88c99bb27964b860df5b92b50eabb589090b126445d6",
+    "after": "83639493103ca2d75d1a88c99bb27964b860df5b92b50eabb589090b126445d6",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/MsvcRandom.cs": {
+    "before": "67e0b651cb2716741df6484b5cb34763d66440cba9923f583b983b009329c839",
+    "after": "67e0b651cb2716741df6484b5cb34763d66440cba9923f583b983b009329c839",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/Player.cs": {
+    "before": "7fda56b6df8d6897acd8c3a751c590d52b23aac4cff2ee194f47b640d87b5f60",
+    "after": "7fda56b6df8d6897acd8c3a751c590d52b23aac4cff2ee194f47b640d87b5f60",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/TownMap.cs": {
+    "before": "3e9454161e578bb327319c95613b82cc7972c1a7d60b7bac56c645fe3571d9b7",
+    "after": "3e9454161e578bb327319c95613b82cc7972c1a7d60b7bac56c645fe3571d9b7",
+    "unchanged": true
+  },
+  "monogame/Yipe.Core/MapVisibility.cs": {
+    "before": "3495d81eee5ecbfbe8fcc69476e885b6087f2743ad06d259e1aa08650f20d5b5",
+    "after": "3495d81eee5ecbfbe8fcc69476e885b6087f2743ad06d259e1aa08650f20d5b5",
+    "unchanged": true
+  },
+  "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.y3m": {
+    "before": "c97cd6e05590b5dc8182d1e77cf199b1dabc706c5b986e5a1b52962696c6515b",
+    "after": "faea930564d1627297ee66e0cb83f2d84275a7827cd5eb39e6363785ff0aa125",
+    "unchanged": false
+  },
+  "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.map.json": {
+    "before": "7ce870e7be14fb3f25fdcda8a4864f88e3812b9e5e66cbbd55046925f74637f3",
+    "after": "53133902756ad53478e2427d4bc2f0d2f1188c7e45445eeff3572b9712109c7c",
+    "unchanged": false
+  },
+  "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json": {
+    "before": "5b2412fb799a7c551469dd55437d809d4e688b25f39eb0e5c9e8ababbe56ba96",
+    "after": "5b2412fb799a7c551469dd55437d809d4e688b25f39eb0e5c9e8ababbe56ba96",
+    "unchanged": true
+  },
+  "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/town-preview.json": {
+    "before": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3",
+    "after": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3",
+    "unchanged": true
+  }
+}

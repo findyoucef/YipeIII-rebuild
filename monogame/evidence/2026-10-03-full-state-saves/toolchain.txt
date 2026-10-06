@@ -1,0 +1,19 @@
+$ dotnet --version
+10.0.300
+
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		26.7.1
+BuildVersion:		25G241
+
+$ uname -m
+arm64
+
+$ git rev-parse HEAD
+349fffe71e052dd4e011f1fe09c0e3080f5bb723
+
+$ git status --short
+ M .gitignore
+ M README.md
+?? global.json
+?? monogame/

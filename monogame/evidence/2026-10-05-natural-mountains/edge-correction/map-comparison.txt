@@ -1,0 +1,2 @@
+Exactly 25 mountain regions changed; 90 other regions remain byte-identical.
+Changed: map-001.png map-006.png map-007.png map-010.png map-011.png map-012.png map-013.png map-014.png map-015.png map-016.png map-017.png map-018.png map-019.png map-020.png map-021.png map-022.png map-023.png map-024.png map-025.png map-026.png map-027.png map-028.png map-029.png map-030.png map-032.png

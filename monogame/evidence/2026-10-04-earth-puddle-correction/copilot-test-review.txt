@@ -1,0 +1,14 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+**Compact draft**
+
+- **Obsolete size assertion — `Run`, `wet.Length > 2500` in the “puddles cover only ordinary walkable floor” check:** the threshold encodes the former large ~38×24 puddles and will reject the smaller ~22×15 authored shapes. Remove `wet.Length > 2500` from this mixed assertion. Retain the `wetTiles.All(...)` walkability/terrain portion. If automated size coverage is required, replace the old lower bound with bounds derived from each puddle’s actual authored mask/component; the supplied file does not provide exact expected pixel counts or native-pixel center coordinates, so a safe numeric replacement cannot be specified here.
+
+- **Obsolete texture assertion — `waterPixels`, `waterPattern`, `interiors`, and “reuse the exact village river texture”:** remove this assertion entirely. Exact equality to `waterPattern` contradicts the new muted brown stone colors and sparse subdued highlights. Do not replace it with another exact color/pattern test; the existing all-map comparison and human review already cover appearance.
+
+**Regression checks worth retaining/adding (maximum two)**
+
+1. **Retain placement/gameplay safety:** preserve the `wetTiles.All(...)` ordinary-floor/walkability check and the following dry landmark check (`Chests`, `Depth`, `Princess`). These verify that changing the authored footprint does not alter traversal or cover gameplay locations.
+
+2. **Retain shoreline reflection behavior:** preserve the per-center `ink.All(i => mask[i] && reflected[i].A < 80 && visibility...)` assertion and the map-57 intermediate-strength fade check (`strengths.Any(...)`). Together they directly guard the stated contract that reflections remain clipped to visible water and fade while crossing the shore.
+
+No new color, asymmetry, notch, or ripple-density assertion is warranted because those are appearance details covered separately.

@@ -1,0 +1,50 @@
+{
+  "include/yipe/encounter.hpp": {
+    "previous": null,
+    "current": "7dae6bf7b19b4ec90bfe79df0a85bf65b016155434adfe715c31ec98efeb603e"
+  },
+  "include/yipe/save.hpp": {
+    "previous": null,
+    "current": "72443513f8384f23cccaa4dc538ee218edf64b6f2c96296319001119e7d5fe5b"
+  },
+  "monogame/Yipe.Core/GameSaveCodec.cs": {
+    "previous": null,
+    "current": "4a09085b54031bf368f558dde94fd404471ce4378f8d41c59a91253c70645a48"
+  },
+  "monogame/Yipe.Core/GameSession.cs": {
+    "previous": "07f2cb34a670e3bb0ebc40ab46e08e4cbeab2463a6cb85f60cecf96c7256afe1",
+    "current": "e65deb97da059bf7dcd240bc190f1e378588c038ea8aa8a166ead48c6c067f6d"
+  },
+  "monogame/Yipe.Desktop/GameSaveStore.cs": {
+    "previous": null,
+    "current": "d0174fe2de69c8abe3b2cdc2424ac7a673b84513b06b9a7922076f50b2ee1de9"
+  },
+  "monogame/Yipe.Desktop/TownGame.cs": {
+    "previous": "c48b5dd2d6ff7de44401a7297cdbc44877f6a249f656105aae0479dbeda3b314",
+    "current": "6f666543724a0661e58f9eb592ad409c3c2ca71a3347fca82bf12a45af58ab89"
+  },
+  "monogame/Yipe.GraphicsChecks/Program.cs": {
+    "previous": "2e5202db4fbbd1328b1d830cb3bfd4e2bae82f59993fb0fd95c12b0b273f2dc9",
+    "current": "550aea65a5da7e0b554dcb1f0b259c9119a8fddd1fe4cd9a4cf8c6d1a6a85114"
+  },
+  "monogame/Yipe.Tests/Fixtures/full-save-v1.y3m": {
+    "previous": null,
+    "current": "6a2eba9d869611eaaf87e30652c680ac09cd2ded0fcead419ab31101fcdb6229"
+  },
+  "monogame/Yipe.Tests/GameSaveChecks.cs": {
+    "previous": null,
+    "current": "4d9888db3193fb76e150a04fbdf96816f33218775ed1fe01b64fb1e5f32f2ab1"
+  },
+  "monogame/Yipe.Tests/Program.cs": {
+    "previous": "c25a84cd1acc60a69ffcdbb1970f79dd9b48d6a2a75350bb84e6d7d3fb66bfcb",
+    "current": "8bcdc90216a192d3c737d513856c05f79444987a8062e9d1c18fcb6f17526a33"
+  },
+  "monogame/Yipe.Tests/Yipe.Tests.csproj": {
+    "previous": "4f1ae1433308ea8766e7648d6a351054bffc348639cc413fabc8b8d00aea7861",
+    "current": "eb4a1afcc90d12fe45f4ee14ba7ded0ab93c8a06a2c7cfa78f242236b0110b3a"
+  },
+  "src/save.cpp": {
+    "previous": null,
+    "current": "8aae5b9ccc0301f9dc8eafc1fe6040de6622efa40863944b082a646e5b666755"
+  }
+}

@@ -1,0 +1,4 @@
+COPILOT_BRIDGE_DRAFT — PARENT VERIFICATION REQUIRED
+**One concrete issue:** the new crisp-heat assertion covers only map `117`, while production enables the behavior for IDs `117–120` (`hell` range in `TownGame` and reflection call). Thus maps `118–120` can regress without detection despite all checks passing.
+
+No second correctness issue is provable from this patch alone. Verifying the stated shared-target concern requires the constructors/allocation code for `MiniatureEffect`, `HeatEffect`, and the `source` render target to determine whether any input/output targets alias.
