@@ -106,7 +106,9 @@ def main():
                     # Hosted Macs may not retain .ips files. Reproduce a native crash once
                     # under LLDB while the isolated executable/save still exist.
                     try:
-                        trace = subprocess.run(["xcrun", "lldb", "--batch", "-o", "run",
+                        trace = subprocess.run(["xcrun", "lldb", "--batch",
+                                                "-o", "process handle -p true -s false -n false SIGUSR1",
+                                                "-o", "run",
                                                 "-k", "thread backtrace all", "--", *arguments],
                                                cwd=empty, env=environment, text=True, capture_output=True, timeout=60)
                         (output / (name + ".lldb.log")).write_text(trace.stdout + trace.stderr)
