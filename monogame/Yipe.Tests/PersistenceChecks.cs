@@ -173,13 +173,24 @@ internal static class PersistenceChecks
             await Fails(() => absent.ImportAsync(source), "Malformed file does not create a destination");
             check(!File.Exists(Path.Combine(directory, "absent.y3m")), "Failed import leaves no output");
             await File.WriteAllBytesAsync(source, preview);
-            var race = new GameSaveStore(Path.Combine(directory, "race.y3m"), catalog);
-            var outcomes = await Task.WhenAll(Enumerable.Range(0, 4).Select(async _ =>
+            // Repeated, synchronized contention exposes Unix check-then-rename races.
+            // Separate stores and Unicode paths also exercise the native publish boundary.
+            for (var attempt = 0; attempt < 16; attempt++)
             {
-                try { await race.ImportAsync(source); return true; } catch (IOException) { return false; }
-            }));
-            check(outcomes.Count(ok => ok) == 1 && (await race.LoadAsync()).Location.Position == new MapPosition(6, 5)
-                && !Directory.EnumerateFiles(directory, "*.tmp").Any(), "Concurrent imports create one intact destination and clean temporary files");
+                var racePath = Path.Combine(directory, $"race-é雪-{attempt}.y3m");
+                var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                var imports = Enumerable.Range(0, 16).Select(async _ =>
+                {
+                    await start.Task;
+                    try { await new GameSaveStore(racePath, catalog).ImportAsync(source); return true; }
+                    catch (IOException) { return false; }
+                }).ToArray();
+                start.SetResult();
+                var outcomes = await Task.WhenAll(imports);
+                check(outcomes.Count(ok => ok) == 1 && Enumerable.SequenceEqual(saved, await File.ReadAllBytesAsync(racePath))
+                    && !Directory.EnumerateFiles(directory, "*.tmp").Any(),
+                    $"Concurrent import round {attempt + 1}: exactly one intact destination, no temporary files ({outcomes.Count(ok => ok)} winners)");
+            }
             var restart = Path.Combine(directory, "restart"); Directory.CreateDirectory(restart);
             await GameSaveChecks.RunChild("--write-import-fixtures", restart);
             await GameSaveChecks.RunChild("--read-import-fixtures", restart);

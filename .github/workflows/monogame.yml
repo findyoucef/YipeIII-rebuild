@@ -68,7 +68,6 @@ jobs:
           (cd build/monogame-packages && shasum -a 256 -c ./*.sha256)
           python3 monogame/tools/verify_macos_package.py build/monogame-packages/*.tar.gz \
             --tests monogame/Yipe.Tests/bin/Release/net10.0 \
-            --graphics monogame/Yipe.GraphicsChecks/bin/Release/net10.0 \
             --output build/monogame-ci/package-check 2>&1 | tee build/monogame-ci/verify-package.log
       - name: Upload verified application and checksum
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -124,5 +123,7 @@ jobs:
           --title "Yipe! III MonoGame ${RELEASE_TAG#monogame-v}"
           --notes-file monogame/packaging/RELEASE_NOTES.md
 
-# Full visual/audio review, frame pacing and physical controllers still use the
-# local desktop procedure in monogame/Yipe.GraphicsChecks/README.md.
+# The VM passes rendered smoke launches, but sustained normal-loop graphics
+# run at ~7 FPS or crash natively. Run verify_macos_package.py --graphics on the
+# downloaded artifact on a physical Mac before tagging. Full visual/audio review,
+# frame pacing and controllers use monogame/Yipe.GraphicsChecks/README.md.

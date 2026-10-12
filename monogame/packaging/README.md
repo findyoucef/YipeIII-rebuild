@@ -36,7 +36,9 @@ the regression logs, extracted-package report and startup captures, including
 failure diagnostics. Branch/PR/manual-branch packages use unique
 `0.0.0-ci.<run>.<attempt>` versions and do not create releases.
 
-After the desired commit's workflow passes, create and push a new release tag:
+After the desired commit's workflow passes, download its application artifact
+and run the verifier above with `--tests` and `--graphics` on a physical Mac.
+Then create and push a new release tag:
 
 ```sh
 git tag -a monogame-v0.1.0-preview.9 -m 'Yipe! III MonoGame 0.1.0-preview.9'
@@ -45,7 +47,7 @@ git push origin monogame-v0.1.0-preview.9
 
 The tag run rebuilds from that exact commit, deriving `0.1.0-preview.9` from the
 tag. It must pass core/campaign tests, signature/dependency/icon checks, graphics
-startup, LaunchServices, fullscreen/resize and fresh-process save checks before
+smoke startup, LaunchServices and fresh-process save checks before
 uploading the verified artifact. A separate job downloads that run's artifact,
 verifies its checksum again and attaches both files to a GitHub prerelease.
 Only this publish job has `contents: write`; it uses the repository-provided
@@ -58,6 +60,16 @@ selected. Use a new version for later releases; published assets are never
 overwritten by this workflow. Update [release notes](RELEASE_NOTES.md) before
 tagging when the feature set or requirements change. Full visual/audio review,
 performance measurement and physical controllers remain local/manual checks.
+
+The hosted macOS VM is unsuitable for the sustained normal-loop graphics check:
+observed runs either crashed natively or rendered the title at 6.8–6.9 FPS. The
+native crash's root cause is unresolved; no gameplay workaround was added. The
+workflow still requires three actual rendered smoke launches, including
+LaunchServices. Normal Game.Run, ident/title animation, resize/fullscreen and
+frame pacing remain required local checks of the downloaded artifact before
+tagging. Reports explicitly set `normal_startup: false` when that check was not
+run. MonoGame's own [workflow](https://github.com/MonoGame/MonoGame/blob/76086c97bb780dfdb371945c5abe862cd245f7a0/.github/workflows/main.yml#L603-L643)
+also excludes sustained Game/graphics tests from hosted macOS runners.
 
 ## Bundle and verification
 

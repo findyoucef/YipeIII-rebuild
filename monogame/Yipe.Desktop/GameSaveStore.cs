@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using Yipe.Core;
 
 namespace Yipe.Desktop;
@@ -46,7 +48,15 @@ public sealed class GameSaveStore
                 await file.WriteAsync(bytes).ConfigureAwait(false);
                 file.Flush(flushToDisk: true);
             }
-            File.Move(temporary, destination, overwrite);
+            if (overwrite || OperatingSystem.IsWindows()) File.Move(temporary, destination, overwrite);
+            // Unix File.Move(overwrite: false) checks then renames, so competing imports
+            // can replace each other. A same-directory hard link publishes the complete
+            // file atomically and refuses an existing name; finally removes its temp name.
+            else if (Link(temporary, destination) != 0)
+            {
+                var error = new Win32Exception(Marshal.GetLastPInvokeError());
+                throw new IOException($"Could not create imported save '{destination}': {error.Message}", error);
+            }
         }
         finally
         {
@@ -55,6 +65,10 @@ public sealed class GameSaveStore
             catch (UnauthorizedAccessException) { }
         }
     }
+
+    [DllImport("libc", EntryPoint = "link", SetLastError = true)]
+    private static extern int Link([MarshalAs(UnmanagedType.LPUTF8Str)] string source,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string destination);
 
     // Imports create a new destination only. Both source and any existing destination survive failures.
     public async Task ImportAsync(string sourcePath)

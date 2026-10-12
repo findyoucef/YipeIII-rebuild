@@ -27,9 +27,13 @@ The older C++/SDL preview uses separate saves; retain originals when importing.
 GitHub Actions builds this package from its release tag after locked dependency
 restore, core/persistence checks and an earned campaign comparison with the
 original C++ observations. The extracted app is checked for file integrity,
-signatures, bundled native dependencies, icon sizes, launch/startup, display
-changes and save continuation using its bundled runtime. Verification logs and
+signatures, bundled native dependencies, icon sizes, rendered smoke launches and
+save continuation using its bundled runtime. Verification logs and
 captures are retained in the matching **MonoGame macOS** Actions run.
+
+The longer normal-startup, animation, resize/fullscreen and frame-pacing checks
+run locally on the downloaded build. GitHub's virtual Mac is unsuitable for
+those checks (very low frame rates and intermittent native crashes).
 
 Physical controllers, Intel Macs, older macOS and other operating systems remain
 unverified. Local visual/performance results are documented in

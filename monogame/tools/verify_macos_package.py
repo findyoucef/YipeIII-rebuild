@@ -28,7 +28,8 @@ def main():
     env = {key: value for key, value in os.environ.items() if not key.startswith(("DOTNET_ROOT", "DYLD_"))}
     env.update(PATH="/usr/bin:/bin:/usr/sbin:/sbin", DOTNET_MULTILEVEL_LOOKUP="0")
     report = {"archive": archive.name, "sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
-              "os": platform.mac_ver()[0], "architecture": platform.machine(), "save_checks": False}
+              "os": platform.mac_ver()[0], "architecture": platform.machine(),
+              "save_checks": False, "normal_startup": False}
     with tempfile.TemporaryDirectory(prefix="yipe-monogame-verify-") as temporary:
         root = Path(temporary)
         extracted = root / "extracted"

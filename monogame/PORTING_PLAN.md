@@ -55,9 +55,10 @@ and publish the first prerelease through the same automation.
 
 1. Extend the existing MonoGame regression workflow with the established
    self-contained packager, archive checksum, extracted-app verifier and uploads.
-2. Run packaged startup, display changes and persistence checks on the hosted
-   Apple Silicon runner. Keep full local visual/performance and physical hardware
-   coverage separate from these automated checks.
+2. Run packaged smoke startup and persistence checks on the hosted Apple Silicon
+   runner. Verify sustained normal startup and display changes on the downloaded
+   app locally: the hosted VM runs at 6.8–6.9 FPS or crashes natively in that test.
+   Keep full local visual/performance and physical hardware coverage separate.
 3. Use `monogame-v*` release tags, deriving the package version from the tag.
    Publish only after verification; retain the existing legacy C++ tag workflow.
 4. Document download/install/signing limits, release notes and tag commands.
@@ -65,8 +66,11 @@ and publish the first prerelease through the same automation.
 5. Tag the passing revision, verify hosted publication, download the archive and
    checksum, and retain a local verification of the GitHub-built app.
 
-Status: implementation ready for hosted validation. No gameplay changes are part
-of this task. The repository-local cave skill move is included in this checkpoint.
+Status: hosted validation in progress. CI exposed a real concurrent import race
+in .NET's Unix non-overwriting move; the save store now publishes imports with
+an atomic hard link. A strengthened test reproduced 12 successful competitors
+before the fix. Save format and normal saves are unchanged. The repository-local
+cave skill move is included in this checkpoint.
 
 
 ## Completed local release-readiness pass — 2026-10-12
