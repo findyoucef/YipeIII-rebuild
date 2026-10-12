@@ -102,6 +102,16 @@ def main():
             result = subprocess.run(arguments, cwd=empty, env=environment, text=True, capture_output=True, timeout=60)
             (output / name).write_text(result.stdout + result.stderr)
             if result.returncode != 0:
+                if result.returncode < 0:
+                    # Hosted Macs may not retain .ips files. Reproduce a native crash once
+                    # under LLDB while the isolated executable/save still exist.
+                    try:
+                        trace = subprocess.run(["xcrun", "lldb", "--batch", "-o", "run",
+                                                "-k", "thread backtrace all", "--", *arguments],
+                                               cwd=empty, env=environment, text=True, capture_output=True, timeout=60)
+                        (output / (name + ".lldb.log")).write_text(trace.stdout + trace.stderr)
+                    except subprocess.TimeoutExpired:
+                        (output / (name + ".lldb.log")).write_text("LLDB diagnostic timed out after 60 seconds.\n")
                 raise RuntimeError(f"{name} failed ({result.returncode}): {result.stdout[-1500:]} {result.stderr[-1500:]}")
             return result
 
