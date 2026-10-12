@@ -1,8 +1,9 @@
-name: MonoGame regression
+name: MonoGame macOS
 
 on:
   push:
     branches: [main]
+    tags: ['monogame-v*']
     paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/monogame.yml']
   pull_request:
     paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/monogame.yml']
@@ -17,12 +18,12 @@ defaults:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 jobs:
-  core-and-campaign:
+  build-test-package:
     runs-on: macos-26
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,6 +31,19 @@ jobs:
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           global-json-file: global.json
+      - name: Select package version
+        id: package
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == tag ]]; then
+            if [[ ! "$GITHUB_REF_NAME" =~ ^monogame-v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Expected a MonoGame tag such as monogame-v0.1.0-preview.9" >&2
+              exit 1
+            fi
+            package_version="${GITHUB_REF_NAME#monogame-v}"
+          else
+            package_version="0.0.0-ci.${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"
+          fi
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
       - name: Restore locked dependencies
         run: dotnet restore monogame/Yipe.slnx --locked-mode
       - name: Checked Release build
@@ -43,6 +57,28 @@ jobs:
           dotnet monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll
           --campaign-route monogame/evidence/2026-10-04-p234-complete/campaign
           build/monogame-ci/campaign-saves 2>&1 | tee build/monogame-ci/campaign.log
+      - name: Package self-contained application
+        env:
+          PACKAGE_VERSION: ${{ steps.package.outputs.version }}
+        run: >-
+          python3 monogame/tools/package_macos.py --version "$PACKAGE_VERSION"
+          --output build/monogame-packages 2>&1 | tee build/monogame-ci/package.log
+      - name: Verify extracted application and packaged runtime
+        run: |
+          (cd build/monogame-packages && shasum -a 256 -c ./*.sha256)
+          python3 monogame/tools/verify_macos_package.py build/monogame-packages/*.tar.gz \
+            --tests monogame/Yipe.Tests/bin/Release/net10.0 \
+            --graphics monogame/Yipe.GraphicsChecks/bin/Release/net10.0 \
+            --output build/monogame-ci/package-check 2>&1 | tee build/monogame-ci/verify-package.log
+      - name: Upload verified application and checksum
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: YipeIII-MonoGame-macOS-arm64
+          path: |
+            build/monogame-packages/*.tar.gz
+            build/monogame-packages/*.sha256
+          compression-level: 0
+          if-no-files-found: error
       - name: Retain MonoGame results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -51,5 +87,34 @@ jobs:
           path: build/monogame-ci/
           if-no-files-found: warn
 
-# Real graphics/audio, frame pacing and physical controllers require the active
-# desktop procedure in monogame/Yipe.GraphicsChecks/README.md. No release upload.
+  publish-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/monogame-v')
+    needs: build-test-package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_ID: ${{ github.run_id }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download verified application
+        run: gh run download "$RUN_ID" --name YipeIII-MonoGame-macOS-arm64 --dir dist
+      - name: Verify upload checksum
+        working-directory: dist
+        run: sha256sum -c ./*.sha256
+      - name: Publish MonoGame preview
+        run: >-
+          gh release create "$RELEASE_TAG" dist/*.tar.gz dist/*.sha256
+          --verify-tag --prerelease --latest=false
+          --title "Yipe! III MonoGame ${RELEASE_TAG#monogame-v}"
+          --notes-file monogame/packaging/RELEASE_NOTES.md
+
+# Full visual/audio review, frame pacing and physical controllers still use the
+# local desktop procedure in monogame/Yipe.GraphicsChecks/README.md.

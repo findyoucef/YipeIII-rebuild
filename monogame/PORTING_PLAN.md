@@ -18,13 +18,13 @@ integration remain separate; this is a playable desktop port, not a release clai
 | Field | Current state |
 | --- | --- |
 | Local gameplay launch | No game process remains after verification. The latest extracted app is `build/monogame-packages/preview.8/Yipe III MonoGame.app`; local builds remain the default for iteration. The previous Ice Cave preview is isolated from personal adventures. |
-| Current milestone | P1–P4 done. Automated P5/P6 release pass complete; macOS preview.8 adds the game icon. Physical controller testing is unverified by agreement; historical three-variant campaign recovery and P7 remain open. |
-| Next task | User review of the app icon in preview.8. When hardware is available, perform the physical-controller checklist. P0.2/P6.1 still need the three absent historical completion input streams; do not claim their full-route parity. |
+| Current milestone | Automating MonoGame macOS packaging and tagged prereleases in GitHub Actions, targeting the first hosted preview.9. P1–P4 and local release verification are complete. |
+| Next task | Verify the hosted branch build, push `monogame-v0.1.0-preview.9`, then download and verify its release assets. Physical-controller and additional historical campaign-route coverage remain unverified. |
 | Last completed work | Pixel-art knight/castle app icon: embedded local-build BMP plus macOS ICNS, fresh build/package/startup checks. [Icon review](evidence/2026-10-12-app-icon/review.html) and [verification](evidence/2026-10-12-app-icon/README.md). Prior [release report](evidence/2026-10-12-release-readiness/README.md) retains full gameplay/performance evidence. |
 | Latest verification | Checked Release: zero warnings/errors. Seven native reference traces match. 43,080 campaign state/RNG observations and 66 complete saves match C++. Nine scenes at 720p/1080p average 60.01–60.16 FPS on M5 Max. Packaged normal startup, native dependencies, signatures and persistence pass. |
 | Earned frontend evidence | Fresh opening matches all 42 C++ checkpoints plus King return and separate-process continuation. Fresh late frontend defeats the empowered Gatekeeper, saves/restarts, rescues 20 and displays the live Maynard finale. |
 | Approved presentation | The user's existing pixel-art, miniature, lighting, clouds, weather and sound defaults remain unchanged. Current clouds, music, river junctions and precise Ice Cave entrance movement are user-approved. |
-| Work left running or half implemented | None. The user requested committing and pushing the completed source, assets and evidence on 2026-10-12. The packaged archive stays local under ignored `build/`; no release upload was requested. |
+| Work left running or half implemented | Release workflow implementation and first hosted verification are in progress. Include the user's requested move of the cave-remaster skill into `.agents/skills`; the global copy has been removed. |
 | Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. CI workflow is linted; check GitHub Actions for the hosted result of this checkpoint. |
 | Save preservation | All 33 personal files stayed byte-identical throughout this pass. Every test used isolated saves/profiles. No save-format changes. |
 | Repository checkpoint | This checkpoint includes approved NPC animation, title/pause menus, music/credits, terrain and combat/ice fixes, release verification and the app icon. All 156 source hashes match preview.8 before committing; only handoff documentation changed afterward. Existing baseline and remaster commits remain intact. |
@@ -47,6 +47,26 @@ At the start of a resumed session:
 
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
+
+## MonoGame GitHub release automation — 2026-10-12
+
+Goal: produce verified downloadable MonoGame macOS artifacts in GitHub Actions
+and publish the first prerelease through the same automation.
+
+1. Extend the existing MonoGame regression workflow with the established
+   self-contained packager, archive checksum, extracted-app verifier and uploads.
+2. Run packaged startup, display changes and persistence checks on the hosted
+   Apple Silicon runner. Keep full local visual/performance and physical hardware
+   coverage separate from these automated checks.
+3. Use `monogame-v*` release tags, deriving the package version from the tag.
+   Publish only after verification; retain the existing legacy C++ tag workflow.
+4. Document download/install/signing limits, release notes and tag commands.
+   Validate workflow syntax and version selection, then push and observe a branch run.
+5. Tag the passing revision, verify hosted publication, download the archive and
+   checksum, and retain a local verification of the GitHub-built app.
+
+Status: implementation ready for hosted validation. No gameplay changes are part
+of this task. The repository-local cave skill move is included in this checkpoint.
 
 
 ## Completed local release-readiness pass — 2026-10-12
@@ -1021,8 +1041,8 @@ Implementation is complete; user visual/audio review remains pending.
 
 User reviewed the updated local build and approved the result: “this looks great!”
 
-Reusable workflow: `$remaster-yipe-caves`, installed at
-`~/.codex/skills/remaster-yipe-caves/SKILL.md`. Its companion reference records
+Reusable workflow: `$remaster-yipe-caves`, stored in the repository at
+[.agents/skills/remaster-yipe-caves/SKILL.md](../.agents/skills/remaster-yipe-caves/SKILL.md). Its companion reference records
 the approved pixel-art, floor/creature, contour-lighting and verification
 techniques. Adapt the treatment to each cave's own palette, theme and resolved
 map scope; the breeding grounds supply a quality reference, not a shared layout.

@@ -16,7 +16,7 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("build/monogame-packages"))
-    parser.add_argument("--version", default="0.1.0-preview.8")
+    parser.add_argument("--version", default="0.1.0-preview.9")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("Build this preview on an Apple Silicon Mac.")

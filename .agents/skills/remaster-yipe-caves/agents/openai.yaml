@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remaster Yipe Caves"
+  short_description: "Reuse the approved pixel-art cave remaster techniques"
+  default_prompt: "Use $remaster-yipe-caves to remaster the requested Yipe III cave while preserving its layout and pixel-art style."

@@ -15,17 +15,51 @@ their respective dependency graphs.
 dotnet restore monogame/Yipe.slnx --locked-mode
 dotnet build monogame/Yipe.slnx -c Release --no-restore -p:CheckForOverflowUnderflow=true
 dotnet run --project monogame/Yipe.Tests -c Release --no-build
-python3 monogame/tools/package_macos.py --version 0.1.0-preview.8
-python3 monogame/tools/verify_macos_package.py build/monogame-packages/YipeIII-MonoGame-0.1.0-preview.8-macOS-arm64.tar.gz --tests monogame/Yipe.Tests/bin/Release/net10.0 --graphics monogame/Yipe.GraphicsChecks/bin/Release/net10.0
+python3 monogame/tools/package_macos.py --version 0.1.0-preview.9
+python3 monogame/tools/verify_macos_package.py build/monogame-packages/YipeIII-MonoGame-0.1.0-preview.9-macOS-arm64.tar.gz --tests monogame/Yipe.Tests/bin/Release/net10.0 --graphics monogame/Yipe.GraphicsChecks/bin/Release/net10.0
 ```
 
 The builder refuses to overwrite an existing archive. Use a new version or a
 separate `--output` directory when repeating it. Package after the normal checks;
 avoid simultaneous restore/build/publish operations against shared project files.
 The existing root GitHub workflow still builds/releases the C++ game. MonoGame
-regression CI now has its own workflow; public upload and official
-signing/notarization remain separate work. The new workflow has been linted
-locally; check GitHub Actions for hosted results after pushing this checkpoint.
+has its own build, verification and prerelease workflow, described below.
+Developer ID signing and notarization remain separate work.
+
+## GitHub Actions builds and releases
+
+The [MonoGame macOS workflow](../../.github/workflows/monogame.yml) runs on
+relevant pushes to `main`, pull requests, manual dispatch and `monogame-v*` tag
+pushes. Every successful run provides a **YipeIII-MonoGame-macOS-arm64** artifact
+containing the app archive and its `.sha256`. **MonoGame-regression** contains
+the regression logs, extracted-package report and startup captures, including
+failure diagnostics. Branch/PR/manual-branch packages use unique
+`0.0.0-ci.<run>.<attempt>` versions and do not create releases.
+
+After the desired commit's workflow passes, create and push a new release tag:
+
+```sh
+git tag -a monogame-v0.1.0-preview.9 -m 'Yipe! III MonoGame 0.1.0-preview.9'
+git push origin monogame-v0.1.0-preview.9
+```
+
+The tag run rebuilds from that exact commit, deriving `0.1.0-preview.9` from the
+tag. It must pass core/campaign tests, signature/dependency/icon checks, graphics
+startup, LaunchServices, fullscreen/resize and fresh-process save checks before
+uploading the verified artifact. A separate job downloads that run's artifact,
+verifies its checksum again and attaches both files to a GitHub prerelease.
+Only this publish job has `contents: write`; it uses the repository-provided
+`GITHUB_TOKEN`. No personal access token or signing certificate is required for
+the existing ad-hoc signed preview.
+
+The `monogame-v` prefix keeps these releases separate from the legacy C++
+workflow's `v*` tags. Manual dispatch builds artifacts only, even when a tag is
+selected. Use a new version for later releases; published assets are never
+overwritten by this workflow. Update [release notes](RELEASE_NOTES.md) before
+tagging when the feature set or requirements change. Full visual/audio review,
+performance measurement and physical controllers remain local/manual checks.
+
+## Bundle and verification
 
 The `.tar.gz` contains `Yipe III MonoGame.app`, `README.txt` and a SHA-256 file
 manifest. A separate archive `.sha256` accompanies it. The launcher in
