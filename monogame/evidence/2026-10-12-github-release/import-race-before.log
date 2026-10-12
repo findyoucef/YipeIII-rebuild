@@ -1,0 +1,36 @@
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-1a42b9f8e7c94216954d555f20e90c10/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+Unhandled exception. System.InvalidOperationException: FAIL: Concurrent import round 1: exactly one intact destination, no temporary files (12 winners)
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Check|1(Boolean condition, String label) in /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/Program.cs:line 335
+   at PersistenceChecks.Run(Action`2 check) in /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/PersistenceChecks.cs:line 190
+   at Program.<Main>$(String[] args) in /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/Program.cs:line 63
+   at Program.<Main>(String[] args)

@@ -1,0 +1,11 @@
+PASS: Normal startup loads the selected adventure and renders the pause menu
+PASS: The studio ident naturally reaches the title screen
+Normal-loop presentation: 60.6 FPS across 1.98 seconds.
+PASS: Presentation advances at a bounded rate with the normal game timer
+PASS: Title animation advances across presented frames
+PASS: Window resize keeps rendering
+PASS: Fullscreen entry keeps presenting frames
+PASS: Returning to a window keeps presenting frames
+PASS: The normal game loop completed all startup phases
+PASS: Normal startup and display changes preserve the selected save
+Normal startup checks passed.

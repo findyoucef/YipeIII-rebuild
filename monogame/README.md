@@ -1,10 +1,12 @@
 # MonoGame desktop port
 
-Current local release pass: **645 core/input/persistence checks**, **4,226 visual
+Current verification: **660 core/input/persistence checks**, **4,226 visual
 integration checks**, and the earned campaign's **43,080 C++ state/RNG observations
 and 66 full saves** pass. Nine representative scenes hold about **60 FPS** at
 720p and 1080p on the tested Apple M5 Max. [Release evidence and limits](evidence/2026-10-12-release-readiness/README.md).
 Physical-controller testing is unverified: no controller was available.
+The [GitHub release verification](evidence/2026-10-12-github-release/README.md)
+adds hosted packaging, download checks and the concurrent-import regression fix.
 
 
 The chosen direction is a C# / MonoGame desktop game with controller support,
@@ -20,9 +22,9 @@ real frontend opening and late-game routes survive separate-process restarts.
 Desktop release work remains in P5/P6. The C++ reconstruction at the repository
 root remains the gameplay reference.
 
-The first standalone MonoGame macOS preview is built separately from the C++
-release. See [packaging and verification](packaging/README.md) for the
-self-contained Apple Silicon app, extraction checks and supported-platform limits.
+Download the standalone [MonoGame macOS preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9),
+built separately from the C++ release. See [packaging and verification](packaging/README.md)
+for the self-contained Apple Silicon app, extraction checks and supported-platform limits.
 
 Use the [port plan and progress tracker](PORTING_PLAN.md) for the full-game
 milestones, acceptance criteria, current task, and session resume instructions.
@@ -747,5 +749,7 @@ dotnet publish monogame/Yipe.Desktop -c Release -o /tmp/yipe-monogame-retro
 ```
 
 The output includes assets and resolves them relative to the executable rather
-than the working directory. The .NET 10 runtime is required. Native installers,
-self-contained releases, signing, and notarization are later packaging work.
+than the working directory. This framework-dependent folder requires .NET 10.
+For the self-contained, ad-hoc signed macOS app, use the
+[packaging workflow](packaging/README.md). Native installers, Developer ID signing
+and notarization remain separate work.

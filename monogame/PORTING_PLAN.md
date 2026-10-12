@@ -18,16 +18,16 @@ integration remain separate; this is a playable desktop port, not a release clai
 | Field | Current state |
 | --- | --- |
 | Local gameplay launch | No game process remains after verification. The latest extracted app is `build/monogame-packages/preview.8/Yipe III MonoGame.app`; local builds remain the default for iteration. The previous Ice Cave preview is isolated from personal adventures. |
-| Current milestone | Automating MonoGame macOS packaging and tagged prereleases in GitHub Actions, targeting the first hosted preview.9. P1–P4 and local release verification are complete. |
-| Next task | Verify the hosted branch build, push `monogame-v0.1.0-preview.9`, then download and verify its release assets. Physical-controller and additional historical campaign-route coverage remain unverified. |
-| Last completed work | Pixel-art knight/castle app icon: embedded local-build BMP plus macOS ICNS, fresh build/package/startup checks. [Icon review](evidence/2026-10-12-app-icon/review.html) and [verification](evidence/2026-10-12-app-icon/README.md). Prior [release report](evidence/2026-10-12-release-readiness/README.md) retains full gameplay/performance evidence. |
-| Latest verification | Checked Release: zero warnings/errors. Seven native reference traces match. 43,080 campaign state/RNG observations and 66 complete saves match C++. Nine scenes at 720p/1080p average 60.01–60.16 FPS on M5 Max. Packaged normal startup, native dependencies, signatures and persistence pass. |
+| Current milestone | GitHub release automation complete. [MonoGame preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9) was built, verified and published by Actions, then downloaded and verified locally. |
+| Next task | No remaining work in this release-automation goal. For the next release, verify the downloaded branch artifact locally before pushing a fresh `monogame-v*` tag. Physical-controller and additional historical campaign-route coverage remain unverified. |
+| Last completed work | Hosted artifacts/tagged prereleases, portable architecture verification and atomic concurrent imports. The requested cave skill move is committed locally to the repository. [Release evidence](evidence/2026-10-12-github-release/README.md). Prior [release report](evidence/2026-10-12-release-readiness/README.md) retains full gameplay/performance evidence. |
+| Latest verification | Checked Release: zero warnings/errors; 660 core checks. Hosted campaign: 43,080 observations and 66 saves match C++. Published archive: signatures, native dependencies, icon, isolated persistence, real startup and display transitions pass locally at 60.7 FPS. Earlier nine-scene 720p/1080p performance pass remains separate. |
 | Earned frontend evidence | Fresh opening matches all 42 C++ checkpoints plus King return and separate-process continuation. Fresh late frontend defeats the empowered Gatekeeper, saves/restarts, rescues 20 and displays the live Maynard finale. |
 | Approved presentation | The user's existing pixel-art, miniature, lighting, clouds, weather and sound defaults remain unchanged. Current clouds, music, river junctions and precise Ice Cave entrance movement are user-approved. |
-| Work left running or half implemented | Release workflow implementation and first hosted verification are in progress. Include the user's requested move of the cave-remaster skill into `.agents/skills`; the global copy has been removed. |
-| Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. CI workflow is linted; check GitHub Actions for the hosted result of this checkpoint. |
+| Work left running or half implemented | None in the completed goal. Release tag points to `fb9a885`; subsequent documentation/evidence changes do not replace its verified assets. |
+| Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. Hosted VM sustained graphics remain unreliable, so full startup/display/frame pacing are verified locally on the exact download. |
 | Save preservation | All 33 personal files stayed byte-identical throughout this pass. Every test used isolated saves/profiles. No save-format changes. |
-| Repository checkpoint | This checkpoint includes approved NPC animation, title/pause menus, music/credits, terrain and combat/ice fixes, release verification and the app icon. All 156 source hashes match preview.8 before committing; only handoff documentation changed afterward. Existing baseline and remaster commits remain intact. |
+| Repository checkpoint | Approved presentation and app-icon work was pushed as `d766996`. Release automation and the save-import race fix culminate in `fb9a885`, tagged `monogame-v0.1.0-preview.9`. All 156 release-manifest source hashes match; later changes are documentation/evidence only. |
 
 At the start of a resumed session:
 
@@ -66,11 +66,13 @@ and publish the first prerelease through the same automation.
 5. Tag the passing revision, verify hosted publication, download the archive and
    checksum, and retain a local verification of the GitHub-built app.
 
-Status: hosted validation in progress. CI exposed a real concurrent import race
-in .NET's Unix non-overwriting move; the save store now publishes imports with
-an atomic hard link. A strengthened test reproduced 12 successful competitors
-before the fix. Save format and normal saves are unchanged. The repository-local
-cave skill move is included in this checkpoint.
+Status: **all five steps complete**. The branch and tag workflows passed; the tag
+run published both assets. The exact published archive passed checksum, manifest,
+source identity and full local package/startup verification. [Evidence and download](evidence/2026-10-12-github-release/README.md).
+CI exposed a concurrent import race in .NET's Unix non-overwriting move; imports
+now publish with an atomic hard link. A strengthened test reproduced 12 successful
+competitors before the fix and exactly one afterward. Save format and normal
+saves are unchanged. The repository-local cave skill move is committed.
 
 
 ## Completed local release-readiness pass — 2026-10-12
@@ -1783,13 +1785,13 @@ The full codec/storage contract is in [SAVE_FORMAT.md](SAVE_FORMAT.md).
 | --- | --- | --- |
 | Missing historical replay artifacts | The docs report corrected completion runs with 108,879 matching observations, but `evidence/corrected-completion/`, `evidence/persistence-parity/` and `evidence/verification-milestone/` are absent from this checkout. This is historical documentation, not a newly verified local result. | One new default completion now passes; P0.2/P6.1 retain the missing three-fixture matrix |
 | Graphics runner portability | P0.1 is complete with configurable paths, isolated saves and optional recording. Real graphics checks have passed on Apple Silicon macOS. | Keep the window focused; validate other platforms separately |
-| Source checkpoint | The baseline is committed at 0638981, followed by the mountain and deferred-effect checkpoints. UI/control/package work is currently uncommitted. | Preserve the working tree and its evidence; do not reset it to the baseline |
+| Source checkpoint | Approved UI/control/remaster work is pushed as `d766996`; hosted preview.9 is tagged at `fb9a885`. | Preserve later documentation and evidence; do not reset to historical baselines |
 | Original diagonal movement | P1.3 restores eight-direction rules and preview input/animation. Diagonals use destination-only collision, horizontal-facing art and one 250 ms grid step. | P5.5: physical-controller validation and full-action/overlay coverage remain |
 | Slower walking and timed gameplay | The approved pace can affect the practical difficulty of timed routes. | P3.5 passed timed platform/fire routes at 250 ms; retain this regression coverage |
 | Save compatibility | `.y3m` v1 and explicit preview/C++ v20/original imports are complete. Original unknown/absent fields and selected Windows-1252 decoding are documented; earlier C++ versions require upgrading in the rebuild. | Keep formats/source files distinct; extend supported variants only with reference evidence. See `SAVE_FORMAT.md`. |
 | Inherited adaptations | C++ D7 restores platform support on reopen; D8 sets new-character stat cap 50 and weapon upgrade ceiling 29. Other fidelity limits remain documented. | Dispositions are recorded in FEATURE_DISPOSITIONS.md; retain original-runtime limits |
 | Menu coverage | Every original menu/system row is mapped in FEATURE_DISPOSITIONS.md; legacy desktop conveniences explicitly excluded by the user on 2026-10-12. | P5.6 closed; verify retained menus and save lifecycle under P5.3/P6.3 |
-| Current CI and release labels | Root hosted CI/releases still target C++/SDL. A distinct local MonoGame macOS package now passes extraction/signature/startup/save checks. | P0.3: add hosted MonoGame coverage; keep artifacts separate |
+| Current CI and release labels | MonoGame Actions builds verified archives and publishes `monogame-v*` prereleases. The C++ `v*` workflow is unchanged. Preview.9 is published and locally verified. | Before future tags, run full graphics verification locally on the downloaded branch artifact; retain separate package identities |
 
 ## Session record
 

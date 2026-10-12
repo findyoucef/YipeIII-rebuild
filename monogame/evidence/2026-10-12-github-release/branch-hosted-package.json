@@ -1,0 +1,129 @@
+{
+  "archive": "YipeIII-MonoGame-0.0.0-ci.7.1-macOS-arm64.tar.gz",
+  "sha256": "8785c6b021ace4ab6fd04783bd17c74a1a121217f2cf082478ef45a000132841",
+  "os": "26.6.2",
+  "architecture": "arm64",
+  "save_checks": "Packaged assemblies/runtime: full-state/RNG restart, 24 imports/96 cycles, eight special rooms/640 continuation ticks",
+  "normal_startup": false,
+  "app_icon": "Ten alpha-preserving representations, 16\u20131024 pixels",
+  "files": 422,
+  "content_files": 208,
+  "native_libraries": 15,
+  "dependencies": {
+    "Yipe.Desktop": [
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "libSDL2-2.0.0.dylib": [
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreVideo.framework/Versions/A/CoreVideo",
+      "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa",
+      "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+      "/System/Library/Frameworks/ForceFeedback.framework/Versions/A/ForceFeedback",
+      "/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon",
+      "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio",
+      "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox",
+      "/System/Library/Frameworks/AVFoundation.framework/Versions/A/AVFoundation",
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/System/Library/Frameworks/GameController.framework/Versions/A/GameController",
+      "/System/Library/Frameworks/Metal.framework/Versions/A/Metal",
+      "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore",
+      "/System/Library/Frameworks/CoreHaptics.framework/Versions/A/CoreHaptics",
+      "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics",
+      "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "libSystem.Globalization.Native.dylib": [
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "libSystem.IO.Compression.Native.dylib": [
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "libSystem.Native.dylib": [
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "libSystem.Net.Security.Native.dylib": [
+      "/System/Library/Frameworks/GSS.framework/Versions/A/GSS",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "libSystem.Security.Cryptography.Native.Apple.dylib": [
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+      "/System/Library/Frameworks/Network.framework/Versions/A/Network",
+      "/System/Library/Frameworks/CryptoKit.framework/Versions/A/CryptoKit",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/swift/libswiftCore.dylib",
+      "/usr/lib/swift/libswiftFoundation.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/usr/lib/swift/libswiftCoreFoundation.dylib",
+      "/usr/lib/swift/libswiftDarwin.dylib",
+      "/usr/lib/swift/libswiftDispatch.dylib",
+      "/usr/lib/swift/libswiftIOKit.dylib",
+      "/usr/lib/swift/libswiftObjectiveC.dylib",
+      "/usr/lib/swift/libswiftXPC.dylib"
+    ],
+    "libclrgc.dylib": [
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "libclrgcexp.dylib": [
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "libclrjit.dylib": [
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+      "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "libcoreclr.dylib": [
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+      "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "libhostfxr.dylib": [
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "libhostpolicy.dylib": [
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "libmscordaccore.dylib": [
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+      "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "libmscordbi.dylib": [
+      "@rpath/libmscordaccore.dylib",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "libopenal.dylib": [
+      "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox",
+      "/System/Library/Frameworks/AudioUnit.framework/Versions/A/AudioUnit",
+      "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices",
+      "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio",
+      "/usr/lib/libSystem.B.dylib",
+      "/usr/lib/libc++.1.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+    ]
+  },
+  "result": "passed"
+}

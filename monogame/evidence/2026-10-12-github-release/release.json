@@ -1,0 +1,38 @@
+{
+  "assets": [
+    {
+      "apiUrl": "https://api.github.com/repos/findyoucef/YipeIII-rebuild/releases/assets/634941041",
+      "contentType": "application/x-gtar",
+      "createdAt": "2026-10-12T20:43:49Z",
+      "digest": "sha256:0cb43e59f02aee989108c01c3469af3bffc8a6f8f8fba361b411df78dbe40585",
+      "downloadCount": 0,
+      "id": "RA_kwDOU2AEos4l2G5x",
+      "label": "",
+      "name": "YipeIII-MonoGame-0.1.0-preview.9-macOS-arm64.tar.gz",
+      "size": 183860696,
+      "state": "uploaded",
+      "updatedAt": "2026-10-12T20:43:54Z",
+      "url": "https://github.com/findyoucef/YipeIII-rebuild/releases/download/monogame-v0.1.0-preview.9/YipeIII-MonoGame-0.1.0-preview.9-macOS-arm64.tar.gz"
+    },
+    {
+      "apiUrl": "https://api.github.com/repos/findyoucef/YipeIII-rebuild/releases/assets/634941043",
+      "contentType": "application/octet-stream",
+      "createdAt": "2026-10-12T20:43:49Z",
+      "digest": "sha256:06da8d26489827436657e2e085f36a6f0763e4d702b0c081da30b95984582991",
+      "downloadCount": 0,
+      "id": "RA_kwDOU2AEos4l2G5z",
+      "label": "",
+      "name": "YipeIII-MonoGame-0.1.0-preview.9-macOS-arm64.tar.gz.sha256",
+      "size": 118,
+      "state": "uploaded",
+      "updatedAt": "2026-10-12T20:43:49Z",
+      "url": "https://github.com/findyoucef/YipeIII-rebuild/releases/download/monogame-v0.1.0-preview.9/YipeIII-MonoGame-0.1.0-preview.9-macOS-arm64.tar.gz.sha256"
+    }
+  ],
+  "isDraft": false,
+  "isPrerelease": true,
+  "name": "Yipe! III MonoGame 0.1.0-preview.9",
+  "publishedAt": "2026-10-12T20:43:55Z",
+  "tagName": "monogame-v0.1.0-preview.9",
+  "url": "https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9"
+}

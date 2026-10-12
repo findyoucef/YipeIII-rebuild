@@ -1,0 +1,13 @@
+PASS: Normal startup loads the selected adventure and renders the pause menu
+PASS: The studio ident naturally reaches the title screen
+Normal-loop presentation: 6.8 FPS across 17.67 seconds.
+System.InvalidOperationException: FAIL: Presentation advances at a bounded rate with the normal game timer
+   at Yipe.GraphicsChecks.StartupChecks.Require(Boolean condition, String message)
+   at Yipe.GraphicsChecks.StartupChecks.Draw(GameTime gameTime)
+   at Microsoft.Xna.Framework.Game.Draw(GameTime gameTime)
+   at Yipe.Desktop.TownGame.Draw(GameTime gameTime) in /Users/runner/work/YipeIII-rebuild/YipeIII-rebuild/monogame/Yipe.Desktop/TownGame.cs:line 569
+   at Microsoft.Xna.Framework.Game.Tick()
+   at Microsoft.Xna.Framework.SdlGamePlatform.RunLoop()
+   at Microsoft.Xna.Framework.Game.Run(GameRunBehavior runBehavior)
+   at Microsoft.Xna.Framework.Game.Run()
+   at Yipe.GraphicsChecks.StartupChecks.Run(String directory)

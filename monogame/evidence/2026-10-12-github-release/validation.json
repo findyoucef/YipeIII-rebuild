@@ -1,0 +1,22 @@
+{
+  "workflow_commit": "fb9a885e43ef1486f94ca3298c106b21dc1ba84b",
+  "workflow_sha256": "1ab0c15c2543e0182ff91831e9a6bf1a871e0fa8b1f560177bfdf56179c22f38",
+  "local_validation": {
+    "actionlint": "passed",
+    "version_selection": "six branch/tag acceptance and rejection cases passed",
+    "skill_move": "three files preserved; global copy removed; quick_validate and links passed",
+    "architecture_check": "Apple lipo and LLVM lipo accept arm64 and reject x86_64; prior argument order fails in LLVM",
+    "concurrent_imports": "Before: 12 winners in round 1. After: exactly one winner in all 16 rounds of 16 contenders; byte-identical destination and no temporary files.",
+    "github_branch_artifact": "Full extracted package, persistence and normal startup checks passed at 60.6 FPS.",
+    "published_release": "Exact published archive passed full extracted package, persistence and normal startup checks at 60.7 FPS; manifest/tag and all 156 source hashes match.",
+    "simplify_review": "Reviewed workflow, package verifier, atomic import fix and contention test. Changes reuse existing boundaries; no extra framework or rendering workaround. No outstanding simplicity findings."
+  },
+  "initial_hosted_run": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38302767653",
+  "initial_hosted_result": "Regression and package build passed; verification blocked on LLVM lipo argument order; no binary uploaded or release published",
+  "fixed_branch_run": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38303153097",
+  "verified_branch_run": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38305477834",
+  "release_run": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38305850728",
+  "release_tag": "monogame-v0.1.0-preview.9",
+  "release_sha256": "0cb43e59f02aee989108c01c3469af3bffc8a6f8f8fba361b411df78dbe40585",
+  "hosted_graphics_limit": "Sustained normal-loop graphics alternated between native SIGSEGV and 6.8\u20136.9 FPS below the 15 FPS minimum. Native root cause unresolved. Three rendered smoke launches remain CI gates; --graphics is a local check of the exact downloaded app before tagging."
+}

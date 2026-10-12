@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/runner/work/YipeIII-rebuild/YipeIII-rebuild/monogame/tools/verify_macos_package.py", line 184, in <module>
+    main()
+    ~~~~^^
+  File "/Users/runner/work/YipeIII-rebuild/YipeIII-rebuild/monogame/tools/verify_macos_package.py", line 176, in main
+    run([str(harness / "Yipe.GraphicsChecks"), "--startup-check", str(output / "normal-startup")], "normal-startup.log")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/runner/work/YipeIII-rebuild/YipeIII-rebuild/monogame/tools/verify_macos_package.py", line 115, in run
+    raise RuntimeError(f"{name} failed ({result.returncode}): {result.stdout[-1500:]} {result.stderr[-1500:]}")
+RuntimeError: normal-startup.log failed (-11): PASS: Normal startup loads the selected adventure and renders the pause menu
+PASS: The studio ident naturally reaches the title screen

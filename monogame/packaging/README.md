@@ -1,5 +1,9 @@
 # MonoGame macOS preview packaging
 
+Download [preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9).
+Its hosted build, published checksum and local download verification are retained
+in the [release evidence](../evidence/2026-10-12-github-release/README.md).
+
 The package is a separate Apple Silicon MonoGame desktop preview. It contains
 the complete campaign, retro assets, audio, gameplay guide and self-contained
 .NET 10.0.8 runtime. It does not require a .NET or Homebrew installation to run.

@@ -186,6 +186,11 @@ version 1 bytes without constructing a session. The desktop adapter reads the
 source and atomically creates a **new** destination; it refuses existing files,
 including during competing imports, and cleans its private temporary files.
 No import replaces a live session. Load the resulting file explicitly afterward.
+On Unix, imports publish the flushed temporary file with an atomic hard link;
+the filesystem must support hard links (including the supported Mac's APFS).
+This avoids .NET's non-atomic check-then-rename behavior for `File.Move` without
+overwrite. Windows retains its non-overwriting move. Normal saves still replace
+their previous file atomically.
 
 | Source | Supported policy |
 | --- | --- |

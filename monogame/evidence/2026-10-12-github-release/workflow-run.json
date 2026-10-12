@@ -1,0 +1,216 @@
+{
+  "conclusion": "success",
+  "event": "push",
+  "headBranch": "monogame-v0.1.0-preview.9",
+  "headSha": "fb9a885e43ef1486f94ca3298c106b21dc1ba84b",
+  "jobs": [
+    {
+      "completedAt": "2026-10-12T20:43:17Z",
+      "conclusion": "success",
+      "databaseId": 114999591308,
+      "name": "build-test-package",
+      "startedAt": "2026-10-12T20:41:33Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T20:41:34Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T20:41:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:41:56Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-12T20:41:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:08Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
+          "number": 3,
+          "startedAt": "2026-10-12T20:41:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:08Z",
+          "conclusion": "success",
+          "name": "Select package version",
+          "number": 4,
+          "startedAt": "2026-10-12T20:42:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:12Z",
+          "conclusion": "success",
+          "name": "Restore locked dependencies",
+          "number": 5,
+          "startedAt": "2026-10-12T20:42:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:18Z",
+          "conclusion": "success",
+          "name": "Checked Release build",
+          "number": 6,
+          "startedAt": "2026-10-12T20:42:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:22Z",
+          "conclusion": "success",
+          "name": "Core, input and isolated persistence checks",
+          "number": 7,
+          "startedAt": "2026-10-12T20:42:18Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:25Z",
+          "conclusion": "success",
+          "name": "Earned campaign against retained C++ observations",
+          "number": 8,
+          "startedAt": "2026-10-12T20:42:22Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:42:44Z",
+          "conclusion": "success",
+          "name": "Package self-contained application",
+          "number": 9,
+          "startedAt": "2026-10-12T20:42:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:11Z",
+          "conclusion": "success",
+          "name": "Verify extracted application and packaged runtime",
+          "number": 10,
+          "startedAt": "2026-10-12T20:42:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:13Z",
+          "conclusion": "success",
+          "name": "Upload verified application and checksum",
+          "number": 11,
+          "startedAt": "2026-10-12T20:43:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:13Z",
+          "conclusion": "skipped",
+          "name": "Collect native crash reports",
+          "number": 12,
+          "startedAt": "2026-10-12T20:43:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:13Z",
+          "conclusion": "success",
+          "name": "Retain MonoGame results",
+          "number": 13,
+          "startedAt": "2026-10-12T20:43:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:13Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
+          "number": 25,
+          "startedAt": "2026-10-12T20:43:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:14Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 26,
+          "startedAt": "2026-10-12T20:43:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:15Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 27,
+          "startedAt": "2026-10-12T20:43:14Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38305850728/job/114999591308"
+    },
+    {
+      "completedAt": "2026-10-12T20:43:57Z",
+      "conclusion": "success",
+      "databaseId": 115000213418,
+      "name": "publish-release",
+      "startedAt": "2026-10-12T20:43:19Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-12T20:43:21Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-12T20:43:20Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:41Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-12T20:43:21Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:47Z",
+          "conclusion": "success",
+          "name": "Download verified application",
+          "number": 3,
+          "startedAt": "2026-10-12T20:43:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:47Z",
+          "conclusion": "success",
+          "name": "Verify upload checksum",
+          "number": 4,
+          "startedAt": "2026-10-12T20:43:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:55Z",
+          "conclusion": "success",
+          "name": "Publish MonoGame preview",
+          "number": 5,
+          "startedAt": "2026-10-12T20:43:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:55Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 10,
+          "startedAt": "2026-10-12T20:43:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-12T20:43:55Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "startedAt": "2026-10-12T20:43:55Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38305850728/job/115000213418"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/findyoucef/YipeIII-rebuild/actions/runs/38305850728"
+}
