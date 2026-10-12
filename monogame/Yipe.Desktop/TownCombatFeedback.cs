@@ -43,7 +43,7 @@ internal sealed partial class TownGame
             if (Crossed(presentation.CounterAt(slot)) && presentation.DamageFromMonsters[slot] > 0) audio.Play(134, overlap: true);
             if (presentation.Before[slot + 1].Health > 0 && presentation.After[slot + 1].Health <= 0
                 && presentation.After[slot + 1].Type > 0 && Crossed(.4 + slot * .08))
-                audio.MonsterDeath(presentation.Before[slot + 1].Type);
+                audio.MonsterVoice(presentation.Before[slot + 1].Type);
         }
         if (Crossed(presentation.RewardsAt))
         {

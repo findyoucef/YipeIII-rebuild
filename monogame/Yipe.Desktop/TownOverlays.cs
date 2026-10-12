@@ -75,8 +75,10 @@ internal sealed partial class TownGame
         }
         player.Update(0, world.RaftSupport(adventure, sceneTime));
         if (changed) pendingDirection = Point.Zero;
-        world.SynchronizeMonsters(adventure, animate && !changed,
+        var alerts = world.SynchronizeMonsters(adventure, animate && !changed,
             new((int)MathF.Round(cameraPosition.X), (int)MathF.Round(cameraPosition.Y), CanvasWidth, CanvasHeight));
+        if (alerts.Roaming != 0) audio.MonsterVoice(alerts.Roaming);
+        if (alerts.Pursuer != 0) audio.MonsterVoice(alerts.Pursuer);
         town.AlternateHero = Hero.Inventory[28] is >= 2 and <= 12 ? world.Character(Hero.Inventory[28]) : null;
     }
 

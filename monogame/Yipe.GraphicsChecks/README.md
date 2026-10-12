@@ -310,6 +310,10 @@ approach, silent spawning/retreat, no repeated chase pulse, pause/modal/map
 freezing, offscreen rearming, fog clipping, actor/map resets, stable native
 rendering and full gameplay/RNG isolation. The amber glyph fades without residue;
 its presentation layer keeps it sharp above heat and other world effects.
+The same trigger plays the creature's existing voice once with the glyph. Real
+audio checks cover simultaneous roaming/pursuing alerts, effects-slider gain,
+mute/zero-volume suppression and no delayed replay after unmuting. Restoring a
+world, hidden approaches and continuing a chase remain silent.
 Artifacts include compiled native sheets, four-second exploration clips for each
 creature, real battle/defeat frame sequences, and a three-second pursuit capture.
 The revised golem walk adds four renderer checks for alternating swing/plant

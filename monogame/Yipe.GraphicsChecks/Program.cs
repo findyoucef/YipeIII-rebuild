@@ -1175,7 +1175,7 @@ internal static class Program
             audio.GetType().GetMethod("Play")!.Invoke(audio, [131, false]);
             var clip = voices[^1];
             Check(clip.State == Microsoft.Xna.Framework.Audio.SoundState.Playing, "An original effect starts playback on the real audio device");
-            audio.GetType().GetMethod("MonsterDeath")!.Invoke(audio, [35]);
+            audio.GetType().GetMethod("MonsterVoice")!.Invoke(audio, [35]);
             Check(voices.Count == 2 && voices.Contains(clip) && !clip.IsDisposed,
                 "A monster death sound overlaps the preceding impact");
             audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);

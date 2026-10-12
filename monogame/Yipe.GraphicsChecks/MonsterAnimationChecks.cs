@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Yipe.Core;
 using Yipe.Desktop;
@@ -19,13 +20,14 @@ internal static class MonsterAnimationChecks
         T Property<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "pendingEvent",
             "pendingDirection", "tickRemaining", "sceneTime", "mapOpen", "miniatureMode", "scanlines", "vignette",
-            "pixelLighting", "sunShaftStrength", "cloudShadowStrength", "rainStrength", "messageRemaining" }.ToDictionary(name => name, Get);
+            "pixelLighting", "sunShaftStrength", "cloudShadowStrength", "rainStrength", "messageRemaining", "renderedMap", "journal" }.ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
         var catalog = (MapCatalog)Get("catalog")!;
         var world = Get("world")!; var renderer = world.GetType();
         var roamingMotion = renderer.GetField("roamingMotion", flags)!.GetValue(world)!;
         var pursuingMotion = renderer.GetField("pursuingMotion", flags)!.GetValue(world)!;
-        void Sync(Adventure adventure, bool animate) => renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [adventure, animate, null]);
+        (int Roaming, int Pursuer) alerts = default;
+        void Sync(Adventure adventure, bool animate) => alerts = ((int, int))renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [adventure, animate, null])!;
         void Travel(double seconds) => renderer.GetMethod("UpdateMonsters")!.Invoke(world, [seconds]);
         var directory = Path.Combine(output, "monster-animation"); Directory.CreateDirectory(directory);
         using var batch = new SpriteBatch(game.GraphicsDevice);
@@ -223,9 +225,9 @@ internal static class MonsterAnimationChecks
             actual = Scene(57); pursuer = new(8, new(8, 6), new(8, 6));
             typeof(Adventure).GetProperty("Pursuer")!.SetValue(actual, pursuer); Sync(actual, false);
             pursuer.Position = new(9, 6); Sync(actual, true); Travel(.25);
-            check(Property<double>(pursuingMotion, "AlertRemaining") == 0, "Spawning and movement away from the hero do not imply pursuit");
+            check(Property<double>(pursuingMotion, "AlertRemaining") == 0 && alerts == (0, 0), "Spawning and movement away from the hero do not imply pursuit");
             pursuer.Position = new(8, 6); Sync(actual, true);
-            check(Property<double>(pursuingMotion, "AlertRemaining") > .6, "A first visible accepted approach triggers the pursuit cue");
+            check(Property<double>(pursuingMotion, "AlertRemaining") > .6 && alerts == (0, 8), "A first visible accepted approach triggers the pursuit cue and its monster voice together");
             Travel(.1); var alert = Property<double>(pursuingMotion, "AlertRemaining");
             var alertFrame = Frame(1); Save(alertFrame, "pursuit-alert.png");
             check(Enumerable.Range(0, alertFrame.Length).All(i => alertFrame[i] == alertFrame[i / 1280 / 4 * 4 * 1280 + i % 1280 / 4 * 4]),
@@ -241,30 +243,72 @@ internal static class MonsterAnimationChecks
             Travel(.15); pursuer.Position = new(7, 6); Sync(actual, true);
             var continuing = Property<double>(pursuingMotion, "AlertRemaining");
             Travel(1); pursuer.Position = new(6, 6); Sync(actual, true);
-            check(continuing <= alert && Property<double>(pursuingMotion, "AlertRemaining") == 0,
+            check(continuing <= alert && Property<double>(pursuingMotion, "AlertRemaining") == 0 && alerts == (0, 0),
                 "A continuing chase does not restart the cue, including after its fade finishes");
             pursuer = new(8, new(8, 6), new(8, 6)); typeof(Adventure).GetProperty("Pursuer")!.SetValue(actual, pursuer); Sync(actual, false);
-            pursuer.Position = new(7, 6); renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [actual, true, new Rectangle(0, 0, 32, 32)]);
-            check(Property<double>(pursuingMotion, "AlertRemaining") == 0, "An offscreen approach stays quiet until the creature is in view");
-            Travel(.25); pursuer.Position = new(6, 6); renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [actual, true, new Rectangle(48, 86, 320, 180)]);
-            check(Property<double>(pursuingMotion, "AlertRemaining") > 0, "The first in-view approach rearms the cue after an offscreen chase");
+            pursuer.Position = new(7, 6); alerts = ((int, int))renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [actual, true, new Rectangle(0, 0, 32, 32)])!;
+            check(Property<double>(pursuingMotion, "AlertRemaining") == 0 && alerts == (0, 0), "An offscreen approach stays quiet until the creature is in view");
+            Travel(.25); pursuer.Position = new(6, 6); alerts = ((int, int))renderer.GetMethod("SynchronizeMonsters")!.Invoke(world, [actual, true, new Rectangle(48, 86, 320, 180)])!;
+            check(Property<double>(pursuingMotion, "AlertRemaining") > 0 && alerts == (0, 8), "The first in-view approach rearms the cue and voice after an offscreen chase");
             actual = Scene(1); typeof(Adventure).GetProperty("Pursuer")!.SetValue(actual, pursuer); Sync(actual, true);
-            check(Property<double>(pursuingMotion, "AlertRemaining") == 0, "Changing maps clears an old pursuit cue even for a retained actor");
+            check(Property<double>(pursuingMotion, "AlertRemaining") == 0 && alerts == (0, 0), "Changing maps clears an old pursuit cue and voice even for a retained actor");
             actual = Scene(57);
             var sealedMap = new Map(57, 1, Enumerable.Repeat((ushort)0x22, Map.TileCount).ToArray());
             actual.Visibility.Initialize(sealedMap, new(6, 5)); actor = new(6, new(0, 0)); Roamer(actual, actor); Sync(actual, false);
             actor.Position = new(1, 0); Sync(actual, true);
-            check(Property<double>(roamingMotion, "AlertRemaining") == 0, "Unexplored creatures never announce a hidden approach");
+            check(Property<double>(roamingMotion, "AlertRemaining") == 0 && alerts == (0, 0), "Unexplored creatures never announce a hidden approach");
             actual.Visibility.RevealFrom(sealedMap, new(1, 0)); Travel(.25); actor.Position = new(2, 0); Sync(actual, true);
-            check(Property<double>(roamingMotion, "AlertRemaining") > 0, "Roaming creatures also announce their first revealed approach");
+            check(Property<double>(roamingMotion, "AlertRemaining") > 0 && alerts == (6, 0), "Roaming creatures also announce their first revealed approach with their own voice");
             Roamer(actual, null); Sync(actual, true); actor = new(6, new(2, 0)); Roamer(actual, actor); Sync(actual, true);
-            check(Property<double>(roamingMotion, "AlertRemaining") == 0, "Removal and replacement clear the pulse instead of transferring it to a new creature");
+            check(Property<double>(roamingMotion, "AlertRemaining") == 0 && alerts == (0, 0), "Removal and replacement clear the pulse instead of transferring it to a new creature");
             actual = Scene(1); var glyph = Cue(actual, .7); var fadingGlyph = Cue(actual, .09);
             check(glyph.Any(p => p == palettes[35]) && fadingGlyph.Any(p => p.A > 0)
                 && fadingGlyph.All(p => p.A < 255) && Cue(actual, 0).All(p => p.A == 0), "The amber glyph has a readable outline, fades gently and leaves no pixels behind");
             actual = Scene(57); actual.Visibility.Initialize(sealedMap, new(3, 2)); glyph = Cue(actual, .7);
             check(glyph.Any(p => p.A > 0) && Enumerable.Range(0, glyph.Length).All(i => glyph[i].A == 0 || actual.Visibility.Contains(new(i % 128 / 32, i / 128 / 32))),
                 "Every cue pixel is clipped to discovered terrain when its outline crosses a fog boundary");
+
+            var audio = Get("audio")!; var audioType = audio.GetType();
+            var enabled = Property<bool>(audio, "Enabled");
+            var volume = Property<float>(audio, "Volume");
+            var effectsVolume = Property<float>(audio, "EffectsVolume");
+            var voices = (List<SoundEffectInstance>)audioType.GetField("voices", flags)!.GetValue(audio)!;
+            void StopSounds() => audioType.GetMethod("Update")!.Invoke(audio, [false]);
+            try
+            {
+                StopSounds(); audioType.GetProperty("Enabled")!.SetValue(audio, true);
+                audioType.GetProperty("Volume")!.SetValue(audio, .4f);
+                audioType.GetProperty("EffectsVolume")!.SetValue(audio, .25f);
+                Set("journal", new MapJournal());
+                actual = Scene(1); actor = new(6, new(9, 5)); Roamer(actual, actor);
+                pursuer = new(8, new(9, 6), new(9, 6)); typeof(Adventure).GetProperty("Pursuer")!.SetValue(actual, pursuer);
+                Call("SynchronizeWorld", false);
+                check(voices.Count == 0, "Restoring a world does not play monster alerts");
+                var beforeAlert = GameSaveCodec.Encode(actual.Session, catalog);
+                actor.Position = new(8, 5); pursuer.Position = new(8, 6); Call("SynchronizeWorld", true);
+                check(voices.Count == 2 && voices.All(voice => voice.State == SoundState.Playing && Math.Abs(voice.Volume - .1f) < .00001f)
+                    && Property<double>(roamingMotion, "AlertRemaining") > 0 && Property<double>(pursuingMotion, "AlertRemaining") > 0,
+                    "Both visible pursuit alerts play their monster voices together at the effects-slider volume");
+                var played = voices.ToArray(); Call("SynchronizeWorld", true); Travel(1);
+                actor.Position = new(7, 5); pursuer.Position = new(7, 6); Call("SynchronizeWorld", true);
+                check(voices.SequenceEqual(played), "Repeated synchronization and continuing pursuit never replay the alert sound");
+                check(beforeAlert.SequenceEqual(GameSaveCodec.Encode(actual.Session, catalog)), "Pursuit audio preserves the saved adventure and RNG");
+                StopSounds(); Call("SynchronizeWorld", false);
+                audioType.GetProperty("Enabled")!.SetValue(audio, false);
+                actor.Position = new(6, 5); Call("SynchronizeWorld", true);
+                check(voices.Count == 0 && Property<double>(roamingMotion, "AlertRemaining") > 0, "Sound Off keeps the visual alert without starting a voice");
+                audioType.GetProperty("Enabled")!.SetValue(audio, true); Call("SynchronizeWorld", true);
+                check(voices.Count == 0, "Unmuting does not replay a pursuit alert that was already shown");
+                Call("SynchronizeWorld", false); audioType.GetProperty("EffectsVolume")!.SetValue(audio, 0f);
+                pursuer.Position = new(6, 6); Call("SynchronizeWorld", true);
+                check(voices.Count == 0 && Property<double>(pursuingMotion, "AlertRemaining") > 0, "Zero effects volume suppresses pursuit audio while retaining the glyph");
+            }
+            finally
+            {
+                StopSounds(); audioType.GetProperty("Enabled")!.SetValue(audio, enabled);
+                audioType.GetProperty("Volume")!.SetValue(audio, volume);
+                audioType.GetProperty("EffectsVolume")!.SetValue(audio, effectsVolume);
+            }
 
             actual = Scene(1); pursuer = new(8, new(9, 6), new(9, 6)); typeof(Adventure).GetProperty("Pursuer")!.SetValue(actual, pursuer); Sync(actual, false);
             for (var frame = 0; frame < 90; frame++)

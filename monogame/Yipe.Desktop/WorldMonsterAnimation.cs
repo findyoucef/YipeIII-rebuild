@@ -12,13 +12,13 @@ internal sealed partial class WorldRenderer
     private Map? monsterMap;
     public bool MonstersMoving => roamingMotion.IsMoving || pursuingMotion.IsMoving;
 
-    public void SynchronizeMonsters(Adventure game, bool animate, Rectangle? view = null)
+    public (int Roaming, int Pursuer) SynchronizeMonsters(Adventure game, bool animate, Rectangle? view = null)
     {
         animate &= ReferenceEquals(monsterMap, game.Map);
         monsterMap = game.Map;
-        Sync(roamingMotion, game.Roaming, game.Roaming?.Position ?? default);
-        Sync(pursuingMotion, game.Pursuer, game.Pursuer?.Position ?? default);
-        void Sync(MonsterMotion motion, object? actor, MapPosition position)
+        return (Sync(roamingMotion, game.Roaming, game.Roaming?.Position ?? default, game.Roaming?.TypeId ?? 0),
+            Sync(pursuingMotion, game.Pursuer, game.Pursuer?.Position ?? default, game.Pursuer?.TypeId ?? 0));
+        int Sync(MonsterMotion motion, object? actor, MapPosition position, int type)
         {
             var tracked = actor is not null && motion.Tracks(actor);
             var visible = actor is not null && game.Visibility.Contains(position)
@@ -29,7 +29,7 @@ internal sealed partial class WorldRenderer
                 var source = new Point((int)(motion.VisualPosition.X * 32 + 16), (int)(motion.VisualPosition.Y * 32 + 16));
                 visible = viewport.Contains(destination) && (!tracked || viewport.Contains(source));
             }
-            motion.Synchronize(actor, position, animate, game.Location.Position, visible);
+            return motion.Synchronize(actor, position, animate, game.Location.Position, visible) ? type : 0;
         }
     }
 

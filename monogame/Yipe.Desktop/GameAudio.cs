@@ -98,7 +98,7 @@ internal sealed class GameAudio : IDisposable
     {
         if (id != 0 && effects.TryGetValue(id, out var sound)) PlayClip(sound, overlap);
     }
-    public void MonsterDeath(int type)
+    public void MonsterVoice(int type)
     {
         if (monsters.TryGetValue(AudioCatalog.MonsterFile(type), out var sound)) PlayClip(sound, overlap: true);
         else Play(12, overlap: true);

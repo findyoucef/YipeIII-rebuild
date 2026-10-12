@@ -21,9 +21,10 @@ internal sealed class MonsterMotion
     public bool Tracks(object value) => ReferenceEquals(actor, value);
     internal static bool UsesHeavyStep(int type) => type is 4 or 8 or 9 or 11 or 19 or 20 or 33 or 36 or 37 or 39 or 40 or 41;
 
-    public void Synchronize(object? value, MapPosition position, bool animate, MapPosition player, bool visible)
+    public bool Synchronize(object? value, MapPosition position, bool animate, MapPosition player, bool visible)
     {
-        if (value is null) { actor = null; elapsed = 1; AlternateStep = false; pursuitAnnounced = false; AlertRemaining = 0; return; }
+        if (value is null) { actor = null; elapsed = 1; AlternateStep = false; pursuitAnnounced = false; AlertRemaining = 0; return false; }
+        var alerted = false;
         var sameActor = ReferenceEquals(actor, value);
         var direction = new Point(position.X - Position.X, position.Y - Position.Y);
         var adjacent = Math.Abs(direction.X) <= 1 && Math.Abs(direction.Y) <= 1;
@@ -34,8 +35,9 @@ internal sealed class MonsterMotion
         {
             pursuitAnnounced = true;
             AlertRemaining = .7;
+            alerted = true;
         }
-        if (sameActor && animate && position == Position) return;
+        if (sameActor && animate && position == Position) return false;
         if (sameActor && animate && adjacent)
         {
             origin = VisualPosition;
@@ -52,6 +54,7 @@ internal sealed class MonsterMotion
         }
         actor = value;
         Position = position;
+        return alerted;
     }
 
     public void Update(double seconds)

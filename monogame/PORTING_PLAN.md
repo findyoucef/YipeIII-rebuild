@@ -17,17 +17,17 @@ integration remain separate; this is a playable desktop port, not a release clai
 
 | Field | Current state |
 | --- | --- |
-| Local gameplay launch | No game process remains after verification. The latest extracted app is `build/monogame-packages/preview.8/Yipe III MonoGame.app`; local builds remain the default for iteration. The previous Ice Cave preview is isolated from personal adventures. |
-| Current milestone | GitHub release automation complete. [MonoGame preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9) was built, verified and published by Actions, then downloaded and verified locally. |
-| Next task | No remaining work in this release-automation goal. For the next release, verify the downloaded branch artifact locally before pushing a fresh `monogame-v*` tag. Physical-controller and additional historical campaign-route coverage remain unverified. |
-| Last completed work | Hosted artifacts/tagged prereleases, portable architecture verification and atomic concurrent imports. The requested cave skill move is committed locally to the repository. [Release evidence](evidence/2026-10-12-github-release/README.md). Prior [release report](evidence/2026-10-12-release-readiness/README.md) retains full gameplay/performance evidence. |
-| Latest verification | Checked Release: zero warnings/errors; 660 core checks. Hosted campaign: 43,080 observations and 66 saves match C++. Published archive: signatures, native dependencies, icon, isolated persistence, real startup and display transitions pass locally at 60.7 FPS. Earlier nine-scene 720p/1080p performance pass remains separate. |
+| Local gameplay launch | Local Release rebuilt and reopened with the original walking speed, pose cadence and motion trail. Local builds remain the default for iteration. |
+| Current milestone | Walking-speed and trail experiments reverted at user request. Pursuit alerts still play their creature voice with the visible `!`. The published preview.9 is unchanged. |
+| Next task | Investigate the separate music-stream repeat check before the next release. Physical-controller and additional historical campaign-route coverage remain unverified. |
+| Last completed work | Restored the previous walking animation and blur; retained monster pursuit voices. Previous release automation and release-readiness evidence remain separate. |
+| Latest verification | Rollback: clean Release build, all 660 core checks and all 23 original motion-trail renderer checks pass. Remaining source changes are the previously verified monster pursuit audio. A full run remains unverified due to the separate music-stream repeat check below. |
 | Earned frontend evidence | Fresh opening matches all 42 C++ checkpoints plus King return and separate-process continuation. Fresh late frontend defeats the empowered Gatekeeper, saves/restarts, rescues 20 and displays the live Maynard finale. |
 | Approved presentation | The user's existing pixel-art, miniature, lighting, clouds, weather and sound defaults remain unchanged. Current clouds, music, river junctions and precise Ice Cave entrance movement are user-approved. |
-| Work left running or half implemented | None in the completed goal. Release tag points to `fb9a885`; subsequent documentation/evidence changes do not replace its verified assets. |
+| Work left running or half implemented | No unfinished movement changes. Recheck the music-stream repeat failure before the next release; the release tag still points to `fb9a885`. |
 | Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. Hosted VM sustained graphics remain unreliable, so full startup/display/frame pacing are verified locally on the exact download. |
-| Save preservation | All 33 personal files stayed byte-identical throughout this pass. Every test used isolated saves/profiles. No save-format changes. |
-| Repository checkpoint | Approved presentation and app-icon work was pushed as `d766996`. Release automation and the save-import race fix culminate in `fb9a885`, tagged `monogame-v0.1.0-preview.9`. All 156 release-manifest source hashes match; later changes are documentation/evidence only. |
+| Save preservation | Pursuit tests used isolated saves/profiles and verify unchanged session/RNG. No save-format changes. The previous release pass additionally verified all 33 personal files stayed byte-identical. |
+| Repository checkpoint | Release automation and the save-import race fix culminate in `fb9a885`, tagged `monogame-v0.1.0-preview.9`; release documentation was pushed as `bb16d7e`. Pursuit audio is the only subsequent gameplay change; walking and blur experiments were reverted before committing. |
 
 At the start of a resumed session:
 
@@ -47,6 +47,40 @@ At the start of a resumed session:
 
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
+
+## Walking and trail experiments reverted — 2026-10-12
+
+The user found the slower animation choppy and requested a return to the previous
+feel. Restored 250 ms walking, the four-Hz pose cycle and the original three-pixel
+motion trail. The associated timing/trail test and README edits were also
+reverted. Monster pursuit audio remains enabled. No saves or gameplay rules changed.
+Fresh local verification: clean Release build, 660 core checks and 23 original
+motion-trail renderer checks pass. Logs are under `build/movement-revert/`.
+The local game was reopened for review; no package was made.
+
+The preceding full-suite attempt stopped in the unrelated `MusicChecks` repeat
+boundary: Battle Theme A stayed Playing at 94.7 seconds during the five-second
+wait instead of wrapping. Music code was unchanged; investigate this before the
+next release. That failure is separate from the requested movement rollback.
+
+## Monster pursuit audio — 2026-10-12
+
+The existing visible `!` trigger now also plays that monster's original sound.
+Roaming and pursuing actors report their newly started alerts to the game audio
+layer, using the existing monster-file aliases, fallback and bounded overlapping
+playback shared with defeat sounds. No additional timers or gameplay state.
+Spawns, restores, hidden/offscreen approaches and repeated steps in the same chase
+remain silent. Sound Off and the effects slider apply immediately; unmuting does
+not replay a past alert. Gameplay, saves and RNG are unchanged.
+
+Validation: checked and normal Release builds pass without warnings; 660 core
+checks and 897 focused visual/real-audio integration checks pass. The focused run
+used `--monsters-only --capture-monsters 8`, including rapid-confirm and overlapping
+defeat-tail regressions. Logs/captures are under `build/pursuit-audio/`.
+The checked-arithmetic graphical run exposed an
+existing overflow in `WorldOutdoors.OutdoorHash`, before reaching monster checks.
+The documented graphics configuration uses a normal Release rebuild; terrain
+code was not changed for this audio task. No package or release was produced.
 
 ## MonoGame GitHub release automation — 2026-10-12
 
