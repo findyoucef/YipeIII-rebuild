@@ -79,6 +79,14 @@ jobs:
             build/monogame-packages/*.sha256
           compression-level: 0
           if-no-files-found: error
+      - name: Collect native crash reports
+        if: failure()
+        run: |
+          mkdir -p build/monogame-ci/crash-reports
+          shopt -s nullglob
+          for report in "$HOME"/Library/Logs/DiagnosticReports/Yipe*.ips; do
+            cp "$report" build/monogame-ci/crash-reports/
+          done
       - name: Retain MonoGame results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
