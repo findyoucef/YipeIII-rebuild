@@ -65,7 +65,8 @@ def main():
         dependencies = {}
         for native in [binary / "Yipe.Desktop", *libraries]:
             subprocess.run(["codesign", "--verify", "--strict", str(native)], check=True, capture_output=True)
-            subprocess.run(["lipo", "-verify_arch", "arm64", str(native)], check=True, capture_output=True)
+            # LLVM lipo consumes all following values as architectures; put the input first.
+            subprocess.run(["lipo", str(native), "-verify_arch", "arm64"], check=True)
             lines = subprocess.check_output(["otool", "-arch", "arm64", "-L", str(native)], text=True).splitlines()[1:]
             links = [line.strip().split(" (")[0] for line in lines]
             if native.suffix == ".dylib":
