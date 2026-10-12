@@ -15,6 +15,15 @@ on a 28 × 28 canvas to keep their symbols readable at a modest size, with
 integer-aligned pieces for their stationary posts and gently moving boards.
 The scaled lower pieces exclude transparent bottom padding so point sampling
 preserves the one-pixel outline along the board's bottom edge.
+`MountainTerrain` compiles eight authored peaks from `World/mountain-peaks.png`
+to 64-pixel cells using a local eleven-color ramp: cool slate shadows and warm
+stone highlights. Other atlases retain the shared palette. Peaks overlap in
+world-cell order with varied heights and widths, clipped to the original mountain
+footprint. Small one-tone chips weather their slopes; the old atlas provides only
+those chips and backing between peaks. Dedicated dusted and deep-snow sprites provide winter forms and a gradual
+transition toward the basin; the former snow recoloring pass has been removed. Region overlaps and wrapping edges
+share identical source placement. No route or collision tile is changed.
+
 The cave uses the shared slate shades over the mountain's rock terrain, with
 paving only at its south-facing entrance. Its base meets the bottom of the rock
 tile and uses no freestanding building shadow, avoiding a visible strip of mountain

@@ -448,3 +448,20 @@ for source hashes, logs, frontend restarts and remaining matrix/platform limits.
 Automatic rain checks sample a full day of outdoor time for bounded intensity,
 varied clear/shower durations and gradual transitions. Profile checks retain an
 explicit Rain Off choice while defaulting missing preferences to Auto Subtle.
+
+## Release persistence and CI
+
+The current suite passes **645 checks**. `ReleasePersistenceChecks` adds separate
+writer/reader processes for normal, Hell, all three generated rooms, timed hazards
+and a moving platform (eight fixtures, 80 continuation ticks each). It compares
+full saves, terrain, platform phase and RNG against a same-process restoration;
+the existing C++ import/generator checks remain the independent rules oracle.
+A killed process repeatedly saving must leave a readable committed file; a
+separate partial orphan staging file checks interrupted-write recovery. This
+does not simulate loss of power or prove filesystem durability under hardware failure.
+
+The separate `MonoGame regression` workflow restores locked dependencies, builds
+with overflow checking, runs the core/persistence suite and replays the retained
+43,080-observation campaign. It has been linted locally; hosted execution awaits
+a push. Graphics/audio and physical-controller verification use the active-desktop
+procedure, and the workflow does not publish a release.

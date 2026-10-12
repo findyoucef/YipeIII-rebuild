@@ -13,7 +13,11 @@ internal static class HelpControlChecks
     {
         var type = game.GetType();
         object Get(string name) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game)!;
-        void Set(string name, object? value) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Call(string name, params object[] args) => type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, args);
         T Property<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
         object Overlay() => Get("overlay");
@@ -37,44 +41,59 @@ internal static class HelpControlChecks
         var width = graphics.PreferredBackBufferWidth;
         var height = graphics.PreferredBackBufferHeight;
         var paused = (bool)Get("paused");
-        var graphicsOpen = (bool)Get("graphicsMenuOpen");
+        var previousPage = Get("pausePage");
         var selected = (int)Get("selected");
         var message = (string)Get("menuMessage");
         var directory = Path.Combine(output, "help-controls");
         Directory.CreateDirectory(directory);
         try
         {
-            var mainMenu = (string[])type.GetField("Menu", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var graphicsMenu = (string[])type.GetField("GraphicsMenu", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            check(mainMenu.Length == 10 && graphicsMenu.Length == 10 && mainMenu.Contains("Graphics")
-                && !mainMenu.Intersect(graphicsMenu).Any(), "The pause menu fits one page and keeps all ten visual settings in Graphics");
-            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", false);
-            Set("selected", 4); Set("selectionY", 40f); Set("menuMessage", "");
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
-            check((bool)Get("graphicsMenuOpen") && (bool)Get("paused") && (int)Get("selected") == 0 && (float)Get("selectionY") == 0,
-                "Confirm opens Graphics at its first setting while play stays paused");
-            Capture("graphics-menu.png");
-            Call("UpdatePauseMenu", new InputFrame(new(0, -1), false, false, false));
-            check((int)Get("selected") == 9, "Up wraps to the last graphics setting");
-            Call("UpdatePauseMenu", new InputFrame(new(0, 1), false, false, false));
-            check((int)Get("selected") == 0, "Down wraps back to the first graphics setting");
-            Call("UpdatePauseMenu", new InputFrame(new(0, 1), false, false, false));
-            var scanlines = (bool)Get("scanlines");
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
-            check((bool)Get("scanlines") != scanlines && (bool)Get("graphicsMenuOpen") && (bool)Get("paused"),
-                "Changing a graphics option stays in the paused submenu");
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, true, true));
-            check(!(bool)Get("graphicsMenuOpen") && (bool)Get("paused") && (int)Get("selected") == 4 && (float)Get("selectionY") == 40,
-                "Escape returns to the highlighted Graphics entry without also resuming play");
+            var menus = (string[][])type.GetField("PauseMenus", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            check(menus[0].Length == 5 && menus.All(m => m.Length <= 7)
+                && menus[1].Contains("New adventure") && menus[2].Contains("Sound"),
+                "Short pause pages group adventure actions, display, atmosphere and audio");
+            Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Main");
+            Set("selected", 2); Set("selectionY", 24f); Set("menuMessage", "");
             Capture("pause-menu.png");
             Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
-            check((bool)Get("graphicsMenuOpen") && (int)Get("selected") == 0, "Reopening Graphics resets its cursor cleanly");
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, false, true));
-            check(!(bool)Get("graphicsMenuOpen") && (bool)Get("paused"), "Controller Start also returns from Graphics to the pause menu");
-            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, false, true));
-            check(!(bool)Get("paused") && before.SequenceEqual(GameSaveCodec.Encode(session, catalog)) && (double)Get("sceneTime") == scene,
-                "Backing out of the root resumes without consuming gameplay, scene time or RNG");
+            check(Get("pausePage").ToString() == "Options" && (bool)Get("paused") && (int)Get("selected") == 0,
+                "Confirm opens Options while play stays paused");
+            Capture("options-menu.png");
+            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
+            check(Get("pausePage").ToString() == "Display" && (int)Get("selected") == 0, "Display opens at its first setting");
+            Capture("display-menu.png");
+            Call("UpdatePauseMenu", new InputFrame(new(0,-1), false, false, false));
+            check((int)Get("selected") == 5, "Up wraps to the visible Back entry");
+            Call("UpdatePauseMenu", new InputFrame(new(0,1), false, false, false));
+            check((int)Get("selected") == 0, "Down wraps to the first setting");
+            Call("UpdatePauseMenu", new InputFrame(new(0,1), false, false, false));
+            var scanlines = (bool)Get("scanlines");
+            Call("ActivateMenu");
+            check((bool)Get("scanlines") != scanlines && (bool)Get("paused") && Get("pausePage").ToString() == "Display",
+                "Settings apply without leaving their paused category");
+            Call("ActivateMenu");
+            Call("UpdatePauseMenu", new InputFrame(Point.Zero,false,true,true));
+            check(Get("pausePage").ToString() == "Options" && (int)Get("selected") == 0 && (float)Get("selectionY") == 0,
+                "Escape returns one level to the highlighted parent category");
+            Set("selected",1); Call("ActivateMenu"); Capture("atmosphere-menu.png");
+            Set("selected",5); Call("ActivateMenu");
+            check(Get("pausePage").ToString() == "Options" && (int)Get("selected") == 1, "Visible Back behaves like Escape");
+            Set("selected",2); Call("ActivateMenu"); Capture("audio-menu.png");
+            var audio = Get("audio"); var enabled = Property<bool>(audio,"Enabled"); var volume = Property<float>(audio,"Volume");
+            Call("ActivateMenu");
+            check(Property<bool>(audio,"Enabled") != enabled, "Audio settings toggle the existing master sound gate");
+            Call("ActivateMenu"); Set("selected",1); Call("UpdatePauseMenu", new InputFrame(new(1,0),false,false,false));
+            check(Property<float>(audio,"Volume") != volume, "Audio volume changes through the existing preference path");
+            audio.GetType().GetProperty("Volume")!.SetValue(audio,volume); Call("SavePreferences");
+            Call("UpdatePauseMenu",new InputFrame(Point.Zero,false,false,true));
+            Call("UpdatePauseMenu",new InputFrame(Point.Zero,false,false,true));
+            check(Get("pausePage").ToString() == "Main" && (bool)Get("paused") && (int)Get("selected") == 2,
+                "Start returns through Options to the highlighted root entry");
+            Set("selected",1); Call("ActivateMenu"); Capture("adventure-menu.png");
+            Call("UpdatePauseMenu",new InputFrame(Point.Zero,false,true,false));
+            Call("UpdatePauseMenu",new InputFrame(Point.Zero,false,false,true));
+            check(!(bool)Get("paused") && before.SequenceEqual(GameSaveCodec.Encode(session,catalog)) && (double)Get("sceneTime") == scene,
+                "Leaving the root resumes without consuming gameplay, scene time or RNG");
             Set("pauseAmount", 0f); Set("selected", 0); Set("selectionY", 0f);
             Set("paused", false);
             Set("overlay", null); Set("studioSplashRemaining", 3.2);
@@ -85,17 +104,19 @@ internal static class HelpControlChecks
             check(before.SequenceEqual(GameSaveCodec.Encode(session, catalog)) && (double)Get("sceneTime") == scene,
                 "Studio branding preserves gameplay state and RNG before the title screen");
             Call("UpdateStudioSplash", new InputFrame(), 3.0);
-            check((double)Get("studioSplashRemaining") == 0 && Property<string>(Overlay(), "Title") == "Yipe! III",
+            check((double)Get("studioSplashRemaining") == 0 && (bool)Get("titleScreen") && Overlay() is null,
                 "The studio ident automatically opens the title screen after 3.2 seconds");
             foreach (var skip in new[] { new InputFrame(Point.Zero, true, false, false),
                 new InputFrame(Point.Zero, false, true, false), new InputFrame(Point.Zero, false, false, true) })
             {
                 Set("overlay", null); Set("studioSplashRemaining", 3.2);
                 Call("UpdateStudioSplash", skip, .016);
-                check((double)Get("studioSplashRemaining") == 0 && Property<string>(Overlay(), "Title") == "Yipe! III"
-                    && Property<int>(Overlay(), "Selected") == 0,
+                check((double)Get("studioSplashRemaining") == 0 && (bool)Get("titleScreen") && Overlay() is null
+                    && (int)Get("titleSelected") == 0,
                     "Confirm, Back and Pause skip studio branding without activating a title choice");
             }
+            Capture("title-screen.png");
+            Set("titleScreen", false);
             Call("ShowHelp");
             Choose(0);
             check(Text().Contains("Actions: Enter") && Text().Contains("South") && !Text().Contains("ENTER, E"),
@@ -105,7 +126,7 @@ internal static class HelpControlChecks
             for (var page = 1; page < count; page++) Control(new(Point.Zero, true, false, false));
             check(Property<int>(Overlay(), "Page") == count - 1, "Long controls help advances through every page");
             Back();
-            check(Property<string>(Overlay(), "Title") == "Help & controls", "Help Back returns to its contents");
+            check(Property<string>(Overlay(), "Title") == "Help & credits", "Help Back returns to its contents");
             Choose(1);
             Control(new(Point.Zero, true, false, false));
             check(Property<Array>(Overlay(), "Options").Length == 22, "All 21 gameplay guide topics are reachable");
@@ -122,7 +143,8 @@ internal static class HelpControlChecks
                 && Text().Contains("icosium labs") && !Text().Contains("Johnston"),
                 "About retains original attribution and credits icosium labs for the port/remaster");
             Capture("about.png"); Back();
-            check((bool)Get("paused"), "About Back returns to the pause menu");
+            check(Property<string>(Overlay(),"Title") == "Help & credits", "About returns to Help and credits");
+            Back();
             Set("paused", false);
             Call("EditControls", 0);
             check(Property<Array>(Overlay(), "Options").Length == 13, "Keyboard, controller and reset options are always reachable");
@@ -164,9 +186,9 @@ internal static class HelpControlChecks
                 Call("EditControls", 12);
                 Capture($"controls-{size.X}x{size.Y}.png");
                 Back();
-                Set("pauseAmount", 1f); Set("selected", 9); Set("selectionY", 90f);
+                Set("pausePage", "Main"); Set("pauseAmount", 1f); Set("selected", 4); Set("selectionY", 48f);
                 Capture($"pause-{size.X}x{size.Y}.png");
-                Set("selected", 4); Call("ActivateMenu"); Set("selected", 9); Set("selectionY", 90f);
+                Set("selected", 2); Call("ActivateMenu"); Set("selected", 1); Call("ActivateMenu"); Set("selected", 4); Set("selectionY", 48f);
                 Capture($"graphics-{size.X}x{size.Y}.png");
                 Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, true, false));
                 Set("paused", false);
@@ -193,8 +215,8 @@ internal static class HelpControlChecks
         {
             Set("profile", profile); data.GetType().GetProperty("Controls")!.SetValue(data, new ControlBindings());
             Call("SavePreferences");
-            Set("bindingAction", -1); Set("overlay", null); Set("paused", paused); Set("selected", selected); Set("graphicsMenuOpen", graphicsOpen);
-            Set("studioSplashRemaining", 0.0);
+            Set("bindingAction", -1); Set("overlay", null); Set("paused", paused); Set("selected", selected); Set("pausePage", previousPage);
+            Set("studioSplashRemaining", 0.0); Set("titleScreen", false); Set("restorePauseOverlay", null);
             Set("menuMessage", message); Set("pauseAmount", 0f); Set("selectionY", 0f);
             graphics.PreferredBackBufferWidth = width; graphics.PreferredBackBufferHeight = height; graphics.ApplyChanges();
         }

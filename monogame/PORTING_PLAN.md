@@ -6,7 +6,7 @@ already approved by the user. This document is the working checklist and handoff
 record for the port. Update it during implementation so a later session can
 resume from repository evidence without needing the conversation history.
 
-Last updated: **2026-10-11**. **P1, P2, P3 and P4 are complete.** The continuous
+Last updated: **2026-10-12**. **P1, P2, P3 and P4 are complete.** The continuous
 P2–P4 goal delivered the connected opening, complete exploration and earned
 campaign ending with the approved retro presentation. The [completion evidence](evidence/2026-10-04-p234-complete/README.md)
 contains runnable inputs, full saves, independent comparisons, screenshots and
@@ -17,17 +17,17 @@ integration remain separate; this is a playable desktop port, not a release clai
 
 | Field | Current state |
 | --- | --- |
-| Local gameplay launch | The latest local Release includes the Final Cave remaster and the approved Water Cave raft fix. The last requested launch used an isolated copy of the current Water Cave preview in Final Cave upper B3 (map 54, tile 6,5); its source adventure is retained as `main_adventure_save` in the [launch record](../build/local-game-launch.json). For a requested launch, inspect running processes and read that record; do not substitute a demo or overwrite the main adventure. Rebuild `build/cloud-rework/launcher` to refresh its copied Desktop assembly before reuse; its process-only refresh-sync workaround avoids the known macOS display-link stall. |
-| Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
-| Next task | Recommended next: a pixel-art animation and interaction pass for the King, Princess and Skill Teacher; implementation has not yet been requested. All cave families now have dedicated remaster treatments. Final Cave and the Water Cave raft presentation were approved on 2026-10-11. Prior aesthetic review and physical-controller verification remain separate. |
-| Last completed work | Remastered Final Cave: connected dark rock, broad worn bedrock floors, crimson crystals with contour lighting, sparse ash/grit/haze, recorded cavern ambience and cohesive creatures. Original hazards, routes, secrets, encounters, platforms and rescues are preserved. [Preview](evidence/2026-10-11-final-cave/gameplay-92.png) and [evidence](evidence/2026-10-11-final-cave/review.json). |
-| Latest verification | Final Cave: 632 core/input checks, 265 focused checks and 3,862 full graphics checks passed, including 360 tour frames. Local Release: zero warnings/errors. Exactly the fifteen Final Cave rooms differ among 115 native maps; 32 other-region reference captures are identical. All 33 personal files and 27 Core/original-map files are unchanged. [Verification](evidence/2026-10-11-final-cave/review.json). |
-| Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
-| Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
-| Work left running or half implemented | Final Cave implementation and verification are complete, with user visual approval received on 2026-10-11. No test process remains running. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
-| Blocking dependencies | Physical-controller/other-OS verification needs the actual environments; official console work needs approved access. |
-| Save preservation | Final Cave checks use isolated saves/profiles and compare complete gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files remain unchanged, with no new personal files or save-format changes. [Latest file checks](evidence/2026-10-11-final-cave/preservation.json). |
-| Repository checkpoint | The first MonoGame checkpoint on main is titled `Add complete MonoGame desktop port with retro presentation`, based on C++ commit 349fffe71e052dd4e011f1fe09c0e3080f5bb723. It includes the port, artwork, fixtures, evidence and resume documentation. Use `git log -- monogame/PORTING_PLAN.md` to locate it. Evidence hashes describe files at capture time; later documentation updates may differ. |
+| Local gameplay launch | No game process remains after verification. The latest extracted app is `build/monogame-packages/preview.8/Yipe III MonoGame.app`; local builds remain the default for iteration. The previous Ice Cave preview is isolated from personal adventures. |
+| Current milestone | P1–P4 done. Automated P5/P6 release pass complete; macOS preview.8 adds the game icon. Physical controller testing is unverified by agreement; historical three-variant campaign recovery and P7 remain open. |
+| Next task | User review of the app icon in preview.8. When hardware is available, perform the physical-controller checklist. P0.2/P6.1 still need the three absent historical completion input streams; do not claim their full-route parity. |
+| Last completed work | Pixel-art knight/castle app icon: embedded local-build BMP plus macOS ICNS, fresh build/package/startup checks. [Icon review](evidence/2026-10-12-app-icon/review.html) and [verification](evidence/2026-10-12-app-icon/README.md). Prior [release report](evidence/2026-10-12-release-readiness/README.md) retains full gameplay/performance evidence. |
+| Latest verification | Checked Release: zero warnings/errors. Seven native reference traces match. 43,080 campaign state/RNG observations and 66 complete saves match C++. Nine scenes at 720p/1080p average 60.01–60.16 FPS on M5 Max. Packaged normal startup, native dependencies, signatures and persistence pass. |
+| Earned frontend evidence | Fresh opening matches all 42 C++ checkpoints plus King return and separate-process continuation. Fresh late frontend defeats the empowered Gatekeeper, saves/restarts, rescues 20 and displays the live Maynard finale. |
+| Approved presentation | The user's existing pixel-art, miniature, lighting, clouds, weather and sound defaults remain unchanged. Current clouds, music, river junctions and precise Ice Cave entrance movement are user-approved. |
+| Work left running or half implemented | None. The user requested committing and pushing the completed source, assets and evidence on 2026-10-12. The packaged archive stays local under ignored `build/`; no release upload was requested. |
+| Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. CI workflow is linted; check GitHub Actions for the hosted result of this checkpoint. |
+| Save preservation | All 33 personal files stayed byte-identical throughout this pass. Every test used isolated saves/profiles. No save-format changes. |
+| Repository checkpoint | This checkpoint includes approved NPC animation, title/pause menus, music/credits, terrain and combat/ice fixes, release verification and the app icon. All 156 source hashes match preview.8 before committing; only handoff documentation changed afterward. Existing baseline and remaster commits remain intact. |
 
 At the start of a resumed session:
 
@@ -48,6 +48,350 @@ At the start of a resumed session:
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
 
+
+## Completed local release-readiness pass — 2026-10-12
+
+Finish the retained UI/save lifecycle, run fresh regression and performance checks,
+verify physical input when hardware is available, and produce an updated
+self-contained macOS Apple Silicon preview. The user approved the Ice Cave fix.
+
+1. Audit title, adventure switching, independent new saves, cancel/back, and
+   quit/relaunch; add focused regressions only for missing risk coverage.
+2. Verify atomic save failure/interruption, imports, generated/Hell/timed-room
+   fresh-process restoration and deterministic continuation.
+3. Run checked Release builds, all core/reference and graphical checks, earned
+   opening/finale restarts, and the normal startup loop. Preserve personal saves.
+4. Measure default-effect dense outdoor, cave and battle scenes; fix demonstrated
+   performance problems and retain timings, hardware details and captures.
+5. Physical controller: **unverified**. User confirmed no controller available
+   and approved documenting the gap. Synthetic checks pass separately; the
+   release report retains the hands-on checklist.
+6. Refresh package instructions/notices, build preview.7, verify the extracted
+   app and packaged persistence outside the checkout, and retain release evidence.
+7. P5/P6 reconciled below. All automatic/local work passes; preview.7 and the
+   retained report are ready. Physical hardware, other platforms and the three
+   historical variant input streams remain explicitly unclaimed.
+
+## Ice Cave entrance traction repair — 2026-10-12
+
+The user reported sliding past doors and section entrances. An isolated
+reproduction on **upper A1 / door 4,8** confirmed that releasing an eastward step
+at **4,7** forced a second step to **5,7**, preventing alignment with the door.
+
+- Ice within one tile of walls, doors, other floor materials, depth travel points
+  and map edges now has ordinary traction. Open ice retains its existing 340 ms
+  push, 220 ms glide and 420 ms one-tile braking animation.
+- The terrain neighborhood also recognizes an opened doorway after its tile
+  becomes ordinary ice. Visible/secret wall variants and floor aliases keep
+  matching traction, and the original collision/key/transition logic is unchanged.
+- Verified actual doors in upper A1 (4,8), upper A2 (2,5) and deep B2 (10,6),
+  upper A3's one-tile passage (2,5), the A2/A1 room transition and upper/deep B1
+  stairs. Release alignment, immediate held turns, opened-door returns and
+  missing-key rejection all pass alongside the existing open-ice/encounter gates.
+- Local Release build: zero warnings/errors. **274 Ice Cave checks** and **641
+  core/input checks** passed. The doorway regression failed as expected against
+  the previous code. All 33 personal files stayed byte-identical.
+- [Review](evidence/2026-10-12-ice-entrances/review.html) retains the original
+  overshoot, repaired alignment, entrance screenshots, and two silent 60 Hz clips
+  showing door entry and preserved open-floor sliding. See `review.json` for
+  source hashes and exact runs.
+- Scoped simplify review kept the production edit in the existing movement
+  selector plus Current controls text; no new state, setting, art or map data.
+  `git diff --check` passed. No repackaging, commit, live input or relaunch.
+
+## Surface river junction repair — 2026-10-12
+
+The user identified square brown mounds beside **surface D2 / 7,3**. The pair
+at **5,2 and 8,2** are tile **9**, whose original bitmap 143 lower-right cell
+depicts a west/east/south river junction. The remaster had incorrectly treated
+it as cave-wall terrain and omitted it from the connected water mask.
+
+- Restored all **nine junctions across seven regions**: C2, D2, E2, C3, E5,
+  C6 and D6. Reused the existing water texture, rounded shoreline treatment,
+  animated ripples/foam and positional river ambience.
+- Removed the wall/rock classification from terrain, sand blending, footsteps,
+  overview map colors and lighting. Original tiles, collision and saves are
+  unchanged; no new renderer subsystem or asset is needed.
+- Local Release build passed with zero warnings/errors. All **369 focused
+  overworld checks** passed: connected branches through straight/bent neighbors,
+  dry northern banks, exposed ground at corners, animation, sound/cache updates,
+  overview colors, light transmission and existing surface regression coverage.
+- [Review captures](evidence/2026-10-12-river-junctions/review.html) include every
+  affected region and D2 day/night gameplay from **7,3**, rendered with isolated
+  fixtures. Original before captures are retained from the October 12, 07:43 UTC
+  overworld run; provenance and final source hashes are in `review.json`.
+- Scoped simplify review found no unnecessary abstraction. `git diff --check`
+  passed. No repackaging, commit, live gameplay input or game relaunch.
+
+## Buffered combat animation and defeat cues — 2026-10-12
+
+After approving the rapid-attack sound fix, the user reported that early confirms
+also removed the animation and skipped monster-death audio. They chose a brief
+readable hit/defeat beat with confirmation buffered.
+
+- An early Continue/Back now remembers the request and plays the remaining
+  presentation at **3x** speed. It closes once, after the timeline finishes;
+  additional presses do not restart animation or queue attacks. A final kill
+  from the start completes in about **0.36 seconds**; a three-enemy response
+  takes at most about **0.86 seconds**. Normal and Auto pacing are unchanged
+  until the player asks to continue early.
+- The existing timeline dispatches impact, individual monster deaths and rewards
+  once each. Sound playback/pitch is unchanged. The prior four-voice overlap
+  remains; death tails continue after the battle panel closes.
+- Pause freezes the buffered animation and resumes it with the request intact.
+  The result panel shows “Continuing...” while completing. This replaces the
+  immediate visual dismissal described in the earlier audio-only entry below.
+- Clean Release build; **890** monster/combat/footstep checks and **163**
+  music/menu/control checks passed. New checks include 24/60 FPS rapid victories,
+  three-enemy defeats, no repeated death cues or rewards, and preserved gameplay
+  and RNG. The opening frontend matched all **42** C++ checkpoints plus King
+  return, **116 victories**, save/reload and fresh-process continuation.
+- All **33** personal files were unchanged. No repackaging or save-format changes.
+  [Silent normal/quick video comparison and verification](evidence/2026-10-12-combat-animation/review.html).
+
+## Rapid combat sound effects — 2026-10-12
+
+The user confirmed battle/cave music works, but rapid Enter presses could dismiss
+an impact before its 180 ms cue and each following sound cut off the previous one.
+
+- Skipping a result before impact now plays that pending action sound once and
+  returns immediately to commands. Normal animation timing and misses are retained.
+- Combat impact, counterattack, death and reward effects can overlap across four
+  voices. A saturated mix retires its oldest voice; it never queues delayed hits.
+  Noncombat effects retain their original replacement behavior.
+- Every active voice follows effects/master volume and is released on mute,
+  focus loss, natural completion or disposal. Footstep suppression and ambient
+  ducking recognize all active effects.
+- Verification: clean Release build, **881** focused monster/combat/footstep checks
+  and **163** music/menu/control checks passed. Rapid-confirm tests compare full
+  saved state and RNG with independent core combat results. All **33** personal
+  files were unchanged. No packaging or save-format changes.
+- [Evidence and commands](evidence/2026-10-12-combat-audio/review.json). The initial
+  test fixture intended to miss could still hit; reusing the existing deterministic
+  miss seed corrected that test. The final run passed in full.
+
+## Normal macOS startup — 2026-10-12
+
+The archived failed launch was blocked in `Cocoa_GL_SwapWindow` /
+`SDL_CondWait_REAL` throughout the main-thread sample, with no display-link
+thread present. SDL 2.32.10 waits indefinitely for refresh notifications when
+swap interval is nonzero. A current pre-fix launch succeeded, so this is an
+intermittent failure rather than an always-reproducible one.
+
+- [x] Disable OpenGL VSync in the macOS production graphics configuration;
+  retain the fixed 60 Hz game timer, which also bounds frame presentation.
+  Other platforms retain their existing VSync setting. No new dependency,
+  profile preference, watchdog or launcher is added to production.
+- [x] Add `Yipe.GraphicsChecks --startup-check DIRECTORY`: normal `Game.Run`,
+  no smoke mode or graphics overrides, isolated save/profile, real ident/title
+  progression, frame-rate/animation check, resize/fullscreen/return and clean
+  exit. A test-only 45-second timeout catches a blocked native main thread.
+- [x] Two separate processes passed all nine checks each at 60.8 and 60.9 FPS.
+  Release build has zero warnings/errors. The direct regular executable also
+  launched from an empty working directory with no arguments and reached title
+  and gameplay. All 33 personal files were unchanged at verification.
+- [x] Switch the local launch record back to the regular executable. No package
+  rebuild, commit or push. The old scratch launcher remains historical output.
+
+A follow-up title-menu input check overlapped with live gameplay. Down, Enter and
+Escape test inputs reached the adventure; input automation was stopped and the
+user was informed. Do not use those live captures as isolated menu-test evidence.
+The normal user session remains open and should not be controlled or restarted
+while completing unrelated work.
+
+[Captures and results](evidence/2026-10-12-normal-startup/review.html),
+[verification record](evidence/2026-10-12-normal-startup/review.json).
+Only the local macOS backend was tested. This removes the game's dependency on
+the stalled wait; it does not repair SDL's display-link implementation.
+
+## Narrow snow margin - 2026-10-12
+
+The user rejected the broad gravel band and requested snow closer to the mountains.
+
+- [x] Reduce the setback and powder width while retaining the broad curved outline.
+- [x] Draw mountain gravel below the snowfield and cliff faces above it, removing square cutoffs at narrow margins.
+- [x] Preserve a solid visible rock core in blocked mountain cells.
+- [x] Pass 45 snow and 338 overworld checks; only maps 13 and 21 change, with all 28 personal files unchanged.
+- [x] Rebuild the local launcher and retain [before/after captures](evidence/2026-10-12-snow-narrow/review.html).
+- [x] User approved the narrower margin: “ok this is better.”
+
+## Smooth snowfield outline - 2026-10-12
+
+The user liked the exposed margin better but found the snowfield shape unnatural.
+
+- [x] Replace the detailed mountain-distance contour with a smoothly averaged open-ground field, reusing existing scratch buffers.
+- [x] Round the square notches into broad curves and reduce short, wavy changes in margin width.
+- [x] Keep native pixel edges, exposed gravel, cold weather and material-aware footsteps intact.
+- [x] Pass the existing 45 snow and 338 overworld checks; only maps 13 and 21 change from the prior pass.
+- [x] Rebuild locally and retain [day/night and map comparisons](evidence/2026-10-12-snow-smooth/review.html); all 28 personal files unchanged.
+- [x] User rejected the wide margin; revised above.
+
+## Snow setback from mountain feet - 2026-10-12
+
+The user rejected snow continuing all the way to the mountains and requested
+exposed ground between the snowy center and rock faces.
+
+- [x] Keep the location at A3/map 13, Ice/Zephyr entrance at 5,4; inspect the actual scene.
+- [x] Replace powder banks with a variable-width slate/gravel margin and scattered powder along its inner edge.
+- [x] Preserve snowfall throughout the cold basin; keep snow prints/crunch on actual snow and stone footsteps on gravel.
+- [x] Retain approved peaks, terrain/collision, cave access and secret-snow equivalence.
+- [x] Pass 45 snow and 338 overworld checks; compare all 36 surface captures and rebuild the local launcher.
+- [x] Retain [day/night and map comparisons](evidence/2026-10-12-snow-setback/review.html); all 28 personal files unchanged.
+- [x] User reviewed: better, but requested a smoother shape. Revised above.
+
+## Snow ground and mountain transitions - 2026-10-12
+
+The user requested further revision after this pass. The snow-setback work above
+supersedes its powder banks; coverage and snowy-pine fringe fixes remain.
+
+- [x] Resolve the reported exterior to surface A3/map 13, Ice/Zephyr entrance at 5,4, and inspect matching gameplay.
+- [x] Preserve snow coverage at rock-enclosed corners and remove the erroneous grass fringe beside snowy pines.
+- [x] Add blue-gray contact shading from the actual rock outline, uneven powder banks and clustered pixel melting edges.
+- [x] Keep approved mountain sprites, terrain/collision, cave approaches, snowfall and secret-snow behavior intact.
+- [x] Pass 44 snow and 338 overworld checks; rebuild the local launcher with zero warnings/errors.
+- [x] Retain [day/night and map comparisons](evidence/2026-10-12-snow-ground/review.html); all 28 personal files unchanged.
+- [x] User reviewed and requested the snow stop short of the mountain feet.
+
+## Maynard mountain backdrops - 2026-10-12
+
+- [x] Resolve the castle (11,1) and cave (1,1) to Maynard, surface E3/map 17.
+- [x] Capture both approaches before changing the art, using isolated gameplay fixtures.
+- [x] Enlarge the existing northern peak sprites and extend their rock beyond the top of the view.
+- [x] Preserve every original terrain/collision cell, river and entrance; other surface maps remain byte-identical.
+- [x] Pass 338 overworld and 38 Maynard checks; rebuild the local launcher with zero warnings/errors.
+- [x] Retain [day/night before-and-after captures](evidence/2026-10-12-maynard-mountains/review.html).
+- [ ] User visual review.
+
+## Desert grass fringe correction - 2026-10-12
+
+- [x] Resolve the reported casino to surface F1, map 6, local 9,6, and inspect matching gameplay.
+- [x] Exclude rock from the sand blend's ground samples so mountain borders no longer expose meadow pixels.
+- [x] Preserve actual grass-sand transitions, authored terrain and approved mountain artwork.
+- [x] Pass 337 focused overworld checks and rebuild the local launcher with zero warnings/errors.
+- [x] Retain [before/after gameplay and maps](evidence/2026-10-12-desert-edges/review.html); all 28 personal files unchanged.
+- [ ] User visual review.
+
+## Dedicated winter mountain sprites - 2026-10-11
+
+The user approved the bare mountain treatment but rejected the basin's applied
+snow effect. The renderer now selects complete authored winter sprites.
+
+- [x] Generate eight lightly dusted and eight deep-snow variants, with snow
+  cornices, shaded folds and exposed stone built into their pixel art.
+- [x] Reuse the native importer and connected-body cleanup; retain the bare
+  atlas and its render behavior away from snow terrain.
+- [x] Choose complete variants by snow-ground distance, including offscreen
+  anchors; remove runtime snow recoloring and its unused height buffer.
+- [x] Verify 335 overworld and 41 snow checks, matching A2/A3 spine and all
+  40,960 mountain overlap pixels, native colors, silhouettes, paths and saves.
+- [x] Compare all 36 surface captures: changes only in 7,13,18,19,20,21,26,27
+  near the existing A3 and C4 snow terrain; 28 captures byte-identical.
+- [x] Rebuild the local launcher and retain before/after gameplay and map captures.
+- [x] User approved the winter sprites: “yep this looks much better”.
+
+[Review gallery and generation prompt](evidence/2026-10-11-snow-mountain-sprites/review.html).
+
+## Overworld mountain forms - 2026-10-11
+
+- [x] Replace the repeated small-rock fill with larger connected ridge planes.
+- [x] Vary front-face depth and use angled corners, sparse lit crests and a
+  short local slate ramp; retain crisp native pixels and binary edges.
+- [x] Use the original rock atlas only for occasional weathering. Keep cave
+  rims, grass/sand foothills and existing travel openings intact.
+- [x] Shape snow caps around the broader slopes, retaining the basin falloff
+  and matching A2/A3 overlap.
+- [x] Verify every surface mountain cell, 40,960 matching overlap pixels,
+  fog, secret aliases, cache changes and unchanged gameplay/RNG.
+- [x] 334 focused overworld checks and 641 core checks; local build only.
+- [x] 4,119 full graphics checks and 360 tour frames; 25 mountain maps changed,
+  all 90 other map captures byte-identical.
+- [x] Revise the art direction after user feedback: the slab comparisons were
+  rejected, then the user approved the overlapping-peaks mockup.
+- [x] Create an art-direction mockup on surface F3 with the built-in image tool.
+  [Current capture and proposed peaks](evidence/2026-10-11-mountain-direction/review.html).
+  This is conceptual artwork, not a tested game render; no production change in
+  this concept pass. The user approved the concept ("beautiful, I love it").
+- [x] Integrate eight authored peak variants, verify region joins and snow
+  transitions, and capture actual gameplay. 335 overworld and 39 snow checks pass.
+  The local eleven-color ramp and binary alpha keep the new art on the native
+  pixel grid. Connected-body cleanup removes stray atlas-row pixels; snowy
+  cut-back corners expose snow rather than meadow. 28 personal files unchanged.
+- [x] User approved the bare mountain implementation; the requested dedicated
+  winter sprites were subsequently implemented and approved as recorded above.
+  [Gameplay, before/after and concept comparison](evidence/2026-10-11-mountain-peaks/review.html).
+  No repackaging or new commit/push in this pass.
+
+[Five-region before/after gallery](evidence/2026-10-11-overworld-mountains/review.html).
+
+## Music, Sound and contributor Credits - 2026-10-11
+
+- [x] Woodland Fantasy by Matthew Pablo (CC BY 3.0) for title/towns;
+  Celtic Impulse by Kevin MacLeod (CC BY 4.0) for outdoor exploration.
+- [x] Streamed, repeating Ogg recordings; matched loudness and crossfaded loop
+  joins; fade transitions, quieter menus and focus/mute pause/resume.
+- [x] Options > Sound: master gate/volume, effects volume, music gate/volume.
+  Left/right adjusts levels in place; Actions shares the same page. Back restores
+  its selected entry, levels clamp at 0-100%, and Enter no longer cycles volume.
+  Preferences are independent of adventure saves.
+  Effects includes footsteps, action sounds and environmental ambience.
+- [x] Options > Help & credits > Credits: Game & remaster, Music, Sound &
+  ambience, Technology. Retain authors, source links, adaptations and licenses.
+  Bundle upstream runtime license texts and third-party notices.
+- [x] 641 core checks; 129 focused menu/music checks; 38 Maynard ambience
+  checks. Zero build warnings/errors; 33 personal files preserved.
+- [x] User listening review of the complete five-track selection is approved; subsequent rapid-combat sound fixes were also approved.
+- [x] **Battle/cave music goal, completed 2026-10-12.** All six planned steps:
+  1. Added Battle Theme A by cynicmusic (CC0), Cave Theme by Brandon Morris /
+     HaelDB (CC0), and Crystal Caves v1.2 by FoxSynergy (CC BY 3.0).
+     Source URLs, original/adapted hashes, exact filters, licenses and credits ship
+     with the audio. All three measure approximately -20 LUFS without clipping.
+  2. Cave Theme covers Earth, Stone, Fire, Breeding Grounds, Final Cave and Hell;
+     Crystal Caves covers Ice/Zephyr and Water. Cave score intensity is 70%.
+  3. Combat enters within 0.4 seconds at full mix; rewards lower the score.
+     Exploration resumes from its stream bookmark; same-score regions stay
+     continuous. New battles start their cue afresh.
+  4. Existing Sound controls, focus/mute behavior and independent ambience/effects
+     gain remain verified. All 28 personal files are unchanged.
+  5. 163 focused menu/music/control checks pass, including all eight underground
+     families, generated Hell, actual repeat boundaries, cancel/mute transitions,
+     title/defeat behavior, credits and complete adventure/RNG preservation.
+     Main and local-launcher Release builds have zero warnings/errors.
+  6. [Listening previews](evidence/2026-10-12-battle-cave-music/review.html),
+     [verification](evidence/2026-10-12-battle-cave-music/review.json), build/check
+     logs and credits screenshots are retained. Local launcher content matches;
+     no repackaging, commit or push in this task. No game is left running.
+
+DesktopGL reports a buffered music position, so bookmark restoration is not
+sample-accurate. The new clips are music-only previews, not recorded gameplay.
+Musical preference and final mix remain open for the user's listening review;
+other audio backends remain separate release-verification work. The macOS startup
+issue was subsequently addressed as recorded above.
+
+[Screenshots](evidence/2026-10-11-music/review.html),
+[verification](evidence/2026-10-11-music/review.json),
+[music provenance](Yipe.Desktop/Content/Audio/Music/sources.json).
+
+## NPC animation and personality — 2026-10-11
+
+The accumulated remaster work was committed as `0af5031` and pushed to
+`origin/main` before the NPC goal began. The NPC pass is now implemented and
+verified locally, with user visual review pending.
+
+- [x] Five native pixel-art sheets: King, Skill Teacher and three Princess
+  appearances, 60 poses with stable feet and palette/binary-alpha import.
+- [x] Restrained world idles and greetings, grounded shadows and cave lighting.
+- [x] Dialogue portrait headers, teaching approval, Princess rescue gratitude
+  and King gold/item/equipment reactions. No delay before choices.
+- [x] Original dialogue, event positions, rewards, training costs and RNG preserved.
+- [x] All 20 rescue locations, four teachers, fog, pagination, pause/focus,
+  immediate choices, cancellation and failed/repeated training verified.
+- [x] 632 core/input, 183 focused and 4,036 full graphics checks,
+  plus 360 tour frames. Local Release: zero warnings/errors; no repackaging.
+- [x] Before/after captures and a 55-second animation review video retained.
+
+[Plan](NPC_ANIMATION_PLAN.md), [review gallery](evidence/2026-10-11-npc-animation/review.html),
+[art provenance](Yipe.Desktop/Content/Art/Retro/World/NPC_ANIMATIONS.md),
+and [verification](evidence/2026-10-11-npc-animation/review.json).
 
 ## Final Cave remaster — 2026-10-11
 
@@ -144,6 +488,9 @@ banks are preserved. [Gameplay](evidence/2026-10-10-water-cave/gameplay-62.png),
 User follow-up: make the character slide and struggle for traction on the frozen
 floor. Applies by default to the eleven resolved Zephyr Cave rooms, on visible
 ice floor 0x53 and its matching 0x49 alias.
+
+The October 12 entrance repair above adds precise traction near obstacles and
+travel points; the timings below now apply to the open floor.
 
 - [x] Slower accelerating push-off (340 ms), steady glide (220 ms), and one
   decelerating tile (420 ms) after releasing or changing direction.
@@ -285,7 +632,7 @@ remained unchanged through verification. The latest adventure is open and verifi
 by screenshot. Normal startup encountered a local macOS display-link wait; a
 temporary launcher runs the identical Desktop assembly with refresh sync disabled
 for this process only. Game timing and saved preferences are unchanged. Diagnose
-the normal-launch stall separately. User aesthetic approval is still pending.
+the normal-launch stall separately. **Resolved 2026-10-12:** see the normal macOS startup section above. The user approved the current clouds on 2026-10-12: “im happy with clouds”.
 [Captures, motion clip, logs and review](evidence/2026-10-09-cloud-rework/review.json).
 
 ## Overworld remaster — 2026-10-09
@@ -995,9 +1342,9 @@ Do not implement the queued features as incidental parts of localized lighting.
 | Character and gameplay | Creation, twelve appearances, all combat/spells/shops/casinos, twenty rescues, six stamps, secrets, Hell/recovery, statistics and ending | Three additional class/difficulty/seed completion fixtures in P6.1 |
 | Randomness and fidelity | Independent rule comparisons plus 43,080 earned campaign state/RNG observations and 66 complete saves | Original-runtime unknowns remain inherited; do not infer original-executable parity |
 | Rendering/audio | All 115 map instances and 97 tile variants covered; monsters, quest art, audio effects/aliases, overlays, original defaults | Supported-size polish, physical input, accessibility and cost review |
-| Input | Keyboard/D-pad/stick, gameplay remapping/conflicts, fixed safe menus and persisted profiles; real frontend opening/late play | Physical-controller checks and remaining desktop conveniences |
-| Saving | Full-state format, explicit safe imports, generated/static reopen, platform saving and early/late fresh-process continuations | Wider lifecycle/OS matrix and file chooser/history/Save As |
-| Profiles | Presentation/audio settings, remapped controls, scores, score code, Silly Mode, Help/About and profile policy | Wider preference/lifecycle validation and clipboard conveniences |
+| Input | Keyboard/D-pad/stick, gameplay remapping/conflicts, fixed safe menus and persisted profiles; real frontend opening/late play | Physical-controller checks |
+| Saving | Full-state format, explicit safe imports, generated/static reopen, platform saving and early/late fresh-process continuations | Wider lifecycle/OS matrix and menu save/load/exit behavior |
+| Profiles | Presentation/audio settings, remapped controls, scores, score code, Silly Mode, Help/About and profile policy | Wider preference/lifecycle validation |
 
 The user approved the overall appearance and direction after the reflection and
 walking-speed changes. Preserve that baseline while expanding functionality.
@@ -1043,7 +1390,7 @@ derive an overall completion percentage from lines of code or map counts.
 | P3 | Complete exploration | Done | Every recovered map and movement/event mechanism works and has appropriate presentation |
 | P4 | Complete campaign | Done | All gameplay systems and content allow earned progression through the ending |
 | P5 | Complete presentation and controls | In progress | Every reachable interaction has finished artwork, readable overlays, audio and complete input coverage |
-| P6 | Desktop release verification | Planned; needs P3 through P5 | Reproducible complete runs, restart tests and verified MonoGame packages pass |
+| P6 | Desktop release verification | Preview.7 verified; physical controller and extended historical routes open | Reproducible complete runs, restart tests and verified MonoGame packages pass |
 | P7 | Official console integration | Deferred | Approved backend, platform services and target-hardware testing satisfy the eventual release requirements |
 
 ### P0 Reproducible baseline
@@ -1063,8 +1410,10 @@ derive an overall completion percentage from lines of code or map counts.
   **Partial recovery:** a new Combat/Medium/1 completion is retained and freshly
   reproduced in the P2–P4 evidence. The three other historical fixtures remain
   absent; regenerate or recover them for P6.1 before checking P0.2.
-- [ ] **P0.3** Add C# build/test CI and a separate graphics-check procedure where
+- [x] **P0.3** Add C# build/test CI and a separate graphics-check procedure where
   a real display is required. Clearly distinguish C++ and MonoGame artifacts.
+  Added separate `monogame.yml` workflow; actionlint passes. Hosted execution
+  awaits a push and is not claimed as verified.
 - [x] **P0.4** Reconcile every coverage-inventory feature with a port task or an
   explicit presentation/platform disposition. Record inherited adaptations from
   `docs/DECISIONS.md`, especially D7 and D8, and retain unresolved evidence limits.
@@ -1258,29 +1607,34 @@ No injected quest flags or completion saves establish this acceptance.
 Implement these alongside each playable region; P5 is the final completeness
 check, not a reason to postpone presentation until all rules are translated.
 
-- [ ] **P5.1** Extend shared terrain families and architecture across all maps.
+- [x] **P5.1** Extend shared terrain families and architecture across all maps.
   Preserve palette, native pixel sizes, anchors, grounded entrances and readable
   paths; record any map-specific art exceptions.
-- [ ] **P5.2** Complete monster, boss, NPC and character-action artwork with clear
+- [x] **P5.2** Complete monster, boss, NPC and character-action artwork with clear
   targeting and combat feedback. Document new assets and generation/edit prompts.
   All 41 canonical monsters now have 656 native pixel-art poses, creature-specific
   travel, real combat/defeat presentation and ordinary/empowered Gatekeeper support.
-  [Roster plan and rollout](MONSTER_ANIMATION_PLAN.md); final earned opening, restart and finale all pass. NPC artwork remains a separate scope.
-- [ ] **P5.3** Finish dialogue, inventory, equipment, spells, shops, combat,
+  [Roster plan and rollout](MONSTER_ANIMATION_PLAN.md); final earned opening, restart and finale all pass. The separate [NPC pass](NPC_ANIMATION_PLAN.md) adds 60 verified poses for the King, Skill Teacher and three Princess appearances; the user approved the King grounding correction and NPC presentation.
+- [x] **P5.3** Finish dialogue, inventory, equipment, spells, shops, combat,
   creation and results overlays. Test long text, focus, back/cancel and readable
   layouts at supported display sizes.
-- [ ] **P5.4** Integrate sound IDs, effect/monster aliases and playback behavior;
+- [x] **P5.4** Integrate sound IDs, effect/monster aliases and playback behavior;
   persist volume/sound and display/input preferences with migration handling.
 - [ ] **P5.5** Verify all original actions have reachable keyboard/controller
   mappings, including diagonals and Other. Test held input, reconnect, focus loss,
   pause, saving mid-step and resuming with a physical controller.
+  On 2026-10-12 the user confirmed no controller is available and approved
+  documenting physical verification as unverified for preview.7.
   Keyboard/controller gameplay remapping, conflicts, safe menu controls, persistence
   and failure feedback now pass automated checks. A physical controller remains required.
-- [ ] **P5.6** Close the P0.4 feature inventory, including explicit dispositions
+- [x] **P5.6** Close the P0.4 feature inventory, including explicit dispositions
   for original desktop menu conveniences, help, history and profile information.
   Help, 21 gameplay guide topics, About and stat/save information now pass.
-  File/history/printing/text conveniences remain explicitly open.
-- [ ] **P5.7** Review new regions against V0 and check effect costs on large
+  On 2026-10-12 the user explicitly excluded legacy Save As, native file browsers,
+  recent-file menus, printing and desktop text/clipboard features. These are not
+  release requirements. Existing save/load and CLI imports remain; ordinary
+  menu/save-lifecycle verification continues under P5.3/P6.3.
+- [x] **P5.7** Review new regions against V0 and check effect costs on large
   encounters and dense scenes. Preserve the user's chosen visual defaults.
 
 ### P6 Desktop verification and packaging
@@ -1293,18 +1647,21 @@ check, not a reason to postpone presentation until all rules are translated.
 - [x] **P6.2** Verify full completion from earned play: all rescues, stamps, keys,
   movement items, strength passage, required Gatekeeper progression and live finale.
   Completed as P4 support; see the P2–P4 completion evidence.
-- [ ] **P6.3** Verify fresh-process restarts in early/late game, generated maps,
+- [x] **P6.3** Verify fresh-process restarts in early/late game, generated maps,
   Hell and timed-map locations; test imports and interrupted/failed writes.
 - [ ] **P6.4** Run full map/asset coverage, overlay/input checks and physical play
   sessions. Separate automated results from manual observations and unresolved
-  original-runtime comparisons.
+  original-runtime comparisons. Automated coverage passes in preview.7; physical
+  controller sessions remain unverified by agreement.
 - [x] **P6.5** Build clearly named MonoGame desktop packages; test extracted
   assets, runtime/native dependencies and startup outside the checkout. Verify
   each claimed operating system separately and document signing/install behavior.
   Done for the sole packaged target: Apple Silicon macOS 26+ (tested 26.7.1),
   self-contained .NET 10.0.8, ad-hoc signed preview. See the 2026-10-07 evidence.
-  Other operating systems, physical-controller play and notarization remain unclaimed.
-- [ ] **P6.6** Update user documentation and this plan with the actual supported
+  Preview.7 freshly verifies 421 files, 15 native libraries, packaged persistence
+  and normal startup; see the 2026-10-12 release report. Other operating systems,
+  physical-controller play and notarization remain unclaimed.
+- [x] **P6.6** Update user documentation and this plan with the actual supported
   feature/platform matrix, remaining limitations and reproducible release evidence.
 
 ### P7 Official console integration
@@ -1366,8 +1723,9 @@ dotnet run --project monogame/Yipe.GraphicsChecks -c Release --no-build -- --out
 ```
 
 Add `--record` to create a six-second MP4 using FFmpeg on `PATH`. The runner
-disables test-only VSync for its manual `RunOneFrame` driver; production VSync
-is unchanged. See [core reproduction](Yipe.Tests/README.md) for the independent
+disables VSync for its manual `RunOneFrame` driver. Normal macOS startup now
+uses the fixed 60 Hz game timer without VSync; other platforms are unchanged.
+Use `--startup-check DIRECTORY` to exercise the normal game loop. See [core reproduction](Yipe.Tests/README.md) for the independent
 RNG, Player, map/world and session C++ references, diagnostic traces and checked-arithmetic commands.
 
 For a fresh C++ comparison build, after installing the README's dependencies:
@@ -1406,7 +1764,7 @@ The full codec/storage contract is in [SAVE_FORMAT.md](SAVE_FORMAT.md).
 | Slower walking and timed gameplay | The approved pace can affect the practical difficulty of timed routes. | P3.5 passed timed platform/fire routes at 250 ms; retain this regression coverage |
 | Save compatibility | `.y3m` v1 and explicit preview/C++ v20/original imports are complete. Original unknown/absent fields and selected Windows-1252 decoding are documented; earlier C++ versions require upgrading in the rebuild. | Keep formats/source files distinct; extend supported variants only with reference evidence. See `SAVE_FORMAT.md`. |
 | Inherited adaptations | C++ D7 restores platform support on reopen; D8 sets new-character stat cap 50 and weapon upgrade ceiling 29. Other fidelity limits remain documented. | Dispositions are recorded in FEATURE_DISPOSITIONS.md; retain original-runtime limits |
-| Menu coverage | Every original menu/system row is mapped in FEATURE_DISPOSITIONS.md; convenience features remain explicit. | P5.6: implement and verify the assigned remaining desktop work |
+| Menu coverage | Every original menu/system row is mapped in FEATURE_DISPOSITIONS.md; legacy desktop conveniences explicitly excluded by the user on 2026-10-12. | P5.6 closed; verify retained menus and save lifecycle under P5.3/P6.3 |
 | Current CI and release labels | Root hosted CI/releases still target C++/SDL. A distinct local MonoGame macOS package now passes extraction/signature/startup/save checks. | P0.3: add hosted MonoGame coverage; keep artifacts separate |
 
 ## Session record

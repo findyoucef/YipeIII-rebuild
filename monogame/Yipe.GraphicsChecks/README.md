@@ -1,6 +1,6 @@
 # MonoGame graphics checks
 
-The latest full run passed **3,862 checks**, including all 41 animated monsters,
+The latest full run passed **4,226 checks**, including title/pause menus, independent adventure slots, the NPC animation pass and all 41 animated monsters,
 the eleven remastered Ice Cave rooms, thirteen Water Cave rooms and fifteen Final Cave rooms. It includes the original 139 visual checks, eight diagonal
 dispatch/animation checks, and six session checks for logical position/storage,
 world transitions, shop handoff and RNG isolation, plus eight full-save checks
@@ -45,16 +45,39 @@ For cloud iterations, use `--clouds-only`. This runs the existing cloud, sun-sha
 hero/dust, rain and day/night checks with isolated saves and settings. It captures
 all three towns, open meadow and desert, including a 24-second cloud sequence.
 
-For overworld iterations, use `--outdoors-only`. This renders all 36 surface maps,
+For overworld iterations, use `--outdoors-only`. This also runs the mountain
+checks: all 36 surface masks, region/world-wrap joins, cave backing, secret aliases,
+cache invalidation, snow-compatible palette and nonrepeating ridge planes.
+It renders all 36 surface maps,
 checks deterministic scenery, fog, secret aliases and gameplay/RNG preservation,
 and exercises habitat mixing, positional water, night/cold wildlife, mute/focus
-and town road access. It also exports day/night views, rain views, motion clips
+and town road access. All nine river junctions are checked for connected branches,
+exposed grass corners and moving water; isolated checks cover their ambience,
+overview colors and light transmission. D2 gameplay captures use the reported
+7,3 viewpoint. It also exports day/night views, rain views, motion clips
 and a region coverage CSV under `outdoors/`. All saves are isolated test fixtures.
 
-For local menu iterations, use `--menus-only`. This checks entering Graphics,
-wrapping its cursor, changing settings while paused, returning one level with
-Escape or controller Start, and resuming from the root. It also runs the existing
-help and control-remapping checks. Captures under `help-controls/` show both menus
+For startup verification, use `--startup-check DIRECTORY`. It runs the normal
+`Game.Run` loop with an isolated save and profile, without smoke mode or graphics
+overrides. It checks selected-save loading, the studio ident/title transition,
+animated presentation at a bounded frame rate, resize, fullscreen, return to a
+window and save preservation. A 45-second watchdog fails the process if native
+presentation blocks. This mode is separate from the manual frame driver used
+by other checks; run it in a fresh process on an active graphical desktop.
+
+```sh
+dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --startup-check build/startup-check
+```
+
+For local menu iterations, use `--menus-only`. This checks the title, adventure
+slots, pause categories, cursor wrapping, settings changes, Back/Start navigation,
+help and control remapping. It also exercises real streamed music playback,
+town/overworld and every cave family's selection, fast combat entry, quieter
+rewards, exploration bookmarks, all new tracks' repeat boundaries, canceled
+transitions, scene changes while muted, focus/mute/resume, independent music/effects
+levels and saved preferences, stable selection through repeated Actions/Options
+volume adjustments and Back navigation, paged contributor credits and missing-music recovery. Music checks and screenshots are under `music/`.
+Captures under `help-controls/` and `title-menu/` show the menus
 at 640×360, 1024×768 and 1920×1080. The full suite additionally exercises every
 moved graphics setting and its existing persistence behavior. Controller actions
 are synthesized; physical-controller verification remains separate.
@@ -119,7 +142,7 @@ dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll 
 ```
 
 For local Ice / Zephyr Cave iterations, use `--ice-only`. The focused run passes
-254 checks across all eleven upper/deep rooms (41/42/47/53/81/82/87/88/93/94/99)
+274 checks across all eleven upper/deep rooms (41/42/47/53/81/82/87/88/93/94/99)
 and six comparison scenes. It covers frozen-floor/wall contrast, cache restoration,
 secret aliases, all nine matching walkable overlaps, sparse frost animation and
 fog, cold contour lighting and door occlusion, creature/battle isolation, solid
@@ -131,10 +154,13 @@ masking, secret aliases, wall/door/stair/fog clipping and changed-terrain restor
 The final focused pass also verifies reflection at a rock's carved open corner.
 Isolated reflections and a complete walking-step sequence are retained there too.
 The full suite includes these checks.
-Thirty-five additional movement checks cover all eleven rooms, release/turn/reverse
+Fifty-five movement checks cover all eleven rooms, release/turn/reverse
 traction, blocked pushes, floor aliases, doors/depth exits/room edges, menu and
-restore cancellation, real encounters and unaffected neighboring biomes. A 60 Hz
-authored-room push/glide/brake sequence is retained under `ice-movement/`.
+restore cancellation, real encounters and unaffected neighboring biomes. Authored
+door approaches in upper A1/A2 and deep B2 retain alignment on release and turn,
+including opened doors; keys remain required. Upper A3's narrow passage and the
+A2 room edge/B1 depth stairs retain precise footing. Two 60 Hz sequences under
+`ice-movement/` show a doorway approach/entry and the preserved open-floor glide.
 
 ```sh
 dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --ice-only --output build/ice-checks
@@ -255,6 +281,14 @@ Profile checks retain the separate Screen shake (Off) and Battle pacing (Manual)
 defaults and independently saved choices. Captures include menus, targets, HUDs,
 individual counterattacks, spells, abilities, victory/level-up, and 96 animation
 frames at 30 fps.
+
+Combat checks also exercise buffered Confirm and Back before impact, accelerated
+completion without queued attacks, pause/resume, no duplicate or false hits,
+single and three-monster defeat cues, and death tails surviving rewards and exit.
+Normal and quick victory captures show the actual timeline at 60 FPS. Audio
+checks cover four-voice overlap under a 24-hit burst, independent effects volume,
+mute/focus cleanup and natural completion on the real audio device. Noncombat
+cues retain their original replacement behavior.
 
 Enemy information checks also cover live encounter ratings, imported incomplete
 defeat counts, independent inspection/attack selections, living-enemy wrap/skip,
@@ -446,3 +480,57 @@ dotnet run --project monogame/Yipe.GraphicsChecks -c Release --no-build -- --may
 
 [Evidence](../evidence/2026-10-09-maynard-atmosphere/review.json) ·
 [Recorded audio credits](../Yipe.Desktop/Content/Audio/Ambience/MAYNARD-CREDITS.txt)
+
+## NPC animation review
+
+`--npc-only` runs the NPC checks with an isolated adventure and produces world,
+dialogue and reward screenshots, native compiled sheets, and 440 animation frames
+under `npcs/`. The focused run passes **183 checks** (174 NPC checks plus nine
+startup/default checks). Coverage includes all 20 rescue locations and four
+teachers, palette/alpha/anchor validation, distinct poses, original event and RNG
+parity, all four rescue gifts, cancellation, training costs/failure/repeat behavior,
+King gold/item/equipment reactions, pagination and pause/focus gating.
+
+```sh
+dotnet run --project monogame/Yipe.GraphicsChecks -c Release -- --npc-only --output build/npc-review
+```
+
+The [review gallery](../evidence/2026-10-11-npc-animation/review.html) includes a
+55-second game-rendered video and before/after images. New poses are native
+pixel art; dialogue gestures use a cosmetic timer while world simulation stays
+frozen. No real save is used by this runner.
+
+
+## Title and pause menus
+
+`--menus-only` now exercises the title, pause categories, controls, help,
+new-adventure slots and load browser. `TitleScreenChecks` captures an eight-second
+animated title sequence, navigation pages and window-size examples. It verifies
+that title animation cannot advance gameplay/RNG, focus loss cannot expose the
+in-game menu, Help restores a suspended interaction/map, Return to title can be
+canceled, new adventures get separate save paths, and failed loads preserve the
+current session and save target. All files are created in the runner's isolated
+library. The existing rain, sunlight, lighting and combat checks also validate
+settings through their new menu categories in the full suite.
+
+[Review screenshots/video](../evidence/2026-10-11-title-menus/review.html).
+
+## Release performance pass
+
+```sh
+dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --performance-check build/performance-check
+```
+
+This separate mode runs normal fixed-60-Hz `Game.Run` with a fresh isolated
+profile and shipping visual defaults. Nine scenes (towns, snow, rainy forest,
+breeding grounds, Fire Cave, Ice Cave, Hell and three-enemy combat) each receive
+60 warmup and 300 measured frames at 1280×720 and 1920×1080. Diagnostic maps
+are fully revealed, world ticks are held, and visual animation continues.
+A real attack presentation loops in the battle scene. Screenshots are excluded
+from timing. `performance.json` records presentation intervals, percentiles,
+slow frames, allocations and working set. CPU draw-submission timings exclude
+GPU completion; frame intervals include normal presentation and pacing. This
+is a warm-scene benchmark on the recorded machine, not a minimum-hardware claim.
+Do not run compilers, another graphics runner, or provide gameplay input during it.
+
+[Latest release results and physical-controller checklist](../evidence/2026-10-12-release-readiness/README.md).

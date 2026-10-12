@@ -1,0 +1,12 @@
+{
+  "monogame/Yipe.Desktop/GameSaveStore.cs": "98d2e04526e9e04e2183174f830c71cd150bd458f49ab39c03f3e85ed402ba82",
+  "monogame/Yipe.Desktop/TownCreation.cs": "567b94fdef5b6a2e87423820cecd4be4b8d592413035efb4f09305eb345f7f73",
+  "monogame/Yipe.Desktop/TownGame.cs": "e7df25bf270fa825622c5e677c245e1f52dd5f81bb0fc43f64f49c972974dcaa",
+  "monogame/Yipe.Desktop/TownHelp.cs": "713d743b662930190ed19438f3a2650adab8f722b13eba7c91951e2f0004c53d",
+  "monogame/Yipe.Desktop/TownMapOverlay.cs": "0fc77375a44c3e6543c5b0a48066c63e1899b4ac2a9057da8d40933d99fac056",
+  "monogame/Yipe.Desktop/TownOverlays.cs": "7ae80e65a930c7697d8c7897b97044e9966d256d0a8f78fa674993f980262429",
+  "monogame/Yipe.Desktop/TownPause.cs": "7a56d2478603e6b00de1715b134e06377a39d25b2f018d1b02ffcc7853d32226",
+  "monogame/Yipe.Desktop/TownTitle.cs": "95971e83945cc84ed1a57d88beaefc7c8f1c7197ade09390d60e49d3ad5f8726",
+  "monogame/Yipe.Desktop/TownRenderer.cs": "b7413bb3ea2aaa6cbbcdd8a363dc285512f4496525907719b4d937900e26980e",
+  "monogame/Yipe.Desktop/TownScenery.cs": "f8c3c32ad117c9b54b7d1c6fb4a03c2f9dde401676a5e430e21e7c2d56a9bb4b"
+}

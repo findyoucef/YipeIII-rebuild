@@ -18,9 +18,15 @@ internal sealed class Overlay
     public int? InspectedEnemy { get; set; }
     public bool EnemyDetails { get; set; }
     public bool AutoAdvance { get; init; }
+    public bool ContinueRequested { get; set; }
     public double CombatTime { get; set; }
     public int FirstPortrait { get; init; }
-    public int LinesPerPage => Combat ? Options.Length == 1 ? 4 : 2 : Options.Length > 1 ? 5 : 10;
+    public NpcActor Npc { get; init; }
+    public bool NpcCelebrating { get; init; }
+    public double NpcTime { get; set; }
+    public int LinesPerPage => Combat ? (Options.Length == 1 ? 4 : 2)
+        : Npc != NpcActor.None ? (Options.Length > 1 ? 4 : 8)
+        : Options.Length > 1 ? 5 : 10;
     public int PageCount => Math.Max(1, (Lines.Length + LinesPerPage - 1) / LinesPerPage);
 
     public Overlay(string title, string text, IEnumerable<OverlayOption> options, Action? back = null)

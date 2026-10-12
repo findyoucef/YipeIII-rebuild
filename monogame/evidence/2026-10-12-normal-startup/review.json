@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-12",
+  "result": "implemented and verified locally",
+  "change": "Disable OpenGL VSync on macOS; retain the existing fixed 60 Hz game loop and VSync behavior on other platforms. No temporary launcher is required.",
+  "cause_evidence": {
+    "archived_failure_trace": "../../../build/cloud-rework/launch-sample.txt",
+    "stack": "Cocoa_GL_SwapWindow -> SDL_CondWait_REAL -> pthread_cond_wait on every sampled main-thread stack; no display-link thread in the archived failure",
+    "current_before_run": "A fresh selected-save launch succeeded before the patch, confirming the issue is intermittent rather than a guaranteed failure.",
+    "upstream_source": "https://github.com/libsdl-org/SDL/blob/release-2.32.10/src/video/cocoa/SDL_cocoaopengl.m",
+    "source_behavior": "Nonzero swap interval waits on display-link condition notifications without a timeout; zero skips that wait."
+  },
+  "verification": {
+    "build_warnings": 0,
+    "build_errors": 0,
+    "normal_loop_runs": 2,
+    "normal_loop_checks_per_run": 9,
+    "measured_fps": [
+      60.8,
+      60.9
+    ],
+    "coverage": [
+      "Normal Game.Run, no smoke mode or graphics overrides",
+      "Isolated selected-save load",
+      "Studio ident reaches animated title",
+      "Bounded presentation speed",
+      "Window resize",
+      "Fullscreen entry and return",
+      "Clean test exit and unchanged fixture save"
+    ],
+    "direct_entrypoint": {
+      "pid": 41605,
+      "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+      "arguments": [],
+      "cwd": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/startup-fix/empty-working-directory",
+      "launched_at": "2026-10-12T15:25:22.332432+00:00"
+    },
+    "direct_entrypoint_verified": "No-argument regular apphost launched from an empty working directory, reached the title and subsequently gameplay.",
+    "process_running_at_record": true,
+    "personal_files_checked": 33,
+    "personal_files_changed": 0,
+    "live_input_incident": "During a subsequent title-menu check, the live session had moved into gameplay. Down/Enter/Escape test inputs reached that session; automated input was stopped and the user was informed. No claim of isolated input verification is made from those captures."
+  },
+  "limits": [
+    "Only local macOS 26.7.1 arm64 was tested; other platforms retain their prior behavior.",
+    "No distributable was rebuilt.",
+    "This removes the blocked sync path from this game; it does not fix SDL or macOS display-link internals."
+  ],
+  "source_sha256": {
+    "monogame/Yipe.Desktop/TownGame.cs": "8f9e5a89e72ae5cebfd81da99482036b209119fcb7c1dfce0f2cfa5127b2cdfc",
+    "monogame/Yipe.GraphicsChecks/StartupChecks.cs": "cdfd313e3a367fc802e67d55e15d7680df6b85ff9de9c2669c75997f67efd674",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "8e4e2f601ebf8ffa1093541af796890ad1ea2581f2f2ef77650669072ba92e6b",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "a50d4cc578af817a8c1465020b7d96a21cd987bc31973d99a649df3ab93520b1"
+  }
+}

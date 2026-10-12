@@ -254,3 +254,66 @@ leaves, seed flecks and insects use deterministic scene time; no gameplay RNG.
 The seed and ground field use wrapped world coordinates with the original
 two-tile room overlap. Maynard and the approved snow terrain retain their own
 rendering. Ervyn has authored garden borders; Quizilog keeps its dry palm setting.
+
+## NPC animation sheets
+
+The King, Skill Teacher and three existing Princess appearances have 60 native
+poses for idle, conversation and reward reactions. See [NPC_ANIMATIONS.md](NPC_ANIMATIONS.md)
+for the installed sheets, import/anchor rules and exact generation provenance.
+
+## Mountain peaks — 2026-10-11
+
+`mountain-peaks.png` is a four-column, two-row transparent atlas generated with
+built-in imagegen from the user's approved overlapping-peaks mockup, then refined
+to reduce secondary crags. It compiles to 256 × 128 native pixels (64-pixel cells),
+binary alpha and the eleven-color `MountainTerrain.StonePalette`. The existing
+importer accepts this explicit local palette; its default remains unchanged.
+The renderer retains each connected rock body to remove stray atlas-row pixels,
+trims transparent padding, varies width/height at whole pixels,
+orders peaks back to front, and clips them to the connected terrain footprint.
+Winter peaks now use the dedicated sprite bank documented below.
+
+- [Approved direction](../../../../../evidence/2026-10-11-mountain-direction/review.html)
+- [Actual game review](../../../../../evidence/2026-10-11-mountain-peaks/review.html)
+- [Initial asset prompt](../../../../../evidence/2026-10-11-mountain-peaks/asset-prompt.txt)
+- [Refinement prompt](../../../../../evidence/2026-10-11-mountain-peaks/asset-refinement-prompt.txt)
+
+Source: built-in image generation, final file `exec-7b62ff3b-7eea-45d0-b485-10fd643b829e.png`
+in the Codex generated-images directory. The production PNG is copied here;
+no runtime path depends on that external directory.
+
+## Dedicated winter mountain sprites — 2026-10-11
+
+`mountain-peaks-snow.png` is a four-column, four-row atlas derived from the
+approved bare-peak artwork with built-in imagegen. Frames 0–7 are lightly dusted
+transition peaks; 8–15 are the corresponding snow-laden peaks with painted
+cornices, snow folds, shaded ledges and exposed slate. It compiles to 256 × 256
+native pixels, binary alpha, and the existing stone ramp plus three snow colors.
+The same connected-body cleanup as the bare sheet removes stray atlas edges.
+
+`MountainTerrain` selects a complete sprite per world-cell anchor using distance
+to authored snow ground: deep snow within 24 pixels, light dusting within 64,
+otherwise the unchanged bare sprite. The neighbor scan includes that radius for
+offscreen contributors, preserving overlap and world-wrap continuity. The old
+per-pixel height/brightness snow recoloring and its height buffer are removed.
+The original masks still protect cave approaches, roads and secret passages.
+
+Snow ground excludes rock from its coverage blend so enclosed corners stay
+covered. The snowfield stops short of the rendered mountain outline, leaving
+a narrow slate/gravel margin with small powder clusters along its inner edge.
+Two cached smoothing passes shape broad curves instead of tracing every mountain
+notch; final pixels still use the native opaque palette.
+Mountain cutbacks and the margin share the same native ground texture. Gravel
+draws below the snow in `MountainTerrain.Scree`; actual cliffs draw above it.
+Do not bake gravel into the cliff layer: it cuts square corners into a narrow
+snow margin. Blocked cells retain a solid rock core. The whole
+basin stays cold and snowing; exposed gravel gets stone footsteps, while snow
+prints and crunch follow actual snow. Melting edges use opaque pixel clusters.
+[Narrow snow margin review](../../../../../evidence/2026-10-12-snow-narrow/review.html).
+
+- [Actual in-game review](../../../../../evidence/2026-10-11-snow-mountain-sprites/review.html)
+- [Generation prompt](../../../../../evidence/2026-10-11-snow-mountain-sprites/asset-prompt.txt)
+
+Source: built-in imagegen, `exec-07b48cfb-a6d9-44ee-9890-14a66d9acc9d.png`.
+The production PNG is stored beside this document; no runtime path depends on
+the external generated-images directory.

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "Licenses/MonoGame.txt",
+    "source": "https://raw.githubusercontent.com/MonoGame/MonoGame/5e9fe9b100ffa67026dff97cc8adffae1414534e/LICENSE.txt",
+    "sha256": "67301fd0f95a7e4ffb3cccde3dafed6ada739f32585c0f7b70adeb2fb904504b"
+  },
+  {
+    "file": "Licenses/MonoGame-third-party.txt",
+    "source": "https://raw.githubusercontent.com/MonoGame/MonoGame/5e9fe9b100ffa67026dff97cc8adffae1414534e/THIRD-PARTY-NOTICES.txt",
+    "sha256": "38448817da07f24737509110cc90b33178fd376db94c92aca824ce49fe1390bb"
+  },
+  {
+    "file": "Licenses/OpenAL-Soft.txt",
+    "source": "https://raw.githubusercontent.com/kcat/openal-soft/1.24.3/COPYING",
+    "sha256": "d808ce217e5b611854da622b57ec29fe545584c48bc5352fae72a4b6e5074a15"
+  },
+  {
+    "file": "Licenses/dotnet.txt",
+    "source": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.8/LICENSE.TXT",
+    "sha256": "cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310"
+  },
+  {
+    "file": "Licenses/dotnet-third-party.txt",
+    "source": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.8/THIRD-PARTY-NOTICES.TXT",
+    "sha256": "66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54"
+  },
+  {
+    "file": "Licenses/SDL.txt",
+    "source": "NuGet monogame.library.sdl/2.32.10.2/LICENSE.txt",
+    "sha256": "97f35b302b361680ec1e891e95d2d52097bb95abff361434916d99dc1305f127"
+  },
+  {
+    "file": "Licenses/NVorbis.txt",
+    "source": "NuGet nvorbis/0.10.4/LICENSE",
+    "sha256": "08e4ea5ffe20037cea0f34a424fee6722898cee7f85cd23cbf2b72847c2c36f8"
+  },
+  {
+    "file": "Licenses/OpenAL-portions.txt",
+    "source": "NuGet monogame.library.openal/1.24.3.4/LICENSE",
+    "sha256": "b5a08cf98996dd83aa906a72c163600f6cb17a65ce546a553815a1267abd43ff"
+  }
+]

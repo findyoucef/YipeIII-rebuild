@@ -22,6 +22,14 @@ internal static class IceMovementChecks
         var catalog = (MapCatalog)Get("catalog")!;
         var east = new Point(1, 0); var south = new Point(0, 1); var zero = Point.Zero;
         Point Momentum() => (Point)Get("iceDirection")!;
+        var directory = Path.Combine(output, "ice-movement"); Directory.CreateDirectory(directory);
+        using var capture = new Texture2D(host.GraphicsDevice, 1280, 720);
+        void Capture(string name)
+        {
+            Set("pauseAmount", 0f); Set("messageRemaining", 0d); Call("Draw", new GameTime());
+            var pixels = new Color[1280 * 720]; host.GraphicsDevice.GetBackBufferData(pixels); capture.SetData(pixels);
+            using var file = File.Create(Path.Combine(directory, name)); capture.SaveAsPng(file, 1280, 720);
+        }
         void Move(Point pressed, Point held) => Call("MovePlayer", pressed, held);
         void Finish() { player.Update(1); var world = Get("world")!; world.GetType().GetMethod("UpdateMonsters")!.Invoke(world, [1d]); }
         void Update() => Call("Update", new GameTime(TimeSpan.Zero, TimeSpan.FromSeconds(.016)));
@@ -49,6 +57,57 @@ internal static class IceMovementChecks
         }
         try
         {
+            // Real locked-door approaches: a released step must align with the opening.
+            foreach (var (id, approachStart, along, enter) in new (int, MapPosition, Point, Point)[]
+                { (41, new(3, 7), east, south), (47, new(1, 4), east, south), (88, new(11, 5), south, new(-1, 0)) })
+            {
+                var room = Scene(id, approachStart, clear: false);
+                room.Player.HasRainbowKey = room.Player.HasUnderworldKey = true;
+                var approach = new MapPosition(approachStart.X + along.X, approachStart.Y + along.Y);
+                var doorway = new MapPosition(approach.X + enter.X, approach.Y + enter.Y);
+                Move(along, along); Finish(); Move(zero, zero); Finish();
+                Capture($"door-{id}-release.png");
+                check(player.Position == approach && Momentum() == zero,
+                    $"Ice {id}: releasing at doorway {doorway.X},{doorway.Y} keeps the player aligned instead of sliding past");
+                Move(enter, enter); Finish(); Move(zero, zero); Finish();
+                check(player.Position == doorway && room.Map.Tile(doorway) == 0x53 && Momentum() == zero,
+                    $"Ice {id}: an intentional turn opens the keyed door and stops on its threshold");
+                Capture($"door-{id}-entered.png");
+                Move(new(-enter.X, -enter.Y), new(-enter.X, -enter.Y)); Finish(); Move(zero, zero); Finish();
+                Move(enter, enter); Finish(); Move(zero, zero); Finish();
+                check(player.Position == doorway && Momentum() == zero,
+                    $"Ice {id}: the opened doorway retains traction after its tile becomes ordinary ice");
+            }
+            var turn = Scene(41, new(3, 7), clear: false); turn.Player.HasRainbowKey = true;
+            Move(east, east); Finish(); Move(south, south); Finish();
+            check(player.Position == new MapPosition(4, 8), "Turning into an authored Ice doorway immediately honors the new held direction");
+            var locked = Scene(41, new(4, 7), clear: false); Move(south, south); Finish();
+            check(player.Position == new MapPosition(4, 7) && locked.Map.Tile(new(4, 8)) == 0x3f && Get("overlay") is not null,
+                "Precise Ice steering still requires the original key to open a locked door");
+            Scene(53, new(1, 4), clear: false); Move(east, east); Finish(); Move(zero, zero); Finish();
+            check(player.Position == new MapPosition(2, 4), "Upper A3: release aligns with the one-tile passage at 2,5");
+            Move(south, south); Finish(); Move(zero, zero); Finish();
+            check(player.Position == new MapPosition(2, 5) && Momentum() == zero,
+                "Upper A3: the player can enter and stop inside the narrow passage");
+            Capture("passage-53.png");
+            Scene(47, new(1, 1), clear: false); Move(east, east); Finish(); Move(zero, zero); Finish();
+            check(player.Position == new MapPosition(2, 1), "Upper A2: release aligns with the northern room opening");
+            Move(new(0, -1), new(0, -1)); Finish();
+            check(((GameSession)Get("session")!).CurrentMap.Id == 41 && player.Position == new MapPosition(2, 10) && Momentum() == zero,
+                "The intentional step through the Ice room opening uses the original transition and clears momentum");
+            Scene(42, new(9, 1), clear: false); Move(east, east); Finish(); Move(zero, zero); Finish();
+            check(((GameSession)Get("session")!).CurrentMap.Id == 42 && player.Position == new MapPosition(10, 1),
+                "Upper B1: release stops beside the depth stairs without entering them automatically");
+            Move(east, east); Finish();
+            check(((GameSession)Get("session")!).CurrentMap.Id == 82 && player.Position == new MapPosition(11, 1) && Momentum() == zero,
+                "An intentional step takes the authored Ice depth stairs");
+            foreach (var rock in new ushort[] { 0x22, 0x43 })
+            {
+                var room = Scene(); room.Map.RestoreTile(new(6, 6), rock);
+                Move(east, east); Finish(); Move(zero, zero); Finish();
+                check(player.Position == new MapPosition(6, 5) && Momentum() == zero,
+                    $"Ice wall {rock:x}: ordinary and secret wall artwork give identical nearby traction");
+            }
             foreach (var id in new[] { 41, 42, 47, 53, 81, 82, 87, 88, 93, 94, 99 })
             {
                 Scene(id); Move(east, east); Finish(); Move(zero, zero); Finish(); Move(zero, zero);
@@ -106,23 +165,28 @@ internal static class IceMovementChecks
 
             // Actual authored entrance room, isolated from personal adventures. Show push,
             // steady glide and release at 60 Hz, with the existing reflected pixel sprite.
-            var map = catalog.CreateMap(53)!;
-            var start = (from y in Enumerable.Range(1, 10) from x in Enumerable.Range(1, 8)
-                where Enumerable.Range(x, 4).All(px => map.Tile(new(px, y)) == 0x53 && map.DepthActionAt(new(px, y)) == 0
-                    && map.Events.Message.Position != new MapPosition(px, y) && !map.Events.Chests.Contains(new(px, y)))
-                orderby Math.Abs(y - 5) + Math.Abs(x - 4) select new MapPosition(x, y)).First();
+            var demonstration = Scene(41, new(3, 7), clear: false); demonstration.Player.HasRainbowKey = true;
+            for (var frame = 0; frame < 120; frame++)
+            {
+                if (frame == 0) Move(east, east);
+                if (frame == 30) Move(zero, zero);
+                if (frame == 60) Move(south, south);
+                if (frame == 90) Move(zero, zero);
+                player.Update(1d / 60); Set("sceneTime", frame / 60d); Capture($"door-{frame:D3}.png");
+            }
+            check(player.Position == new MapPosition(4, 8) && !player.IsMoving && Momentum() == zero,
+                "The authored doorway demonstration stops in alignment and then enters without a skid");
+
+            // Open floor away from the new traction margin still demonstrates the full glide.
+            var start = new MapPosition(6, 7);
             Scene(position: start, clear: false); Set("pauseAmount", 0f); Set("messageRemaining", 0d);
-            var directory = Path.Combine(output, "ice-movement"); Directory.CreateDirectory(directory);
-            using var capture = new Texture2D(host.GraphicsDevice, 1280, 720);
             Move(east, east);
             for (var frame = 0; frame < 120; frame++)
             {
                 if (!player.IsMoving && frame < 22) Move(east, east);
                 else if (!player.IsMoving) Move(zero, zero);
                 player.Update(1d / 60); Set("sceneTime", frame / 60d);
-                Call("Draw", new GameTime());
-                var pixels = new Color[1280 * 720]; host.GraphicsDevice.GetBackBufferData(pixels); capture.SetData(pixels);
-                using var file = File.Create(Path.Combine(directory, $"slide-{frame:D3}.png")); capture.SaveAsPng(file, 1280, 720);
+                Capture($"slide-{frame:D3}.png");
             }
             check(!player.IsMoving && Momentum() == zero && player.Position == new MapPosition(start.X + 3, start.Y),
                 "Authored Ice Cave demonstration ends after push, glide and one release skid");

@@ -24,7 +24,7 @@ internal sealed partial class TownRenderer : IDisposable
         this.map = map;
         terrain = Load("terrain.png", 2, 2, 32);
         using (var sand = Load("World/desert.png", 2, 2, 32))
-            mountains = new MountainTerrain(device, terrain, catalog, sand);
+            mountains = new MountainTerrain(device, terrain, catalog, sand, content);
         town = Load("town.png", 3, 3, 48);
         // Replace only the five shop cells; keep the castle, cave, bridge and stones intact.
         using (var shops = Load("shops.png", 3, 3, 48))
@@ -55,7 +55,7 @@ internal sealed partial class TownRenderer : IDisposable
             RetroArt.Load(device, content, name, columns, rows, cellSize);
     }
 
-    public void Draw(SpriteBatch batch, PlayerMotion player, double time, bool miniature, float rainStrength = 0)
+    public void Draw(SpriteBatch batch, PlayerMotion? player, double time, bool miniature, float rainStrength = 0, WorldRenderer? npcs = null)
     {
         mountains.Prepare(TownMap.Id, map.Tile);
         for (var y = 0; y < TownMap.Height; y++)
@@ -68,7 +68,7 @@ internal sealed partial class TownRenderer : IDisposable
                     Color.White, 0, Vector2.Zero, effects, 0);
             }
         DrawRiver(batch, time);
-        DrawHeroReflection(batch, player, time);
+        if (player is not null) DrawHeroReflection(batch, player, time);
         for (var y = 0; y < TownMap.Height; y++)
             for (var x = 0; x < TownMap.Width; x++)
             {
@@ -76,6 +76,7 @@ internal sealed partial class TownRenderer : IDisposable
                 if (MountainTerrain.IsMountain(tile))
                 {
                     var bounds = new Rectangle(x * 32, y * 32, 32, 32);
+                    batch.Draw(mountains.Scree, bounds, bounds, Color.White);
                     batch.Draw(mountains.Texture, bounds, bounds, Color.White);
                 }
                 var path = RetroArt.PathConnections(tile);
@@ -96,21 +97,23 @@ internal sealed partial class TownRenderer : IDisposable
             {
                 DrawBuildingShadow(batch, map.Tile(new(x, y)), new(x, y));
             }
-        var heroDrawn = false;
+        var heroDrawn = player is null;
         for (var y = 0; y < TownMap.Height; y++)
         {
-            if (!heroDrawn && player.VisualPosition.Y * 32 + 25 < y * 32 + 28)
+            if (!heroDrawn && player!.VisualPosition.Y * 32 + 25 < y * 32 + 28)
             {
-                DrawHero(batch, player, time, miniature);
+                DrawHero(batch, player!, time, miniature);
                 heroDrawn = true;
             }
             for (var x = 0; x < TownMap.Width; x++)
             {
                 var tile = map.Tile(new(x, y));
                 DrawBuilding(batch, tile, new(x, y), time, miniature);
+                if (tile == 0x30) npcs?.DrawNpcWorld(batch, NpcActor.King, new(x, y), time,
+                    player is not null && Vector2.DistanceSquared(player.VisualPosition, new(x, y)) <= 4);
             }
         }
-        if (!heroDrawn) DrawHero(batch, player, time, miniature);
+        if (!heroDrawn) DrawHero(batch, player!, time, miniature);
     }
 
     internal void DrawBuildingShadow(SpriteBatch batch, ushort tile, MapPosition cell)

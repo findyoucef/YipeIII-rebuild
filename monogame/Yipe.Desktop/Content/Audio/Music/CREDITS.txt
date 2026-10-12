@@ -1,0 +1,44 @@
+Woodland Fantasy
+Music by Matthew Pablo
+https://www.matthewpablo.com
+Licensed under CC BY 3.0:
+https://creativecommons.org/licenses/by/3.0/
+Source:
+https://opengameart.org/content/woodland-fantasy
+
+Celtic Impulse
+Kevin MacLeod (incompetech.com)
+Licensed under CC BY 4.0:
+https://creativecommons.org/licenses/by/4.0/
+Source:
+https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100297
+
+Battle Theme A
+Music by cynicmusic
+https://cynicmusic.com
+https://pixelsphere.org
+CC0 1.0 public domain dedication:
+https://creativecommons.org/publicdomain/zero/1.0/
+Source:
+https://opengameart.org/content/battle-theme-a
+
+Cave Theme
+Music by Brandon Morris (HaelDB)
+CC0 1.0 public domain dedication:
+https://creativecommons.org/publicdomain/zero/1.0/
+Source:
+https://opengameart.org/content/cave-theme
+
+Crystal Caves v1.2
+Music by FoxSynergy
+Licensed under CC BY 3.0:
+https://creativecommons.org/licenses/by/3.0/
+Source:
+https://opengameart.org/content/crystal-caves
+
+Adapted for Yipe! III by icosium labs:
+Loudness matched and converted to Ogg Vorbis.
+Woodland Fantasy, Celtic Impulse and Cave Theme have crossfaded loop joins.
+Battle Theme A has trimmed silence. Crystal Caves retains its 240-second cycle.
+Battle Theme A and Crystal Caves have short click-prevention edge fades.
+Full license texts and source details accompany the audio files in Content/Audio/Music.

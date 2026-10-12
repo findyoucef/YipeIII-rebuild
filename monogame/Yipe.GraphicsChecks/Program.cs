@@ -13,6 +13,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length == 2 && args[0] == "--startup-check") return StartupChecks.Run(args[1]);
+        if (args.Length == 2 && args[0] == "--performance-check") return PerformanceChecks.Run(args[1]);
         string? outputRoot = null;
         var record = false;
         var opening = false;
@@ -20,6 +22,7 @@ internal static class Program
         string? lateInput = null;
         var lateResume = false;
         int[]? monsterCaptures = null;
+        var npcOnly = false;
         var monstersOnly = false;
         var snowOnly = false;
         var breedingOnly = false;
@@ -40,11 +43,14 @@ internal static class Program
             {
                 Console.WriteLine("Usage: Yipe.GraphicsChecks [--output DIRECTORY] [--record | --opening-route | --late-route CAMPAIGN_SAVES]");
                 Console.WriteLine("Requires an active graphical desktop. --record additionally requires ffmpeg on PATH.");
+                Console.WriteLine("--startup-check DIRECTORY exercises the normal game loop, frame pacing and display changes with isolated saves.");
+                Console.WriteLine("--performance-check DIRECTORY measures nine scenes at 720p and 1080p using the normal paced game loop.");
                 Console.WriteLine("--capture-monsters 7,9 selects monster clips; all registered monsters are still checked.");
                 Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
                 Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
                 Console.WriteLine("--final-only runs focused Final Cave checks and captures.");
+                Console.WriteLine("--npc-only runs NPC artwork, dialogue and reward checks with review captures.");
                 Console.WriteLine("--water-only runs focused Water Cave checks and captures.");
                 Console.WriteLine("--ice-only runs focused Ice/Zephyr Cave checks and captures.");
                 Console.WriteLine("--clouds-only runs focused cloud, sunlight, actor, weather and day/night checks.");
@@ -53,7 +59,7 @@ internal static class Program
                 Console.WriteLine("--stone-only runs focused Stone Cave terrain, light and ambience checks.");
                 Console.WriteLine("--earth-only runs focused Earth Cave material, lighting and ambience checks.");
                 Console.WriteLine("--fire-only runs focused volcanic cave checks and captures.");
-                Console.WriteLine("--menus-only runs focused pause/graphics/help/control checks and captures.");
+                Console.WriteLine("--menus-only runs title, pause, adventure-slot, help and control checks with captures.");
                 Console.WriteLine("--breeding-only runs focused breeding-ground terrain, light and ambience checks.");
                 return 0;
             }
@@ -64,6 +70,7 @@ internal static class Program
             else if (args[i] == "--snow-only") snowOnly = true;
             else if (args[i] == "--outdoors-only") outdoorsOnly = true;
             else if (args[i] == "--ice-only") iceOnly = true;
+            else if (args[i] == "--npc-only") npcOnly = true;
             else if (args[i] == "--final-only") finalOnly = true;
             else if (args[i] == "--water-only") waterOnly = true;
             else if (args[i] == "--clouds-only") cloudsOnly = true;
@@ -95,6 +102,8 @@ internal static class Program
                 return 2;
             }
         }
+        if (npcOnly && (finalOnly || waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--npc-only cannot be combined with other capture or route modes."); return 2; }
         if (finalOnly && (waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
         { Console.Error.WriteLine("--final-only cannot be combined with other capture or route modes."); return 2; }
         if (waterOnly && (iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
@@ -157,7 +166,7 @@ internal static class Program
                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
                     }
                 }
-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly);
+                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly, npcOnly);
                 return 0;
             }
             catch (Exception error)
@@ -199,7 +208,7 @@ internal static class Program
         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
     }
 
-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly)
+    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly, bool npcOnly)
     {
         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
@@ -250,6 +259,12 @@ internal static class Program
         Check(!(bool)Get("screenShake"), "Screen shake defaults to Off");
         Check((int)Get("timeOfDayMode") == 0 && (double)Get("dayNightSeconds") is >= 300 and < 330,
             "Automatic day/night cycle is enabled by default, starting near midday as startup time elapses");
+        if (npcOnly)
+        {
+            NpcPresentationChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused NPC run.");
+            return;
+        }
         if (finalOnly)
         {
             FinalCaveChecks.Run(game, outputDirectory, Check);
@@ -272,7 +287,9 @@ internal static class Program
         }
         if (menusOnly)
         {
+            MusicChecks.Run(game, outputDirectory, Check);
             HelpControlChecks.Run(game, outputDirectory, Check);
+            TitleScreenChecks.Run(game, outputDirectory, Check);
             Log($"Passed {checks} visual integration checks. Focused menu/help/control run.");
             return;
         }
@@ -284,6 +301,7 @@ internal static class Program
         }
         if (outdoorsOnly)
         {
+            MountainPresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
             OutdoorPresentationChecks.Run(game, outputDirectory, Check);
             VillagePresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
             Log($"Passed {checks} visual integration checks. Focused overworld run.");
@@ -343,6 +361,7 @@ internal static class Program
         }
         FootstepChecks.Run(game, outputDirectory, Check);
         if (!monstersOnly) SnowBiomeChecks.Run(game, outputDirectory, Check);
+        if (!monstersOnly) NpcPresentationChecks.Run(game, outputDirectory, Check);
         MonsterAnimationChecks.Run(game, outputDirectory, Check, monsterCaptures);
         CombatFeedbackChecks.Run(game, outputDirectory, Check);
         if (monstersOnly)
@@ -365,11 +384,13 @@ internal static class Program
         Set("paused", false); Set("pauseAmount", 0f);
         Check(!(bool)Get("vignette"), "Vignette defaults to off");
         CheckVignette();
+        MusicChecks.Run(game, outputDirectory, Check);
         HelpControlChecks.Run(game, outputDirectory, Check);
+        TitleScreenChecks.Run(game, outputDirectory, Check);
         // Isolate existing blur measurements from scanlines, then exercise the full mode cycle.
         Set("scanlines", false);
         Set("miniatureMode", 1);
-        Set("graphicsMenuOpen", true); Set("selected", 2);
+        Set("pausePage", "Display"); Set("selected", 2);
         menu.Invoke(game, null);
         Check((int)Get("miniatureMode") == 2, "Miniature menu advances to Strong");
         menu.Invoke(game, null);
@@ -454,12 +475,12 @@ internal static class Program
         Set("miniatureMode", 2);
         var menuStrong = DrawPixels();
         Check((from y in Enumerable.Range(6 * 4, 168 * 4)
-               where y < 64 * 4 || y >= 71 * 4
+               where y < 79 * 4 || y >= 86 * 4
                from x in Enumerable.Range(34 * 4, 252 * 4)
                select y * 1280 + x).All(i => menuOff[i] == menuStrong[i]),
             "Opaque pause panel and typography remain untouched by the blur");
         Capture("yipe-village-menu.png");
-        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
+        Set("pausePage", "Main"); Set("selected", 0); Set("selectionY", 0f);
         Set("paused", false);
         Set("pauseAmount", 0f);
         Set("message", "Beyond Maynard\nThis area is not available in the town preview.");
@@ -630,10 +651,10 @@ internal static class Program
                 $"Bridge {bridge.X},{bridge.Y} reflection freezes at a fixed scene time");
             Check(!stillReflection.SequenceEqual(Layer("DrawHeroReflection", reflectionActor, 2d)),
                 $"Bridge {bridge.X},{bridge.Y} reflection has gentle animated ripples");
-            var withReflection = Layer("Draw", reflectionActor, 1d, false, 0);
+            var withReflection = Layer("Draw", reflectionActor, 1d, false, 0, Get("world"));
             var originalMask = (bool[])waterMask.Clone();
             Color[] withoutReflection;
-            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false, 0); }
+            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false, 0, Get("world")); }
             finally { originalMask.CopyTo(waterMask, 0); }
             var townAtlas = (Texture2D)townType.GetField("town", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(townRenderer)!;
             var townPixels = new Color[townAtlas.Width * townAtlas.Height]; townAtlas.GetData(townPixels);
@@ -738,10 +759,10 @@ internal static class Program
         try
         {
             detailsAtlas.SetData(new Color[originalDetails.Length]);
-            bareFacades = Layer("Draw", stillPlayer, 1d, false, 0);
+            bareFacades = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
         }
         finally { detailsAtlas.SetData(originalDetails); }
-        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false, 0);
+        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
         for (var y = 0; y < TownMap.Height; y++) for (var x = 0; x < TownMap.Width; x++)
         {
             var sprite = map.Tile(new(x, y)) switch { 1 => 0, 5 => 1, 6 => 2, 7 => 3, 10 => 4, _ => -1 };
@@ -770,7 +791,7 @@ internal static class Program
         try
         {
             buildingAtlas.SetData(withoutCavePixels);
-            withoutCave = Layer("Draw", stillPlayer, 1d, false, 0);
+            withoutCave = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
         }
         finally { buildingAtlas.SetData(buildingPixels); }
         var caveChanged = Enumerable.Range(0, withoutCave.Length).Where(i => withoutCave[i] != decoratedFacades[i]).ToArray();
@@ -850,7 +871,7 @@ internal static class Program
         session.DefeatedMonsterPlacements.Add(5);
         session.Random.Next();
         randomState = session.Random.State;
-        Set("selected", 1);
+        Set("pausePage", "Adventure"); Set("selected", 0);
         menu.Invoke(game, null);
         ((Task)Get("saving")).GetAwaiter().GetResult();
         finishStorage.Invoke(game, null);
@@ -860,7 +881,7 @@ internal static class Program
         session.Player.QuestFlags[9] = false; session.Player.OpenedChests[16] = 0;
         session.DefeatedMonsterPlacements.Clear(); session.Random.Next();
         restore.Invoke(game, [new MapPosition(5, 4)]);
-        Set("selected", 2);
+        Set("pausePage", "Adventure"); Set("selected", 1);
         menu.Invoke(game, null);
         ((Task)Get("loading")).GetAwaiter().GetResult();
         finishStorage.Invoke(game, null);
@@ -887,7 +908,7 @@ internal static class Program
         var visualBeforeRejectedLoad = player.VisualPosition;
         var corruptSave = (byte[])goodSaveBytes.Clone(); corruptSave[^1] ^= 1;
         File.WriteAllBytes(gameSavePath, corruptSave);
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(ReferenceEquals(session, Get("session")) && ReferenceEquals(townRenderer, Get("town"))
             && player.VisualPosition == visualBeforeRejectedLoad && player.IsMoving
             && GameSaveCodec.Encode(session, (MapCatalog)Get("catalog")).SequenceEqual(beforeRejectedLoad),
@@ -896,7 +917,7 @@ internal static class Program
 
         var outsideTown = new GameSession((MapCatalog)Get("catalog"), location: new() { MapId = 57, MapLayer = 1 });
         File.WriteAllBytes(gameSavePath, GameSaveCodec.Encode(outsideTown, (MapCatalog)Get("catalog")));
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(((GameSession)Get("session")).CurrentMap.Id == 57 && player.Position == outsideTown.Location.Position,
             "A wider-world save opens in its cave with the animated player synchronized");
         Capture("yipe-earth-cave.png");
@@ -905,29 +926,29 @@ internal static class Program
         var generatedBytes = GameSaveCodec.Encode(generatedSession, (MapCatalog)Get("catalog"));
         var expectedGenerated = GameSaveCodec.Decode(generatedBytes, (MapCatalog)Get("catalog"));
         File.WriteAllBytes(gameSavePath, generatedBytes);
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(((GameSession)Get("session")).CurrentMap.Id == 118 && ((GameSession)Get("session")).Random.State == expectedGenerated.Random.State,
             "Generated-map loading advances the restored RNG exactly once, independently of rendering");
         Capture("yipe-generated-map.png");
         RestoreSavedTown();
         File.WriteAllText(gameSavePath, "{\"Version\":1,\"MapId\":17,\"X\":5,\"Y\":5}");
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(ReferenceEquals(session, Get("session")) && session.Player.Gold == 321
             && ((string)Get("menuMessage")).StartsWith("Could not load"),
             "Loading raw preview JSON cannot silently replace earned character progress");
         var unsupportedPosition = new GameSession((MapCatalog)Get("catalog"), location: new() { Position = new(6, 6) });
         File.WriteAllBytes(gameSavePath, GameSaveCodec.Encode(unsupportedPosition, (MapCatalog)Get("catalog")));
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(((GameSession)Get("session")).Location.Position == new MapPosition(6, 6) && player.Position == new MapPosition(6, 6),
             "The full game can display saved positions beyond the former preview restriction");
         RestoreSavedTown();
         File.Delete(gameSavePath);
-        Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+        Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
         Check(ReferenceEquals(session, Get("session")) && ((string)Get("menuMessage")) == "No saved game yet.",
             "Missing-save feedback preserves the live game");
         File.WriteAllBytes(gameSavePath, goodSaveBytes);
         session.Player.OpenedChests[0] = 16;
-        Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("saving");
+        Set("pausePage", "Adventure"); Set("selected", 0); menu.Invoke(game, null); FinishPendingStorage("saving");
         session.Player.OpenedChests[0] = 0;
         Check(((string)Get("menuMessage")).StartsWith("Could not save") && File.ReadAllBytes(gameSavePath).SequenceEqual(goodSaveBytes),
             "Pause-menu save validation failure preserves the previous successful file");
@@ -1005,7 +1026,7 @@ internal static class Program
         restore.Invoke(game, [new MapPosition(11, 5)]);
         Check(((Vector2)Get("cameraPosition")).X == 96, "Camera clamps at the east edge");
         Capture("yipe-village-east.png");
-        Set("graphicsMenuOpen", true); Set("selected", 0);
+        Set("pausePage", "Display"); Set("selected", 0);
         menu.Invoke(game, null);
         var graphics = (GraphicsDeviceManager)Get("graphics");
         Check(graphics.IsFullScreen, "Fullscreen activates");
@@ -1013,7 +1034,7 @@ internal static class Program
         menu.Invoke(game, null);
         Check(!graphics.IsFullScreen && game.GraphicsDevice.PresentationParameters.BackBufferWidth == 1280
             && game.GraphicsDevice.PresentationParameters.BackBufferHeight == 720, "Windowed 16:9 resolution restores");
-        Set("selected", 1);
+        Set("pausePage", "Display"); Set("selected", 1);
         menu.Invoke(game, null);
         Check((bool)Get("scanlines"), "Scanlines toggle on through the menu");
         draw.Invoke(game, [new GameTime()]);
@@ -1031,7 +1052,7 @@ internal static class Program
             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-scanlines.png"));
             capture.SaveAsPng(file, capture.Width, capture.Height);
         }
-        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
+        Set("pausePage", "Main"); Set("selected", 0); Set("selectionY", 0f);
         var renderer = Get("town");
         var rendererType = renderer.GetType();
         var palette = (Color[])rendererType.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
@@ -1100,7 +1121,7 @@ internal static class Program
             game.GraphicsDevice.SetRenderTarget(fullMap);
             game.GraphicsDevice.Clear(Color.Black);
             referenceBatch.Begin(samplerState: SamplerState.PointClamp);
-            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false, 0]);
+            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false, 0, worldRenderer]);
             referenceBatch.End();
             game.GraphicsDevice.SetRenderTarget(null);
             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-entire-town.png"));
@@ -1150,15 +1171,15 @@ internal static class Program
             var audio = Get("audio");
             Check((string)audio.GetType().GetProperty("Error")!.GetValue(audio)! == "", "All original effects and packaged monster WAV files load on the real audio device");
             audio.GetType().GetProperty("Enabled")!.SetValue(audio, true);
-            var clipField = audio.GetType().GetField("current", BindingFlags.Instance | BindingFlags.NonPublic)!;
-            audio.GetType().GetMethod("Play")!.Invoke(audio, [131]);
-            var clip = (Microsoft.Xna.Framework.Audio.SoundEffectInstance)clipField.GetValue(audio)!;
+            var voices = (List<Microsoft.Xna.Framework.Audio.SoundEffectInstance>)audio.GetType().GetField("voices", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(audio)!;
+            audio.GetType().GetMethod("Play")!.Invoke(audio, [131, false]);
+            var clip = voices[^1];
             Check(clip.State == Microsoft.Xna.Framework.Audio.SoundState.Playing, "An original effect starts playback on the real audio device");
             audio.GetType().GetMethod("MonsterDeath")!.Invoke(audio, [35]);
-            Check(!ReferenceEquals(clip, clipField.GetValue(audio)) && clip.IsDisposed,
-                "A monster sound replaces and disposes the previous effect");
+            Check(voices.Count == 2 && voices.Contains(clip) && !clip.IsDisposed,
+                "A monster death sound overlaps the preceding impact");
             audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
-            Check(clipField.GetValue(audio) is null, "Losing focus stops and releases the playing sound");
+            Check(voices.LastOrDefault() is null, "Losing focus stops and releases the playing sound");
             audio.GetType().GetProperty("Enabled")!.SetValue(audio, false);
             Invoke("BeginCharacterCreation"); Choose("Combat"); Choose("Use these attributes");
             var nameOverlay = Get("overlay"); var nameReceiver = Get("textReceiver");
@@ -1168,6 +1189,8 @@ internal static class Program
             Check(inputSuspended && ReferenceEquals(nameOverlay, Get("overlay")) && ReferenceEquals(nameReceiver, Get("textReceiver")),
                 "Cancelling New adventure restores name entry after suspending its text input");
             Choose("Done"); Choose("Medium"); Choose("Classic"); Choose("Knight");
+            // The legacy storage fixtures below use a fixed scratch file. TitleScreenChecks covers new slots.
+            Set("saves", new GameSaveStore(gameSavePath, (MapCatalog)Get("catalog")));
             Capture("yipe-creation-intro.png"); Choose("Continue");
             session = (GameSession)Get("session"); map = (TownMap)Get("map"); townRenderer = Get("town");
             Check(session.Player.Name == "Yipie" && session.Player.Strength == 16 && session.Player.Difficulty == 2
@@ -1329,7 +1352,7 @@ internal static class Program
                     "Closing the map does not replay paused time or buffered input");
                 Update(PlayerMotion.StepDuration); Invoke("OpenMap");
                 Invoke("UpdateMap", new InputFrame(Point.Zero, false, false, true));
-                Set("selected", 3); menu.Invoke(game, null);
+                Set("pausePage", "Adventure"); Set("selected", 2); menu.Invoke(game, null);
                 Check(!(bool)Get("mapOpen") && !(bool)Get("paused") && Get("overlay") is not null,
                     "New adventure from the map's pause menu exposes its confirmation correctly");
                 Choose("Keep playing");
@@ -1355,9 +1378,9 @@ internal static class Program
                 Capture("yipe-map-world-hell.png");
                 Check((int)Get("mapLayer") == 3, "Alternate regions occupy their original coordinates on a separate world layer");
                 Invoke("UpdateMap", new InputFrame(new Point(1, 0), false, false, false));
-                Set("paused", true); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("saving");
+                Set("paused", true); Set("pausePage", "Adventure"); Set("selected", 0); menu.Invoke(game, null); FinishPendingStorage("saving");
                 var mapNotes = File.ReadAllBytes(Path.ChangeExtension(gameSavePath, ".map.json"));
-                Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+                Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
                 session = (GameSession)Get("session"); Set("paused", false); Set("pauseAmount", 0f);
                 Check(!(bool)Get("mapOpen") && ((MapJournal)Get("journal")).Regions.Count == 13
                     && ((MapJournal)Get("journal")).Encode(File.ReadAllBytes(gameSavePath)).SequenceEqual(mapNotes),
@@ -1401,7 +1424,7 @@ internal static class Program
                     var hero = new Player { Health = 100, MaximumHealth = 100, HasRainbowKey = true, RandomEncounterThreshold = 32767 };
                     var scenario = new GameSession(routeCatalog, hero, location);
                     File.WriteAllBytes(gameSavePath, GameSaveCodec.Encode(scenario, routeCatalog));
-                    Set("paused", true); Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+                    Set("paused", true); Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
                     session = (GameSession)Get("session"); Set("paused", false); Set("pauseAmount", 0f);
                 }
                 void Frame()
@@ -1438,8 +1461,8 @@ internal static class Program
                 Until(() => session.CurrentMap.Events.Overlay.Position == new MapPosition(4, 9)); Walk("1");
                 Check(session.CurrentMap.Id == 74 && session.Location.Position == new MapPosition(4, 9),
                     "At the approved walking pace, the character enters the water cave and boards its moving platform");
-                Set("paused", true); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("saving");
-                Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+                Set("paused", true); Set("pausePage", "Adventure"); Set("selected", 0); menu.Invoke(game, null); FinishPendingStorage("saving");
+                Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
                 session = (GameSession)Get("session"); Set("paused", false); Set("pauseAmount", 0f);
                 Check(session.Location.Position == new MapPosition(4, 9) && session.CurrentMap.Events.Overlay.Position == session.Location.Position,
                     "Production pause-menu save/load restores platform support under its rider");
@@ -1468,11 +1491,11 @@ internal static class Program
                 var potionRandom = session.Random.State;
                 audio.GetType().GetProperty("Enabled")!.SetValue(audio, true);
                 Invoke("ShowActions"); Choose("Inventory"); Choose(ItemNames.Consumable(5)); Choose("Use");
-                var potionClip = (Microsoft.Xna.Framework.Audio.SoundEffectInstance)clipField.GetValue(audio)!;
+                var potionClip = voices[^1];
                 Check(session.CurrentMap.Id == 17 && session.Player.Inventory[0] == 0 && session.Random.State == potionRandom,
                     "The surface potion relocates through its inventory overlay without drawing RNG");
                 Choose("Continue");
-                Check(potionClip.IsDisposed && !ReferenceEquals(potionClip, clipField.GetValue(audio)) && clipField.GetValue(audio) is not null,
+                Check(potionClip.IsDisposed && !ReferenceEquals(potionClip, voices.LastOrDefault()) && voices.LastOrDefault() is not null,
                     "Acknowledging a surface potion plays the return cue after its item cue");
                 audio.GetType().GetProperty("Enabled")!.SetValue(audio, false);
                 Choose("Back"); Choose("Continue exploring");
@@ -1491,12 +1514,17 @@ internal static class Program
         void RestoreSavedTown()
         {
             File.WriteAllBytes(gameSavePath, goodSaveBytes);
-            Set("selected", 2); menu.Invoke(game, null); FinishPendingStorage("loading");
+            Set("saves", new GameSaveStore(gameSavePath, (MapCatalog)Get("catalog")));
+            Set("pausePage", "Adventure"); Set("selected", 1); menu.Invoke(game, null); FinishPendingStorage("loading");
             session = (GameSession)Get("session"); map = (TownMap)Get("map"); townRenderer = Get("town");
             randomState = session.Random.State;
         }
         object Get(string name) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game)!;
-        void Set(string name, object? value) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Update(double seconds) => update.Invoke(game, [new GameTime(TimeSpan.Zero, TimeSpan.FromSeconds(seconds))]);
         void Log(string message)
         {
@@ -1507,7 +1535,7 @@ internal static class Program
         void CheckVignette()
         {
             var snapshot = GameSaveCodec.Encode(session, (MapCatalog)Get("catalog"));
-            Set("graphicsMenuOpen", true); Set("selected", 3); menu.Invoke(game, null);
+            Set("pausePage", "Display"); Set("selected", 3); menu.Invoke(game, null);
             Check((bool)Get("vignette"), "Vignette toggles on through the pause menu");
             var profileType = Get("profile").GetType();
             var reopened = Activator.CreateInstance(profileType, [Path.ChangeExtension(importedPath, ".profile.json")])!;
@@ -1531,7 +1559,7 @@ internal static class Program
             Set("miniatureMode", 0); Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 30f);
             Set("menuMessage", "Preferences could not be saved.\nChanges apply for this session.");
             var pauseOff = DrawPixels(); Set("vignette", true); var pauseOn = DrawPixels();
-            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 74 * 4 || y >= 81 * 4
+            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 91 * 4 || y >= 98 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => pauseOff[i] == pauseOn[i]),
                 "Vignette leaves pause text and panels unchanged apart from its own On/Off label");
             Capture("yipe-vignette-menu.png");
@@ -1549,7 +1577,7 @@ internal static class Program
             menu.Invoke(game, null);
             Check(!(bool)Get("vignette") && GameSaveCodec.Encode(session, (MapCatalog)Get("catalog")).SequenceEqual(snapshot),
                 "Vignette toggles off again without changing gameplay or RNG");
-            Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
+            Set("pausePage", "Main"); Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
         }
 
         void Check(bool condition, string label)

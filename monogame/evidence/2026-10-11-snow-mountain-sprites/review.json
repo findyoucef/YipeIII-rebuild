@@ -1,0 +1,39 @@
+{
+  "status": "Implemented, locally verified and user-approved",
+  "outdoors_checks": 335,
+  "snow_checks": 41,
+  "matching_overlap_pixels": 40960,
+  "surface_maps_changed": [
+    7,
+    13,
+    18,
+    19,
+    20,
+    21,
+    26,
+    27
+  ],
+  "surface_maps_identical": 28,
+  "note": "Existing snow terrain occurs in A3/map13 and C4/map21; adjacent-region captures include their shared ranges. Bare peak artwork is byte-identical.",
+  "personal_files_compared": 28,
+  "personal_files_changed": 0,
+  "source_hashes": {
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "392a63d00a866e3e046a62d571a789bdee27d2dfc499a475e495b7965764b389",
+    "monogame/Yipe.GraphicsChecks/SnowBiomeChecks.cs": "b8ce8df062c3aa2401876deb14fcb3fef587b2225b23f30d5bbf74344e06f640",
+    "monogame/Yipe.Desktop/Content/Art/Retro/World/mountain-peaks-snow.png": "b6fc0e72d0bb1067e98ef6c2dd49c1b9d1f6f1c881683e4feff589b193b6b176",
+    "monogame/Yipe.Desktop/Content/Art/Retro/World/mountain-peaks.png": "667a14888b032982b331db70b3fb93d96d43de05c36430f157542367a3ef4d91",
+    "assets/maps/original-map-tables.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e"
+  },
+  "desktop_assembly_sha256": "31f482c3d1323a3e5e3677a25ed7bd4b6c2609f995a98c2829408b4d15a22379",
+  "launcher_matches_tested_build_and_asset": true,
+  "method": "Dedicated sprite sheet generated using built-in imagegen, compiled to native pixels. Runtime snow recoloring and height buffer removed.",
+  "prompt": "asset-prompt.txt",
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --snow-only --output build/snow-mountain-sprites/snow",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --outdoors-only --output build/snow-mountain-sprites/outdoors",
+    "dotnet build build/cloud-rework/launcher/CloudPreview.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false"
+  ],
+  "repackaged": false,
+  "user_game_relaunched": false
+}

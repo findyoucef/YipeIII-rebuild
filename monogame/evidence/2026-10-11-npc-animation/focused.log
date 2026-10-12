@@ -1,0 +1,187 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/npc-animation/focused-3/yipe-graphics-20261012-014816-ddb8617f
+Content startup and five initial frames: 3.30 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Five NPC sheets preserve the King, Teacher and all three Princess identities
+PASS: King: native 48-pixel poses use binary alpha and the shared palette
+PASS: King: every pose has planted feet and clean cell borders
+PASS: King: blink, conversation and celebration have distinct artwork
+PASS: King: one-shot celebration settles to idle instead of repeating
+PASS: Teacher: native 48-pixel poses use binary alpha and the shared palette
+PASS: Teacher: every pose has planted feet and clean cell borders
+PASS: Teacher: blink, conversation and celebration have distinct artwork
+PASS: Teacher: one-shot celebration settles to idle instead of repeating
+PASS: PrincessPink: native 48-pixel poses use binary alpha and the shared palette
+PASS: PrincessPink: every pose has planted feet and clean cell borders
+PASS: PrincessPink: blink, conversation and celebration have distinct artwork
+PASS: PrincessPink: one-shot celebration settles to idle instead of repeating
+PASS: PrincessPurple: native 48-pixel poses use binary alpha and the shared palette
+PASS: PrincessPurple: every pose has planted feet and clean cell borders
+PASS: PrincessPurple: blink, conversation and celebration have distinct artwork
+PASS: PrincessPurple: one-shot celebration settles to idle instead of repeating
+PASS: PrincessBlue: native 48-pixel poses use binary alpha and the shared palette
+PASS: PrincessBlue: every pose has planted feet and clean cell borders
+PASS: PrincessBlue: blink, conversation and celebration have distinct artwork
+PASS: PrincessBlue: one-shot celebration settles to idle instead of repeating
+PASS: king: world rendering preserves gameplay and RNG
+PASS: king: original event opens its dialogue
+PASS: king: dialogue uses the correct actor/variant
+PASS: king: opening the animated dialogue matches the original event state and RNG
+PASS: king: prose and every choice fit below the portrait without overlap
+PASS: king: dialogue animates through the real update loop
+PASS: king: portrait time does not advance the world or RNG
+PASS: King dialogue retains every original word across pages
+PASS: Pause freezes NPC portrait animation
+PASS: Focus loss freezes NPC portrait animation
+PASS: King prose paginates with Continue without closing early
+PASS: teacher: world rendering preserves gameplay and RNG
+PASS: teacher: original event opens its dialogue
+PASS: teacher: dialogue uses the correct actor/variant
+PASS: teacher: opening the animated dialogue matches the original event state and RNG
+PASS: teacher: prose and every choice fit below the portrait without overlap
+PASS: teacher: dialogue animates through the real update loop
+PASS: teacher: portrait time does not advance the world or RNG
+PASS: Learning an ability celebrates once and preserves its original cost and outcome
+PASS: teacher-trained: reaction frames preserve full gameplay and RNG
+PASS: Already-trained feedback does not celebrate or charge again
+PASS: princess-pink: world rendering preserves gameplay and RNG
+PASS: princess-pink: original event opens its dialogue
+PASS: princess-pink: dialogue uses the correct actor/variant
+PASS: princess-pink: opening the animated dialogue matches the original event state and RNG
+PASS: princess-pink: prose and every choice fit below the portrait without overlap
+PASS: princess-pink: dialogue animates through the real update loop
+PASS: princess-pink: portrait time does not advance the world or RNG
+PASS: princess-pink: rescue celebration preserves the original gift, flags and RNG
+PASS: princess-pink-rescued: reaction frames preserve full gameplay and RNG
+PASS: princess-purple: world rendering preserves gameplay and RNG
+PASS: princess-purple: original event opens its dialogue
+PASS: princess-purple: dialogue uses the correct actor/variant
+PASS: princess-purple: opening the animated dialogue matches the original event state and RNG
+PASS: princess-purple: prose and every choice fit below the portrait without overlap
+PASS: princess-purple: dialogue animates through the real update loop
+PASS: princess-purple: portrait time does not advance the world or RNG
+PASS: princess-purple: rescue celebration preserves the original gift, flags and RNG
+PASS: princess-purple-rescued: reaction frames preserve full gameplay and RNG
+PASS: princess-blue: world rendering preserves gameplay and RNG
+PASS: princess-blue: original event opens its dialogue
+PASS: princess-blue: dialogue uses the correct actor/variant
+PASS: princess-blue: opening the animated dialogue matches the original event state and RNG
+PASS: princess-blue: prose and every choice fit below the portrait without overlap
+PASS: princess-blue: dialogue animates through the real update loop
+PASS: princess-blue: portrait time does not advance the world or RNG
+PASS: princess-blue: rescue celebration preserves the original gift, flags and RNG
+PASS: princess-blue-rescued: reaction frames preserve full gameplay and RNG
+PASS: Princess 46: frozen rendering is deterministic
+PASS: Princess 46: the world actor disappears after rescue
+PASS: Princess 46: unexplored cells never reveal the actor
+PASS: Princess 46: drawing uses no gameplay state or RNG
+PASS: Princess 49: frozen rendering is deterministic
+PASS: Princess 49: the world actor disappears after rescue
+PASS: Princess 49: unexplored cells never reveal the actor
+PASS: Princess 49: drawing uses no gameplay state or RNG
+PASS: Princess 51: frozen rendering is deterministic
+PASS: Princess 51: the world actor disappears after rescue
+PASS: Princess 51: unexplored cells never reveal the actor
+PASS: Princess 51: drawing uses no gameplay state or RNG
+PASS: Princess 65: frozen rendering is deterministic
+PASS: Princess 65: the world actor disappears after rescue
+PASS: Princess 65: unexplored cells never reveal the actor
+PASS: Princess 65: drawing uses no gameplay state or RNG
+PASS: Princess 74: frozen rendering is deterministic
+PASS: Princess 74: the world actor disappears after rescue
+PASS: Princess 74: unexplored cells never reveal the actor
+PASS: Princess 74: drawing uses no gameplay state or RNG
+PASS: Princess 86: frozen rendering is deterministic
+PASS: Princess 86: the world actor disappears after rescue
+PASS: Princess 86: unexplored cells never reveal the actor
+PASS: Princess 86: drawing uses no gameplay state or RNG
+PASS: Princess 88: frozen rendering is deterministic
+PASS: Princess 88: the world actor disappears after rescue
+PASS: Princess 88: unexplored cells never reveal the actor
+PASS: Princess 88: drawing uses no gameplay state or RNG
+PASS: Princess 90: frozen rendering is deterministic
+PASS: Princess 90: the world actor disappears after rescue
+PASS: Princess 90: unexplored cells never reveal the actor
+PASS: Princess 90: drawing uses no gameplay state or RNG
+PASS: Princess 91: frozen rendering is deterministic
+PASS: Princess 91: the world actor disappears after rescue
+PASS: Princess 91: unexplored cells never reveal the actor
+PASS: Princess 91: drawing uses no gameplay state or RNG
+PASS: Princess 97: frozen rendering is deterministic
+PASS: Princess 97: the world actor disappears after rescue
+PASS: Princess 97: unexplored cells never reveal the actor
+PASS: Princess 97: drawing uses no gameplay state or RNG
+PASS: Princess 99: frozen rendering is deterministic
+PASS: Princess 99: the world actor disappears after rescue
+PASS: Princess 99: unexplored cells never reveal the actor
+PASS: Princess 99: drawing uses no gameplay state or RNG
+PASS: Princess 100: frozen rendering is deterministic
+PASS: Princess 100: the world actor disappears after rescue
+PASS: Princess 100: unexplored cells never reveal the actor
+PASS: Princess 100: drawing uses no gameplay state or RNG
+PASS: Princess 103: frozen rendering is deterministic
+PASS: Princess 103: the world actor disappears after rescue
+PASS: Princess 103: unexplored cells never reveal the actor
+PASS: Princess 103: drawing uses no gameplay state or RNG
+PASS: Princess 106: frozen rendering is deterministic
+PASS: Princess 106: the world actor disappears after rescue
+PASS: Princess 106: unexplored cells never reveal the actor
+PASS: Princess 106: drawing uses no gameplay state or RNG
+PASS: Princess 109: frozen rendering is deterministic
+PASS: Princess 109: the world actor disappears after rescue
+PASS: Princess 109: unexplored cells never reveal the actor
+PASS: Princess 109: drawing uses no gameplay state or RNG
+PASS: Princess 113: frozen rendering is deterministic
+PASS: Princess 113: the world actor disappears after rescue
+PASS: Princess 113: unexplored cells never reveal the actor
+PASS: Princess 113: drawing uses no gameplay state or RNG
+PASS: Princess 116: frozen rendering is deterministic
+PASS: Princess 116: the world actor disappears after rescue
+PASS: Princess 116: unexplored cells never reveal the actor
+PASS: Princess 116: drawing uses no gameplay state or RNG
+PASS: Princess 117: frozen rendering is deterministic
+PASS: Princess 117: the world actor disappears after rescue
+PASS: Princess 117: unexplored cells never reveal the actor
+PASS: Princess 117: drawing uses no gameplay state or RNG
+PASS: Princess 127: frozen rendering is deterministic
+PASS: Princess 127: the world actor disappears after rescue
+PASS: Princess 127: unexplored cells never reveal the actor
+PASS: Princess 127: drawing uses no gameplay state or RNG
+PASS: Princess 133: frozen rendering is deterministic
+PASS: Princess 133: the world actor disappears after rescue
+PASS: Princess 133: unexplored cells never reveal the actor
+PASS: Princess 133: drawing uses no gameplay state or RNG
+PASS: Teacher 75: artwork occupies the original training tile
+PASS: Teacher 94: artwork occupies the original training tile
+PASS: Teacher 104: artwork occupies the original training tile
+PASS: Teacher 105: artwork occupies the original training tile
+PASS: Rescue gift 1: original choices and order remain available
+PASS: Rescue gift 1: immediate choice exactly matches core rewards and RNG
+PASS: Rescue gift 2: original choices and order remain available
+PASS: Rescue gift 2: immediate choice exactly matches core rewards and RNG
+PASS: Rescue gift 3: original choices and order remain available
+PASS: Rescue gift 3: immediate choice exactly matches core rewards and RNG
+PASS: Rescue gift 4: original choices and order remain available
+PASS: Rescue gift 4: immediate choice exactly matches core rewards and RNG
+PASS: Backing out of a rescue leaves the Princess available and gives no reward
+PASS: Teacher 75: prose and every choice fit below the portrait without overlap
+PASS: Teacher 75: insufficient funds give ordinary feedback without charging or teaching
+PASS: Teacher 94: prose and every choice fit below the portrait without overlap
+PASS: Teacher 94: insufficient funds give ordinary feedback without charging or teaching
+PASS: Teacher 104: prose and every choice fit below the portrait without overlap
+PASS: Teacher 104: insufficient funds give ordinary feedback without charging or teaching
+PASS: Teacher 105: prose and every choice fit below the portrait without overlap
+PASS: Teacher 105: insufficient funds give ordinary feedback without charging or teaching
+PASS: King: gold reward plays an approving reaction
+PASS: king-reward: reaction frames preserve full gameplay and RNG
+PASS: King: item reward plays an approving reaction
+PASS: King: equipment reward plays an approving reaction
+Passed 183 visual integration checks. Focused NPC run.

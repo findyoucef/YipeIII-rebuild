@@ -369,3 +369,9 @@ resets and full session/RNG preservation during continuous strides and turning.
 The native sheet and a four-second walking capture were visually inspected.
 The preceding earned opening replay remains the gameplay reference; it was not
 repeated for this pose/timing revision. [Evidence and walking preview](evidence/2026-10-07-golem-walk/README.md).
+
+## Separate NPC pass — 2026-10-11
+
+The King, Skill Teacher and all three Princess appearances now have a separate
+completed [NPC animation pass](NPC_ANIMATION_PLAN.md), adding 60 native poses.
+The 41-monster roster and its 656 poses are unchanged.

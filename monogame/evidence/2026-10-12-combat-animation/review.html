@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yipe — rapid combat feedback</title>
+<style>
+body { margin: 0; background: #151c25; color: #e5e8df; font: 16px/1.6 system-ui,sans-serif; }
+main { max-width: 1200px; margin: auto; padding: 40px 24px; }
+h1 { color: #edca78; line-height: 1.2; }
+.clips { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 24px; }
+video { display: block; width: 100%; background: #000; image-rendering: pixelated; border-radius: 4px; }
+article { background: #222c38; padding: 20px; border-radius: 8px; }
+h2 { margin-top: 0; font-size: 20px; }
+a { color: #edca78; }
+.note { color: #b0becc; }
+</style>
+<main>
+<h1>Rapid combat stays readable</h1>
+<p>Continue now remembers your confirmation and speeds up the remaining animation.
+The impact, defeat and reward cues finish before the panel closes. Repeated presses
+do not queue extra attacks.</p>
+<div class="clips">
+<article><h2>Normal playback</h2>
+<video controls loop preload="metadata" src="normal-victory.mp4"></video>
+<p>No early confirmation; the victory panel stays open.</p></article>
+<article><h2>Rapid Enter</h2>
+<video controls loop preload="metadata" src="quick-victory.mp4"></video>
+<p>Enter is pressed after 50 ms and on every following frame. The remaining
+sequence plays at three times normal speed, then returns to the game.</p></article>
+</div>
+<p class="note">These silent clips use the production renderer and simulated 60 FPS updates
+with isolated test characters. Audio playback was checked separately on the real audio
+device, including death cues surviving rewards and battle exit.</p>
+<p><a href="review.json">Verification details</a> · <a href="combat-checks.log">Combat checks</a></p>
+</main>
+</html>

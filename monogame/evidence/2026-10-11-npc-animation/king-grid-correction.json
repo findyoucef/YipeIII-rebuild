@@ -1,0 +1,6 @@
+{
+  "tool": "built-in imagegen",
+  "prompt": "Correct the animation grid placement of this King sprite sheet only. Preserve all 12 character poses, identity, costume, pixel-art style and transparent background exactly. Output a perfectly regular FOUR equal columns by THREE equal rows sheet. Each cell must contain exactly one COMPLETE King with his boots fully inside that cell. The current first row's boots cross into row 2 and create stray pixels. Uniformly shrink all characters about 15% to create generous TRANSPARENT gutters at top and bottom of EVERY cell. Same scale for all poses, same foot baseline relative to each cell, same head center. No pixels whatsoever from adjacent rows inside another cell. No labels, lines or shadows. This is a production animation texture, not a poster.",
+  "source": "/Users/baouchiy/.codex/generated_images/01a117b4-228b-7910-8dfa-e79d7b1b727f/exec-73c63a3a-454b-454c-b8de-368f3a67f663.png",
+  "reason": "Correct first-row boots crossing the sprite grid and causing stray marks in later poses."
+}

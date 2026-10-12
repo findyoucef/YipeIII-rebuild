@@ -1,0 +1,297 @@
+  Yipe.Core -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/bin/Release/net8.0/Yipe.Core.dll
+  Yipe.Desktop -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll
+  Yipe.GraphicsChecks -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll
+  Yipe.Tests -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.60
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-786fef9dc12e4c0ca0ba2a794eb3e947/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-5e523e919433408797499e302f5bede6/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-5e523e919433408797499e302f5bede6/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-68237df38ee846c6bd9b9c9558547ea1/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-6f44af31a6ce40eca36a3f158b0f5af9/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-6f44af31a6ce40eca36a3f158b0f5af9/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-4c87c610850949f3a4b0183a1cee8936/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-851cd41ea0514b3bb5e865a7be0df3c8/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-851cd41ea0514b3bb5e865a7be0df3c8/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-e686a4c0f88f4688a09945941da37b82/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-b4e50ab2e3f54c529ed62943d6262738/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-b4e50ab2e3f54c529ed62943d6262738/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-bccc6f1e8ec04f6a841204bddb015552/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-595428bab8e74d60956bdfbf29850556/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-595428bab8e74d60956bdfbf29850556/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-6e54261f3532467b81180cfd6f4c7d28/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-e01c620b771d4db68d2c9bc9053f0f28/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-e01c620b771d4db68d2c9bc9053f0f28/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-39a899db0f9347f29fc0bbb88426311a/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-7083d70293f74a7cb73de5957ebe7f76/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-7083d70293f74a7cb73de5957ebe7f76/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+--write-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+--read-room-fixtures passed (eight normal/Hell/generated/timed/platform rooms).
+Passed 645 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.

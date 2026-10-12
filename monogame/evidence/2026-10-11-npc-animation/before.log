@@ -1,0 +1,23 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/npc-animation/before/yipe-graphics-20261012-013822-0d3f0de4
+Content startup and five initial frames: 3.16 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: king: world rendering preserves gameplay and RNG
+PASS: king: original event opens its dialogue
+PASS: teacher: world rendering preserves gameplay and RNG
+PASS: teacher: original event opens its dialogue
+PASS: princess-pink: world rendering preserves gameplay and RNG
+PASS: princess-pink: original event opens its dialogue
+PASS: princess-purple: world rendering preserves gameplay and RNG
+PASS: princess-purple: original event opens its dialogue
+PASS: princess-blue: world rendering preserves gameplay and RNG
+PASS: princess-blue: original event opens its dialogue
+Passed 19 visual integration checks. Focused NPC run.

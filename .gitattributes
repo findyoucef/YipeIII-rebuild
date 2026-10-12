@@ -8,3 +8,6 @@ assets/embedded/audio/** -text -diff
 assets/embedded/resource-manifest.tsv whitespace=-blank-at-eol
 # Original-runtime fixtures and captures are byte-preserved evidence.
 evidence/original-runtime/** -text -whitespace
+# Bundled upstream licenses retain their source bytes and recorded hashes.
+monogame/Yipe.Desktop/Content/Credits/Licenses/** -text -whitespace
+monogame/Yipe.Desktop/Content/Audio/Music/CC-*.txt -text -whitespace

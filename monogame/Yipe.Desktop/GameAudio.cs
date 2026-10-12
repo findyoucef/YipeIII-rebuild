@@ -5,12 +5,13 @@ namespace Yipe.Desktop;
 
 internal enum FootstepSurface { Grass, Stone, Sand, Wood, Water, Snow }
 
-/// <summary>Original effects and interruption behavior. Playback never controls simulation time or RNG.</summary>
+/// <summary>Original effects with bounded combat overlap. Playback never controls simulation time or RNG.</summary>
 internal sealed class GameAudio : IDisposable
 {
     private readonly Dictionary<int, SoundEffect> effects = new();
     private readonly Dictionary<int, SoundEffect> monsters = new();
-    private SoundEffectInstance? current;
+    private readonly List<SoundEffectInstance> voices = new();
+    private bool EffectPlaying => voices.Any(voice => voice.State == SoundState.Playing);
     private readonly Dictionary<FootstepSurface, SoundEffect[]> footsteps = new();
     private SoundEffectInstance? footstep;
     private int footstepIndex;
@@ -30,6 +31,8 @@ internal sealed class GameAudio : IDisposable
     private float outdoorBirdGain, outdoorNightGain;
     public bool Enabled { get; set; } = true;
     public float Volume { get; set; } = .65f;
+    public float EffectsVolume { get; set; } = 1f;
+    private float OutputVolume => Volume * EffectsVolume;
     public string Error { get; private set; } = "";
 
     public GameAudio(string content)
@@ -91,30 +94,32 @@ internal sealed class GameAudio : IDisposable
             Dispose();
         }
     }
-    public void Play(int id)
+    public void Play(int id, bool overlap = false)
     {
-        if (id != 0 && effects.TryGetValue(id, out var sound)) PlayClip(sound);
+        if (id != 0 && effects.TryGetValue(id, out var sound)) PlayClip(sound, overlap);
     }
     public void MonsterDeath(int type)
     {
-        if (monsters.TryGetValue(AudioCatalog.MonsterFile(type), out var sound)) PlayClip(sound);
-        else Play(12);
+        if (monsters.TryGetValue(AudioCatalog.MonsterFile(type), out var sound)) PlayClip(sound, overlap: true);
+        else Play(12, overlap: true);
     }
-    private void PlayClip(SoundEffect sound)
+    private void PlayClip(SoundEffect sound, bool overlap)
     {
-        if (!Enabled || Error.Length != 0) return;
+        if (!Enabled || OutputVolume <= 0 || Error.Length != 0) return;
         StopFootsteps();
-        // The original clears queued audio each time a new effect is played.
-        current?.Stop(); current?.Dispose();
-        current = sound.CreateInstance(); current.Volume = Volume; current.Play();
+        UpdateEffects(overlap);
+        // Keep combat responsive without cutting off every preceding impact or building a backlog.
+        if (voices.Count == 4) { voices[0].Dispose(); voices.RemoveAt(0); }
+        var voice = sound.CreateInstance();
+        voice.Volume = OutputVolume; voice.Play(); voices.Add(voice);
     }
     public void Footstep(FootstepSurface surface)
     {
-        if (!Enabled || Volume <= 0 || Error.Length != 0 || current?.State == SoundState.Playing) return;
+        if (!Enabled || OutputVolume <= 0 || Error.Length != 0 || EffectPlaying) return;
         StopFootsteps();
         var variant = footstepIndex++ % 3;
         footstep = footsteps[surface][variant].CreateInstance();
-        footstep.Volume = Volume * .28f;
+        footstep.Volume = OutputVolume * .28f;
         footstep.Play();
     }
     public void StopFootsteps()
@@ -123,12 +128,22 @@ internal sealed class GameAudio : IDisposable
     }
     public void Update(bool active)
     {
-        if (!Enabled || !active || Volume <= 0) { ambience?.Pause(); river?.Pause(); outdoorBirds?.Pause(); outdoorNight?.Pause(); }
-        if (!Enabled || !active) current?.Stop();
-        if (!Enabled || !active || Volume <= 0 || footstep?.State == SoundState.Stopped) StopFootsteps();
-        if (footstep is not null) footstep.Volume = Volume * .28f;
-        if (current?.State == SoundState.Stopped) { current.Dispose(); current = null; }
-        if (current is not null) current.Volume = Volume;
+        if (!Enabled || !active || OutputVolume <= 0) { ambience?.Pause(); river?.Pause(); outdoorBirds?.Pause(); outdoorNight?.Pause(); }
+        UpdateEffects(active);
+        if (!Enabled || !active || OutputVolume <= 0 || footstep?.State == SoundState.Stopped) StopFootsteps();
+        if (footstep is not null) footstep.Volume = OutputVolume * .28f;
+    }
+    private void UpdateEffects(bool active)
+    {
+        for (var index = voices.Count - 1; index >= 0; index--)
+        {
+            var voice = voices[index];
+            if (!Enabled || !active || OutputVolume <= 0 || voice.State == SoundState.Stopped)
+            {
+                voice.Dispose(); voices.RemoveAt(index);
+            }
+            else voice.Volume = OutputVolume;
+        }
     }
     public void UpdateAmbience(bool inBreedingGrounds, bool playing, double elapsed)
         => UpdateAmbientTrack(inBreedingGrounds ? caveAmbience : null, playing, elapsed, .18f);
@@ -161,12 +176,12 @@ internal sealed class GameAudio : IDisposable
     public void UpdateRiverAmbience(float intensity, float pan, bool playing, double elapsed)
     {
         if (Error.Length != 0 || riverSound is null) { StopRiver(); return; }
-        if (!Enabled || !playing || Volume <= 0) { river?.Pause(); return; }
+        if (!Enabled || !playing || OutputVolume <= 0) { river?.Pause(); return; }
         var blend = 1 - MathF.Exp(-(float)Math.Clamp(elapsed, 0, 1) * 4);
         riverGain += (Math.Clamp(intensity, 0, 1) - riverGain) * blend;
         if (intensity <= 0 && riverGain < .001f) { StopRiver(); return; }
         if (river is null) { river = riverSound.CreateInstance(); river.IsLooped = true; }
-        river.Volume = Volume * .24f * riverGain * (current?.State == SoundState.Playing ? .4f : 1);
+        river.Volume = OutputVolume * .24f * riverGain * (EffectPlaying ? .4f : 1);
         river.Pan += (Math.Clamp(pan, -.65f, .65f) - river.Pan) * blend;
         if (river.State == SoundState.Paused) river.Resume();
         else if (river.State == SoundState.Stopped) river.Play();
@@ -191,11 +206,11 @@ internal sealed class GameAudio : IDisposable
         float target, bool playing, double elapsed)
     {
         if (Error.Length != 0 || sound is null) { voice?.Dispose(); voice = null; gain = 0; return; }
-        if (!Enabled || !playing || Volume <= 0) { voice?.Pause(); return; }
+        if (!Enabled || !playing || OutputVolume <= 0) { voice?.Pause(); return; }
         gain += (target - gain) * (1 - MathF.Exp(-(float)Math.Clamp(elapsed, 0, 1) * 2));
         if (target <= .001f && gain < .001f) { voice?.Dispose(); voice = null; gain = 0; return; }
         if (voice is null) { voice = sound.CreateInstance(); voice.IsLooped = true; }
-        voice.Volume = Volume * gain * (current?.State == SoundState.Playing ? .4f : 1);
+        voice.Volume = OutputVolume * gain * (EffectPlaying ? .4f : 1);
         if (voice.State == SoundState.Paused) voice.Resume();
         else if (voice.State == SoundState.Stopped) voice.Play();
     }
@@ -214,19 +229,19 @@ internal sealed class GameAudio : IDisposable
             ambienceTrack = track;
         }
         if (track is null || Error.Length != 0) return;
-        if (!Enabled || !playing || Volume <= 0) { ambience?.Pause(); return; }
+        if (!Enabled || !playing || OutputVolume <= 0) { ambience?.Pause(); return; }
         if (ambience is null)
         {
             ambience = track.CreateInstance(); ambience.IsLooped = true;
         }
         ambienceGain = Math.Min(1, ambienceGain + (float)Math.Clamp(elapsed, 0, 1) / .8f);
-        ambience.Volume = Volume * volume * ambienceGain * (current?.State == SoundState.Playing ? .4f : 1);
+        ambience.Volume = OutputVolume * volume * ambienceGain * (EffectPlaying ? .4f : 1);
         if (ambience.State == SoundState.Paused) ambience.Resume();
         else if (ambience.State == SoundState.Stopped) ambience.Play();
     }
     public void Dispose()
     {
-        current?.Dispose(); current = null;
+        UpdateEffects(false);
         StopFootsteps();
         ambience?.Dispose(); ambience = null;
         caveAmbience?.Dispose(); caveAmbience = null;

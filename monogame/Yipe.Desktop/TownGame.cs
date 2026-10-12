@@ -14,8 +14,6 @@ internal sealed partial class TownGame : Game
     private static readonly Color Ink = new(241, 220, 158);
     private static readonly Color Muted = new(164, 173, 176);
     private static readonly Color Accent = new(217, 172, 79);
-    private static readonly string[] Menu = ["Continue", "Save game", "Load game", "New adventure", "Graphics", "Battle pacing", "Help & controls", "About Quest of Yipe!", "Edit controls", "Quit"];
-    private static readonly string[] GraphicsMenu = ["Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Pixel lighting", "Sun shafts", "Cloud shadows", "Rain", "Screen shake", "Time of day"];
     private static readonly string[] EffectStrengths = ["Off", "Subtle", "Strong"];
     private static readonly string[] TimesOfDay = ["Auto", "Day", "Dusk", "Night"];
     private readonly GraphicsDeviceManager graphics;
@@ -44,6 +42,7 @@ internal sealed partial class TownGame : Game
     private TownRenderer town = null!;
     private WorldRenderer world = null!;
     private GameAudio audio = null!;
+    private GameMusic music = null!;
     private DesktopProfile profile = null!;
     private ItemNames itemNames = new();
     private Adventure adventure = null!;
@@ -69,7 +68,6 @@ internal sealed partial class TownGame : Game
     private double messageRemaining;
     private string menuMessage = "";
     private bool paused;
-    private bool graphicsMenuOpen;
     private bool scanlines = true;
     private int miniatureMode = 2;
     private bool vignette;
@@ -98,7 +96,9 @@ internal sealed partial class TownGame : Game
         {
             PreferredBackBufferWidth = CanvasWidth * 4,
             PreferredBackBufferHeight = CanvasHeight * 4,
-            SynchronizeWithVerticalRetrace = !smoke,
+            // SDL's macOS OpenGL display-link wait can stall before the first frame.
+            // The fixed 60 Hz game loop below also paces presentation without VSync.
+            SynchronizeWithVerticalRetrace = !smoke && !OperatingSystem.IsMacOS(),
             HardwareModeSwitch = false,
         };
         Window.Title = "Yipe! III | Enter / A: actions | Esc / Start: pause";
@@ -107,7 +107,7 @@ internal sealed partial class TownGame : Game
         IsMouseVisible = true;
         IsFixedTimeStep = true;
         TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 60);
-        Deactivated += (_, _) => { if (studioSplashRemaining <= 0) paused = true; };
+        Deactivated += (_, _) => { if (studioSplashRemaining <= 0 && !titleScreen) paused = true; };
         Exiting += (_, _) => { if (profile is not null) SavePreferences(); };
     }
 
@@ -151,10 +151,14 @@ internal sealed partial class TownGame : Game
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "YipeIII-MonoGame", "game.y3m"), catalog);
 
+        adventureDirectory = Path.GetDirectoryName(saves.FilePath)!;
+        var saveFolder = new DirectoryInfo(adventureDirectory);
+        if (saveFolder.Parent?.Name == "Saved Adventures") adventureDirectory = saveFolder.Parent.Parent!.FullName;
         town = new TownRenderer(GraphicsDevice, map, contentDirectory, catalog);
         world = new WorldRenderer(GraphicsDevice, contentDirectory, catalog);
         lighting = new PixelLighting(GraphicsDevice, pixel, CanvasWidth, CanvasHeight, world);
         audio = new GameAudio(contentDirectory);
+        music = new GameMusic(contentDirectory);
         profile = new DesktopProfile(selectedSave is not null ? Path.ChangeExtension(selectedSave, ".profile.json")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YipeIII-MonoGame", "profile.json"));
         scanlines = profile.Data.Scanlines; miniatureMode = profile.Data.Miniature;
@@ -168,6 +172,7 @@ internal sealed partial class TownGame : Game
         dayNightSeconds = profile.Data.DayNightSeconds;
         dayNightUpdatedAt = DateTime.UtcNow;
         audio.Enabled = profile.Data.Sound; audio.Volume = profile.Data.Volume;
+        audio.EffectsVolume = profile.Data.EffectsVolume;
         cameraPosition = CameraTarget(player.VisualPosition);
         if (!smoke && selectedSave is null) studioSplashRemaining = StudioSplashDuration;
         if (selectedSave is not null)
@@ -195,7 +200,7 @@ internal sealed partial class TownGame : Game
             pad = candidate;
             break;
         }
-        if (controllerConnected && !pad.IsConnected && studioSplashRemaining <= 0)
+        if (controllerConnected && !pad.IsConnected && studioSplashRemaining <= 0 && !titleScreen)
         {
             paused = true;
             menuMessage = "Controller disconnected.\nReconnect or use the keyboard.";
@@ -204,18 +209,19 @@ internal sealed partial class TownGame : Game
 
         var keyboard = Keyboard.GetState();
         var actions = input.Update(keyboard, pad, elapsed, IsActive,
-            repeatInterval: paused || overlay is not null || mapOpen ? 0.12 : PlayerMotion.StepDuration, textInput: textReceiver is not null,
-            controls: studioSplashRemaining > 0 || paused || overlay is not null || mapOpen ? null : profile.Data.Controls);
+            repeatInterval: titleScreen || paused || overlay is not null || mapOpen ? 0.12 : PlayerMotion.StepDuration, textInput: textReceiver is not null,
+            controls: titleScreen || studioSplashRemaining > 0 || paused || overlay is not null || mapOpen ? null : profile.Data.Controls);
 
         audio.Update(IsActive);
         UpdateCaveAmbience(elapsed);
-        if (paused || overlay is not null || mapOpen || saving is not null || loading is not null || studioSplashRemaining > 0)
+        UpdateMusic(elapsed);
+        if (titleScreen || paused || overlay is not null || mapOpen || saving is not null || loading is not null || studioSplashRemaining > 0)
             audio.StopFootsteps();
         FinishStorage();
         if (paused || overlay is not null || mapOpen || !IsActive || saving is not null || loading is not null)
         { pendingDirection = iceDirection = Point.Zero; tickRemaining = .512; }
         pauseAmount = MathHelper.Lerp(pauseAmount, paused ? 1 : 0, 1 - MathF.Exp(-(float)elapsed * 22));
-        selectionY = MathHelper.Lerp(selectionY, selected * 10, 1 - MathF.Exp(-(float)elapsed * 25));
+        selectionY = MathHelper.Lerp(selectionY, selected * PauseRowHeight, 1 - MathF.Exp(-(float)elapsed * 25));
         if (!IsActive || saving is not null || loading is not null)
         { previousKeyboardState = keyboard; return; }
         if (studioSplashRemaining > 0)
@@ -225,6 +231,7 @@ internal sealed partial class TownGame : Game
             base.Update(gameTime);
             return;
         }
+        if (titleScreen) titleTime += elapsed;
         if (bindingAction >= 0)
         {
             if (actions.Back || actions.Pause) overlay!.Back?.Invoke();
@@ -235,13 +242,23 @@ internal sealed partial class TownGame : Game
         }
         previousKeyboardState = keyboard;
 
+        if (titleScreen)
+        {
+            if (paused) UpdatePauseMenu(actions);
+            else if (restorePauseOverlay is not null && actions.Pause && !actions.Back) ReturnToPause();
+            else if (overlay is not null) UpdateOverlay(actions);
+            else UpdateTitleMenu(actions);
+            base.Update(gameTime);
+            return;
+        }
         if (paused) UpdatePauseMenu(actions);
+        else if (restorePauseOverlay is not null && actions.Pause && !actions.Back) ReturnToPause();
         else if (mapOpen) UpdateMap(actions);
         else if (actions.Map && overlay is null && command is null) OpenMap();
         else if (actions.Pause && !actions.Back || overlay is null && (actions.Pause || actions.Back))
         {
             paused = true;
-            graphicsMenuOpen = false;
+            pausePage = PausePage.Main;
             pendingDirection = Point.Zero;
             selected = 0;
             selectionY = 0;
@@ -249,6 +266,7 @@ internal sealed partial class TownGame : Game
         }
         else if (overlay is not null)
         {
+            if (overlay.Npc != NpcActor.None) overlay.NpcTime += elapsed;
             if (!UpdateCombatPresentation(elapsed)) UpdateOverlay(actions);
         }
         else
@@ -300,9 +318,28 @@ internal sealed partial class TownGame : Game
         base.Update(gameTime);
     }
 
+    private void UpdateMusic(double elapsed)
+    {
+        var track = titleScreen ? MusicTrack.Town : session.CurrentMap.Id switch
+        {
+            8 or 17 or 27 => MusicTrack.Town,
+            >= 1 and <= 36 => MusicTrack.Overworld,
+            _ when WorldRenderer.IsIce(session.CurrentMap) || WorldRenderer.IsWaterCave(session.CurrentMap) => MusicTrack.CrystalCave,
+            _ => MusicTrack.Cave,
+        };
+        if (!titleScreen && adventure.Battle is not null) track = MusicTrack.Battle;
+        if (studioSplashRemaining > 0 || !titleScreen && Hero.Health <= 0)
+            track = MusicTrack.None;
+        var intensity = track is MusicTrack.Cave or MusicTrack.CrystalCave ? .7f : 1f;
+        if (paused || overlay is { Combat: false } || mapOpen) intensity *= .65f;
+        if (overlay?.Presentation is { Turn.Outcome: CombatOutcome.Victory }) intensity *= .5f;
+        music.Update(track, IsActive && audio.Enabled && profile.Data.Music,
+            audio.Volume * profile.Data.MusicVolume, intensity, elapsed);
+    }
+
     private void UpdateCaveAmbience(double elapsed)
     {
-        var playing = IsActive && !paused && overlay is null && !mapOpen && saving is null && loading is null && studioSplashRemaining <= 0;
+        var playing = !titleScreen && IsActive && !paused && overlay is null && !mapOpen && saving is null && loading is null && studioSplashRemaining <= 0;
         if (session.CurrentMap.Id == TownMap.Id)
         {
             audio.StopOutdoorNature();
@@ -357,66 +394,6 @@ internal sealed partial class TownGame : Game
         messageRemaining = 0;
     }
 
-    private void UpdatePauseMenu(InputFrame actions)
-    {
-        if (actions.Back || actions.Pause)
-        {
-            if (graphicsMenuOpen)
-            {
-                graphicsMenuOpen = false;
-                selected = 4; selectionY = 40; menuMessage = "";
-            }
-            else paused = false;
-            return;
-        }
-        var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
-        if (actions.Direction.Y != 0) selected = (selected + actions.Direction.Y + menu.Length) % menu.Length;
-        if (actions.Confirm) ActivateMenu();
-    }
-
-    private void ActivateMenu()
-    {
-        if (graphicsMenuOpen)
-        {
-            switch (selected)
-            {
-                case 0:
-                    graphics.IsFullScreen = !graphics.IsFullScreen;
-                    graphics.PreferredBackBufferWidth = graphics.IsFullScreen
-                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
-                    graphics.PreferredBackBufferHeight = graphics.IsFullScreen
-                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : CanvasHeight * 4;
-                    graphics.ApplyChanges();
-                    break;
-                case 1: scanlines = !scanlines; SavePreferences(); break;
-                case 2: miniatureMode = (miniatureMode + 1) % EffectStrengths.Length; SavePreferences(); break;
-                case 3: vignette = !vignette; SavePreferences(); break;
-                case 4: pixelLighting = !pixelLighting; SavePreferences(); break;
-                case 5: sunShaftStrength = (sunShaftStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
-                case 6: cloudShadowStrength = (cloudShadowStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
-                case 7: rainStrength = (rainStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
-                case 8: screenShake = !screenShake; SavePreferences(); break;
-                case 9: timeOfDayMode = (timeOfDayMode + 1) % TimesOfDay.Length; SavePreferences(); break;
-            }
-            return;
-        }
-        switch (selected)
-        {
-            case 0: paused = false; break;
-            case 1:
-                if (command is not null || textReceiver is not null) { menuMessage = "Finish this interaction\nbefore saving."; break; }
-                menuMessage = "Saving..."; saving = saves.SaveAsync(session, journal); break;
-            case 2: menuMessage = "Loading..."; loading = saves.LoadAsync(); break;
-            case 3: paused = false; mapOpen = false; ShowNewGameConfirmation(); break;
-            case 4: graphicsMenuOpen = true; selected = 0; selectionY = 0; menuMessage = ""; break;
-            case 5: profile.Data.AutoBattle = !profile.Data.AutoBattle; SavePreferences(); break;
-            case 6: paused = false; ShowHelp(); break;
-            case 7: paused = false; ShowAbout(); break;
-            case 8: paused = false; EditControls(); break;
-            case 9: Exit(); break;
-        }
-    }
-
     private void FinishStorage()
     {
         if (saving?.IsCompleted == true)
@@ -442,7 +419,10 @@ internal sealed partial class TownGame : Game
             {
                 var next = loading.GetAwaiter().GetResult();
                 command?.Dispose(); command = null; pendingEvent = null; overlay = null; textReceiver = null;
+                saves = loadingStore ?? saves;
                 session = next;
+                titleScreen = false; restorePauseOverlay = null; pausePage = PausePage.Main;
+                selected = 0; selectionY = 0;
                 journal = saves.RestoredJournal; mapOpen = false;
                 adventure = new Adventure(session);
                 SynchronizeWorld(animate: false);
@@ -459,12 +439,15 @@ internal sealed partial class TownGame : Game
                 menuMessage = "Could not load this save.\nYour current game is unchanged.";
             }
             loading = null;
+            if (titleScreen && loadingStore is not null) ShowLoadGames();
+            loadingStore = null;
         }
     }
 
     protected override void Draw(GameTime gameTime)
     {
         if (studioSplashRemaining > 0) { DrawStudioSplash(); base.Draw(gameTime); return; }
+        if (titleScreen) { DrawTitleScreen(); base.Draw(gameTime); return; }
         var outdoor = session.CurrentMap.Id is >= 1 and <= 40;
         var daylight = outdoor ? DayNightCycle.At(dayNightSeconds, timeOfDayMode)
             : new DayNightCycle.Light(Color.White, 1);
@@ -482,7 +465,7 @@ internal sealed partial class TownGame : Game
         GraphicsDevice.Clear(Background);
         var rainAmount = rainStrength == 0 ? 0 : rainStrength * Rain.WeatherAmount(outdoorWeatherTime);
         batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
-        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount);
+        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount, world);
         else
         {
             world.OutdoorDaylight = daylight.Daylight;
@@ -544,47 +527,7 @@ internal sealed partial class TownGame : Game
         if (mapOpen) DrawMapOverlay();
         else if (overlay is not null) DrawOverlay();
 
-        if (pauseAmount > 0.005f)
-        {
-            var offset = (int)MathF.Round((1 - pauseAmount) * 4);
-            Fill(new(0, 0, CanvasWidth, CanvasHeight), Color.Black * 0.5f);
-            DrawPanel(new(32, 4 + offset, 256, 172));
-            font.Draw(batch, graphicsMenuOpen ? "Graphics" : "Paused", 46, 14 + offset, Accent, 2);
-            font.Draw(batch, controllerConnected ? "EAST: BACK" : "ESC: BACK", 210, 19 + offset, Muted);
-            font.Draw(batch, $"{LocationName()} / {player.Position.X}, {player.Position.Y}", 46, 34 + offset, Muted);
-            var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
-            var firstMenuRow = Math.Clamp(selected - 9, 0, Math.Max(0, menu.Length - 10));
-            var rowY = 42 + Math.Clamp((int)MathF.Round(selectionY) - firstMenuRow * 10, 0, 90) + offset;
-            Fill(new(44, rowY, 232, 9), new Color(64, 73, 87));
-            Fill(new(49, rowY + 3, 1, 5), Accent);
-            Fill(new(50, rowY + 4, 1, 3), Accent);
-            Fill(new(51, rowY + 5, 1, 1), Accent);
-            for (var i = firstMenuRow; i < Math.Min(firstMenuRow + 10, menu.Length); i++)
-            {
-                var label = graphicsMenuOpen ? i switch
-                {
-                    0 => $"Fullscreen: {(graphics.IsFullScreen ? "on" : "off")}",
-                    1 => $"Scanlines: {(scanlines ? "on" : "off")}",
-                    2 => $"Miniature effect: {EffectStrengths[miniatureMode]}",
-                    3 => $"Vignette: {(vignette ? "on" : "off")}",
-                    4 => $"Pixel lighting: {(pixelLighting ? "on" : "off")}",
-                    5 => $"Sun shafts: {EffectStrengths[sunShaftStrength]}",
-                    6 => $"Cloud shadows: {EffectStrengths[cloudShadowStrength]}",
-                    7 => rainStrength == 0 ? "Rain: Off" : $"Rain: Auto {EffectStrengths[rainStrength]}",
-                    8 => $"Screen shake: {(screenShake ? "on" : "off")}",
-                    9 => $"Time of day: {TimesOfDay[timeOfDayMode]}",
-                    _ => menu[i],
-                } : i == 5 ? $"Battle pacing: {(profile.Data.AutoBattle ? "Auto" : "Manual")}" : menu[i];
-                font.Draw(batch, label, 60, 44 + (i - firstMenuRow) * 10 + offset, i == selected ? Accent : Ink);
-            }
-            for (var step = 0; step < 3; step++)
-            {
-                if (firstMenuRow > 0) Fill(new(280 - step, 44 + step + offset, step * 2 + 1, 1), Muted);
-                if (firstMenuRow + 10 < menu.Length) Fill(new(280 - step, 139 - step + offset, step * 2 + 1, 1), Muted);
-            }
-            font.Draw(batch, menuMessage, 46, 145 + offset, Ink);
-            font.Draw(batch, controllerConnected ? "D-PAD/STICK MOVE  SOUTH SELECT" : "ARROWS/WASD MOVE  ENTER SELECT", 46, 166 + offset, Muted);
-        }
+        if (pauseAmount > 0.005f) DrawPauseMenu();
         batch.End();
         GraphicsDevice.SetRenderTarget(null);
         GraphicsDevice.Clear(Color.Black);
@@ -683,9 +626,11 @@ internal sealed partial class TownGame : Game
     protected override void UnloadContent()
     {
         command?.Dispose();
+        music?.Dispose();
         audio?.Dispose();
         world?.Dispose();
         town?.Dispose();
+        titleTown?.Dispose();
         miniature?.Dispose();
         heat?.Dispose();
         lighting?.Dispose();

@@ -218,10 +218,10 @@ internal sealed partial class TownRenderer
         return true;
     }
 
-    private void DrawGroundDetails(SpriteBatch batch, PlayerMotion player, double time)
+    private void DrawGroundDetails(SpriteBatch batch, PlayerMotion? player, double time)
     {
         foreach (var prop in GroundDetails) DrawProp(batch, prop.Sprite, new(prop.X, prop.Y), time);
-        var facing = player.FacingRow switch { 0 => new Point(0, 1), 1 => new Point(-1, 0), 2 => new Point(1, 0), _ => new Point(0, -1) };
+        var facing = player?.FacingRow switch { 0 => new Point(0, 1), 1 => new Point(-1, 0), 2 => new Point(1, 0), _ => new Point(0, -1) };
         // Worn turf softens the doorstep where traffic leaves the paving.
         for (var y = 1; y < TownMap.Height - 1; y++)
             for (var x = 1; x < TownMap.Width - 1; x++)
@@ -235,7 +235,7 @@ internal sealed partial class TownRenderer
                     batch.Draw(pixel, new Rectangle(x * 32 + 16 - width / 2, groundY + 1 + row, width, 1),
                         Palette[18] * (0.12f - row * 0.015f));
                 }
-                if (player.IsMoving || player.Position.X + facing.X != x || player.Position.Y + facing.Y != y) continue;
+                if (player is null || player.IsMoving || player.Position.X + facing.X != x || player.Position.Y + facing.Y != y) continue;
                 // This marks the existing entrance, without claiming a new interaction.
                 batch.Draw(pixel, new Rectangle(x * 32 + 11, groundY + 2, 10, 1), Palette[6] * 0.85f);
                 batch.Draw(pixel, new Rectangle(x * 32 + 10, groundY, 1, 3), Palette[6] * 0.85f);

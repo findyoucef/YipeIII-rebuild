@@ -13,11 +13,15 @@ internal static class SunShaftChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
-            "sunShaftStrength", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }.ToDictionary(name => name, Get);
+            "sunShaftStrength", "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining" }.ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
         var catalog = (MapCatalog)Get("catalog")!;
         var shafts = Get("sunShafts")!;
@@ -74,7 +78,7 @@ internal static class SunShaftChecks
             var native = Frame(2, 1);
             check(Enumerable.Range(0, native.Length).All(i => native[i] == native[i / 1280 / 4 * 4 * 1280 + i % 1280 / 4 * 4]),
                 "Sunlight retains exact native pixels when scaled to the window");
-            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 5); Set("selectionY", 50f);
+            Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Atmosphere"); Set("selected", 1); Set("selectionY", 12f);
             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
             check((double)Get("sceneTime")! == 1, "The pause menu freezes the sunlight clock");
             for (var expected = 0; expected < 3; expected++)
@@ -89,7 +93,7 @@ internal static class SunShaftChecks
             }
             Set("menuMessage", "");
             var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 94 * 4 || y >= 101 * 4
+            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 67 * 4 || y >= 74 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
                 "Sun shafts leave the pause panel and every other label unchanged");
             Set("paused", false); Set("pauseAmount", 0f);

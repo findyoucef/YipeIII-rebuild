@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-12",
+  "goal": "Complete battle and cave music in the local MonoGame build",
+  "status": "implemented and locally verified; musical selection ready for user listening review",
+  "build": {
+    "configuration": "Release",
+    "warnings": 0,
+    "errors": 0,
+    "launcher_rebuilt": true,
+    "repackaged": false
+  },
+  "checks": {
+    "mode": "--menus-only",
+    "passed": 163,
+    "exit_code": 0,
+    "coverage": [
+      "All five streams load",
+      "Town/overworld and all eight underground families including generated Hell",
+      "Combat entry at most 0.4 seconds at full mix",
+      "Combat overlay keeps score; victory lowers it",
+      "Exploration bookmarks through battle and cave changes",
+      "Same-score region continuity",
+      "Focus/mute/zero volumes and scene changes while muted",
+      "Canceled transition and defeat",
+      "New track end boundaries repeat on real OpenAL device",
+      "Independent effects/ambience gain, persisted sliders, paged credits",
+      "Whole adventure and RNG unchanged"
+    ]
+  },
+  "audio": [
+    {
+      "file": "battle-theme-a.ogg",
+      "lufs": -20.06,
+      "true_peak_db": -10.07
+    },
+    {
+      "file": "cave-theme.ogg",
+      "lufs": -20.02,
+      "true_peak_db": -5.84
+    },
+    {
+      "file": "crystal-caves.ogg",
+      "lufs": -19.99,
+      "true_peak_db": -6.47
+    }
+  ],
+  "sources": "../../Yipe.Desktop/Content/Audio/Music/sources.json",
+  "personal_files_checked": 28,
+  "personal_files_changed": 0,
+  "all_music_assets_and_licenses_match_launcher": true,
+  "listening_review": "review.html",
+  "review_clips": "35-second music-only excerpts at default gain; not live gameplay recordings",
+  "limitations": [
+    "User musical preference/listening approval remains pending.",
+    "DesktopGL bookmarks use the buffered MediaPlayer position, not sample-accurate audible timing.",
+    "Only the local macOS audio backend was tested.",
+    "The existing session-only VSync workaround remains in the scratch launcher."
+  ],
+  "source_sha256": {
+    "monogame/Yipe.Desktop/GameMusic.cs": "6848b86520ffbea414d4a63805bdb03d3d0ea6855e55d90373b2366148617a4d",
+    "monogame/Yipe.Desktop/TownGame.cs": "63acd075928805a7f1f3de7c2c6b1de13a38a88d35012b6a3655ef27ada405b4",
+    "monogame/Yipe.GraphicsChecks/MusicChecks.cs": "3fe8c28b042483fa6ff8b1ed512e35fe834dab7766c7a3d14a2fa27c54bd50f1",
+    "monogame/Yipe.Desktop/Content/Audio/Music/sources.json": "5c373bea74b520ff5d80a464f081c8f4e43fd128e8ccca39a5c70c2801d5bf39",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "e6bffe7d0732a754490ebb69414558bf79574055677b57b853934ea7222f5c61"
+  }
+}

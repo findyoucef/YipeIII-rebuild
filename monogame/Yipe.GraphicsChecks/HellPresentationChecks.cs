@@ -233,7 +233,7 @@ internal static class HellPresentationChecks
             at.GetProperty("Enabled")!.SetValue(audio, false); Call("UpdateCaveAmbience", .1d); check(voice.State == SoundState.Paused, "Sound Off mutes Hell ambience");
             at.GetProperty("Enabled")!.SetValue(audio, true); at.GetProperty("Volume")!.SetValue(audio, 0f); Call("UpdateCaveAmbience", .1d); check(voice.State == SoundState.Paused, "Zero master volume mutes Hell ambience");
             at.GetProperty("Volume")!.SetValue(audio, .5f); Call("UpdateCaveAmbience", .1d);
-            at.GetMethod("Play")!.Invoke(audio, [12]); Call("UpdateCaveAmbience", .1d);
+            at.GetMethod("Play")!.Invoke(audio, [12, false]); Call("UpdateCaveAmbience", .1d);
             check(Math.Abs(voice.Volume - .048f) < .001f, "Action sounds duck Hell ambience to stay audible");
             at.GetMethod("Update")!.Invoke(audio, [false]); Call("UpdateCaveAmbience", .1d);
             check(Math.Abs(voice.Volume - .12f) < .001f, "Hell ambience recovers after the action sound stops");

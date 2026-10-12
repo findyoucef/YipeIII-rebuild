@@ -1,0 +1,890 @@
+diff --git a/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md b/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md
+index 23c0d7b..9c2dbaf 100644
+--- a/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md
++++ b/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md
+@@ -254,3 +254,9 @@ leaves, seed flecks and insects use deterministic scene time; no gameplay RNG.
+ The seed and ground field use wrapped world coordinates with the original
+ two-tile room overlap. Maynard and the approved snow terrain retain their own
+ rendering. Ervyn has authored garden borders; Quizilog keeps its dry palm setting.
++
++## NPC animation sheets
++
++The King, Skill Teacher and three existing Princess appearances have 60 native
++poses for idle, conversation and reward reactions. See [NPC_ANIMATIONS.md](NPC_ANIMATIONS.md)
++for the installed sheets, import/anchor rules and exact generation provenance.
+diff --git a/monogame/Yipe.Desktop/Overlay.cs b/monogame/Yipe.Desktop/Overlay.cs
+index 8f5ac4e..972e55e 100644
+--- a/monogame/Yipe.Desktop/Overlay.cs
++++ b/monogame/Yipe.Desktop/Overlay.cs
+@@ -20,7 +20,12 @@ internal sealed class Overlay
+     public bool AutoAdvance { get; init; }
+     public double CombatTime { get; set; }
+     public int FirstPortrait { get; init; }
+-    public int LinesPerPage => Combat ? Options.Length == 1 ? 4 : 2 : Options.Length > 1 ? 5 : 10;
++    public NpcActor Npc { get; init; }
++    public bool NpcCelebrating { get; init; }
++    public double NpcTime { get; set; }
++    public int LinesPerPage => Combat ? (Options.Length == 1 ? 4 : 2)
++        : Npc != NpcActor.None ? (Options.Length > 1 ? 4 : 8)
++        : Options.Length > 1 ? 5 : 10;
+     public int PageCount => Math.Max(1, (Lines.Length + LinesPerPage - 1) / LinesPerPage);
+ 
+     public Overlay(string title, string text, IEnumerable<OverlayOption> options, Action? back = null)
+diff --git a/monogame/Yipe.Desktop/TownGame.cs b/monogame/Yipe.Desktop/TownGame.cs
+index 8b014a0..81636c8 100644
+--- a/monogame/Yipe.Desktop/TownGame.cs
++++ b/monogame/Yipe.Desktop/TownGame.cs
+@@ -249,6 +249,7 @@ internal sealed partial class TownGame : Game
+         }
+         else if (overlay is not null)
+         {
++            if (overlay.Npc != NpcActor.None) overlay.NpcTime += elapsed;
+             if (!UpdateCombatPresentation(elapsed)) UpdateOverlay(actions);
+         }
+         else
+@@ -482,7 +483,7 @@ internal sealed partial class TownGame : Game
+         GraphicsDevice.Clear(Background);
+         var rainAmount = rainStrength == 0 ? 0 : rainStrength * Rain.WeatherAmount(outdoorWeatherTime);
+         batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
+-        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount);
++        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount, world);
+         else
+         {
+             world.OutdoorDaylight = daylight.Daylight;
+diff --git a/monogame/Yipe.Desktop/TownOverlays.cs b/monogame/Yipe.Desktop/TownOverlays.cs
+index ca8975a..a555ac7 100644
+--- a/monogame/Yipe.Desktop/TownOverlays.cs
++++ b/monogame/Yipe.Desktop/TownOverlays.cs
+@@ -6,6 +6,7 @@ namespace Yipe.Desktop;
+ internal sealed partial class TownGame
+ {
+     private Player Hero => session.Player;
++    private bool pendingNpcCelebration;
+     private string StatusLine => $"HP {Hero.Health}/{Hero.MaximumHealth}  SP {Hero.SpellPoints}/{Hero.MaximumSpellPoints}  AP {Hero.AbilityPoints}/{Hero.MaximumAbilityPoints}\nLevel {Hero.Level}   Gold {Hero.Gold}";
+     private string LocationName() => session.CurrentMap.Id switch
+     {
+@@ -25,11 +26,15 @@ internal sealed partial class TownGame
+         overlay = null;
+         if (command is null) return;
+         pendingEvent = null;
++        pendingNpcCelebration = false;
++        var rewardsBefore = (Hero.Gold, Hero.HasLuckyRabbitFoot, Hero.QuestScore, Hero.WeaponRank, Hero.ArmorRank);
+         while (command.MoveNext())
+         {
+             if (command.Current.Kind == AdventureEventKind.Sound) { audio.Play(command.Current.SoundId); continue; }
+             pendingEvent = command.Current; break;
+         }
++        pendingNpcCelebration = pendingEvent?.Kind == AdventureEventKind.King
++            && rewardsBefore != (Hero.Gold, Hero.HasLuckyRabbitFoot, Hero.QuestScore, Hero.WeaponRank, Hero.ArmorRank);
+         if (pendingEvent is null) { command.Dispose(); command = null; }
+         SynchronizeWorld(animate: true);
+         if (!player.IsMoving && !world.MonstersMoving && pendingEvent is not null)
+@@ -105,13 +110,13 @@ internal sealed partial class TownGame
+             current.Selected = (current.Selected + actions.Direction.Y + current.Options.Length) % current.Options.Length;
+         if (actions.Confirm && current.Options.Length != 0) current.Options[current.Selected].Choose();
+     }
+-    private void Notice(string title, string text, Action? done = null, bool combat = false)
++    private void Notice(string title, string text, Action? done = null, bool combat = false, NpcActor npc = NpcActor.None, bool celebrate = false)
+     {
+         done ??= () => overlay = null;
+-        overlay = new(title, text, [new("Continue", done)], done) { Combat = combat };
++        overlay = new(title, text, [new("Continue", done)], done) { Combat = combat, Npc = npc, NpcCelebrating = celebrate };
+     }
+-    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null, bool combat = false) =>
+-        overlay = new(title, text, options, back) { Combat = combat };
++    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null, bool combat = false, NpcActor npc = NpcActor.None) =>
++        overlay = new(title, text, options, back) { Combat = combat, Npc = npc };
+ 
+     private void ShowInteraction(AdventureEvent interaction)
+     {
+@@ -123,7 +128,14 @@ internal sealed partial class TownGame
+             case AdventureEventKind.Princess:
+                 Choices("Rescued Princess", "The Princess thanks you for rescuing her and offers you a gift.",
+                     new[] { "Gold", "Experience", "Kiss", "Mystery" }.Select((name, index) => new OverlayOption(name, () =>
+-                    { interaction.Choice = index + 1; AdvanceCommand(); })), AdvanceCommand);
++                    { interaction.Choice = index + 1; AdvanceCommand(); })), AdvanceCommand, npc: WorldRenderer.PrincessActor(interaction.Value));
++                break;
++            case AdventureEventKind.King:
++                Notice(interaction.Title, interaction.Text, AdvanceCommand, npc: NpcActor.King, celebrate: pendingNpcCelebration);
++                break;
++            case AdventureEventKind.Message when interaction.Title == "Princess Reward":
++                Notice(interaction.Title, interaction.Text, AdvanceCommand,
++                    npc: WorldRenderer.PrincessActor(adventure.Map.Events.Princess.PortraitVariant), celebrate: true);
+                 break;
+             case AdventureEventKind.WeaponShop: ShowEquipmentShop(EquipmentKind.Weapon); break;
+             case AdventureEventKind.ArmorShop: ShowEquipmentShop(EquipmentKind.Armor); break;
+@@ -219,10 +231,15 @@ internal sealed partial class TownGame
+     }
+     private void ShowTraining()
+     {
+-        if (Shops.AbilityForEnvironment(adventure.Map.Environment) is not { } offer) { Notice("Training", "No training is available here.", AdvanceCommand); return; }
++        if (Shops.AbilityForEnvironment(adventure.Map.Environment) is not { } offer)
++        { Notice("Training", "No training is available here.", AdvanceCommand, npc: NpcActor.Teacher); return; }
+         Choices("Ability Training", offer.Description + $"\nGold {Hero.Gold}", [new($"Learn {offer.Name} - {offer.Price}G", () =>
+-            Notice("Training", Shops.TrainAbility(Hero, adventure.Map.Environment) switch
+-            { AbilityTrainingStatus.Learned => "Your training is complete.", AbilityTrainingStatus.AlreadyTrained => "You already know this ability.", _ => "You do not have enough gold." }, ShowTraining)), new("Leave", AdvanceCommand)], AdvanceCommand);
++        {
++            var result = Shops.TrainAbility(Hero, adventure.Map.Environment);
++            Notice("Training", result switch
++            { AbilityTrainingStatus.Learned => "Your training is complete.", AbilityTrainingStatus.AlreadyTrained => "You already know this ability.", _ => "You do not have enough gold." },
++                ShowTraining, npc: NpcActor.Teacher, celebrate: result == AbilityTrainingStatus.Learned);
++        }), new("Leave", AdvanceCommand)], AdvanceCommand, npc: NpcActor.Teacher);
+     }
+ 
+     private void ShowInventory(bool combat)
+@@ -450,7 +467,12 @@ internal sealed partial class TownGame
+         DrawPanel(new(12, 5, 296, 170));
+         if (current.Combat && adventure.Battle is { } battle) { DrawCombatOverlay(current, battle); return; }
+         font.Draw(batch, current.Title, 24, 14, Accent, current.Title.Length <= 22 ? 2 : 1);
+-        const int textY = 37;
++        var textY = current.Npc == NpcActor.None ? 37 : 64;
++        if (current.Npc != NpcActor.None)
++        {
++            world.DrawNpcPortrait(batch, current.Npc, new(246, 6, 48, 48), current.NpcTime, current.NpcCelebrating);
++            Fill(new(24, 56, 272, 1), Muted * .4f);
++        }
+         for (var i = 0; i < current.LinesPerPage; i++)
+         {
+             var index = current.Page * current.LinesPerPage + i;
+@@ -462,7 +484,7 @@ internal sealed partial class TownGame
+         else
+         {
+             var remainingLines = Math.Min(current.LinesPerPage, current.Lines.Length - current.Page * current.LinesPerPage);
+-            var startY = current.Options.Length > 1 ? 47 + remainingLines * 10 : 150;
++            var startY = current.Options.Length > 1 ? textY + 10 + remainingLines * 10 : 150;
+             var visible = Math.Min(current.Options.Length, (159 - startY) / 11 + 1);
+             var first = Math.Clamp(current.Selected - visible / 2, 0, Math.Max(0, current.Options.Length - visible));
+             for (var row = 0; row < visible; row++)
+diff --git a/monogame/Yipe.Desktop/TownRenderer.cs b/monogame/Yipe.Desktop/TownRenderer.cs
+index 6fe185e..e81e4a6 100644
+--- a/monogame/Yipe.Desktop/TownRenderer.cs
++++ b/monogame/Yipe.Desktop/TownRenderer.cs
+@@ -55,7 +55,7 @@ internal sealed partial class TownRenderer : IDisposable
+             RetroArt.Load(device, content, name, columns, rows, cellSize);
+     }
+ 
+-    public void Draw(SpriteBatch batch, PlayerMotion player, double time, bool miniature, float rainStrength = 0)
++    public void Draw(SpriteBatch batch, PlayerMotion player, double time, bool miniature, float rainStrength = 0, WorldRenderer? npcs = null)
+     {
+         mountains.Prepare(TownMap.Id, map.Tile);
+         for (var y = 0; y < TownMap.Height; y++)
+@@ -108,6 +108,8 @@ internal sealed partial class TownRenderer : IDisposable
+             {
+                 var tile = map.Tile(new(x, y));
+                 DrawBuilding(batch, tile, new(x, y), time, miniature);
++                if (tile == 0x30) npcs?.DrawNpcWorld(batch, NpcActor.King, new(x, y), time,
++                    Vector2.DistanceSquared(player.VisualPosition, new(x, y)) <= 4);
+             }
+         }
+         if (!heroDrawn) DrawHero(batch, player, time, miniature);
+diff --git a/monogame/Yipe.Desktop/WorldRenderer.cs b/monogame/Yipe.Desktop/WorldRenderer.cs
+index 894bf93..f4846c8 100644
+--- a/monogame/Yipe.Desktop/WorldRenderer.cs
++++ b/monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -61,6 +61,7 @@ internal sealed partial class WorldRenderer : IDisposable
+         pixel = new Texture2D(device, 1, 1);
+         pixel.SetData([Color.White]);
+         LoadMonsterAnimations(device, content);
++        LoadNpcAnimations(device, content);
+         hellProps = LoadHell(device, content);
+         hellGround = new Texture2D(device, HellWidth, HellHeight);
+         hellLava = new Texture2D(device, HellWidth * 4, HellHeight * 2);
+@@ -206,14 +207,16 @@ internal sealed partial class WorldRenderer : IDisposable
+             {
+                 var cell = new MapPosition(x, y);
+                 if (!game.Visibility.Contains(cell)) continue;
+-                DrawScenery(batch, map, cell, time, town, miniature);
++                DrawScenery(batch, map, cell, time, town, miniature,
++                    Vector2.DistanceSquared(hero.VisualPosition, new(x, y)) <= 4);
+                 foreach (var depth in map.Events.Depth)
+                     if (depth.HasPosition && depth.Position == cell) DrawProp(batch, depth.Value == 0x3a ? 3 : 4, cell);
+                 if (map.Events.Message is { HasPosition: true } sign && sign.Position == cell) DrawProp(batch, 2, cell);
+                 if (map.Events.Chests.Contains(cell)) DrawProp(batch, 0, cell);
+                 if (map.Events.Princess is { HasPosition: true } princess && princess.Position == cell
+                     && game.Player.InventoryValues[princess.RescueIndex] == 0)
+-                    batch.Draw(quests, new Vector2(x * 32 - 8, y * 32 - 16), Cell(princess.PortraitVariant - 1, 2, 48), Color.White);
++                    DrawNpcWorld(batch, PrincessActor(princess.PortraitVariant), cell, time,
++                        Vector2.DistanceSquared(hero.VisualPosition, new(x, y)) <= 4, map);
+                 foreach (var placement in placements)
+                     if (placement.Position == cell)
+                     {
+@@ -288,10 +291,11 @@ internal sealed partial class WorldRenderer : IDisposable
+                 }
+     }
+ 
+-    private void DrawScenery(SpriteBatch batch, Map map, MapPosition cell, double time, TownRenderer town, bool miniature = false)
++    private void DrawScenery(SpriteBatch batch, Map map, MapPosition cell, double time, TownRenderer town, bool miniature = false, bool nearby = false)
+     {
+         var x = cell.X; var y = cell.Y;
+         var tile = map.Tile(cell);
++        if (tile == 0x41) { DrawNpcWorld(batch, NpcActor.Teacher, cell, time, nearby, map); return; }
+         if (IsVillage(map) && tile is 1 or 5 or 6 or 7)
+         { town.DrawBuilding(batch, tile, cell, time, miniature); return; }
+         if (IsHell(map)) { DrawHellScenery(batch, map, cell, time); return; }
+@@ -306,7 +310,7 @@ internal sealed partial class WorldRenderer : IDisposable
+         var prop = tile switch
+         {
+             0x24 => 9, 0x26 => 8,
+-            0x3e => 5, 0x3f => 6, 0x40 => 7, 0x41 => 15,
++            0x3e => 5, 0x3f => 6, 0x40 => 7,
+             _ => -1,
+         };
+         if (prop >= 0) DrawProp(batch, prop, cell);
+@@ -336,6 +340,7 @@ internal sealed partial class WorldRenderer : IDisposable
+         floors.Dispose(); outdoors.Dispose(); meadow.Dispose(); props.Dispose(); buildings.Dispose(); shops.Dispose(); pixel.Dispose();
+         foreach (var atlas in monsters) atlas.Dispose();
+         foreach (var atlas in monsterAnimations.Values) atlas.Dispose();
++        foreach (var atlas in npcAnimations.Values) atlas.Dispose();
+         empoweredGatekeeperAnimation?.Dispose();
+         foreach (var atlas in heroes) atlas.Dispose();
+         hellProps.Dispose(); hellGround.Dispose(); hellLava.Dispose(); hellGlow.Dispose();
+diff --git a/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs b/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs
+index abe970a..cbad1ba 100644
+--- a/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs
+@@ -46,7 +46,8 @@ internal static class MaynardAtmosphereChecks
+             check(leaf.SequenceEqual(Leaves(2.01)) && !leaf.SequenceEqual(Leaves(3)), "Leaves flutter on a discrete scene clock and freeze exactly");
+             check(Enumerable.Range(0, leaf.Length).Where(i => leaf[i].A > 0).All(i =>
+                 townScene.Map.Tile(new(i % 416 / 32, i / 416 / 32)) is 2 or 8 or 22 or 25 or 26 or 50), "Leaves stay over open grass and paths");
+-            var native = Render(() => Town("Draw", batch, player, 2d, false, 0f)); Save("native-town.png");
++            // Isolate leaves/scenery from the King, which has separate NPC coverage.
++            var native = Render(() => Town("Draw", batch, player, 2d, false, 0f, null!)); Save("native-town.png");
+             var buildings = Render(() => { for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) Town("DrawBuilding", batch, townScene.Map.Tile(new(x, y)), new MapPosition(x, y), 2d, false); });
+             check(Enumerable.Range(0, buildings.Length).Where(i => buildings[i].A == 255).All(i => native[i] == buildings[i]), "Leaves cannot cover opaque shop and castle artwork");
+             var hero = Render(() => Town("DrawHero", batch, player, 2d, false, false));
+diff --git a/monogame/Yipe.GraphicsChecks/Program.cs b/monogame/Yipe.GraphicsChecks/Program.cs
+index ec1469f..4a7d0bf 100644
+--- a/monogame/Yipe.GraphicsChecks/Program.cs
++++ b/monogame/Yipe.GraphicsChecks/Program.cs
+@@ -20,6 +20,7 @@ internal static class Program
+         string? lateInput = null;
+         var lateResume = false;
+         int[]? monsterCaptures = null;
++        var npcOnly = false;
+         var monstersOnly = false;
+         var snowOnly = false;
+         var breedingOnly = false;
+@@ -45,6 +46,7 @@ internal static class Program
+                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
+                 Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
+                 Console.WriteLine("--final-only runs focused Final Cave checks and captures.");
++                Console.WriteLine("--npc-only runs NPC artwork, dialogue and reward checks with review captures.");
+                 Console.WriteLine("--water-only runs focused Water Cave checks and captures.");
+                 Console.WriteLine("--ice-only runs focused Ice/Zephyr Cave checks and captures.");
+                 Console.WriteLine("--clouds-only runs focused cloud, sunlight, actor, weather and day/night checks.");
+@@ -64,6 +66,7 @@ internal static class Program
+             else if (args[i] == "--snow-only") snowOnly = true;
+             else if (args[i] == "--outdoors-only") outdoorsOnly = true;
+             else if (args[i] == "--ice-only") iceOnly = true;
++            else if (args[i] == "--npc-only") npcOnly = true;
+             else if (args[i] == "--final-only") finalOnly = true;
+             else if (args[i] == "--water-only") waterOnly = true;
+             else if (args[i] == "--clouds-only") cloudsOnly = true;
+@@ -95,6 +98,8 @@ internal static class Program
+                 return 2;
+             }
+         }
++        if (npcOnly && (finalOnly || waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
++        { Console.Error.WriteLine("--npc-only cannot be combined with other capture or route modes."); return 2; }
+         if (finalOnly && (waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+         { Console.Error.WriteLine("--final-only cannot be combined with other capture or route modes."); return 2; }
+         if (waterOnly && (iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+@@ -157,7 +162,7 @@ internal static class Program
+                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
+                     }
+                 }
+-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly);
++                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly, npcOnly);
+                 return 0;
+             }
+             catch (Exception error)
+@@ -199,7 +204,7 @@ internal static class Program
+         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
+     }
+ 
+-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly)
++    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly, bool npcOnly)
+     {
+         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
+         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
+@@ -250,6 +255,12 @@ internal static class Program
+         Check(!(bool)Get("screenShake"), "Screen shake defaults to Off");
+         Check((int)Get("timeOfDayMode") == 0 && (double)Get("dayNightSeconds") is >= 300 and < 330,
+             "Automatic day/night cycle is enabled by default, starting near midday as startup time elapses");
++        if (npcOnly)
++        {
++            NpcPresentationChecks.Run(game, outputDirectory, Check);
++            Log($"Passed {checks} visual integration checks. Focused NPC run.");
++            return;
++        }
+         if (finalOnly)
+         {
+             FinalCaveChecks.Run(game, outputDirectory, Check);
+@@ -343,6 +354,7 @@ internal static class Program
+         }
+         FootstepChecks.Run(game, outputDirectory, Check);
+         if (!monstersOnly) SnowBiomeChecks.Run(game, outputDirectory, Check);
++        if (!monstersOnly) NpcPresentationChecks.Run(game, outputDirectory, Check);
+         MonsterAnimationChecks.Run(game, outputDirectory, Check, monsterCaptures);
+         CombatFeedbackChecks.Run(game, outputDirectory, Check);
+         if (monstersOnly)
+@@ -630,10 +642,10 @@ internal static class Program
+                 $"Bridge {bridge.X},{bridge.Y} reflection freezes at a fixed scene time");
+             Check(!stillReflection.SequenceEqual(Layer("DrawHeroReflection", reflectionActor, 2d)),
+                 $"Bridge {bridge.X},{bridge.Y} reflection has gentle animated ripples");
+-            var withReflection = Layer("Draw", reflectionActor, 1d, false, 0);
++            var withReflection = Layer("Draw", reflectionActor, 1d, false, 0, Get("world"));
+             var originalMask = (bool[])waterMask.Clone();
+             Color[] withoutReflection;
+-            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false, 0); }
++            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false, 0, Get("world")); }
+             finally { originalMask.CopyTo(waterMask, 0); }
+             var townAtlas = (Texture2D)townType.GetField("town", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(townRenderer)!;
+             var townPixels = new Color[townAtlas.Width * townAtlas.Height]; townAtlas.GetData(townPixels);
+@@ -738,10 +750,10 @@ internal static class Program
+         try
+         {
+             detailsAtlas.SetData(new Color[originalDetails.Length]);
+-            bareFacades = Layer("Draw", stillPlayer, 1d, false, 0);
++            bareFacades = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
+         }
+         finally { detailsAtlas.SetData(originalDetails); }
+-        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false, 0);
++        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
+         for (var y = 0; y < TownMap.Height; y++) for (var x = 0; x < TownMap.Width; x++)
+         {
+             var sprite = map.Tile(new(x, y)) switch { 1 => 0, 5 => 1, 6 => 2, 7 => 3, 10 => 4, _ => -1 };
+@@ -770,7 +782,7 @@ internal static class Program
+         try
+         {
+             buildingAtlas.SetData(withoutCavePixels);
+-            withoutCave = Layer("Draw", stillPlayer, 1d, false, 0);
++            withoutCave = Layer("Draw", stillPlayer, 1d, false, 0, Get("world"));
+         }
+         finally { buildingAtlas.SetData(buildingPixels); }
+         var caveChanged = Enumerable.Range(0, withoutCave.Length).Where(i => withoutCave[i] != decoratedFacades[i]).ToArray();
+@@ -1100,7 +1112,7 @@ internal static class Program
+             game.GraphicsDevice.SetRenderTarget(fullMap);
+             game.GraphicsDevice.Clear(Color.Black);
+             referenceBatch.Begin(samplerState: SamplerState.PointClamp);
+-            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false, 0]);
++            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false, 0, worldRenderer]);
+             referenceBatch.End();
+             game.GraphicsDevice.SetRenderTarget(null);
+             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-entire-town.png"));
+diff --git a/monogame/Yipe.GraphicsChecks/README.md b/monogame/Yipe.GraphicsChecks/README.md
+index d8d5fd2..b46a660 100644
+--- a/monogame/Yipe.GraphicsChecks/README.md
++++ b/monogame/Yipe.GraphicsChecks/README.md
+@@ -1,6 +1,6 @@
+ # MonoGame graphics checks
+ 
+-The latest full run passed **3,862 checks**, including all 41 animated monsters,
++The latest full run passed **4,036 checks**, including the NPC animation pass, all 41 animated monsters,
+ the eleven remastered Ice Cave rooms, thirteen Water Cave rooms and fifteen Final Cave rooms. It includes the original 139 visual checks, eight diagonal
+ dispatch/animation checks, and six session checks for logical position/storage,
+ world transitions, shop handoff and RNG isolation, plus eight full-save checks
+@@ -446,3 +446,22 @@ dotnet run --project monogame/Yipe.GraphicsChecks -c Release --no-build -- --may
+ 
+ [Evidence](../evidence/2026-10-09-maynard-atmosphere/review.json) ·
+ [Recorded audio credits](../Yipe.Desktop/Content/Audio/Ambience/MAYNARD-CREDITS.txt)
++
++## NPC animation review
++
++`--npc-only` runs the NPC checks with an isolated adventure and produces world,
++dialogue and reward screenshots, native compiled sheets, and 440 animation frames
++under `npcs/`. The focused run passes **183 checks** (174 NPC checks plus nine
++startup/default checks). Coverage includes all 20 rescue locations and four
++teachers, palette/alpha/anchor validation, distinct poses, original event and RNG
++parity, all four rescue gifts, cancellation, training costs/failure/repeat behavior,
++King gold/item/equipment reactions, pagination and pause/focus gating.
++
++```sh
++dotnet run --project monogame/Yipe.GraphicsChecks -c Release -- --npc-only --output build/npc-review
++```
++
++The [review gallery](../evidence/2026-10-11-npc-animation/review.html) includes a
++55-second game-rendered video and before/after images. New poses are native
++pixel art; dialogue gestures use a cosmetic timer while world simulation stays
++frozen. No real save is used by this runner.
+diff --git a/monogame/NPC_ANIMATION_PLAN.md b/monogame/NPC_ANIMATION_PLAN.md
+new file mode 100644
+index 0000000..eaaf9a9
+--- /dev/null
++++ b/monogame/NPC_ANIMATION_PLAN.md
+@@ -0,0 +1,44 @@
++# NPC animation and personality
++
++Goal: bring the King, Princess and Skill Teacher to life with native pixel-art
++poses, restrained idle motion and distinct interaction gestures. Preserve all
++three Princess variants and the original dialogue, choices, quest rewards,
++training costs, world rules, RNG and save data. Use local builds only.
++
++The existing remaster checkpoint was committed as `0af5031` and pushed to
++`origin/main` before this work began.
++
++## Implementation and review
++
++- [x] Capture the existing NPC world and interaction presentation with isolated
++  adventures; fingerprint personal saves and original gameplay files.
++- [x] Create and inspect consistent pose sheets: dignified King nods and open-hand
++  greetings, the Teacher's staff-supported idle and instructional gesture, and
++  Princess breathing/blinking, greeting and grateful celebration. Retain the
++  blonde/pink, auburn/purple and blonde/blue rescue appearances.
++- [x] Compile through the existing fixed palette and binary-alpha native sprite
++  pipeline. Keep stable feet, crisp pixels, grounded shadows and environmental
++  lighting. Do not add NPC wandering or change event locations.
++- [x] Animate appropriate world actors and add readable dialogue portraits using
++  the same poses. Play teaching and rescue/reward reactions at the existing event
++  boundaries. Animation must not delay choices or advance gameplay during dialogue.
++- [x] Verify dialogue pagination, selection/back behavior, rewards/training,
++  disappearance after rescue, fog, pause, deterministic rendering and save/RNG
++  preservation. Run local Release and relevant core/frontend graphics checks.
++- [x] Inspect before/after screenshots and animation video at gameplay scale;
++  retain review media and provenance under `evidence/2026-10-11-npc-animation`.
++
++Completion requires implementation, passing verification and reviewable captures.
++User aesthetic approval is a separate review after delivery.
++
++## Completion — 2026-10-11
++
++Implemented all five appearance sheets (60 poses), world NPCs and portrait
++reactions. Local Release passes 632 core/input checks, 183 focused and
++4,036 full graphics checks, including 360 tour frames. All 33 personal files
++and 31 core/map files remain byte-identical.
++
++[Review gallery and 55-second video](evidence/2026-10-11-npc-animation/review.html)
++and [verification](evidence/2026-10-11-npc-animation/review.json).
++User aesthetic approval remains pending. This work follows the pushed checkpoint
++and remains local for review; no package was rebuilt.
+diff --git a/monogame/Yipe.Desktop/Content/Art/Retro/World/NPC_ANIMATIONS.md b/monogame/Yipe.Desktop/Content/Art/Retro/World/NPC_ANIMATIONS.md
+new file mode 100644
+index 0000000..1c0ee10
+--- /dev/null
++++ b/monogame/Yipe.Desktop/Content/Art/Retro/World/NPC_ANIMATIONS.md
+@@ -0,0 +1,38 @@
++# NPC animation assets
++
++Five transparent source sheets add **60 poses** for the King, Skill Teacher and
++three existing Princess rescue appearances. They were created with the built-in
++imagegen tool using `monsters-03.png` and `quests.png` as identity references.
++The existing atlases are retained.
++
++| Installed asset | Identity |
++| --- | --- |
++| [npc-king-animation.png](npc-king-animation.png) | Crown, white beard, blue tunic, red cape |
++| [npc-teacher-animation.png](npc-teacher-animation.png) | Olive hood, white beard, planted wooden staff |
++| [npc-princess-pink-animation.png](npc-princess-pink-animation.png) | Blonde hair, pink gown |
++| [npc-princess-purple-animation.png](npc-princess-purple-animation.png) | Auburn hair, purple gown |
++| [npc-princess-blue-animation.png](npc-princess-blue-animation.png) | Blonde hair, blue gown |
++
++Every sheet has four columns and three rows: idle/breath/blink/return,
++conversation anticipation/gesture/hold/return, celebration anticipation/gesture/
++hold/return. Idle holds are longer than blinks. Nearby actors occasionally greet;
++conversation gestures are restrained. Reward reactions play once, then idle.
++The Teacher keeps his staff grounded; NPCs do not wander or affect collision.
++
++`WorldNpc.cs` uses `RetroArt.Load` to compile native 48 × 48 cells with the shared
++palette and binary alpha. One size correction per sheet matches the existing
++identity. Each frame's feet/skirt hem centers the body, so an extended hand does
++not slide it sideways. The feet use a common baseline. World rendering adds a
++small stepped shadow, restrained cave tint and the existing scene lighting.
++Dialogue portraits use the same native art, with a separate header to preserve
++full-width text and choices. Portrait time advances independently from the paused
++world; pause and focus loss freeze the portrait too.
++
++The King's first source had boots crossing a row boundary. A built-in imagegen
++edit added clear gutters before the corrected sheet was installed. Native
++compiled sheets and actual game captures were inspected after import.
++
++[Exact generation prompts and source paths](../../../../../evidence/2026-10-11-npc-animation/generation.json),
++[King correction prompt](../../../../../evidence/2026-10-11-npc-animation/king-grid-correction.json),
++[review gallery/video](../../../../../evidence/2026-10-11-npc-animation/review.html),
++and [plan](../../../../../NPC_ANIMATION_PLAN.md).
+diff --git a/monogame/Yipe.Desktop/WorldNpc.cs b/monogame/Yipe.Desktop/WorldNpc.cs
+new file mode 100644
+index 0000000..fac5bae
+--- /dev/null
++++ b/monogame/Yipe.Desktop/WorldNpc.cs
+@@ -0,0 +1,86 @@
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++
++namespace Yipe.Desktop;
++
++internal enum NpcActor { None, King, Teacher, PrincessPink, PrincessPurple, PrincessBlue }
++
++internal sealed partial class WorldRenderer
++{
++    private readonly Dictionary<NpcActor, Texture2D> npcAnimations = new();
++
++    private void LoadNpcAnimations(GraphicsDevice device, string content)
++    {
++        foreach (var (actor, name) in new[] { (NpcActor.King, "king"), (NpcActor.Teacher, "teacher"),
++            (NpcActor.PrincessPink, "princess-pink"), (NpcActor.PrincessPurple, "princess-purple"), (NpcActor.PrincessBlue, "princess-blue") })
++        {
++            var sheet = RetroArt.Load(device, content, $"World/npc-{name}-animation.png", 4, 3, 48);
++            var source = new Color[sheet.Width * sheet.Height]; sheet.GetData(source);
++            var bounds = Enumerable.Range(0, 12).Select(f => InkBounds(source, sheet.Width, Cell(f, 4, 48))).ToArray();
++            var original = actor is NpcActor.King or NpcActor.Teacher ? monsters[2] : quests;
++            var originalCell = actor is NpcActor.King ? Cell(9, 4, 48) : actor is NpcActor.Teacher ? Cell(11, 4, 48)
++                : Cell((int)actor - (int)NpcActor.PrincessPink, 2, 48);
++            var originalPixels = new Color[original.Width * original.Height]; original.GetData(originalPixels);
++            var originalHeight = InkBounds(originalPixels, original.Width, originalCell).Height;
++            var scale = Math.Min(originalHeight / (float)bounds[0].Height,
++                Math.Min(40f / bounds.Max(b => b.Height), 42f / bounds.Max(b => b.Width)));
++            var aligned = new Color[source.Length];
++            for (var frame = 0; frame < 12; frame++)
++            {
++                var ink = bounds[frame];
++                var width = Math.Max(2, (int)MathF.Round(ink.Width * scale));
++                var height = Math.Max(2, (int)MathF.Round(ink.Height * scale));
++                var pose = new Color[width * height];
++                for (var y = 0; y < height; y++) for (var x = 0; x < width; x++)
++                    pose[y * width + x] = source[(ink.Y + (int)MathF.Round(y * (ink.Height - 1f) / (height - 1))) * sheet.Width
++                        + ink.X + (int)MathF.Round(x * (ink.Width - 1f) / (width - 1))];
++                var resized = InkBounds(pose, width, new(0, 0, width, height));
++                // Align the feet/skirt hem rather than the hands: a wave cannot slide the body sideways.
++                var feet = InkBounds(pose, width, new(0, Math.Max(0, resized.Bottom - 4), width, Math.Min(4, resized.Bottom)));
++                var left = 24 - (feet.Left + feet.Right) / 2; var top = 44 - resized.Bottom;
++                if (left < 0 || left + width > 48 || top < 0)
++                    throw new InvalidDataException($"NPC {name} pose {frame} exceeds its native cell.");
++                var cell = Cell(frame, 4, 48);
++                for (var y = 0; y < height; y++)
++                    Array.Copy(pose, y * width, aligned, (cell.Y + top + y) * sheet.Width + cell.X + left, width);
++            }
++            sheet.SetData(aligned); npcAnimations.Add(actor, sheet);
++        }
++    }
++
++    internal static NpcActor PrincessActor(int variant) => variant switch
++    { 1 => NpcActor.PrincessPink, 2 => NpcActor.PrincessPurple, 3 => NpcActor.PrincessBlue, _ => NpcActor.None };
++
++    internal static int NpcFrame(NpcActor actor, double time, bool speaking = false, bool celebrating = false)
++    {
++        time = Math.Max(0, time);
++        if (celebrating && time < 1.8) return time < .2 ? 8 : time < .5 ? 9 : time < 1.35 ? 10 : 11;
++        var phase = time % (actor == NpcActor.Teacher ? 7 : actor == NpcActor.King ? 6 : 5);
++        if (speaking && !celebrating && phase < 1.65)
++            return phase < .2 ? 4 : phase < .65 ? 5 : phase < 1.3 ? 6 : 7;
++        return phase < 3.8 ? 0 : phase < 4 ? 1 : phase < 4.13 ? 2 : phase < 4.45 ? 3 : 0;
++    }
++
++    internal void DrawNpcPortrait(SpriteBatch batch, NpcActor actor, Rectangle destination, double time, bool celebrating)
++    {
++        if (npcAnimations.TryGetValue(actor, out var sheet))
++            batch.Draw(sheet, destination, Cell(NpcFrame(actor, time, speaking: true, celebrating), 4, 48), Color.White);
++    }
++
++    internal void DrawNpcWorld(SpriteBatch batch, NpcActor actor, MapPosition cell, double time, bool nearby = false, Map? map = null)
++    {
++        if (!npcAnimations.TryGetValue(actor, out var sheet)) return;
++        var feet = new Point(cell.X * 32 + 16, cell.Y * 32 + 28);
++        for (var row = 0; row < 3; row++)
++        {
++            var radius = row == 1 ? 9 : 6;
++            batch.Draw(pixel, new Rectangle(feet.X - radius, feet.Y - 2 + row, radius * 2, 1), RetroArt.Palette[0] * .3f);
++        }
++        var tint = map is null ? Color.White : IsFire(map) || IsHell(map) ? new Color(247, 220, 205)
++            : IsIce(map) ? new Color(224, 237, 249) : IsWaterCave(map) ? new Color(223, 239, 233)
++            : IsFinal(map) ? new Color(244, 224, 233) : IsBreeding(map) ? new Color(236, 229, 231) : Color.White;
++        var frame = NpcFrame(actor, time + cell.X * .31 + cell.Y * .17, speaking: nearby);
++        batch.Draw(sheet, new Vector2(feet.X - 24, feet.Y - 44), Cell(frame, 4, 48), tint);
++    }
++}
+diff --git a/monogame/Yipe.GraphicsChecks/NpcPresentationChecks.cs b/monogame/Yipe.GraphicsChecks/NpcPresentationChecks.cs
+new file mode 100644
+index 0000000..3e89200
+--- /dev/null
++++ b/monogame/Yipe.GraphicsChecks/NpcPresentationChecks.cs
+@@ -0,0 +1,289 @@
++using System.Reflection;
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++using Yipe.Desktop;
++
++namespace Yipe.GraphicsChecks;
++
++internal static class NpcPresentationChecks
++{
++    internal static void Run(Game host, string output, Action<bool, string> check)
++    {
++        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
++        var type = host.GetType();
++        object? Get(string name) => type.GetField(name, flags)!.GetValue(host);
++        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(host, value);
++        void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(host, args);
++        var saved = new[] { "session", "adventure", "renderedMap", "journal", "cameraPosition", "sceneTime", "paused", "pauseAmount",
++            "overlay", "mapOpen", "worldMapOpen", "saving", "loading", "studioSplashRemaining", "walkingStep", "pendingDirection",
++            "miniatureMode", "scanlines", "vignette", "pixelLighting", "messageRemaining", "timeOfDayMode", "pendingEvent", "command", "pendingNpcCelebration", "tickRemaining", "iceDirection", "dayNightSeconds", "dayNightUpdatedAt" }.ToDictionary(n => n, Get);
++        var player = (PlayerMotion)Get("player")!; var position = player.Position; var facing = player.FacingRow;
++        var catalog = (MapCatalog)Get("catalog")!;
++        var directory = Path.Combine(output, "npcs"); Directory.CreateDirectory(directory);
++        var world = Get("world")!; var wt = world.GetType();
++        object? Invoke(string name, params object[] args) => wt.GetMethod(name, flags | BindingFlags.Public | BindingFlags.Static)!.Invoke(world, args);
++        T Property<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
++        void PropertySet(object value, string name, object data) => value.GetType().GetProperty(name)!.SetValue(value, data);
++        using var target = new RenderTarget2D(host.GraphicsDevice, 416, 384);
++        using var batch = new SpriteBatch(host.GraphicsDevice);
++        using var presented = new Texture2D(host.GraphicsDevice, 1280, 720);
++        try
++        {
++            Set("paused", false); Set("pauseAmount", 0f); Set("overlay", null); Set("mapOpen", false); Set("worldMapOpen", false);
++            Set("saving", null); Set("loading", null); Set("studioSplashRemaining", 0d); Set("walkingStep", false);
++            Set("pendingDirection", Point.Zero); Set("messageRemaining", 0d); Set("journal", new MapJournal()); Set("timeOfDayMode", 1);
++            Set("miniatureMode", 2); Set("scanlines", true); Set("vignette", false); Set("pixelLighting", true);
++            CheckAssets();
++            foreach (var (name, id, at) in new[] { ("king",17,new MapPosition(11,2)), ("teacher",75,new MapPosition(4,2)),
++                ("princess-pink",46,new MapPosition(7,2)), ("princess-purple",65,new MapPosition(10,6)), ("princess-blue",51,new MapPosition(5,3)) })
++            {
++                var game = Scene(id, at);
++                var before = GameSaveCodec.Encode(game.Session, catalog);
++                Capture(name + "-world.png");
++                check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), name + ": world rendering preserves gameplay and RNG");
++                for (var frame = 0; frame < 40; frame++)
++                { Set("sceneTime", frame / 8d); Capture($"{name}-world-{frame:D2}.png"); }
++                var direction = id is 51 or 65 ? new Point(-1,0) : new Point(0,-1);
++                var expected = NewGame(id, at);
++                using var expectedMove = expected.Move(direction.X,direction.Y).GetEnumerator();
++                while (expectedMove.MoveNext() && expectedMove.Current.Kind == AdventureEventKind.Sound) { }
++                Call("StartCommand", game.Move(direction.X,direction.Y));
++                FinishMovement(); Capture(name + "-dialogue.png");
++                check(Get("overlay") is not null, name + ": original event opens its dialogue");
++                var current = Get("overlay")!;
++                var actor = Property<object>(current, "Npc").ToString()!;
++                check(actor == (id == 17 ? "King" : id == 75 ? "Teacher" : id == 46 ? "PrincessPink" : id == 65 ? "PrincessPurple" : "PrincessBlue"),
++                    name + ": dialogue uses the correct actor/variant");
++                check(GameSaveCodec.Encode(expected.Session, catalog).SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)),
++                    name + ": opening the animated dialogue matches the original event state and RNG");
++                CheckDialogueLayout(current, name);
++                var frozen = GameSaveCodec.Encode(game.Session, catalog); var sceneTime = (double)Get("sceneTime")!;
++                var screenA = Capture(name + "-dialogue.png");
++                Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.7)));
++                var screenB = Capture(name + "-gesture.png");
++                check(Property<double>(current,"NpcTime") > 0 && !screenA.SequenceEqual(screenB), name + ": dialogue animates through the real update loop");
++                check(frozen.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)) && (double)Get("sceneTime")! == sceneTime,
++                    name + ": portrait time does not advance the world or RNG");
++                for (var frame = 0; frame < 24; frame++)
++                { PropertySet(current,"NpcTime",frame / 8d); Capture($"{name}-talk-{frame:D2}.png"); }
++                if (id == 17)
++                {
++                    check(string.Join(" ", Property<string[]>(current,"Lines")).Split(' ',StringSplitOptions.RemoveEmptyEntries)
++                        .SequenceEqual(expectedMove.Current.Text.Replace("\n"," ").Split(' ',StringSplitOptions.RemoveEmptyEntries)), "King dialogue retains every original word across pages");
++                    CheckPause(current);
++                    var pages = Property<int>(current,"PageCount");
++                    for (var page = 0; page < pages - 1; page++) Call("UpdateOverlay", new InputFrame(Point.Zero,true,false,false));
++                    check(ReferenceEquals(Get("overlay"),current) && Property<int>(current,"Page") == pages - 1,
++                        "King prose paginates with Continue without closing early");
++                    Capture("king-dialogue-last-page.png");
++                }
++                else if (id == 75)
++                {
++                    var gold = game.Player.Gold; var offer = Shops.AbilityForEnvironment(game.Map.Environment)!.Value;
++                    Choose(0); Shops.TrainAbility(expected.Player, expected.Map.Environment);
++                    check(Property<bool>(Get("overlay")!,"NpcCelebrating") && game.Player.Gold == gold - offer.Price
++                        && GameSaveCodec.Encode(expected.Session,catalog).SequenceEqual(GameSaveCodec.Encode(game.Session,catalog)),
++                        "Learning an ability celebrates once and preserves its original cost and outcome");
++                    RecordReaction("teacher-trained");
++                    Choose(0); Choose(0);
++                    check(!Property<bool>(Get("overlay")!,"NpcCelebrating") && game.Player.Gold == gold - offer.Price,
++                        "Already-trained feedback does not celebrate or charge again");
++                }
++                else
++                {
++                    Choose(0); expectedMove.Current.Choice = 1;
++                    while (expectedMove.MoveNext() && expectedMove.Current.Kind == AdventureEventKind.Sound) { }
++                    check(Property<bool>(Get("overlay")!,"NpcCelebrating")
++                        && GameSaveCodec.Encode(expected.Session,catalog).SequenceEqual(GameSaveCodec.Encode(game.Session,catalog)),
++                        name + ": rescue celebration preserves the original gift, flags and RNG");
++                    RecordReaction(name + "-rescued");
++                }
++                if (Get("command") is IDisposable command) command.Dispose();
++                Set("command", null); Set("pendingEvent", null); Set("overlay", null);
++            }
++            CheckWorldVisibility(); CheckOutcomes();
++        }
++        finally
++        {
++            if (Get("command") is IDisposable command) command.Dispose();
++            foreach (var entry in saved) Set(entry.Key, entry.Value);
++            player.SnapTo(position); player.Face(facing switch { 1 => new(-1,0), 2 => new(1,0), 3 => new(0,-1), _ => new(0,1) });
++            Call("SynchronizeWorld", false); Call("Draw", new GameTime());
++        }
++        void Choose(int index)
++        {
++            var current = Get("overlay")!;
++            while (Property<int>(current,"Page") < Property<int>(current,"PageCount") - 1)
++                Call("UpdateOverlay",new InputFrame(new(1,0),false,false,false));
++            PropertySet(current,"Selected",index);
++            Call("UpdateOverlay",new InputFrame(Point.Zero,true,false,false));
++        }
++        void RecordReaction(string name)
++        {
++            var current = Get("overlay")!; var game = (Adventure)Get("adventure")!;
++            var snapshot = GameSaveCodec.Encode(game.Session,catalog);
++            PropertySet(current,"NpcTime",.7d); Capture(name + ".png");
++            for (var frame = 0; frame < 24; frame++)
++            { PropertySet(current,"NpcTime",frame / 8d); Capture($"{name}-{frame:D2}.png"); }
++            check(snapshot.SequenceEqual(GameSaveCodec.Encode(game.Session,catalog)), name + ": reaction frames preserve full gameplay and RNG");
++        }
++        void CheckDialogueLayout(object current, string name)
++        {
++            var lines = Property<string[]>(current,"Lines"); var perPage = Property<int>(current,"LinesPerPage");
++            var options = Property<Array>(current,"Options");
++            check(lines.All(l => l.Length <= 44) && 64 + (perPage - 1) * 10 + 7 < 150
++                && (options.Length <= 1 || 74 + Math.Min(lines.Length,perPage) * 10 + (options.Length - 1) * 11 + 7 < 164),
++                name + ": prose and every choice fit below the portrait without overlap");
++        }
++        void CheckPause(object current)
++        {
++            var before = Property<double>(current,"NpcTime");
++            Set("paused",true); Call("Update",new GameTime(TimeSpan.FromSeconds(2),TimeSpan.FromSeconds(.5)));
++            check(Property<double>(current,"NpcTime") == before, "Pause freezes NPC portrait animation"); Set("paused",false);
++            var platform = typeof(Game).GetField("Platform",flags)!.GetValue(host)!;
++            var active = platform.GetType().GetProperty("IsActive")!; var wasActive = host.IsActive;
++            try
++            {
++                active.SetValue(platform,false); Call("Update",new GameTime(TimeSpan.FromSeconds(3),TimeSpan.FromSeconds(.5)));
++                check(Property<double>(current,"NpcTime") == before, "Focus loss freezes NPC portrait animation");
++            }
++            finally { active.SetValue(platform,wasActive); Set("paused",false); Set("pauseAmount",0f); }
++        }
++        void CheckAssets()
++        {
++            var sheets = (System.Collections.IDictionary)wt.GetField("npcAnimations",flags)!.GetValue(world)!;
++            var palette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!.GetField("Palette",BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
++            check(sheets.Count == 5,"Five NPC sheets preserve the King, Teacher and all three Princess identities");
++            foreach (System.Collections.DictionaryEntry entry in sheets)
++            {
++                var sheet = (Texture2D)entry.Value!; var data = new Color[sheet.Width * sheet.Height]; sheet.GetData(data);
++                check(sheet.Width == 192 && sheet.Height == 144 && data.All(c => c.A == 0 || c.A == 255 && palette.Contains(c)),
++                    entry.Key + ": native 48-pixel poses use binary alpha and the shared palette");
++                var poses = new List<Color[]>(); var feetStable = true; var clearBorders = true;
++                for (var frame = 0; frame < 12; frame++)
++                {
++                    var pose = new Color[48*48]; sheet.GetData(0,new(frame%4*48,frame/4*48,48,48),pose,0,pose.Length); poses.Add(pose);
++                    var bottom = Enumerable.Range(0,48).Where(y => pose.Skip(y*48).Take(48).Any(c => c.A != 0)).Max();
++                    feetStable &= bottom == 43;
++                    clearBorders &= Enumerable.Range(0,48).All(i => pose[i].A == 0 && pose[47*48+i].A == 0 && pose[i*48].A == 0 && pose[i*48+47].A == 0);
++                }
++                check(feetStable && clearBorders, entry.Key + ": every pose has planted feet and clean cell borders");
++                check(!poses[0].SequenceEqual(poses[2]) && !poses[0].SequenceEqual(poses[5]) && !poses[5].SequenceEqual(poses[10]),
++                    entry.Key + ": blink, conversation and celebration have distinct artwork");
++                using var file = File.Create(Path.Combine(directory,entry.Key + "-native.png")); sheet.SaveAsPng(file,sheet.Width,sheet.Height);
++                check((int)Invoke("NpcFrame",entry.Key,2d,true,true)! < 4 && (int)Invoke("NpcFrame",entry.Key,8d,true,true)! < 4,
++                    entry.Key + ": one-shot celebration settles to idle instead of repeating");
++            }
++        }
++        Color[] World(Adventure game)
++        {
++            host.GraphicsDevice.SetRenderTarget(target); host.GraphicsDevice.Clear(Color.Transparent);
++            batch.Begin(samplerState:SamplerState.PointClamp);
++            Invoke("Draw",batch,game,player,Get("town")!,1d,false,0f);
++            batch.End(); host.GraphicsDevice.SetRenderTarget(null);
++            var pixels = new Color[416*384]; target.GetData(pixels); return pixels;
++        }
++        void CheckWorldVisibility()
++        {
++            foreach (var id in catalog.Ids.Where(id => catalog.CreateMap(id)!.Events.Princess.HasPosition))
++            {
++                var map = catalog.CreateMap(id)!; var p = map.Events.Princess;
++                var game = Scene(id,p.Position); player.SnapTo(new(6,5));
++                var visible = World(game); var snapshot = GameSaveCodec.Encode(game.Session,catalog);
++                check(visible.SequenceEqual(World(game)), $"Princess {id}: frozen rendering is deterministic");
++                game.Player.InventoryValues[p.RescueIndex] = 1; var rescued = World(game);
++                check(!visible.SequenceEqual(rescued), $"Princess {id}: the world actor disappears after rescue");
++                game.Visibility.Initialize(new Map(id,map.Environment,Enumerable.Repeat((ushort)0x22,Map.TileCount).ToArray()),new(12,11));
++                var hidden = World(game); game.Player.InventoryValues[p.RescueIndex] = 0;
++                check(hidden.SequenceEqual(World(game)), $"Princess {id}: unexplored cells never reveal the actor");
++                check(snapshot.SequenceEqual(GameSaveCodec.Encode(game.Session,catalog)), $"Princess {id}: drawing uses no gameplay state or RNG");
++            }
++            foreach (var id in new[] {75,94,104,105})
++            {
++                var map = catalog.CreateMap(id)!;
++                var at = (from x in Enumerable.Range(0,13) from y in Enumerable.Range(0,12) where map.Tile(new(x,y)) == 0x41 select new MapPosition(x,y)).Single();
++                var game = Scene(id,at); var visible = World(game); game.Map.RestoreTile(at,0x28);
++                check(!visible.SequenceEqual(World(game)), $"Teacher {id}: artwork occupies the original training tile");
++            }
++        }
++        void CheckOutcomes()
++        {
++            // Every original rescue choice can be accepted immediately, without waiting for the gesture.
++            foreach (var gift in new[] {1,2,3,4})
++            {
++                var game = Scene(46,new(7,2)); var expected = NewGame(46,new(7,2));
++                using var move = expected.Move(0,-1).GetEnumerator();
++                while(move.MoveNext() && move.Current.Kind == AdventureEventKind.Sound) { }
++                Call("StartCommand",game.Move(0,-1)); FinishMovement();
++                var labels = Property<Array>(Get("overlay")!,"Options").Cast<object>().Select(o=>Property<string>(o,"Label"));
++                check(labels.SequenceEqual(new[]{"Gold","Experience","Kiss","Mystery"}), $"Rescue gift {gift}: original choices and order remain available");
++                Choose(gift-1); move.Current.Choice = gift;
++                while(move.MoveNext() && move.Current.Kind == AdventureEventKind.Sound) { }
++                check(GameSaveCodec.Encode(game.Session,catalog).SequenceEqual(GameSaveCodec.Encode(expected.Session,catalog)),
++                    $"Rescue gift {gift}: immediate choice exactly matches core rewards and RNG");
++            }
++            var cancelled = Scene(46,new(7,2)); Call("StartCommand",cancelled.Move(0,-1)); FinishMovement();
++            Call("UpdateOverlay",new InputFrame(Point.Zero,false,true,false));
++            check(cancelled.Player.InventoryValues[cancelled.Map.Events.Princess.RescueIndex] == 0 && Get("overlay") is null,
++                "Backing out of a rescue leaves the Princess available and gives no reward");
++            foreach (var id in new[]{75,94,104,105})
++            {
++                var map = catalog.CreateMap(id)!;
++                var at = (from x in Enumerable.Range(0,13) from y in Enumerable.Range(0,12) where map.Tile(new(x,y)) == 0x41 select new MapPosition(x,y)).Single();
++                var game = Scene(id,at); game.Player.Gold = 0;
++                Call("ShowInteraction",new AdventureEvent(AdventureEventKind.AbilityTraining,"Ability Training"));
++                CheckDialogueLayout(Get("overlay")!,"Teacher " + id);
++                var before = GameSaveCodec.Encode(game.Session,catalog); Choose(0);
++                check(!Property<bool>(Get("overlay")!,"NpcCelebrating") && before.SequenceEqual(GameSaveCodec.Encode(game.Session,catalog)),
++                    $"Teacher {id}: insufficient funds give ordinary feedback without charging or teaching");
++            }
++            foreach (var reward in new[]{"gold","item","equipment"})
++            {
++                var king = Scene(17,new(11,2));
++                var p = king.Player; p.QuestFlags[0] = p.QuestFlags[1] = true;
++                if(reward == "gold") p.StampsFound = 1;
++                else if(reward == "item") { p.PrincessesFound = 10; p.QuestFlags[5] = true; }
++                else { p.StampsFound = 6; p.GatekeeperState = 2; p.QuestFlags[6] = p.QuestFlags[9] = true; }
++                Call("StartCommand",king.Move(0,-1)); FinishMovement();
++                check(Property<bool>(Get("overlay")!,"NpcCelebrating"), "King: " + reward + " reward plays an approving reaction");
++                if(reward == "gold") RecordReaction("king-reward");
++            }
++        }
++        Adventure NewGame(int id, MapPosition at)
++        {
++            var layer = id >= 117 ? 0 : (id - 1) / 40; var cell = id >= 117 ? id - 99 : id - layer * 40 - 1;
++            var game = new Adventure(new GameSession(catalog, location: new() { MapId = id, MapLayer = layer, AlternateMapSet = id >= 117,
++                RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = at }));
++            game.Player.Gold = 10000;
++            return game;
++        }
++        Adventure Scene(int id, MapPosition at)
++        {
++            if (Get("command") is IDisposable previous) previous.Dispose();
++            var game = NewGame(id,at);
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Visibility.RevealFrom(game.Map, new(x,y));
++            Set("session", game.Session); Set("adventure", game); Set("sceneTime", 1d);
++            // Maynard terrain is unchanged: retain the host renderer and its ownership.
++            Set("renderedMap", game.Map);
++            Set("overlay", null); Set("command", null); Set("pendingEvent", null);
++            Call("SynchronizeWorld", false);
++            Set("cameraPosition", type.GetMethod("CameraTarget", flags | BindingFlags.Static)!.Invoke(host, [player.VisualPosition]));
++            return game;
++        }
++        void FinishMovement()
++        {
++            player.Update(1);
++            Invoke("UpdateMonsters", 1d);
++            if (Get("pendingEvent") is AdventureEvent next)
++            { Set("pendingEvent", null); Call("ShowInteraction", next); }
++        }
++        Color[] Capture(string name)
++        {
++            Call("Draw", new GameTime());
++            var pixels = new Color[1280 * 720]; host.GraphicsDevice.GetBackBufferData(pixels); presented.SetData(pixels);
++            using var file = File.Create(Path.Combine(directory, name)); presented.SaveAsPng(file, 1280, 720);
++            return pixels;
++        }
++    }
++}

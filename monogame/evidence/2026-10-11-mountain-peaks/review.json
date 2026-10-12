@@ -1,0 +1,36 @@
+{
+  "status": "Implemented approved art direction; actual in-game aesthetic review pending",
+  "graphics_checks": 335,
+  "snow_checks": 39,
+  "matching_overlap_pixels": 40960,
+  "surface_maps_changed": 25,
+  "surface_maps_identical": 11,
+  "personal_files_compared": 28,
+  "personal_files_changed": [],
+  "save_format_or_map_data_changes": false,
+  "package_built": false,
+  "source_hashes": {
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "95620f007c969351778af2b4f76bec9a8dfdbf0189651a1f57c99be8aaa7fb98",
+    "monogame/Yipe.Desktop/RetroArt.cs": "d973f864e4a9daab1936957f751145a0d8af4b80545b3d8d4a9c461209963aca",
+    "monogame/Yipe.Desktop/TownRenderer.cs": "8ce60695fda79a2c917afc14cf6c57117bf3e4ab7430035a73d5e8d4f6cdfeee",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "9c768df151e4854110956f05e330716e7056083d613ec702f4e2869fc158e253",
+    "monogame/Yipe.GraphicsChecks/MountainPresentationChecks.cs": "9c94c9648f594639c286bd6b623b88e41413b7a6550225cff3700cd73af806c3",
+    "monogame/Yipe.Desktop/Content/Art/Retro/World/mountain-peaks.png": "667a14888b032982b331db70b3fb93d96d43de05c36430f157542367a3ef4d91",
+    "assets/maps/original-map-tables.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e"
+  },
+  "desktop_assembly_sha256": "1da8dce6a8e4c66afbc3c4830e5a9569ea1c00c4802cccfeedca7d830ae48c1f",
+  "launcher_matches_tested_desktop": true,
+  "asset_method": "Built-in imagegen, two prompts; runtime native-pixel import with local 11-color palette",
+  "concept": "../2026-10-11-mountain-direction/review.html",
+  "captures": "build/mountain-peaks/verified/yipe-graphics-20261012-053932-5ad832d9",
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --outdoors-only --output build/mountain-peaks/verified",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --snow-only --output build/mountain-peaks/snow",
+    "dotnet build build/cloud-rework/launcher/CloudPreview.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false"
+  ],
+  "notes": [
+    "Full integration and core runs from the previous slab pass are historical; focused runs above validate this implementation.",
+    "No live-game navigation, shutdown or relaunch during this pass."
+  ]
+}

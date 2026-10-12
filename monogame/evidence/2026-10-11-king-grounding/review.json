@@ -1,0 +1,25 @@
+{
+  "location": {
+    "map": 17,
+    "region": "Surface E3 / Maynard",
+    "tile": [
+      11,
+      1
+    ]
+  },
+  "change": "King world sprite scaled to 75%, foot anchor lowered eight native pixels to the doorstep, contact shadow narrowed and strengthened. Native point sampling retained. Dialogue portraits and interaction unchanged.",
+  "validation": {
+    "release_build": "0 warnings, 0 errors",
+    "focused_npc_checks": 183,
+    "video": "5 seconds / 40 game-rendered frames sampled at 8 fps, encoded at 24 fps; full decode passed",
+    "scope": "Local build and isolated test adventures only; no repackaging."
+  },
+  "source_sha256": "a089c340a5e6ea62f7257a8c60b91153766019af51185475e6a22bc3dd301ed6",
+  "evidence": [
+    "before.png",
+    "after.png",
+    "king-grounding.mp4",
+    "checks.log"
+  ],
+  "review": "World capture inspected at gameplay scale against previous placement. User aesthetic review pending."
+}

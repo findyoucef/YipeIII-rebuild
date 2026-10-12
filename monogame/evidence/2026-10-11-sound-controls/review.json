@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-12T04:59:39.582192+00:00",
+  "focused_menu_checks": 142,
+  "build_errors": 0,
+  "build_warnings": 0,
+  "repackaged": false,
+  "changes": [
+    "Actions and Options share one Sound page.",
+    "Left/right adjusts in place, clamps to 0-100 percent and keeps the selected row.",
+    "Enter no longer cycles volume.",
+    "Back restores Actions with Sound selected."
+  ],
+  "adventure_saves_and_journals_unchanged": true,
+  "personal_files_changed_during_checks": [
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json"
+  ],
+  "note": "The existing user game remained running; its root profile changed during this interval and was preserved. Graphics checks use an isolated startup-import profile. The running game predates the fix; local launcher was rebuilt for next launch.",
+  "tested_assembly_sha256": "729a50a9326bde56c5aa883288f85ebea79fb9c4ec2721a615e6041f88a84e1d"
+}

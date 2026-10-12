@@ -7,6 +7,7 @@ public sealed class GameSaveStore
 {
     private readonly string path;
     private readonly MapCatalog catalog;
+    public string FilePath => path;
     public MapJournal RestoredJournal { get; private set; } = new();
     public string JournalWarning { get; private set; } = "";
 

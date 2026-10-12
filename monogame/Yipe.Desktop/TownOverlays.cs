@@ -6,6 +6,7 @@ namespace Yipe.Desktop;
 internal sealed partial class TownGame
 {
     private Player Hero => session.Player;
+    private bool pendingNpcCelebration;
     private string StatusLine => $"HP {Hero.Health}/{Hero.MaximumHealth}  SP {Hero.SpellPoints}/{Hero.MaximumSpellPoints}  AP {Hero.AbilityPoints}/{Hero.MaximumAbilityPoints}\nLevel {Hero.Level}   Gold {Hero.Gold}";
     private string LocationName() => session.CurrentMap.Id switch
     {
@@ -25,11 +26,15 @@ internal sealed partial class TownGame
         overlay = null;
         if (command is null) return;
         pendingEvent = null;
+        pendingNpcCelebration = false;
+        var rewardsBefore = (Hero.Gold, Hero.HasLuckyRabbitFoot, Hero.QuestScore, Hero.WeaponRank, Hero.ArmorRank);
         while (command.MoveNext())
         {
             if (command.Current.Kind == AdventureEventKind.Sound) { audio.Play(command.Current.SoundId); continue; }
             pendingEvent = command.Current; break;
         }
+        pendingNpcCelebration = pendingEvent?.Kind == AdventureEventKind.King
+            && rewardsBefore != (Hero.Gold, Hero.HasLuckyRabbitFoot, Hero.QuestScore, Hero.WeaponRank, Hero.ArmorRank);
         if (pendingEvent is null) { command.Dispose(); command = null; }
         SynchronizeWorld(animate: true);
         if (!player.IsMoving && !world.MonstersMoving && pendingEvent is not null)
@@ -105,13 +110,13 @@ internal sealed partial class TownGame
             current.Selected = (current.Selected + actions.Direction.Y + current.Options.Length) % current.Options.Length;
         if (actions.Confirm && current.Options.Length != 0) current.Options[current.Selected].Choose();
     }
-    private void Notice(string title, string text, Action? done = null, bool combat = false)
+    private void Notice(string title, string text, Action? done = null, bool combat = false, NpcActor npc = NpcActor.None, bool celebrate = false)
     {
         done ??= () => overlay = null;
-        overlay = new(title, text, [new("Continue", done)], done) { Combat = combat };
+        overlay = new(title, text, [new("Continue", done)], done) { Combat = combat, Npc = npc, NpcCelebrating = celebrate };
     }
-    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null, bool combat = false) =>
-        overlay = new(title, text, options, back) { Combat = combat };
+    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null, bool combat = false, NpcActor npc = NpcActor.None) =>
+        overlay = new(title, text, options, back) { Combat = combat, Npc = npc };
 
     private void ShowInteraction(AdventureEvent interaction)
     {
@@ -123,7 +128,14 @@ internal sealed partial class TownGame
             case AdventureEventKind.Princess:
                 Choices("Rescued Princess", "The Princess thanks you for rescuing her and offers you a gift.",
                     new[] { "Gold", "Experience", "Kiss", "Mystery" }.Select((name, index) => new OverlayOption(name, () =>
-                    { interaction.Choice = index + 1; AdvanceCommand(); })), AdvanceCommand);
+                    { interaction.Choice = index + 1; AdvanceCommand(); })), AdvanceCommand, npc: WorldRenderer.PrincessActor(interaction.Value));
+                break;
+            case AdventureEventKind.King:
+                Notice(interaction.Title, interaction.Text, AdvanceCommand, npc: NpcActor.King, celebrate: pendingNpcCelebration);
+                break;
+            case AdventureEventKind.Message when interaction.Title == "Princess Reward":
+                Notice(interaction.Title, interaction.Text, AdvanceCommand,
+                    npc: WorldRenderer.PrincessActor(adventure.Map.Events.Princess.PortraitVariant), celebrate: true);
                 break;
             case AdventureEventKind.WeaponShop: ShowEquipmentShop(EquipmentKind.Weapon); break;
             case AdventureEventKind.ArmorShop: ShowEquipmentShop(EquipmentKind.Armor); break;
@@ -159,7 +171,7 @@ internal sealed partial class TownGame
             var result = adventure.Other(); audio.Play(result.SoundId); SynchronizeWorld(false);
             Notice("Other", result.Message, () => overlay = null);
         }),
-        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; paused = true; graphicsMenuOpen = false; selected = 0; selectionY = 0; })], () => overlay = null);
+        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; OpenPausePage(PausePage.Main); })], () => overlay = null);
 
     private void ShowEquipmentShop(EquipmentKind kind)
     {
@@ -219,10 +231,15 @@ internal sealed partial class TownGame
     }
     private void ShowTraining()
     {
-        if (Shops.AbilityForEnvironment(adventure.Map.Environment) is not { } offer) { Notice("Training", "No training is available here.", AdvanceCommand); return; }
+        if (Shops.AbilityForEnvironment(adventure.Map.Environment) is not { } offer)
+        { Notice("Training", "No training is available here.", AdvanceCommand, npc: NpcActor.Teacher); return; }
         Choices("Ability Training", offer.Description + $"\nGold {Hero.Gold}", [new($"Learn {offer.Name} - {offer.Price}G", () =>
-            Notice("Training", Shops.TrainAbility(Hero, adventure.Map.Environment) switch
-            { AbilityTrainingStatus.Learned => "Your training is complete.", AbilityTrainingStatus.AlreadyTrained => "You already know this ability.", _ => "You do not have enough gold." }, ShowTraining)), new("Leave", AdvanceCommand)], AdvanceCommand);
+        {
+            var result = Shops.TrainAbility(Hero, adventure.Map.Environment);
+            Notice("Training", result switch
+            { AbilityTrainingStatus.Learned => "Your training is complete.", AbilityTrainingStatus.AlreadyTrained => "You already know this ability.", _ => "You do not have enough gold." },
+                ShowTraining, npc: NpcActor.Teacher, celebrate: result == AbilityTrainingStatus.Learned);
+        }), new("Leave", AdvanceCommand)], AdvanceCommand, npc: NpcActor.Teacher);
     }
 
     private void ShowInventory(bool combat)
@@ -377,10 +394,12 @@ internal sealed partial class TownGame
             turn.Outcome == CombatOutcome.Ongoing);
     }
 
-    private void ShowSoundSettings() => Choices("Sound", audio.Error.Length == 0 ? "Sound effects use the original game recordings.\n" + menuMessage : audio.Error, [
-        new($"Sound: {(audio.Enabled ? "on" : "off")}", () => { audio.Enabled = !audio.Enabled; SavePreferences(); ShowSoundSettings(); }),
-        new($"Volume: {(int)MathF.Round(audio.Volume * 100)}%", () => { audio.Volume = audio.Volume >= 1 ? 0 : Math.Min(1, audio.Volume + .1f); SavePreferences(); ShowSoundSettings(); }),
-        new("Back", ShowActions)], ShowActions);
+    private void ShowSoundSettings()
+    {
+        soundMenuParent = overlay;
+        overlay = null;
+        OpenPausePage(PausePage.Audio);
+    }
 
     private void ShowStatistics()
     {
@@ -406,6 +425,7 @@ internal sealed partial class TownGame
     private bool SavePreferences()
     {
         profile.Data.Sound = audio.Enabled; profile.Data.Volume = audio.Volume;
+        profile.Data.EffectsVolume = audio.EffectsVolume;
         profile.Data.Scanlines = scanlines; profile.Data.Miniature = miniatureMode;
         profile.Data.Vignette = vignette;
         profile.Data.PixelLighting = pixelLighting;
@@ -450,7 +470,12 @@ internal sealed partial class TownGame
         DrawPanel(new(12, 5, 296, 170));
         if (current.Combat && adventure.Battle is { } battle) { DrawCombatOverlay(current, battle); return; }
         font.Draw(batch, current.Title, 24, 14, Accent, current.Title.Length <= 22 ? 2 : 1);
-        const int textY = 37;
+        var textY = current.Npc == NpcActor.None ? 37 : 64;
+        if (current.Npc != NpcActor.None)
+        {
+            world.DrawNpcPortrait(batch, current.Npc, new(246, 6, 48, 48), current.NpcTime, current.NpcCelebrating);
+            Fill(new(24, 56, 272, 1), Muted * .4f);
+        }
         for (var i = 0; i < current.LinesPerPage; i++)
         {
             var index = current.Page * current.LinesPerPage + i;
@@ -462,7 +487,7 @@ internal sealed partial class TownGame
         else
         {
             var remainingLines = Math.Min(current.LinesPerPage, current.Lines.Length - current.Page * current.LinesPerPage);
-            var startY = current.Options.Length > 1 ? 47 + remainingLines * 10 : 150;
+            var startY = current.Options.Length > 1 ? textY + 10 + remainingLines * 10 : 150;
             var visible = Math.Min(current.Options.Length, (159 - startY) / 11 + 1);
             var first = Math.Clamp(current.Selected - visible / 2, 0, Math.Max(0, current.Options.Length - visible));
             for (var row = 0; row < visible; row++)

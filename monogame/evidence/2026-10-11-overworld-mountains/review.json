@@ -1,0 +1,18 @@
+{
+  "core_checks": 641,
+  "focused_overworld_checks": 334,
+  "full_graphics_checks": 4119,
+  "tour_frames": 360,
+  "matching_overlap_pixels": 40960,
+  "personal_files_compared": 33,
+  "personal_files_changed": [
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json"
+  ],
+  "maps_compared": 115,
+  "mountain_maps_changed": 25,
+  "other_maps_unchanged": 90,
+  "visual_review": "User reviewed comparisons and is unhappy with the result. Awaiting specific aesthetic feedback; no further renderer changes yet.",
+  "full_command": "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --capture-monsters 7,9 --output build/mountain-remaster/full-verified"
+}

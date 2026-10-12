@@ -1,0 +1,176 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/combat-animation-fix/yipe-graphics-20261012-171824-b5e701c2
+Content startup and five initial frames: 3.71 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: All five packaged Ogg music streams initialize on the real audio device
+PASS: The studio ident has no premature town music
+PASS: Title plays the full adapted Woodland Fantasy recording with repeat enabled
+PASS: Master and independent music volume multiply at full scene intensity
+PASS: paused lowers music without restarting it
+PASS: mapOpen lowers music without restarting it
+PASS: Music Off silences only music while action effects still play
+PASS: Re-enabling music resumes its existing position
+PASS: Master Sound Off also silences music
+PASS: Zero Volume pauses the soundtrack
+PASS: Zero MusicVolume pauses the soundtrack
+PASS: Effects gain scales action sounds independently of the music stream
+PASS: Effects volume also scales real cave ambience and positional river audio
+PASS: Zero effects volume silences effects and ambience while music continues unchanged
+PASS: Inactive window immediately silences the stream
+PASS: Focus return fades back in without replaying the intro
+PASS: Leaving town fades the old track before switching
+PASS: Open overworld selects Celtic Impulse after the fade
+PASS: Crossing outdoor region boundaries preserves the song position
+PASS: Combat starts and fades up within 0.4 seconds; battle choices do not duck its score
+PASS: Combat turns keep one continuous battle recording
+PASS: Victory lowers the battle score for the reward and level-up sounds
+PASS: Battle return restores exploration at its interrupted position, not its intro
+PASS: Earth Cave gets the quiet underground score with headroom for ambience
+PASS: Moving between regions of a cave preserves continuous playback
+PASS: A new cave battle starts a fresh combat cue
+PASS: Cave combat returns to the correct underground song and bookmark
+PASS: Underground map 51 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Underground map 67 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Underground map 59 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Underground map 43 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Underground map 117 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Underground map 120 uses Cave Theme (Stone, Fire, Breeding, Final and Hell coverage)
+PASS: Ice Cave selects the gentler crystal score without drowning its ambience
+PASS: Water Cave shares the crystal score without restarting it at the boundary
+PASS: Pause further dims the quieter cave mix
+PASS: A scene change while muted never leaks the newly selected cue
+PASS: Re-enabling music selects the current scene, not the scene where it was muted
+PASS: A canceled transition recovers without switching to a stale battle request
+PASS: Defeat silences the score so the death sound remains clear
+PASS: Leaving a cave restores the overworld bookmark
+Loop Battle Theme A: duration 00:01:34.9000000; 00:01:34.7000000 -> 00:00:00.5000000; Playing; repeat True
+PASS: Battle Theme A actually repeats at the end of the streamed asset
+Loop Cave Theme: duration 00:04:38; 00:04:37.8000000 -> 00:00:00.5000000; Playing; repeat True
+PASS: Cave Theme actually repeats at the end of the streamed asset
+Loop Crystal Caves: duration 00:04:00; 00:03:59.8000000 -> 00:00:00.5000000; Playing; repeat True
+PASS: Crystal Caves actually repeats at the end of the streamed asset
+PASS: Town map 8 uses Woodland Fantasy
+PASS: Town map 17 uses Woodland Fantasy
+PASS: Town map 27 uses Woodland Fantasy
+Music repeat boundary: 00:02:27.8479818 -> 00:00:01.9898412; Playing
+PASS: The real streamed recording repeats after reaching its end
+PASS: Sound menu toggles the music preference through production controls
+PASS: The music slider saves independently through the production profile path
+PASS: Left lowers and persists effects volume without changing music volume
+PASS: Right raises effects volume back to its upper limit
+PASS: Volume adjustment clamps at 100 percent
+PASS: Actions Sound opens the same stable settings page as Options Sound
+PASS: Repeated left adjustments keep Volume selected without recreating the menu
+PASS: Volume clamps at zero without wrapping or moving focus
+PASS: Volume clamps at 100 percent and Confirm does not cycle it back to zero
+PASS: Repeated left adjustments keep EffectsVolume selected without recreating the menu
+PASS: EffectsVolume clamps at zero without wrapping or moving focus
+PASS: EffectsVolume clamps at 100 percent and Confirm does not cycle it back to zero
+PASS: Repeated left adjustments keep MusicVolume selected without recreating the menu
+PASS: MusicVolume clamps at zero without wrapping or moving focus
+PASS: MusicVolume clamps at 100 percent and Confirm does not cycle it back to zero
+PASS: Back, Start and the Back row restore Actions with Sound still selected
+PASS: Back, Start and the Back row restore Actions with Sound still selected
+PASS: Back, Start and the Back row restore Actions with Sound still selected
+PASS: Help opens the full categorized Credits menu
+PASS: In-game Music credits retain all five authors, licenses and adaptation notices
+PASS: Sound credits include every recorded-footstep and ambient source creator
+PASS: Long credits can be paged with the standard controls
+PASS: Technology credits and complete bundled notices reach the local build
+PASS: Credits Back returns through its parent menu
+Music is unavailable. Other game sounds remain enabled. Could not find a part of the path '/Users/baouchiy/source/repos/YipeIII-rebuild/build/combat-animation-fix/yipe-graphics-20261012-171824-b5e701c2/music/Audio/Music/woodland-fantasy.ogg'.
+PASS: Unavailable music assets fail locally without disabling the existing sound system
+PASS: Music playback and options preserve the complete adventure and RNG
+PASS: Short pause pages group adventure actions, display, atmosphere and audio
+PASS: UI capture renders at pause-menu.png
+PASS: Confirm opens Options while play stays paused
+PASS: UI capture renders at options-menu.png
+PASS: Display opens at its first setting
+PASS: UI capture renders at display-menu.png
+PASS: Up wraps to the visible Back entry
+PASS: Down wraps to the first setting
+PASS: Settings apply without leaving their paused category
+PASS: Escape returns one level to the highlighted parent category
+PASS: UI capture renders at atmosphere-menu.png
+PASS: Visible Back behaves like Escape
+PASS: UI capture renders at audio-menu.png
+PASS: Audio settings toggle the existing master sound gate
+PASS: Audio volume changes through the existing preference path
+PASS: Start returns through Options to the highlighted root entry
+PASS: UI capture renders at adventure-menu.png
+PASS: Leaving the root resumes without consuming gameplay, scene time or RNG
+PASS: The studio ident advances on its own display clock
+PASS: UI capture renders at icosium-labs-splash.png
+PASS: Studio branding preserves gameplay state and RNG before the title screen
+PASS: The studio ident automatically opens the title screen after 3.2 seconds
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: UI capture renders at title-screen.png
+PASS: Current help describes the actual default keyboard and physical controller bindings
+PASS: UI capture renders at help-default.png
+PASS: Long controls help advances through every page
+PASS: Help Back returns to its contents
+PASS: All 21 gameplay guide topics are reachable
+PASS: The recovered original manual opens its original first topic
+PASS: UI capture renders at original-manual.png
+PASS: The gameplay guide ends with controls rather than commercial pages
+PASS: About retains original attribution and credits icosium labs for the port/remaster
+PASS: UI capture renders at about.png
+PASS: About returns to Help and credits
+PASS: Keyboard, controller and reset options are always reachable
+PASS: The key that opened capture is not immediately rebound
+PASS: A conflicting captured key is rejected visibly
+PASS: A modifier chord cannot silently become a single-key binding
+PASS: Escape cancels keyboard capture without changing controls
+PASS: The standard controller Back action can cancel keyboard capture
+PASS: A valid captured key is applied and saved through the production preference path
+PASS: Help immediately reflects a changed gameplay binding
+PASS: Controller conflicts are rejected through the real chooser
+PASS: The controller chooser applies a physical West button remap
+PASS: UI-applied remaps reopen from the isolated profile
+PASS: UI capture renders at remapped-controls.png
+PASS: UI capture renders at controls-640x360.png
+PASS: UI capture renders at pause-640x360.png
+PASS: UI capture renders at graphics-640x360.png
+PASS: Controls can be reopened and canceled at 640x360
+PASS: UI capture renders at controls-1024x768.png
+PASS: UI capture renders at pause-1024x768.png
+PASS: UI capture renders at graphics-1024x768.png
+PASS: Controls can be reopened and canceled at 1024x768
+PASS: UI capture renders at controls-1920x1080.png
+PASS: UI capture renders at pause-1920x1080.png
+PASS: UI capture renders at graphics-1920x1080.png
+PASS: Controls can be reopened and canceled at 1920x1080
+PASS: Canceling reset retains gameplay bindings
+PASS: Confirmed reset restores standard gameplay bindings
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+PASS: Failed control-preference writes retain the session and preserve the unreadable file
+PASS: Help, About, remapping, display changes and preference failures preserve complete gameplay state/RNG
+Physical controllers connected: 0
+PASS: Title focus loss never exposes the in-game pause menu
+PASS: Title scenery animates on its own clock and renders deterministically when frozen
+PASS: Title update advances only presentation, not gameplay or RNG
+PASS: Title Options uses the same organized settings pages
+PASS: Controls Back returns to the selected title Options entry
+PASS: Back from title Options never starts gameplay
+PASS: Title Load Game opens the selected adventure and adopts its save destination
+PASS: Pause Help remains visible when opened over the map
+PASS: Pause Help restores the suspended interaction and map without consuming a turn
+PASS: Canceling Return to title restores the paused interaction
+PASS: Confirmed Return to title preserves the existing save
+PASS: Saving a new adventure creates a separate slot without overwriting the loaded adventure
+PASS: Even consecutive new adventures receive distinct save destinations
+PASS: Load Game lists both saved adventures and excludes the unsaved new slot
+Invalid MonoGame save length.
+PASS: Corrupt title loads preserve the current adventure and display a recoverable error
+Passed 163 visual integration checks. Focused menu/help/control run.

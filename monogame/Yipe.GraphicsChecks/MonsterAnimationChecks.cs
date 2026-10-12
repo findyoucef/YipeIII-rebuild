@@ -491,6 +491,9 @@ internal static class MonsterAnimationChecks
             var options = Property<Array>(overlay, "Options").Cast<object>().ToArray();
             overlay.GetType().GetProperty("Selected")!.SetValue(overlay, Array.FindIndex(options, option => Property<string>(option, "Label") == label));
             Call("UpdateOverlay", new InputFrame(Point.Zero, true, false, false));
+            for (var frame = 0; ReferenceEquals(overlay, Get("overlay"))
+                && Property<bool>(overlay, "ContinueRequested") && frame < 120; frame++)
+                Call("UpdateCombatPresentation", 1d / 60);
         }
         Color[] Sprite(int monster, int frame, bool facing)
         {

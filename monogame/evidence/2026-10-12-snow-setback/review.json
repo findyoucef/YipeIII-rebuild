@@ -1,0 +1,33 @@
+{
+  "changed_surface_maps": [
+    13,
+    20,
+    21,
+    26,
+    27
+  ],
+  "unchanged_surface_maps": 31,
+  "personal_files_checked": 28,
+  "changed_personal_files": [],
+  "status": "Implemented and locally verified; user visual review pending",
+  "region": "Surface A3 / map 13, Ice (Zephyr) Cave entrance at 5,4",
+  "snow_checks": 45,
+  "outdoors_checks": 338,
+  "matching_mountain_overlap_pixels": 40960,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "repackaged": false,
+  "changes": [
+    "Set snow back from mountain feet with an irregular exposed slate margin.",
+    "Reuse the same native gravel at cut-back mountain corners and basin ground.",
+    "Keep the exposed margin cold and snowing, while snow prints and crunch remain on actual snow.",
+    "Use existing stone footsteps on the exposed gravel."
+  ],
+  "artwork": "Approved bare and winter sprite assets unchanged.",
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldSnow.cs": "84230175523d9b00238f4d2a3a56ad20891c924fb8403faa8d62035ab8c1babf",
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "87121ae6e0c6ce1638bdd73848c7994d143ae89bf9afa4670a997d9cab40e902",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "7bd8fa2c0d4ea7faadae81b01caa2e61c9f3cc31b4e38d763bda44f8f3ab8a7e",
+    "monogame/Yipe.GraphicsChecks/SnowBiomeChecks.cs": "8be7993ecff1d3f3b684d1c5bc7c97f0fa5ebc6a8ccd83dcfd9bb7d6eff8b2a5"
+  }
+}

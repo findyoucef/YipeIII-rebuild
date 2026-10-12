@@ -1,0 +1,30 @@
+{
+  "verified_at": "2026-10-12T17:20:28.437899+00:00",
+  "user_choice": "Brief readable hit/defeat beat, with confirmation buffered.",
+  "implementation": "Early Continue or Back requests completion. The remaining presentation runs at 3x and closes once finished, preserving every scheduled impact/death/reward cue. Repeated presses coalesce into the same request. No extra attacks are queued. Audio pitch and playback speed remain unchanged.",
+  "checks": {
+    "build": "Release; zero warnings/errors",
+    "monster_combat_footsteps": 890,
+    "music_menu_controls": 163,
+    "opening_route": "42 C++ checkpoints plus King return, 116 victories, 14 chests, 2 rescues; pause-menu save and fresh-process continuation passed",
+    "personal_files": 33,
+    "personal_unchanged": true
+  },
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --monsters-only --capture-monsters 1 --output build/combat-animation-fix",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --menus-only --output build/combat-animation-fix",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --opening-route --output build/combat-animation-fix"
+  ],
+  "capture": "Silent production-renderer captures at simulated 60 FPS. Quick clip starts repeated confirmations after 50 ms; normal clip receives no confirmation. Real audio-device lifecycle is checked independently.",
+  "source_sha256": {
+    "monogame/Yipe.Desktop/Overlay.cs": "a8ba97ae2568f771989f2b693eefb7f0cbf064f361cba3bdee27a52f33ef5544",
+    "monogame/Yipe.Desktop/TownCombatFeedback.cs": "a05b35008964dd4f2bb0d42ad625c8bafac927f69a83e24690509dc3d3cdfb19",
+    "monogame/Yipe.GraphicsChecks/CombatFeedbackChecks.cs": "758fdaedfdbf706c6b78c59ead47fc9827028c9bd4abb97b5dd194ed92b530ae",
+    "monogame/Yipe.GraphicsChecks/MonsterAnimationChecks.cs": "e7eed2f5736018d40b1360b464efb2f0b55fe63bee9c9fbd4d503b24d462a586",
+    "monogame/Yipe.GraphicsChecks/OpeningFrontendChecks.cs": "f9142f51b6e9842917197c7b8bb78ab2d4fda37099e80ebda27334ade06d626b",
+    "monogame/Yipe.GraphicsChecks/LateFrontendChecks.cs": "b52df9b1935fb2335f20501f817d29b8ff72db9036ceba9eb5ee5f705c54e910",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "ae9b75c63167be0ab53b8c18c7133396853d76840c953311eee9c7ccf5323b54"
+  },
+  "review": "Scoped simplicity review: two localized production edits, one per-overlay pending-confirmation flag, existing animation timeline and audio dispatch reused. No new animation queue, timing framework, gameplay or save changes."
+}

@@ -28,7 +28,7 @@ internal sealed partial class WorldRenderer
     private static ushort WaterTile(ushort tile) => tile switch
     {
         0x0b or 0x59 => 0x0e, 0x58 => 0x11,
-        >= 0x0c and <= 0x15 or >= 0x4a and <= 0x51 => tile,
+        9 or >= 0x0c and <= 0x15 or >= 0x4a and <= 0x51 => tile,
         _ => 0,
     };
 
@@ -69,6 +69,9 @@ internal sealed partial class WorldRenderer
                 bool Bend(float dx, float dy) => MathF.Abs(MathF.Sqrt(dx * dx + dy * dy) - 16) < radius;
                 waterMask[y * WaterWidth + x] = tile switch
                 {
+                    // Original bitmap 143's lower-right cell joins west, east and south.
+                    // Round the two southern banks into the same-width stream arms.
+                    9 => py > 16 - radius && new Vector2(Math.Min(px, 32 - px), 32 - py).Length() > 16 - radius,
                     0x0c or 0x0d => true,
                     0x0e => MathF.Abs(px - 16) < radius,
                     0x11 => MathF.Abs(py - 16) < radius,
@@ -196,12 +199,13 @@ internal sealed partial class WorldRenderer
             var travel = (seed + i * 19 + tick) % 32;
             var point = tile switch
             {
+                9 => i == 0 ? new Point(travel, 14 + seed % 4) : new Point(14 + (seed + i) % 4, 16 + travel / 2),
                 0x0e or 0x12 or 0x13 => new Point(14 + (seed + i) % 4, travel),
                 0x11 => new Point(travel, 14 + (seed + i) % 4),
                 0x0f or 0x10 or 0x14 or 0x15 => BendPoint(tile, travel),
                 _ => new Point(travel, 4 + (seed * 3 + i * 17) % 24),
             };
-            var horizontal = tile != 0x11;
+            var horizontal = tile != 0x11 && !(tile == 9 && i == 0);
             var wave = new Rectangle(bounds.X + point.X, bounds.Y + point.Y, horizontal ? 4 : 1, horizontal ? 1 : 4);
             if (Fits(wave)) batch.Draw(pixel, wave, (flooded ? WaterCavePalette[21] : RetroArt.Palette[puddles ? 18 : 29])
                 * (flooded ? .22f : puddles ? .25f : .6f));

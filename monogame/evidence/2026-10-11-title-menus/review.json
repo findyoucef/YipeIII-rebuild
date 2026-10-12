@@ -1,0 +1,32 @@
+{
+  "scope": [
+    "Animated pixel-art Maynard title with New adventure, Load game, Options and Quit",
+    "Five-entry pause root; Adventure, Options, Display, Atmosphere and Audio pages",
+    "Return-to-title confirmation with cancellation restoring the suspended interaction and map",
+    "Independent new-adventure save slots and title load browser; existing version-one save bytes unchanged"
+  ],
+  "validation": {
+    "release_build": "0 warnings / 0 errors",
+    "core_checks": 632,
+    "full_graphics_checks": 4059,
+    "tour_frames": 360,
+    "final_focused_checks": 89,
+    "after_full_run": "Final focused run includes the restored location coordinates in the pause header and compiled earned-route harness menu updates. Separate earned route replays were not rerun.",
+    "personal_files_compared": 33,
+    "personal_files_changed": [],
+    "physical_gamepad": "No physical controller connected; menu actions exercised by the automated input frames."
+  },
+  "evidence": {
+    "video": "title-and-menus.mp4",
+    "seconds": 32.0,
+    "capture": "Eight seconds of game-rendered title animation at 12 fps, followed by actual menu screenshots held for three seconds each; encoded at 24 fps.",
+    "video_decode": "Full ffmpeg decode passed",
+    "fixture": "Isolated game saves only. Gallery screenshots show default graphics preferences."
+  },
+  "review": {
+    "visual": "Inspected title, pause, category, load and error screens, including 640x360, 1024x768 and 1920x1080 captures.",
+    "simplicity": "Two focused TownGame partials reuse existing scenery, input, overlays, preferences and atomic storage. One enum replaces the graphics-page boolean; no generic menu framework, new asset or save-schema change.",
+    "approval": "Awaiting user visual review.",
+    "packaging": "Local build only; no package rebuild or new user-game launch."
+  }
+}

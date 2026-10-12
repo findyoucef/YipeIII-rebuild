@@ -25,7 +25,7 @@ internal static class FootstepChecks
         var enabled = (bool)audioType.GetProperty("Enabled")!.GetValue(audio)!;
         var volume = (float)audioType.GetProperty("Volume")!.GetValue(audio)!;
         var stepField = audioType.GetField("footstep", flags)!;
-        var effectField = audioType.GetField("current", flags)!;
+        var voices = (List<SoundEffectInstance>)audioType.GetField("voices", flags)!.GetValue(audio)!;
         var indexField = audioType.GetField("footstepIndex", flags)!;
         int Count() => (int)indexField.GetValue(audio)!;
         var surfaceType = typeof(GameInput).Assembly.GetType("Yipe.Desktop.FootstepSurface")!;
@@ -44,11 +44,11 @@ internal static class FootstepChecks
                 Stop(); check(voice.IsDisposed && stepField.GetValue(audio) is null, $"{surface} voice stops and releases on focus loss");
             }
             Sound("Grass"); var previous = (SoundEffectInstance)stepField.GetValue(audio)!;
-            audioType.GetMethod("Play")!.Invoke(audio, [131]); var important = (SoundEffectInstance)effectField.GetValue(audio)!;
+            audioType.GetMethod("Play")!.Invoke(audio, [131, false]); var important = voices[^1];
             check(previous.IsDisposed && stepField.GetValue(audio) is null && important.State == SoundState.Playing,
                 "A door effect immediately replaces only the footstep voice, preserving original-effect priority");
             var before = Count(); Sound("Stone");
-            check(Count() == before && stepField.GetValue(audio) is null && ReferenceEquals(important, effectField.GetValue(audio)) && !important.IsDisposed,
+            check(Count() == before && stepField.GetValue(audio) is null && ReferenceEquals(important, voices.LastOrDefault()) && !important.IsDisposed,
                 "Walking cannot interrupt or queue footsteps behind a playing important effect");
             Stop(); audioType.GetProperty("Enabled")!.SetValue(audio, false); Sound("Grass");
             check(Count() == before && stepField.GetValue(audio) is null, "Sound Off suppresses footsteps without advancing their variation sequence");

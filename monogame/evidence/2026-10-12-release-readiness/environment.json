@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-12",
+  "cpu": "Apple M5 Max",
+  "memory_bytes": 68719476736,
+  "os": "macOS 26.7.1 (25G241)",
+  "architecture": "arm64",
+  "sdk": "10.0.300",
+  "package_runtime": "10.0.8",
+  "physical_controller": "No HID game controller detected; user confirmed no controller available and approved documenting unverified coverage.",
+  "personal_files_unchanged": 33
+}

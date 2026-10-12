@@ -31,7 +31,7 @@ internal sealed partial class WorldRenderer : IDisposable
         floors = RetroArt.Load(device, content, "World/terrain.png", 4, 4, 32);
         props = RetroArt.Load(device, content, "World/props.png", 4, 4, 48);
         outdoors = RetroArt.Load(device, content, "terrain.png", 2, 2, 32);
-        mountains = new MountainTerrain(device, outdoors, catalog, desert);
+        mountains = new MountainTerrain(device, outdoors, catalog, desert, content);
         water = CreateWater(device);
         paths = RetroArt.CreatePaths(device, outdoors);
         paths.GetData(outdoorPathPattern);
@@ -61,6 +61,7 @@ internal sealed partial class WorldRenderer : IDisposable
         pixel = new Texture2D(device, 1, 1);
         pixel.SetData([Color.White]);
         LoadMonsterAnimations(device, content);
+        LoadNpcAnimations(device, content);
         hellProps = LoadHell(device, content);
         hellGround = new Texture2D(device, HellWidth, HellHeight);
         hellLava = new Texture2D(device, HellWidth * 4, HellHeight * 2);
@@ -100,11 +101,12 @@ internal sealed partial class WorldRenderer : IDisposable
         if (WaterAt(x, y)) return FootstepSurface.Water;
         PrepareSnow(map);
         if (SnowAt(x, y)) return FootstepSurface.Snow;
-        if (map.Id < 41 && SnowTile(tile)) return FootstepSurface.Grass;
+        if (map.Id < 41 && SnowTile(tile))
+            return snowPixels[y * SnowWidth + x].A > 0 ? FootstepSurface.Stone : FootstepSurface.Grass;
         if (IsHell(map)) return FootstepSurface.Stone;
         if (IsFire(map)) return FireFootstep(map, position);
         var stone = VillagePathConnections(map, position) != 0 || MountainTerrain.IsMountain(tile)
-            || tile is 9 or 0x1f or 0x20 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a or >= 0x65 and <= 0x69
+            || tile is 0x1f or 0x20 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a or >= 0x65 and <= 0x69
             || map.Id < 41 && tile is (>= 0x27 and <= 0x2b or 0x47 or 0x48 or 0x52 or 0x54 or 0x55 or 0x5d or 0x5e or 0x61);
         if (stone) return FootstepSurface.Stone;
         if (IsEarth(map)) return FootstepSurface.Sand;
@@ -206,14 +208,16 @@ internal sealed partial class WorldRenderer : IDisposable
             {
                 var cell = new MapPosition(x, y);
                 if (!game.Visibility.Contains(cell)) continue;
-                DrawScenery(batch, map, cell, time, town, miniature);
+                DrawScenery(batch, map, cell, time, town, miniature,
+                    Vector2.DistanceSquared(hero.VisualPosition, new(x, y)) <= 4);
                 foreach (var depth in map.Events.Depth)
                     if (depth.HasPosition && depth.Position == cell) DrawProp(batch, depth.Value == 0x3a ? 3 : 4, cell);
                 if (map.Events.Message is { HasPosition: true } sign && sign.Position == cell) DrawProp(batch, 2, cell);
                 if (map.Events.Chests.Contains(cell)) DrawProp(batch, 0, cell);
                 if (map.Events.Princess is { HasPosition: true } princess && princess.Position == cell
                     && game.Player.InventoryValues[princess.RescueIndex] == 0)
-                    batch.Draw(quests, new Vector2(x * 32 - 8, y * 32 - 16), Cell(princess.PortraitVariant - 1, 2, 48), Color.White);
+                    DrawNpcWorld(batch, PrincessActor(princess.PortraitVariant), cell, time,
+                        Vector2.DistanceSquared(hero.VisualPosition, new(x, y)) <= 4, map);
                 foreach (var placement in placements)
                     if (placement.Position == cell)
                     {
@@ -288,10 +292,11 @@ internal sealed partial class WorldRenderer : IDisposable
                 }
     }
 
-    private void DrawScenery(SpriteBatch batch, Map map, MapPosition cell, double time, TownRenderer town, bool miniature = false)
+    private void DrawScenery(SpriteBatch batch, Map map, MapPosition cell, double time, TownRenderer town, bool miniature = false, bool nearby = false)
     {
         var x = cell.X; var y = cell.Y;
         var tile = map.Tile(cell);
+        if (tile == 0x41) { DrawNpcWorld(batch, NpcActor.Teacher, cell, time, nearby, map); return; }
         if (IsVillage(map) && tile is 1 or 5 or 6 or 7)
         { town.DrawBuilding(batch, tile, cell, time, miniature); return; }
         if (IsHell(map)) { DrawHellScenery(batch, map, cell, time); return; }
@@ -306,7 +311,7 @@ internal sealed partial class WorldRenderer : IDisposable
         var prop = tile switch
         {
             0x24 => 9, 0x26 => 8,
-            0x3e => 5, 0x3f => 6, 0x40 => 7, 0x41 => 15,
+            0x3e => 5, 0x3f => 6, 0x40 => 7,
             _ => -1,
         };
         if (prop >= 0) DrawProp(batch, prop, cell);
@@ -336,6 +341,7 @@ internal sealed partial class WorldRenderer : IDisposable
         floors.Dispose(); outdoors.Dispose(); meadow.Dispose(); props.Dispose(); buildings.Dispose(); shops.Dispose(); pixel.Dispose();
         foreach (var atlas in monsters) atlas.Dispose();
         foreach (var atlas in monsterAnimations.Values) atlas.Dispose();
+        foreach (var atlas in npcAnimations.Values) atlas.Dispose();
         empoweredGatekeeperAnimation?.Dispose();
         foreach (var atlas in heroes) atlas.Dispose();
         hellProps.Dispose(); hellGround.Dispose(); hellLava.Dispose(); hellGlow.Dispose();

@@ -1,0 +1,33 @@
+{
+  "changed_surface_maps": [
+    13,
+    20,
+    21,
+    26,
+    27
+  ],
+  "unchanged_surface_maps": 31,
+  "personal_files_checked": 28,
+  "changed_personal_files": [],
+  "status": "Implemented and locally verified; user visual review pending",
+  "region": "Surface A3 / map 13, Ice (Zephyr) Cave entrance at 5,4",
+  "snow_checks": 44,
+  "outdoors_checks": 338,
+  "matching_mountain_overlap_pixels": 40960,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "repackaged": false,
+  "changes": [
+    "Exclude rock from snow-ground blending so covered corners do not erode into meadow.",
+    "Use clustered native pixels at melting snow edges.",
+    "Add restrained blue-gray shading based on the visible rock contour.",
+    "Vary the snow-bank outline and add broken powder deposits at rock feet.",
+    "Remove grass-fringe treatment from snowy pine neighbors."
+  ],
+  "artwork": "Approved bare and winter sprite assets unchanged; only ground coverage and rock-foot transitions changed.",
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldSnow.cs": "9df4f36fdc2cf0eb43ae87e3f21a0534dbc5c0ae65e3002218769a59e93276de",
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "1ce5406de0293ddd7298db83de7f1a3bf0d60b8323f9cfe86d32e341fce54aed",
+    "monogame/Yipe.GraphicsChecks/SnowBiomeChecks.cs": "5ba7f1daba1e1e81bcbfdc55c561a695d7c74d7b6b048d4a227381b954f1e1fa"
+  }
+}

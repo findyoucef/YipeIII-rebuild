@@ -1,0 +1,31 @@
+{
+  "changed_surface_maps": [
+    13,
+    21
+  ],
+  "unchanged_surface_maps": 34,
+  "personal_files_checked": 28,
+  "changed_personal_files": [],
+  "status": "Implemented, locally verified and user-approved",
+  "region": "Surface A3 / map 13, Ice (Zephyr) Cave entrance at 5,4",
+  "snow_checks": 45,
+  "outdoors_checks": 338,
+  "matching_mountain_overlap_pixels": 40960,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "repackaged": false,
+  "changes": [
+    "Reduce snow setback and powder width.",
+    "Separate mountain gravel from cliff faces so the snow can cover the gravel without rectangular cutoffs.",
+    "Retain the broad snowfield curves, cold weather, material-aware footsteps and solid blocked-cell cores."
+  ],
+  "artwork": "Approved bare and winter sprite assets unchanged.",
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldSnow.cs": "e82627ab724f6ff816564c41ab73f26c6f274b7160a854204cd7dfd895ae80c5",
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "9fccb809a2b81fc746ca089b7e271409df28dff2f56eaaeb11d55b6f351cb7f5",
+    "monogame/Yipe.Desktop/WorldTerrain.cs": "8566f16de091c4e5d70cc2db2d68beab28a4d9cdb4624c82530f8fbfce6dc595",
+    "monogame/Yipe.Desktop/TownRenderer.cs": "9a13a2d2d1612cdb85ba9fad13e9563dcb6f107e2afe6b9460056485edfa3d75",
+    "monogame/Yipe.GraphicsChecks/SnowBiomeChecks.cs": "e2ea3218df795974a845e19ebb0146ea7bc0b34248e9f076499b7dafbad0dbec"
+  },
+  "user_review": "2026-10-12: ok this is better."
+}

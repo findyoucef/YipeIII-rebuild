@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-11",
+  "checkpoint": {
+    "commit": "0af5031c25cd2f0ebb6efd9ba34e77a06e7273b4",
+    "pushed_to": "origin/main",
+    "npc_work": "Subsequent local changes; not committed or pushed yet"
+  },
+  "scope": {
+    "actors": [
+      "King",
+      "Skill Teacher",
+      "Princess pink/blonde",
+      "Princess purple/auburn",
+      "Princess blue/blonde"
+    ],
+    "native_poses": 60,
+    "rescue_locations": 20,
+    "training_locations": 4
+  },
+  "changes": [
+    "Shared-palette native pixel-art idle/blink, greeting/conversation and one-shot approving/rescue reactions",
+    "King at the existing castle entrance, Teachers at original event tiles, Princesses visible until their original rescue flag is set",
+    "Stable foot/skirt anchors, contact shadows, restrained cave tint and existing scene lighting",
+    "Animated dialogue portrait header with full-width text and original choices; independent cosmetic timer",
+    "Immediate choices; original dialogue, costs, rewards, encounters, RNG, maps and save format preserved"
+  ],
+  "verification": {
+    "release_build": "0 warnings, 0 errors",
+    "core_input_checks": 632,
+    "focused_graphics_checks": 183,
+    "full_graphics_checks": 4036,
+    "tour_frames": 360,
+    "monster_capture_selection": [
+      1,
+      41
+    ],
+    "monster_checks": "All 41 types remain checked. Rerun limits optional recording output after legacy reflection helpers were updated for the new town renderer argument; the initial run already completed all 41 movement/combat recordings.",
+    "preservation": {
+      "personal_files": 33,
+      "personal_files_unchanged": true,
+      "core_map_files": 31,
+      "core_map_files_unchanged": true,
+      "new_personal_files": []
+    }
+  },
+  "evidence": {
+    "gallery": "review.html",
+    "video": "npc-review.mp4",
+    "video_seconds": 55,
+    "captured_animation_frames": 440,
+    "capture_rate": 8,
+    "encoded_rate": 24,
+    "video_decode": "ffmpeg full decode passed",
+    "video_scenes": "video-scenes.json",
+    "source_generation": "generation.json",
+    "king_correction": "king-grid-correction.json",
+    "asset_hashes": "asset-sha256.json"
+  },
+  "review": {
+    "visual": "Inspected game-scale world scenes, dialogue headers, reward reactions, compiled native pose sheets and an encoded video frame. Corrected King source row bleed before final import. Side-by-side before/after captures use the same King, Teacher and pink Princess fixtures. Purple/blue final captures use adjacent walkable floor.",
+    "simplicity": "Reviewed all NPC production, tests and assets against the pushed checkpoint. One WorldRenderer partial and actor enum follow existing sprite import/rendering patterns; existing events and Overlay own all interaction data. No new gameplay state, wandering system, shader, option or production test API. No remaining findings.",
+    "approval": "Implementation and verification complete; user aesthetic review pending.",
+    "packaging": "Local builds only. No packaging or user-game launch for this task."
+  }
+}

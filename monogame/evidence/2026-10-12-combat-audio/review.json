@@ -1,0 +1,31 @@
+{
+  "verified_at": "2026-10-12T16:39:33.953638+00:00",
+  "behavior": "Skipping a combat result before its 180 ms impact plays the pending action cue immediately. Combat sounds overlap up to four voices; the oldest is retired at capacity. No input cooldown, sound queue, or gameplay changes. Noncombat effects retain replacement behavior.",
+  "checks": {
+    "release_build": "zero warnings/errors",
+    "monster_combat_footstep": 881,
+    "music_menu_control": 163,
+    "personal_files_checked": 33,
+    "personal_files_changed": []
+  },
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --monsters-only --capture-monsters 1 --output build/combat-audio-fix",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --menus-only --output build/combat-audio-fix"
+  ],
+  "limitations": [
+    "Real audio-device state verified on this macOS machine; listening approval of the new combat mix remains with the user.",
+    "The first run used an incorrect zero-damage fixture. It was replaced with the existing deterministic miss seed; the final full focused run passed."
+  ],
+  "source_sha256": {
+    "monogame/Yipe.Desktop/GameAudio.cs": "a2892775c9f7000d4167628ba3923d4d300476a3960957303d0e9c4728fb28a2",
+    "monogame/Yipe.Desktop/TownCombatFeedback.cs": "676cbee1acb7568405032c9a311e2a65d9f2a72f18ebb25db86daa647ddd766b",
+    "monogame/Yipe.GraphicsChecks/CombatFeedbackChecks.cs": "b2f3fa83ac1b2b2b4074a36a85d30a0ce64ed9d9964e1fe72b1899a6dcfd94f6",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "b1fead6feae5f87dd386c2f4b087c0ef9901541783ca5c0e6eeb1fa605b4e9fe",
+    "monogame/Yipe.GraphicsChecks/FootstepChecks.cs": "fae72c7c548ad791ccf304dfff14fee2d23f186dc33170812acc57da55600be9",
+    "monogame/Yipe.GraphicsChecks/MusicChecks.cs": "77e28f8c641ca7ffbd3be7291b4def2d9e6a055d44d5994863569be47ea1e5f3",
+    "monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs": "bdb920eb13bf600316ba8cce809b9e83d8743d86b7252c89a9333ea46f7253ab",
+    "monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs": "596dcb26ab5fd236cd87ee3b52969a02dd1f4d8a7c8bee7eae9defed808cc389",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "996033d6ae87126e335e4ac94b69fee8761fa920695ef03c3b8477f701db02ea"
+  }
+}

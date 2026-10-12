@@ -1,0 +1,55 @@
+name: MonoGame regression
+
+on:
+  push:
+    branches: [main]
+    paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/monogame.yml']
+  pull_request:
+    paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/monogame.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-and-campaign:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Restore locked dependencies
+        run: dotnet restore monogame/Yipe.slnx --locked-mode
+      - name: Checked Release build
+        run: dotnet build monogame/Yipe.slnx -c Release --no-restore -p:CheckForOverflowUnderflow=true
+      - name: Core, input and isolated persistence checks
+        run: |
+          mkdir -p build/monogame-ci
+          dotnet monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll 2>&1 | tee build/monogame-ci/core.log
+      - name: Earned campaign against retained C++ observations
+        run: >-
+          dotnet monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll
+          --campaign-route monogame/evidence/2026-10-04-p234-complete/campaign
+          build/monogame-ci/campaign-saves 2>&1 | tee build/monogame-ci/campaign.log
+      - name: Retain MonoGame results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: MonoGame-regression
+          path: build/monogame-ci/
+          if-no-files-found: warn
+
+# Real graphics/audio, frame pacing and physical controllers require the active
+# desktop procedure in monogame/Yipe.GraphicsChecks/README.md. No release upload.

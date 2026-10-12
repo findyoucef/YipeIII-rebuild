@@ -16,7 +16,7 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("build/monogame-packages"))
-    parser.add_argument("--version", default="0.1.0-preview.6")
+    parser.add_argument("--version", default="0.1.0-preview.8")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("Build this preview on an Apple Silicon Mac.")
@@ -45,13 +45,16 @@ def main():
         if runtime.get("includedFrameworks") != [{"name": "Microsoft.NETCore.App", "version": "10.0.8"}]:
             raise RuntimeError("Update runtime dependency notices before changing the packaged .NET version.")
         shutil.copytree(repo / "monogame/packaging/licenses", resources / "Licenses")
+        shutil.copyfile(repo / "monogame/packaging/icons/YipeIII.icns", resources / "YipeIII.icns")
         for name in ["README.md", "SAVE_FORMAT.md", "FEATURE_DISPOSITIONS.md"]:
             shutil.copyfile(repo / "monogame" / name, resources / name)
         with (contents / "Info.plist").open("wb") as file:
             plistlib.dump({"CFBundleName": "Yipe III MonoGame", "CFBundleDisplayName": "Yipe III MonoGame",
                           "CFBundleExecutable": "YipeIII", "CFBundleIdentifier": "org.yipe.rebuild.monogame",
                           "CFBundlePackageType": "APPL", "CFBundleVersion": "0.1.0",
+                          "CFBundleIconFile": "YipeIII.icns",
                           "CFBundleShortVersionString": "0.1.0", "LSMinimumSystemVersion": "26.0",
+                          "YipePreviewVersion": args.version,
                           "NSHighResolutionCapable": True,
                           "NSHumanReadableCopyright": "Original Yipe! III: Kevin Kinell, 2002-03. icosium labs, 2026."}, file)
         launcher = contents / "MacOS/YipeIII"
@@ -66,9 +69,14 @@ def main():
             "If macOS blocks it, use System Settings > Privacy & Security > Open Anyway.\n"
             "The app is separate from the C++/SDL preview and uses separate save/profile files.\n"
             "Escape opens pause; Enter opens Actions; M opens the map.\n"
-            "Help, About and Edit controls are in pause. Menus retain their standard controls.\n"
+            "The title screen offers New adventure, Load game, Options and Quit.\n"
+            "Pause > Adventure contains Save game, Load game and New adventure.\n"
+            "Pause > Return to title lets you choose a different adventure. Save first to keep progress.\n"
+            "Options contains Display, Atmosphere, Sound, Battle pacing, Edit controls and Help & credits.\n"
+            "Adjust Sound sliders with Left/Right. Menus retain their standard controls.\n"
             "Default saves: ~/Library/Application Support/YipeIII-MonoGame/\n"
             "Copy both .y3m and .map.json when moving an adventure.\n"
+            "New adventures receive separate slots under Saved Adventures. Existing saves are preserved.\n"
             "Full controls, save policy and dependency notices are inside Contents/Resources.\n"
             "Physical controllers, other operating systems and older macOS versions remain unverified.\n")
         for library in sorted(binary.glob("*.dylib")):

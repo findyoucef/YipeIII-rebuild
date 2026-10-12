@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Yipe.Core;
@@ -15,15 +16,20 @@ internal static class CombatFeedbackChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         object? Call(string name, params object?[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
         T Property<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
             "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "sunShaftStrength",
-            "cloudShadowStrength", "rainStrength", "screenShake", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+            "cloudShadowStrength", "rainStrength", "screenShake", "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining" }
             .ToDictionary(name => name, Get);
         var catalog = (MapCatalog)Get("catalog")!;
         var audio = Get("audio")!; var wasAudible = Property<bool>(audio, "Enabled");
+        var oldEffectsVolume = Property<float>(audio, "EffectsVolume");
         var directory = Path.Combine(output, "combat-feedback"); Directory.CreateDirectory(directory);
         var json = new JsonSerializerOptions { IncludeFields = true };
         var profileData = Property<object>(Get("profile")!, "Data");
@@ -111,17 +117,181 @@ internal static class CombatFeedbackChecks
             actual = Fixture(); Choose("Attack");
             audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
             audio.GetType().GetProperty("Enabled")!.SetValue(audio, true);
-            var currentSound = audio.GetType().GetField("current", flags)!;
+            var voices = (List<SoundEffectInstance>)audio.GetType().GetField("voices", flags)!.GetValue(audio)!;
             Call("UpdateCombatPresentation", .1d);
-            check(currentSound.GetValue(audio) is null, "Attack sound waits for the animated impact");
-            Call("UpdateCombatPresentation", .12d); var hitSound = currentSound.GetValue(audio);
-            check(hitSound is not null, "Attack impact starts the original hit sound");
+            check(voices.Count == 0, "Attack sound waits for the animated impact");
+            Call("UpdateCombatPresentation", .12d); var hitSound = voices.Single();
+            check(hitSound.State == SoundState.Playing, "Attack impact starts the original hit sound");
             var firstHit = Array.FindIndex(Property<int[]>(Presentation(), "DamageFromMonsters"), damage => damage > 0);
             Call("UpdateCombatPresentation", CounterAt(firstHit) - .22 + .01);
-            check(currentSound.GetValue(audio) is { } counterSound && !ReferenceEquals(hitSound, counterSound),
-                "The enemy hit sound starts at its own counterattack instead of interrupting the player's impact immediately");
+            check(voices.Count == 2 && voices.All(voice => voice.State == SoundState.Playing) && !hitSound.IsDisposed,
+                "Enemy counterattack audio overlaps the player's impact instead of cutting it off");
+            var played = voices.ToArray(); Choose("Continue", finish: false);
+            check(voices.SequenceEqual(played) && Property<bool>(Get("overlay")!, "ContinueRequested"),
+                "Early Continue remembers the request without replaying an impact already heard");
+            var pendingTime = Property<double>(Get("overlay")!, "CombatTime");
+            Set("paused", true); Call("Update", new GameTime(TimeSpan.Zero, TimeSpan.FromSeconds(.2)));
+            check(Property<double>(Get("overlay")!, "CombatTime") == pendingTime,
+                "Pause freezes a buffered combat completion without losing its request");
+            Set("paused", false); Set("pauseAmount", 0f);
+            FinishConfirmed();
+
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            actual = Fixture(); expected = Fixture(false);
+            for (var round = 0; round < 3; round++)
+            {
+                attack = expected.Attack(); Choose("Attack");
+                Call("UpdateCombatPresentation", .02d);
+                snapshot = GameSaveCodec.Encode(actual.Session, catalog);
+                battleBefore = JsonSerializer.Serialize(actual.Battle, json);
+                var result = Get("overlay");
+                Choose("Continue", finish: false);
+                check(ReferenceEquals(result, Get("overlay")) && Property<bool>(result!, "ContinueRequested"),
+                    $"Rapid confirm {round + 1} buffers Continue while retaining the hit animation");
+                var frames = 0;
+                while (ReferenceEquals(result, Get("overlay")) && frames++ < 60)
+                {
+                    Choose("Continue", finish: false);
+                    Call("UpdateCombatPresentation", 1d / 60);
+                }
+                check(frames is > 3 and < 60 && Property<object?>(Get("overlay")!, "Presentation") is null
+                    && snapshot.SequenceEqual(GameSaveCodec.Encode(actual.Session, catalog))
+                    && battleBefore == JsonSerializer.Serialize(actual.Battle, json)
+                    && snapshot.SequenceEqual(GameSaveCodec.Encode(expected.Session, catalog)),
+                    $"Rapid confirm {round + 1} finishes within one second without queued attacks or changed combat/RNG");
+            }
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            actual = Fixture(); Choose("Attack");
+            Call("UpdateOverlay", new InputFrame(Point.Zero, false, true, false));
+            var pendingBack = Get("overlay"); Call("UpdateCombatPresentation", .08d);
+            check(voices.Count == 1 && voices[0].State == SoundState.Playing
+                && ReferenceEquals(pendingBack, Get("overlay")) && Property<bool>(pendingBack!, "ContinueRequested"),
+                "Back also buffers completion and retains the animated impact with its sound");
+            FinishConfirmed();
+
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            actual = Fixture(seed: missSeed);
+            Choose("Attack"); Choose("Continue", finish: false); Call("UpdateCombatPresentation", .1d);
+            check(voices.Count == 0, "Fast-forwarding a zero-damage attack does not invent an impact sound");
+            FinishConfirmed(); audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+
+            foreach (var fps in new[] { 24, 60 })
+            {
+                actual = Fixture(); actual.Battle!.Monsters[0].Health = 1;
+                actual.Battle.Monsters[1] = new(); actual.Battle.Monsters[2] = new();
+                Choose("Attack"); var result = Get("overlay")!;
+                snapshot = GameSaveCodec.Encode(actual.Session, catalog);
+                Choose("Continue", finish: false);
+                SoundEffectInstance? deathSound = null;
+                var deathCues = 0; var total = 0;
+                var frames = 0;
+                while (ReferenceEquals(result, Get("overlay")) && frames++ < fps)
+                {
+                    // Every simulated frame receives another Enter, as in aggressive button mashing.
+                    Choose("Continue", finish: false);
+                    var beforeTime = Property<double>(result, "CombatTime");
+                    var beforeVoices = voices.Count;
+                    Call("UpdateCombatPresentation", 1d / fps);
+                    var afterTime = Property<double>(result, "CombatTime");
+                    total += voices.Count - beforeVoices;
+                    if (beforeTime < .4 && afterTime >= .4)
+                    {
+                        deathCues += voices.Count - beforeVoices;
+                        deathSound = voices[^1];
+                    }
+                }
+                check(frames >= fps / 4 && frames < fps / 2 && Get("overlay") is null && total == 3
+                    && deathCues == 1 && deathSound is { IsDisposed: false, State: SoundState.Playing },
+                    $"Rapid victory at {fps} FPS shows a brief defeat and plays impact, death and reward once; the death tail survives exit");
+                check(snapshot.SequenceEqual(GameSaveCodec.Encode(actual.Session, catalog)),
+                    $"Buffered victory at {fps} FPS never grants rewards or advances gameplay twice");
+                audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            }
+
+            actual = Fixture();
+            foreach (var monster in actual.Battle!.Monsters) monster.Health = 1;
+            Choose("Spells"); Choose(Spells.Definitions[6].Name); Choose("High power");
+            var areaResult = Get("overlay")!;
+            check(Property<CombatTurn>(Presentation(), "Turn").Outcome == CombatOutcome.Victory,
+                "Rapid area-defeat fixture kills all three enemies");
+            Choose("Continue", finish: false); Call("UpdateCombatPresentation", .13d);
+            var deaths = new List<SoundEffectInstance>();
+            for (var slot = 0; slot < 3; slot++)
+            {
+                Call("UpdateCombatPresentation", .08d / 3);
+                deaths.Add(voices[^1]);
+            }
+            check(deaths.Distinct().Count() == 3 && deaths.All(voice => voice.State == SoundState.Playing),
+                "A fast-forwarded area kill retains one distinct death sound per defeated monster");
+            FinishConfirmed();
+            check(Get("overlay") is null && deaths.All(voice => !voice.IsDisposed),
+                "Reward audio and battle exit preserve all three monster-death tails");
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+
+            actual = Fixture(); actual.Battle!.Monsters[0].Health = 1;
+            actual.Battle.Monsters[1] = new(); actual.Battle.Monsters[2] = new();
+            Choose("Attack"); Call("UpdateCombatPresentation", .5d);
+            var existingDeath = voices[^1];
+            Choose("Continue");
+            check(voices.Count == 3 && voices.Contains(existingDeath) && !existingDeath.IsDisposed,
+                "Confirming after the death cue adds only rewards and never duplicates the monster sound");
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+
+            // Stress the real audio device without waiting between requests or queuing stale combat sounds.
+            var started = new List<SoundEffectInstance>();
+            var bounded = true;
+            for (var index = 0; index < 24; index++)
+            {
+                audio.GetType().GetMethod("Play")!.Invoke(audio, [130, true]);
+                started.Add(voices[^1]);
+                bounded &= voices.Count <= 4 && voices[^1].State == SoundState.Playing;
+            }
+            check(bounded && started.Take(20).All(voice => voice.IsDisposed) && voices.Count == 4,
+                "A 24-hit burst starts immediately and retires oldest voices to stay bounded at four");
+            audio.GetType().GetProperty("EffectsVolume")!.SetValue(audio, .25f);
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [true]);
+            check(voices.All(voice => Math.Abs(voice.Volume - Property<float>(audio, "Volume") * .25f) < .0001f),
+                "Effects volume changes apply to every overlapping combat voice");
+            audio.GetType().GetProperty("EffectsVolume")!.SetValue(audio, 0f);
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [true]);
+            check(voices.Count == 0 && started.All(voice => voice.IsDisposed),
+                "Muting effects releases every overlapping voice");
+            audio.GetType().GetProperty("EffectsVolume")!.SetValue(audio, oldEffectsVolume);
+            for (var index = 0; index < 3; index++) audio.GetType().GetMethod("Play")!.Invoke(audio, [130, true]);
+            played = voices.ToArray(); audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            check(voices.Count == 0 && played.All(voice => voice.IsDisposed),
+                "Focus loss stops and releases all combat voices");
+            audio.GetType().GetMethod("Play")!.Invoke(audio, [130, true]);
+            var completedVoice = voices.Single();
+            var deadline = System.Diagnostics.Stopwatch.StartNew();
+            while (completedVoice.State == SoundState.Playing && deadline.Elapsed.TotalSeconds < 3) Thread.Sleep(10);
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [true]);
+            check(voices.Count == 0 && completedVoice.IsDisposed,
+                "Completed impact audio is reclaimed by the regular update");
+            for (var index = 0; index < 2; index++) audio.GetType().GetMethod("Play")!.Invoke(audio, [130, true]);
+            played = voices.ToArray(); audio.GetType().GetMethod("Play")!.Invoke(audio, [131, false]);
+            check(voices.Count == 1 && played.All(voice => voice.IsDisposed),
+                "Noncombat cues retain their existing replacement behavior");
             audio.GetType().GetProperty("Enabled")!.SetValue(audio, false);
             audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            actual = Fixture(); Choose("Attack"); Choose("Continue");
+            check(voices.Count == 0, "Rapid confirms respect Sound Off");
+
+            foreach (var quick in new[] { false, true })
+            {
+                actual = Fixture(); actual.Battle!.Monsters[0].Health = 1;
+                actual.Battle.Monsters[1] = new(); actual.Battle.Monsters[2] = new();
+                Choose("Attack"); var result = Get("overlay")!;
+                var variant = quick ? "quick" : "normal";
+                for (var frame = 0; frame < 90; frame++)
+                {
+                    if (quick && frame >= 3 && ReferenceEquals(result, Get("overlay")))
+                        Choose("Continue", finish: false);
+                    Call("UpdateCombatPresentation", 1d / 60);
+                    Save(Frame(Get("overlay") is { } shown ? Property<double>(shown, "CombatTime") : 0),
+                        $"{variant}-victory-{frame:D3}.png");
+                }
+            }
 
             actual = Fixture();
             var menu = Get("overlay")!;
@@ -392,7 +562,7 @@ internal static class CombatFeedbackChecks
                 && snapshot.SequenceEqual(GameSaveCodec.Encode(actual.Session, catalog)), "Failed casts retain the battle HUD and await confirmation without spending resources");
             Auto(false);
 
-            Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 8); Set("selectionY", 80f);
+            Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Display"); Set("selected", 4); Set("selectionY", 48f);
             for (var i = 0; i < 2; i++)
             {
                 Call("ActivateMenu");
@@ -404,7 +574,7 @@ internal static class CombatFeedbackChecks
                     $"Screen shake menu persists {(i == 0 ? "On" : "Off")} independently");
             }
             Save(Frame(0), "screen-shake-menu.png");
-            Set("graphicsMenuOpen", false); Set("selected", 5); Set("selectionY", 50f);
+            Set("pausePage", "Options"); Set("selected", 3); Set("selectionY", 36f);
             for (var i = 0; i < 2; i++)
             {
                 Call("ActivateMenu");
@@ -421,6 +591,8 @@ internal static class CombatFeedbackChecks
         {
             Auto(wasAutomatic);
             foreach (var entry in saved) Set(entry.Key, entry.Value);
+            audio.GetType().GetMethod("Update")!.Invoke(audio, [false]);
+            audio.GetType().GetProperty("EffectsVolume")!.SetValue(audio, oldEffectsVolume);
             audio.GetType().GetProperty("Enabled")!.SetValue(audio, wasAudible);
             Call("SavePreferences"); Set("menuMessage", saved["menuMessage"]);
         }
@@ -456,7 +628,7 @@ internal static class CombatFeedbackChecks
                 && JsonSerializer.Serialize(actual.Battle, json) == JsonSerializer.Serialize(expected.Battle, json)
                 && actual.BattleResult == expected.BattleResult, $"{label}: UI actions exactly match core gameplay and RNG");
         }
-        void Choose(string label)
+        void Choose(string label, bool finish = true)
         {
             var current = Get("overlay")!;
             current.GetType().GetProperty("Page")!.SetValue(current, Property<int>(current, "PageCount") - 1);
@@ -465,6 +637,14 @@ internal static class CombatFeedbackChecks
             if (index < 0) throw new InvalidOperationException("Missing combat option: " + label);
             current.GetType().GetProperty("Selected")!.SetValue(current, index);
             Call("UpdateOverlay", new InputFrame(Point.Zero, true, false, false));
+            if (finish) FinishConfirmed();
+        }
+        void FinishConfirmed()
+        {
+            var current = Get("overlay");
+            for (var frame = 0; current is not null && ReferenceEquals(current, Get("overlay"))
+                && Property<bool>(current, "ContinueRequested") && frame < 120; frame++)
+                Call("UpdateCombatPresentation", 1d / 60);
         }
         Color[] Frame(double time)
         {

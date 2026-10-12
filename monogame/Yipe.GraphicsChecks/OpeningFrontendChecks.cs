@@ -26,7 +26,11 @@ internal static class OpeningFrontendChecks
         }
         using var game = (Game)Activator.CreateInstance(type, [false, null, savePath])!;
         object? Get(string name) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         object? Call(string method, params object[] arguments) => type.GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, arguments);
         var graphics = (GraphicsDeviceManager)Get("graphics")!;
         graphics.SynchronizeWithVerticalRetrace = false;
@@ -94,6 +98,9 @@ internal static class OpeningFrontendChecks
                 Control(new(new Point(0, 1), false, false, false));
             Draw();
             Control(new(Point.Zero, true, false, false));
+            for (var frame = 0; ReferenceEquals(current, Get("overlay"))
+                && Property<bool>(current, "ContinueRequested") && frame < 120; frame++)
+                Call("UpdateCombatPresentation", 1d / 60);
         }
         void Choose(string label)
         {
@@ -320,7 +327,9 @@ internal static class OpeningFrontendChecks
 
         void Save()
         {
-            Set("paused", true); Set("selected", 1); Call("ActivateMenu");
+            // This earned replay exports a fixed filename for its independent restart process.
+            Set("saves", new GameSaveStore(savePath, catalog));
+            Set("paused", true); Set("pausePage", "Adventure"); Set("selected", 0); Call("ActivateMenu");
             ((Task)Get("saving")!).GetAwaiter().GetResult(); Call("FinishStorage");
             if (!File.ReadAllBytes(savePath).SequenceEqual(GameSaveCodec.Encode(Session(), catalog)))
                 throw new InvalidOperationException("Frontend pause-menu save differs from the earned session.");

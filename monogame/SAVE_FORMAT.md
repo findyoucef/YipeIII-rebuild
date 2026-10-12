@@ -1,7 +1,12 @@
 # MonoGame full-state saves, version 1
 
-The pause menu's **Save game / Load game** uses
-`<LocalApplicationData>/YipeIII-MonoGame/game.y3m`. This format belongs to the
+**Pause > Adventure > Save game / Load game** uses the current adventure's path.
+Each new adventure receives a unique `Saved Adventures/<slot>/game.y3m` beneath
+`<LocalApplicationData>/YipeIII-MonoGame`; the slot is written on manual save.
+**Title > Load game** lists those slots and existing root `.y3m` files, including
+the older `game.y3m`. Explicitly loaded preview files use an isolated library
+beside the selected file. New adventure creation never reuses a loaded save's
+destination. This format belongs to the
 C# port. It is distinct from `town-preview.json`, C++ `.y3r`, and original `.yp3`
 files. Explicit import creates a new `.y3m` without modifying the source; see the
 [import policy](#explicit-import-policy) below.

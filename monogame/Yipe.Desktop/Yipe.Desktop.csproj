@@ -4,12 +4,15 @@
     <RuntimeFrameworkVersion Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">10.0.8</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Icon.bmp" LogicalName="Icon.bmp" />
     <ProjectReference Include="../Yipe.Core/Yipe.Core.csproj" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5.1" />
     <Content Include="Content/original-help.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Content/Branding/*.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Content/Audio/Footsteps/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Content/Audio/Ambience/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Content/Credits/**/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Content/Audio/Music/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../assets/maps/original-map-tables.json" Link="Content/maps.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Content/Art/Retro/**/*.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../assets/embedded/audio/*.wav" Link="Content/Audio/Effects/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

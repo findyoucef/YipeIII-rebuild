@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-12T17:58:58.001228+00:00",
+  "reproduction": "Original movement failed the authored upper A1 door (4,8) alignment check: release carried the player from (4,7) to (5,7).",
+  "fix": "Normal traction within one tile of non-ice terrain, depth entrances and room edges; open ice retains push, glide and one-tile braking.",
+  "tested_locations": [
+    "Upper A1 / door 4,8, closed and opened; locked without key",
+    "Upper A2 / door 2,5, closed and opened",
+    "Deep B2 / door 10,6, closed and opened",
+    "Upper A3 / narrow passage 2,5",
+    "Upper A2 / north opening 2,0 to upper A1",
+    "Upper B1 / stairs 11,1 to deep B1",
+    "Upper A3 / open-ice glide from 6,7"
+  ],
+  "build": "Release: zero warnings/errors",
+  "ice_checks": 274,
+  "core_input_checks": 641,
+  "runs": {
+    "repro": "build/ice-entrance-fix/repro/yipe-graphics-20261012-175420-a52c192c",
+    "final": "build/ice-entrance-fix/final/yipe-graphics-20261012-175643-9a20af40"
+  },
+  "clips": "Silent production-renderer captures of isolated adventures, simulated at 60 fps; 120 frames (2 seconds) each.",
+  "personal_file_count": 33,
+  "personal_files_changed_since_start": 0,
+  "personal_adventure_files_unchanged": true,
+  "save_note": "Tests used isolated saves and profiles. The user game was also running at the beginning; no live gameplay input, save restoration or relaunch was performed.",
+  "source_sha256": {
+    "monogame/Yipe.Desktop/TownIceMovement.cs": "d7f395dd14cb7bbf4d529f46f0b9098d7010b504c76a5879989106e8c5d4aa16",
+    "monogame/Yipe.Desktop/TownHelp.cs": "09e129ca482b339c94162762a55ceda057d0fee94ff1b72f3b662d9b777644ae",
+    "monogame/Yipe.GraphicsChecks/IceMovementChecks.cs": "b1ec32f8b97c3d7428e2023b7567282bcdf94df15957c4e3945646f013c9d5d0",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "f07e3fcc054572f31fde21e1a143273e843a8fa9dc841ba64c5f531ddb8485b0"
+  },
+  "simplify_review": "Production changes are scoped to the existing movement selector and controls text. One shared terrain-neighborhood predicate replaces the repeated drift eligibility checks. No new state, assets, map edits, save format, core mechanics or settings."
+}

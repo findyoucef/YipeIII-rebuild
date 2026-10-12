@@ -1,0 +1,342 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/snow-smooth/outdoors/yipe-graphics-20261012-072724-55c70a51
+Content startup and five initial frames: 3.19 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: The weathering source keeps the original slate colors and sparse highlights
+PASS: Weathering source and cave rim retain compatible slate tones
+PASS: Village and world cave entrances share the same softened stone rim
+PASS: Cave rim treatment only lifts exterior shadows; sprite silhouettes and other atlas cells stay intact
+PASS: Cave roof joins the slate wall while the recessed tunnel stays dark
+PASS: Surface 1 mountains keep native palette colors and binary pixel edges
+PASS: Surface 1 mountains leave every non-mountain cell unobstructed
+PASS: Surface 1 all blocked mountain cells retain a solid visible core
+PASS: Surface 1 cached mountains remain deterministic
+PASS: Surface 1 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 2 mountains keep native palette colors and binary pixel edges
+PASS: Surface 2 mountains leave every non-mountain cell unobstructed
+PASS: Surface 2 all blocked mountain cells retain a solid visible core
+PASS: Surface 3 mountains keep native palette colors and binary pixel edges
+PASS: Surface 3 mountains leave every non-mountain cell unobstructed
+PASS: Surface 3 all blocked mountain cells retain a solid visible core
+PASS: Surface 4 mountains keep native palette colors and binary pixel edges
+PASS: Surface 4 mountains leave every non-mountain cell unobstructed
+PASS: Surface 4 all blocked mountain cells retain a solid visible core
+PASS: Surface 5 mountains keep native palette colors and binary pixel edges
+PASS: Surface 5 mountains leave every non-mountain cell unobstructed
+PASS: Surface 5 all blocked mountain cells retain a solid visible core
+PASS: Surface 6 mountains keep native palette colors and binary pixel edges
+PASS: Surface 6 mountains leave every non-mountain cell unobstructed
+PASS: Surface 6 all blocked mountain cells retain a solid visible core
+PASS: Surface 6 cached mountains remain deterministic
+PASS: Surface 6 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 7 mountains keep native palette colors and binary pixel edges
+PASS: Surface 7 mountains leave every non-mountain cell unobstructed
+PASS: Surface 7 all blocked mountain cells retain a solid visible core
+PASS: Surface 7 cached mountains remain deterministic
+PASS: Surface 7 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 8 mountains keep native palette colors and binary pixel edges
+PASS: Surface 8 mountains leave every non-mountain cell unobstructed
+PASS: Surface 8 all blocked mountain cells retain a solid visible core
+PASS: Surface 9 mountains keep native palette colors and binary pixel edges
+PASS: Surface 9 mountains leave every non-mountain cell unobstructed
+PASS: Surface 9 all blocked mountain cells retain a solid visible core
+PASS: Surface 10 mountains keep native palette colors and binary pixel edges
+PASS: Surface 10 mountains leave every non-mountain cell unobstructed
+PASS: Surface 10 all blocked mountain cells retain a solid visible core
+PASS: Surface 11 mountains keep native palette colors and binary pixel edges
+PASS: Surface 11 mountains leave every non-mountain cell unobstructed
+PASS: Surface 11 all blocked mountain cells retain a solid visible core
+PASS: Surface 12 mountains keep native palette colors and binary pixel edges
+PASS: Surface 12 mountains leave every non-mountain cell unobstructed
+PASS: Surface 12 all blocked mountain cells retain a solid visible core
+PASS: Surface 13 mountains keep native palette colors and binary pixel edges
+PASS: Surface 13 mountains leave every non-mountain cell unobstructed
+PASS: Surface 13 all blocked mountain cells retain a solid visible core
+PASS: Surface 13 cached mountains remain deterministic
+PASS: Surface 13 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 14 mountains keep native palette colors and binary pixel edges
+PASS: Surface 14 mountains leave every non-mountain cell unobstructed
+PASS: Surface 14 all blocked mountain cells retain a solid visible core
+PASS: Surface 15 mountains keep native palette colors and binary pixel edges
+PASS: Surface 15 mountains leave every non-mountain cell unobstructed
+PASS: Surface 15 all blocked mountain cells retain a solid visible core
+PASS: Surface 16 mountains keep native palette colors and binary pixel edges
+PASS: Surface 16 mountains leave every non-mountain cell unobstructed
+PASS: Surface 16 all blocked mountain cells retain a solid visible core
+PASS: Surface 17 mountains keep native palette colors and binary pixel edges
+PASS: Surface 17 mountains leave every non-mountain cell unobstructed
+PASS: Surface 17 all blocked mountain cells retain a solid visible core
+PASS: Surface 17 cached mountains remain deterministic
+PASS: Surface 17 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 18 mountains keep native palette colors and binary pixel edges
+PASS: Surface 18 mountains leave every non-mountain cell unobstructed
+PASS: Surface 18 all blocked mountain cells retain a solid visible core
+PASS: Surface 18 cached mountains remain deterministic
+PASS: Surface 18 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 19 mountains keep native palette colors and binary pixel edges
+PASS: Surface 19 mountains leave every non-mountain cell unobstructed
+PASS: Surface 19 all blocked mountain cells retain a solid visible core
+PASS: Surface 20 mountains keep native palette colors and binary pixel edges
+PASS: Surface 20 mountains leave every non-mountain cell unobstructed
+PASS: Surface 20 all blocked mountain cells retain a solid visible core
+PASS: Surface 21 mountains keep native palette colors and binary pixel edges
+PASS: Surface 21 mountains leave every non-mountain cell unobstructed
+PASS: Surface 21 all blocked mountain cells retain a solid visible core
+PASS: Surface 22 mountains keep native palette colors and binary pixel edges
+PASS: Surface 22 mountains leave every non-mountain cell unobstructed
+PASS: Surface 22 all blocked mountain cells retain a solid visible core
+PASS: Surface 22 cached mountains remain deterministic
+PASS: Surface 22 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 23 mountains keep native palette colors and binary pixel edges
+PASS: Surface 23 mountains leave every non-mountain cell unobstructed
+PASS: Surface 23 all blocked mountain cells retain a solid visible core
+PASS: Surface 23 cached mountains remain deterministic
+PASS: Surface 23 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 24 mountains keep native palette colors and binary pixel edges
+PASS: Surface 24 mountains leave every non-mountain cell unobstructed
+PASS: Surface 24 all blocked mountain cells retain a solid visible core
+PASS: Surface 24 cached mountains remain deterministic
+PASS: Surface 24 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 25 mountains keep native palette colors and binary pixel edges
+PASS: Surface 25 mountains leave every non-mountain cell unobstructed
+PASS: Surface 25 all blocked mountain cells retain a solid visible core
+PASS: Surface 26 mountains keep native palette colors and binary pixel edges
+PASS: Surface 26 mountains leave every non-mountain cell unobstructed
+PASS: Surface 26 all blocked mountain cells retain a solid visible core
+PASS: Surface 27 mountains keep native palette colors and binary pixel edges
+PASS: Surface 27 mountains leave every non-mountain cell unobstructed
+PASS: Surface 27 all blocked mountain cells retain a solid visible core
+PASS: Surface 27 cached mountains remain deterministic
+PASS: Surface 27 mountain/map rendering preserves the complete gameplay save and RNG
+PASS: Surface 28 mountains keep native palette colors and binary pixel edges
+PASS: Surface 28 mountains leave every non-mountain cell unobstructed
+PASS: Surface 28 all blocked mountain cells retain a solid visible core
+PASS: Surface 29 mountains keep native palette colors and binary pixel edges
+PASS: Surface 29 mountains leave every non-mountain cell unobstructed
+PASS: Surface 29 all blocked mountain cells retain a solid visible core
+PASS: Surface 30 mountains keep native palette colors and binary pixel edges
+PASS: Surface 30 mountains leave every non-mountain cell unobstructed
+PASS: Surface 30 all blocked mountain cells retain a solid visible core
+PASS: Surface 31 mountains keep native palette colors and binary pixel edges
+PASS: Surface 31 mountains leave every non-mountain cell unobstructed
+PASS: Surface 31 all blocked mountain cells retain a solid visible core
+PASS: Surface 32 mountains keep native palette colors and binary pixel edges
+PASS: Surface 32 mountains leave every non-mountain cell unobstructed
+PASS: Surface 32 all blocked mountain cells retain a solid visible core
+PASS: Surface 33 mountains keep native palette colors and binary pixel edges
+PASS: Surface 33 mountains leave every non-mountain cell unobstructed
+PASS: Surface 33 all blocked mountain cells retain a solid visible core
+PASS: Surface 34 mountains keep native palette colors and binary pixel edges
+PASS: Surface 34 mountains leave every non-mountain cell unobstructed
+PASS: Surface 34 all blocked mountain cells retain a solid visible core
+PASS: Surface 35 mountains keep native palette colors and binary pixel edges
+PASS: Surface 35 mountains leave every non-mountain cell unobstructed
+PASS: Surface 35 all blocked mountain cells retain a solid visible core
+PASS: Surface 36 mountains keep native palette colors and binary pixel edges
+PASS: Surface 36 mountains leave every non-mountain cell unobstructed
+PASS: Surface 36 all blocked mountain cells retain a solid visible core
+PASS: Maynard gameplay and area maps share identical mountain and cave backing artwork
+PASS: Maynard's castle and cave ridges fill the upper sightline without distant grass or desert gaps
+PASS: All 40960 matching mountain overlap pixels join across region edges and world wrap
+PASS: Surface F3 beside 2,6 has a long diagonal contour instead of a lightly rounded square step
+PASS: Eight authored peak variants compile to native pixels with the local stone ramp and binary alpha
+PASS: Broad mountain planes vary across tiles instead of repeating the same 32-pixel rock pattern
+PASS: Every peak keeps its sunlit left slope visibly brighter than its shaded right slope
+PASS: Exposed mountain rock and ground contacts never acquire an artificial near-black outline
+PASS: Meadow grass and moss overlap broken parts of the rock foot, leaving visible stone between them
+PASS: Adjacent mountain tiles form continuous rock without internal outlines or transparent seams
+PASS: Exposed mountain borders have uneven pixel ledges and cut-back corners
+PASS: Secret mountain passages do not change contours, texture or decoration
+PASS: Removing mountain terrain invalidates its cached silhouette
+PASS: Restoring terrain reconstructs the same mountain without cache residue
+PASS: Desert cut-back mountain corners expose warm sand instead of green meadow
+PASS: Desert rock feet use overlapping sand instead of meadow-green patches
+PASS: Rock beside a paved approach does not grow a meadow fringe across it
+PASS: Mountain rock meets its authored walkable foothill without a grass seam
+PASS: Connected mountain formations and cave sprites cannot expose unseen area-map cells
+PASS: Surface 1: scenery freezes deterministically at the same time
+PASS: Surface 1: bounded habitat planting leaves room for routes and encounters (40 clumps)
+PASS: Surface 1: planting and shadows cannot reveal unexplored cells
+PASS: Surface 1: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 2: scenery freezes deterministically at the same time
+PASS: Surface 2: bounded habitat planting leaves room for routes and encounters (31 clumps)
+PASS: Surface 2: planting and shadows cannot reveal unexplored cells
+PASS: Surface 2: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 3: scenery freezes deterministically at the same time
+PASS: Surface 3: bounded habitat planting leaves room for routes and encounters (48 clumps)
+PASS: Surface 3: planting and shadows cannot reveal unexplored cells
+PASS: Surface 3: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 4: scenery freezes deterministically at the same time
+PASS: Surface 4: bounded habitat planting leaves room for routes and encounters (42 clumps)
+PASS: Surface 4: planting and shadows cannot reveal unexplored cells
+PASS: Surface 4: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 5: scenery freezes deterministically at the same time
+PASS: Surface 5: bounded habitat planting leaves room for routes and encounters (44 clumps)
+PASS: Surface 5: planting and shadows cannot reveal unexplored cells
+PASS: Surface 5: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 6: scenery freezes deterministically at the same time
+PASS: Surface 6: bounded habitat planting leaves room for routes and encounters (23 clumps)
+PASS: Surface 6: planting and shadows cannot reveal unexplored cells
+PASS: Surface 6: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 7: scenery freezes deterministically at the same time
+PASS: Surface 7: bounded habitat planting leaves room for routes and encounters (43 clumps)
+PASS: Surface 7: planting and shadows cannot reveal unexplored cells
+PASS: Surface 7: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 8: scenery freezes deterministically at the same time
+PASS: Surface 8: bounded habitat planting leaves room for routes and encounters (17 clumps)
+PASS: Surface 8: planting and shadows cannot reveal unexplored cells
+PASS: Surface 8: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 9: scenery freezes deterministically at the same time
+PASS: Surface 9: bounded habitat planting leaves room for routes and encounters (44 clumps)
+PASS: Surface 9: planting and shadows cannot reveal unexplored cells
+PASS: Surface 9: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 10: scenery freezes deterministically at the same time
+PASS: Surface 10: bounded habitat planting leaves room for routes and encounters (43 clumps)
+PASS: Surface 10: planting and shadows cannot reveal unexplored cells
+PASS: Surface 10: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 11: scenery freezes deterministically at the same time
+PASS: Surface 11: bounded habitat planting leaves room for routes and encounters (43 clumps)
+PASS: Surface 11: planting and shadows cannot reveal unexplored cells
+PASS: Surface 11: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 12: scenery freezes deterministically at the same time
+PASS: Surface 12: bounded habitat planting leaves room for routes and encounters (16 clumps)
+PASS: Surface 12: planting and shadows cannot reveal unexplored cells
+PASS: Surface 12: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 13: scenery freezes deterministically at the same time
+PASS: Surface 13: bounded habitat planting leaves room for routes and encounters (32 clumps)
+PASS: Surface 13: planting and shadows cannot reveal unexplored cells
+PASS: Surface 13: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 14: scenery freezes deterministically at the same time
+PASS: Surface 14: bounded habitat planting leaves room for routes and encounters (64 clumps)
+PASS: Surface 14: planting and shadows cannot reveal unexplored cells
+PASS: Surface 14: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 15: scenery freezes deterministically at the same time
+PASS: Surface 15: bounded habitat planting leaves room for routes and encounters (40 clumps)
+PASS: Surface 15: planting and shadows cannot reveal unexplored cells
+PASS: Surface 15: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 16: scenery freezes deterministically at the same time
+PASS: Surface 16: bounded habitat planting leaves room for routes and encounters (24 clumps)
+PASS: Surface 16: planting and shadows cannot reveal unexplored cells
+PASS: Surface 16: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 17: scenery freezes deterministically at the same time
+PASS: Surface 17: planting and shadows cannot reveal unexplored cells
+PASS: Surface 17: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 18: scenery freezes deterministically at the same time
+PASS: Surface 18: bounded habitat planting leaves room for routes and encounters (38 clumps)
+PASS: Surface 18: planting and shadows cannot reveal unexplored cells
+PASS: Surface 18: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 19: scenery freezes deterministically at the same time
+PASS: Surface 19: bounded habitat planting leaves room for routes and encounters (42 clumps)
+PASS: Surface 19: planting and shadows cannot reveal unexplored cells
+PASS: Surface 19: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 20: scenery freezes deterministically at the same time
+PASS: Surface 20: bounded habitat planting leaves room for routes and encounters (47 clumps)
+PASS: Surface 20: planting and shadows cannot reveal unexplored cells
+PASS: Surface 20: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 21: scenery freezes deterministically at the same time
+PASS: Surface 21: bounded habitat planting leaves room for routes and encounters (52 clumps)
+PASS: Surface 21: planting and shadows cannot reveal unexplored cells
+PASS: Surface 21: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 22: scenery freezes deterministically at the same time
+PASS: Surface 22: bounded habitat planting leaves room for routes and encounters (32 clumps)
+PASS: Surface 22: planting and shadows cannot reveal unexplored cells
+PASS: Surface 22: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 23: scenery freezes deterministically at the same time
+PASS: Surface 23: bounded habitat planting leaves room for routes and encounters (32 clumps)
+PASS: Surface 23: planting and shadows cannot reveal unexplored cells
+PASS: Surface 23: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 24: scenery freezes deterministically at the same time
+PASS: Surface 24: bounded habitat planting leaves room for routes and encounters (39 clumps)
+PASS: Surface 24: planting and shadows cannot reveal unexplored cells
+PASS: Surface 24: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 25: scenery freezes deterministically at the same time
+PASS: Surface 25: bounded habitat planting leaves room for routes and encounters (41 clumps)
+PASS: Surface 25: planting and shadows cannot reveal unexplored cells
+PASS: Surface 25: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 26: scenery freezes deterministically at the same time
+PASS: Surface 26: bounded habitat planting leaves room for routes and encounters (34 clumps)
+PASS: Surface 26: planting and shadows cannot reveal unexplored cells
+PASS: Surface 26: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 27: scenery freezes deterministically at the same time
+PASS: Surface 27: bounded habitat planting leaves room for routes and encounters (38 clumps)
+PASS: Surface 27: planting and shadows cannot reveal unexplored cells
+PASS: Surface 27: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 28: scenery freezes deterministically at the same time
+PASS: Surface 28: bounded habitat planting leaves room for routes and encounters (52 clumps)
+PASS: Surface 28: planting and shadows cannot reveal unexplored cells
+PASS: Surface 28: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 29: scenery freezes deterministically at the same time
+PASS: Surface 29: bounded habitat planting leaves room for routes and encounters (32 clumps)
+PASS: Surface 29: planting and shadows cannot reveal unexplored cells
+PASS: Surface 29: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 30: scenery freezes deterministically at the same time
+PASS: Surface 30: bounded habitat planting leaves room for routes and encounters (33 clumps)
+PASS: Surface 30: planting and shadows cannot reveal unexplored cells
+PASS: Surface 30: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 31: scenery freezes deterministically at the same time
+PASS: Surface 31: bounded habitat planting leaves room for routes and encounters (50 clumps)
+PASS: Surface 31: planting and shadows cannot reveal unexplored cells
+PASS: Surface 31: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 32: scenery freezes deterministically at the same time
+PASS: Surface 32: bounded habitat planting leaves room for routes and encounters (37 clumps)
+PASS: Surface 32: planting and shadows cannot reveal unexplored cells
+PASS: Surface 32: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 33: scenery freezes deterministically at the same time
+PASS: Surface 33: bounded habitat planting leaves room for routes and encounters (38 clumps)
+PASS: Surface 33: planting and shadows cannot reveal unexplored cells
+PASS: Surface 33: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 34: scenery freezes deterministically at the same time
+PASS: Surface 34: bounded habitat planting leaves room for routes and encounters (28 clumps)
+PASS: Surface 34: planting and shadows cannot reveal unexplored cells
+PASS: Surface 34: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 35: scenery freezes deterministically at the same time
+PASS: Surface 35: bounded habitat planting leaves room for routes and encounters (39 clumps)
+PASS: Surface 35: planting and shadows cannot reveal unexplored cells
+PASS: Surface 35: complete gameplay, map state and RNG stay unchanged
+PASS: Surface 36: scenery freezes deterministically at the same time
+PASS: Surface 36: bounded habitat planting leaves room for routes and encounters (30 clumps)
+PASS: Surface 36: planting and shadows cannot reveal unexplored cells
+PASS: Surface 36: complete gameplay, map state and RNG stay unchanged
+PASS: Secret grass has identical soil and vegetation to ordinary grass
+PASS: Secret tree 56 retains ordinary planting, canopy motion and leaf litter
+PASS: Secret tree 57 retains ordinary planting, canopy motion and leaf litter
+PASS: Ground variation wraps seamlessly across the six-by-six world
+PASS: Sand beside mountains, cave mouths and secret rock stays opaque without a false grass fringe
+PASS: Real grass-sand boundaries retain their broken pixel transition and distinct ground on each side
+PASS: Habitat sound follows authored sand and snow footprints rather than whole-region labels
+PASS: Outdoor river sound falls to silence inland
+PASS: Outdoor water pans toward its actual bank
+PASS: Woodland leaves and insects remain sparse native pixels
+PASS: Outdoor movement is deterministic and advances with scene time
+PASS: Outdoor ambience plays bounded independent nature and wind loops
+PASS: Entering dry ground fades bird activity without restarting ambience
+PASS: Outdoor sound obeys paused
+PASS: Outdoor sound obeys mapOpen
+PASS: Focus loss silences outdoor ambience
+PASS: Sound Off mutes outdoor nature
+PASS: Night crossfades daytime birds to quiet crickets while preserving wind playback
+PASS: Zero master volume silences both night layers
+PASS: Cold snow habitat suppresses warm-weather wildlife audio
+PASS: Returning to Maynard releases the extra outdoor nature voice
+PASS: Town 8: paving never advertises a route through blocked palms or buildings
+PASS: Town 8: the connected roads reach a usable approach to every shop
+PASS: Town 8: new paving gets stone footsteps while adjoining soil keeps its material
+PASS: Town 8: signs, smoke and plants animate with scene time and freeze at a fixed time
+PASS: Town 8: decorations and building shadows cannot reveal unexplored map cells
+PASS: Town 8: scenery, paths and animation preserve gameplay, quest state and RNG
+PASS: Town 27: paving never advertises a route through blocked palms or buildings
+PASS: Town 27: the connected roads reach a usable approach to every shop
+PASS: Town 27: new paving gets stone footsteps while adjoining soil keeps its material
+PASS: Town 27: signs, smoke and plants animate with scene time and freeze at a fixed time
+PASS: Town 27: decorations and building shadows cannot reveal unexplored map cells
+PASS: Town 27: scenery, paths and animation preserve gameplay, quest state and RNG
+PASS: Ervyn retains its original road exit into the eastern neighboring region
+Passed 338 visual integration checks. Focused overworld run.

@@ -9,6 +9,9 @@ internal sealed class ProfileData
     public int Version { get; set; } = 1;
     public bool Sound { get; set; } = true;
     public float Volume { get; set; } = .65f;
+    public float EffectsVolume { get; set; } = 1f;
+    public bool Music { get; set; } = true;
+    public float MusicVolume { get; set; } = .5f;
     public bool Scanlines { get; set; } = true;
     public int Miniature { get; set; } = 2;
     public bool Vignette { get; set; }
@@ -44,6 +47,8 @@ internal sealed class DesktopProfile
             if (file.Length > 128 * 1024) throw new InvalidDataException("The profile is too large.");
             var data = JsonSerializer.Deserialize(file, ProfileJsonContext.Default.ProfileData);
             if (data is null || data.Version != 1 || !float.IsFinite(data.Volume) || data.Volume is < 0 or > 1
+                || !float.IsFinite(data.EffectsVolume) || data.EffectsVolume is < 0 or > 1
+                || !float.IsFinite(data.MusicVolume) || data.MusicVolume is < 0 or > 1
                 || data.Miniature is < 0 or > 2 || data.SunShaftStrength is < 0 or > 2
                 || data.CloudShadowStrength is < 0 or > 2 || data.RainStrength is < 0 or > 2
                 || data.TimeOfDayMode is < 0 or > 3 || !double.IsFinite(data.DayNightSeconds)

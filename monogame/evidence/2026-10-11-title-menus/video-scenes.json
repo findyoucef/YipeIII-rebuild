@@ -1,0 +1,47 @@
+[
+  {
+    "scene": "Animated title",
+    "start": 0,
+    "end": 8.0
+  },
+  {
+    "scene": "pause-menu",
+    "start": 8.0,
+    "end": 11.0
+  },
+  {
+    "scene": "adventure-menu",
+    "start": 11.0,
+    "end": 14.0
+  },
+  {
+    "scene": "options-menu",
+    "start": 14.0,
+    "end": 17.0
+  },
+  {
+    "scene": "display-menu",
+    "start": 17.0,
+    "end": 20.0
+  },
+  {
+    "scene": "atmosphere-menu",
+    "start": 20.0,
+    "end": 23.0
+  },
+  {
+    "scene": "audio-menu",
+    "start": 23.0,
+    "end": 26.0
+  },
+  {
+    "scene": "load-multiple-adventures",
+    "start": 26.0,
+    "end": 29.0
+  },
+  {
+    "scene": "return-to-title",
+    "start": 29.0,
+    "end": 32.0
+  }
+]

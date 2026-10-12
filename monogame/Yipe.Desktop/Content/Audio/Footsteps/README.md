@@ -21,7 +21,7 @@ three packs as CC0. Credits are retained voluntarily with the game content.
 Adaptations: decoded to 22,050 Hz, mono, 16-bit PCM WAV; DC removed; leading silence
 trimmed; tails limited to 240 ms to fit the existing 250 ms walking cadence;
 levels balanced with a peak ceiling of 0.75 and short boundary fades. Playback
-uses the existing master volume × 0.28. Walking timing and gameplay are unchanged.
+uses the master volume × sound effects volume × 0.28. Walking timing and gameplay are unchanged.
 
 The [CC0 license text](CC0-1.0.txt) and Kenney's original [license notice](KENNEY_LICENSE.txt)
 ship alongside the WAVs and this credit file in local builds and published output.

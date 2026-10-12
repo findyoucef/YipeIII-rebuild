@@ -46,7 +46,8 @@ internal static class MaynardAtmosphereChecks
             check(leaf.SequenceEqual(Leaves(2.01)) && !leaf.SequenceEqual(Leaves(3)), "Leaves flutter on a discrete scene clock and freeze exactly");
             check(Enumerable.Range(0, leaf.Length).Where(i => leaf[i].A > 0).All(i =>
                 townScene.Map.Tile(new(i % 416 / 32, i / 416 / 32)) is 2 or 8 or 22 or 25 or 26 or 50), "Leaves stay over open grass and paths");
-            var native = Render(() => Town("Draw", batch, player, 2d, false, 0f)); Save("native-town.png");
+            // Isolate leaves/scenery from the King, which has separate NPC coverage.
+            var native = Render(() => Town("Draw", batch, player, 2d, false, 0f, null!)); Save("native-town.png");
             var buildings = Render(() => { for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) Town("DrawBuilding", batch, townScene.Map.Tile(new(x, y)), new MapPosition(x, y), 2d, false); });
             check(Enumerable.Range(0, buildings.Length).Where(i => buildings[i].A == 255).All(i => native[i] == buildings[i]), "Leaves cannot cover opaque shop and castle artwork");
             var hero = Render(() => Town("DrawHero", batch, player, 2d, false, false));
@@ -86,7 +87,7 @@ internal static class MaynardAtmosphereChecks
             at.GetProperty("Volume")!.SetValue(audio, .25f); Call("UpdateCaveAmbience", 0d);
             check(Math.Abs(river.Volume - riverVolume / 2) < .001f && Math.Abs(ambient.Volume - .045f) < .001f, "Master volume scales both recordings immediately");
             at.GetProperty("Volume")!.SetValue(audio, .5f); Call("UpdateCaveAmbience", 0d);
-            at.GetMethod("Play")!.Invoke(audio, [12]); Call("UpdateCaveAmbience", 0d);
+            at.GetMethod("Play")!.Invoke(audio, [12, false]); Call("UpdateCaveAmbience", 0d);
             check(Math.Abs(river.Volume - riverVolume * .4f) < .001f && Math.Abs(ambient.Volume - .036f) < .001f, "Action sounds duck both layers without masking their cues");
             at.GetMethod("Update")!.Invoke(audio, [false]); Call("UpdateCaveAmbience", .1d);
             Set("timeOfDayMode", 3); Call("UpdateCaveAmbience", .8d); var night = Voice("ambience")!;
@@ -110,6 +111,12 @@ internal static class MaynardAtmosphereChecks
             check(river.IsDisposed && Voice("river") is null, "The previous town river reaches silence and releases its voice on dry ground");
             check(before.SequenceEqual(GameSaveCodec.Encode(townScene.Session, catalog)), "Maynard leaves and positional audio preserve complete gameplay and RNG");
             Scene(17); Set("sceneTime", 2d); Capture("bridge-day.png");
+            foreach (var (name, viewpoint) in new[] { ("castle", new MapPosition(11, 2)), ("cave", new MapPosition(1, 2)) })
+            {
+                player.Face(new(0, -1)); Call("RestorePosition", viewpoint);
+                Capture(name + "-day.png");
+                Set("timeOfDayMode", 3); Capture(name + "-night.png"); Set("timeOfDayMode", 1);
+            }
             player.SnapTo(new(5, 5)); Call("RestorePosition", new MapPosition(5, 5)); Capture("square-day.png");
             var captureBefore = GameSaveCodec.Encode(townScene.Session, catalog);
             Set("timeOfDayMode", 3); Capture("square-night.png"); Set("timeOfDayMode", 1);

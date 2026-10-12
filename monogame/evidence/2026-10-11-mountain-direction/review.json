@@ -1,0 +1,18 @@
+{
+  "status": "User approved this art direction; authored-sprite implementation complete",
+  "map_id": 18,
+  "layer": "Surface",
+  "region": "F3",
+  "method": "Built-in image_gen edit using the current map capture",
+  "reference": "current-f3.png",
+  "concept": "overlapping-peaks-concept.png",
+  "prompt": "prompt.txt",
+  "generated_source": "/Users/baouchiy/.codex/generated_images/01a117b4-228b-7910-8dfa-e79d7b1b727f/exec-732904d8-6467-4326-9a19-502516a3ded3.png",
+  "production_changes": false,
+  "limitations": [
+    "Generated concept does not prove exact pixel-grid, palette or collision alignment.",
+    "Map surroundings and cave details may drift in the concept and are not proposed production changes.",
+    "Implementation should preserve paths, cave entrances, blocked footprints and wrapping map joins."
+  ],
+  "implementation_review": "../2026-10-11-mountain-peaks/review.html"
+}

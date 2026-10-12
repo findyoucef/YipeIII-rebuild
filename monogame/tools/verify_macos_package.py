@@ -18,6 +18,7 @@ def main():
     parser.add_argument("archive", type=Path)
     parser.add_argument("--output", type=Path, default=Path("build/monogame-package-check"))
     parser.add_argument("--tests", type=Path, help="Built Yipe.Tests directory; runs fresh-process save checks against packaged assemblies")
+    parser.add_argument("--graphics", type=Path, help="Built Yipe.GraphicsChecks directory; runs the normal game-loop startup check against packaged assemblies")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("Verify this package on an Apple Silicon Mac with an active graphical desktop.")
@@ -43,6 +44,22 @@ def main():
         plist = plistlib.loads((app / "Contents/Info.plist").read_bytes())
         if plist["CFBundleIdentifier"] != "org.yipe.rebuild.monogame":
             raise RuntimeError("Unexpected app bundle identity.")
+        if plist.get("YipePreviewVersion") != manifest["version"]:
+            raise RuntimeError("The app preview version differs from its manifest.")
+        if plist.get("CFBundleIconFile") != "YipeIII.icns":
+            raise RuntimeError("The app does not declare its game icon.")
+        iconset = root / "YipeIII.iconset"
+        subprocess.run(["iconutil", "-c", "iconset", str(app / "Contents/Resources/YipeIII.icns"),
+                        "-o", str(iconset)], check=True, capture_output=True)
+        for size in [16, 32, 128, 256, 512]:
+            for scale in [1, 2]:
+                name = f"icon_{size}x{size}" + ("@2x" if scale == 2 else "") + ".png"
+                dimensions = subprocess.check_output(["sips", "-g", "pixelWidth", "-g", "pixelHeight",
+                                                       "-g", "hasAlpha", str(iconset / name)], text=True)
+                if any(value not in dimensions for value in [f"pixelWidth: {size * scale}",
+                                                              f"pixelHeight: {size * scale}", "hasAlpha: yes"]):
+                    raise RuntimeError("Invalid app icon representation: " + name)
+        report["app_icon"] = "Ten alpha-preserving representations, 16–1024 pixels"
         subprocess.run(["codesign", "--verify", "--deep", "--strict", str(app)], check=True)
         libraries = sorted(binary.glob("*.dylib"))
         dependencies = {}
@@ -128,7 +145,25 @@ def main():
             imports = root / "import-restarts"
             for mode in ["--write-import-fixtures", "--read-import-fixtures"]:
                 run([str(harness / "Yipe.Tests"), mode, str(imports)], mode[2:] + ".log")
-            report["save_checks"] = "Packaged assemblies/runtime: full-state/RNG restart and 24 imports with 96 reload/item/save cycles"
+            rooms = root / "room-restarts"
+            rooms.mkdir()
+            for mode in ["--write-room-fixtures", "--read-room-fixtures"]:
+                run([str(harness / "Yipe.Tests"), mode, str(rooms)], mode[2:] + ".log")
+            report["save_checks"] = "Packaged assemblies/runtime: full-state/RNG restart, 24 imports/96 cycles, eight special rooms/640 continuation ticks"
+        if args.graphics:
+            harness = root / "graphics-runner"
+            shutil.copytree(binary, harness)
+            for name in ["Yipe.GraphicsChecks", "Yipe.GraphicsChecks.dll"]:
+                shutil.copyfile(args.graphics / name, harness / name)
+            (harness / "Yipe.GraphicsChecks").chmod(0o755)
+            shutil.copyfile(binary / "Yipe.Desktop.runtimeconfig.json", harness / "Yipe.GraphicsChecks.runtimeconfig.json")
+            deps = json.loads((binary / "Yipe.Desktop.deps.json").read_text())
+            target = deps["targets"][deps["runtimeTarget"]["name"]]
+            target["Yipe.GraphicsChecks/1.0.0"] = {"runtime": {"Yipe.GraphicsChecks.dll": {}}}
+            deps["libraries"]["Yipe.GraphicsChecks/1.0.0"] = {"type": "project", "serviceable": False, "sha512": ""}
+            (harness / "Yipe.GraphicsChecks.deps.json").write_text(json.dumps(deps))
+            run([str(harness / "Yipe.GraphicsChecks"), "--startup-check", str(output / "normal-startup")], "normal-startup.log")
+            report["normal_startup"] = "Packaged assemblies/runtime: normal Game.Run, ident/title, bounded presentation, resize/fullscreen/window, save preservation"
         report["result"] = "passed"
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"Package verified: {archive.name}; {report['files']} files, {report['content_files']} content files, {report['native_libraries']} native libraries.\nEvidence: {output}")

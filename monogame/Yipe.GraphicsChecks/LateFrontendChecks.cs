@@ -16,7 +16,11 @@ internal static class LateFrontendChecks
         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
         using var game = (Game)Activator.CreateInstance(type, [false, null, save])!;
         object? Get(string name) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         object? Call(string name, params object[] arguments) => type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, arguments);
         ((GraphicsDeviceManager)Get("graphics")!).SynchronizeWithVerticalRetrace = false;
         for (var i = 0; i < 5; i++) game.RunOneFrame();
@@ -56,6 +60,9 @@ internal static class LateFrontendChecks
             for (var i = 0; Property<int>(current, "Selected") != index && i < labels.Length; i++)
                 Control(new(new Point(0, 1), false, false, false));
             Draw(); Control(new(Point.Zero, true, false, false));
+            for (var frame = 0; ReferenceEquals(current, Get("overlay"))
+                && Property<bool>(current, "ContinueRequested") && frame < 120; frame++)
+                Call("UpdateCombatPresentation", 1d / 60);
         }
         void Cast(int spell, bool combat)
         {
@@ -133,7 +140,7 @@ internal static class LateFrontendChecks
         }
         void Save()
         {
-            Set("paused", true); Set("selected", 1); Call("ActivateMenu");
+            Set("paused", true); Set("pausePage", "Adventure"); Set("selected", 0); Call("ActivateMenu");
             ((Task)Get("saving")!).GetAwaiter().GetResult(); Call("FinishStorage");
             Check(File.ReadAllBytes(save).SequenceEqual(GameSaveCodec.Encode(Session(), catalog)),
                 "Production pause-menu save preserves the complete earned late-game state");

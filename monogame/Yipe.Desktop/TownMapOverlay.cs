@@ -18,7 +18,7 @@ internal sealed partial class TownGame
     {
         if (actions.Map || actions.Back)
         { mapOpen = false; pendingDirection = Point.Zero; tickRemaining = .512; return; }
-        if (actions.Pause) { paused = true; selected = 0; selectionY = 0; return; }
+        if (actions.Pause) { OpenPausePage(PausePage.Main); return; }
         if (actions.Confirm) { worldMapOpen = !worldMapOpen; return; }
         if (worldMapOpen && actions.Direction.X != 0)
         {
@@ -143,8 +143,8 @@ internal sealed partial class TownGame
 
     private static Color MapTileColor(ushort tile, int layer) => RetroArt.Palette[tile switch
     {
-        11 or >= 0x0c and <= 0x15 or >= 0x4a and <= 0x51 or 0x58 or 0x59 => 28,
-        3 or 0x39 or 0x45 or 9 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a => 3,
+        9 or 11 or >= 0x0c and <= 0x15 or >= 0x4a and <= 0x51 or 0x58 or 0x59 => 28,
+        3 or 0x39 or 0x45 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a => 3,
         8 or >= 0x16 and <= 0x1a => 18,
         >= 0x2c and <= 0x2f or 0x36 or 0x42 or 0x57 => 17,
         _ => layer == 0 ? 10 : 15,

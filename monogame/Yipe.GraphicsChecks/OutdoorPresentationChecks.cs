@@ -32,6 +32,7 @@ internal static class OutdoorPresentationChecks
         using var presented = new Texture2D(host.GraphicsDevice, 1280, 720);
         var buffer = new Color[1280 * 720];
         var counts = new List<string>();
+        var junctionCount = 0;
         try
         {
             for (var id = 1; id <= 36; id++)
@@ -41,6 +42,29 @@ internal static class OutdoorPresentationChecks
                 var seen = Enumerable.Repeat(true, Map.TileCount).ToArray();
                 var pixels = Render(() => World("DrawMap", batch, map, seen, 2d, town)); Save($"map-{id:D3}.png");
                 check(pixels.SequenceEqual(Render(() => World("DrawMap", batch, map, seen, 2d, town))), $"Surface {id}: scenery freezes deterministically at the same time");
+                var junctions = (from x in Enumerable.Range(0, Map.Width) from y in Enumerable.Range(0, Map.Height)
+                    where map.Tile(new(x, y)) == 9 select new MapPosition(x, y)).ToArray();
+                if (junctions.Length > 0)
+                {
+                    var ground = new Color[416 * 384];
+                    ((Texture2D)wt.GetField("outdoorGround", flags)!.GetValue(world)!).GetData(ground);
+                    foreach (var cell in junctions)
+                    {
+                        junctionCount++;
+                        bool Wet(int x, int y) => (bool)World("WaterAt", cell.X * 32 + x, cell.Y * 32 + y)!;
+                        check(Enumerable.Range(-1, 34).All(x => Wet(x, 16))
+                            && Enumerable.Range(16, 17).All(y => Wet(16, y))
+                            && Enumerable.Range(0, 32).All(x => !Wet(x, 0)),
+                            $"Surface {id} junction {cell.X},{cell.Y}: west, east and south streams connect across their tile edges; north stays dry");
+                        var still = Render(() => World("DrawGround", batch, map, cell, 2d));
+                        check(new[] { new Point(0, 0), new Point(31, 0), new Point(0, 31), new Point(31, 31) }
+                            .All(p => still[(cell.Y * 32 + p.Y) * 416 + cell.X * 32 + p.X]
+                                == ground[(cell.Y * 32 + p.Y) * 416 + cell.X * 32 + p.X]),
+                            $"Surface {id} junction {cell.X},{cell.Y}: exposed corners show meadow instead of a square wall");
+                        check(!still.SequenceEqual(Render(() => World("DrawGround", batch, map, cell, 2.5d))),
+                            $"Surface {id} junction {cell.X},{cell.Y}: water ripples animate");
+                    }
+                }
                 if (id != 17)
                 {
                     var plants = ((System.Collections.ICollection)wt.GetField("outdoorPlants", flags)!.GetValue(world)!).Count;
@@ -60,6 +84,22 @@ internal static class OutdoorPresentationChecks
                     Capture($"play-{id:D3}-{(mode == 1 ? "day" : "night")}.png");
                 }
             }
+            check(junctionCount == 9, "All nine authored surface river junctions were checked");
+            var isolatedJunction = new Map(10, 0, Enumerable.Repeat((ushort)2, Map.TileCount).ToArray());
+            isolatedJunction.RestoreTile(new(6, 6), 9);
+            var junctionSound = ((float Gain, float Pan))World("OutdoorWaterSoundAt", isolatedJunction, new Vector2(6, 6))!;
+            var mapColor = type.GetMethod("MapTileColor", BindingFlags.Static | BindingFlags.NonPublic)!;
+            check(Equals(mapColor.Invoke(null, [(ushort)9, 0]), mapColor.Invoke(null, [(ushort)0x11, 0])),
+                "The world-map overview colors junctions as river water");
+            var reaches = Get("lighting").GetType().GetMethod("Reaches", BindingFlags.Static | BindingFlags.NonPublic)!;
+            var acrossJunction = (bool)reaches.Invoke(null, [isolatedJunction, new MapPosition(5, 6), new MapPosition(7, 6)])!;
+            isolatedJunction.RestoreTile(new(6, 6), 3);
+            check(acrossJunction && !(bool)reaches.Invoke(null, [isolatedJunction, new MapPosition(5, 6), new MapPosition(7, 6)])!,
+                "River junctions let light pass through while mountains still block it");
+            isolatedJunction.RestoreTile(new(6, 6), 2);
+            var drySound = ((float Gain, float Pan))World("OutdoorWaterSoundAt", isolatedJunction, new Vector2(6, 6))!;
+            check(junctionSound.Gain > .9f && drySound.Gain == 0,
+                "Junction water supplies local river ambience and clears it when the same map cell changes to grass");
             File.WriteAllLines(Path.Combine(directory, "region-coverage.csv"), new[] { "region,map,plant_clumps", "E3,17,existing Maynard treatment" }.Concat(counts));
             var meadow = catalog.CreateMap(16)!;
             var all = Enumerable.Repeat(true, Map.TileCount).ToArray();
@@ -77,6 +117,22 @@ internal static class OutdoorPresentationChecks
             var field = wt.GetMethod("MeadowField", BindingFlags.Static | BindingFlags.NonPublic)!;
             float Field(int x, int y) => (float)field.Invoke(null, [x, y])!;
             check(Enumerable.Range(0, 120).All(i => Field(i * 17, i * 11) == Field(i * 17 + 2112, i * 11 + 1920)), "Ground variation wraps seamlessly across the six-by-six world");
+            var desert = new Map(6, 0, Enumerable.Repeat((ushort)0x2d, Map.TileCount).ToArray());
+            for (var y = 3; y <= 7; y++)
+                for (var x = 5; x <= 8; x++) desert.RestoreTile(new(x, y), 3);
+            desert.RestoreTile(new(5, 4), 0x39);
+            desert.RestoreTile(new(5, 5), 0x45);
+            Render(() => World("DrawMap", batch, desert, all, 2d, town)); Save("desert-rock-contact.png");
+            var sand = (Color[])wt.GetField("sandPixels", flags)!.GetValue(world)!;
+            check(Enumerable.Range(0, sand.Length).Where(i => desert.Tile(new(i % 416 / 32, i / 416 / 32)) == 0x2d)
+                .All(i => sand[i].A == 255 && sand[i].R > sand[i].G),
+                "Sand beside mountains, cave mouths and secret rock stays opaque without a false grass fringe");
+            for (var y = 0; y < Map.Height; y++)
+                for (var x = 0; x < 3; x++) desert.RestoreTile(new(x, y), 2);
+            Render(() => World("DrawMap", batch, desert, all, 2d, town)); Save("desert-grass-contact.png");
+            check(Enumerable.Range(0, 384).All(y => sand[y * 416 + 64].A == 0 && sand[y * 416 + 128].A == 255)
+                && Enumerable.Range(0, 384).SelectMany(y => Enumerable.Range(84, 24).Select(x => sand[y * 416 + x].A)).Distinct().Count() == 2,
+                "Real grass-sand boundaries retain their broken pixel transition and distinct ground on each side");
             var dryScene = Scene(8);
             var dryHabitat = ((float Dry, float Cold, float Wood))World("OutdoorHabitatAt", dryScene.Map, new Vector2(9, 8))!;
             var snowHabitat = ((float Dry, float Cold, float Wood))World("OutdoorHabitatAt", catalog.CreateMap(13)!, new Vector2(6, 6))!;
@@ -162,6 +218,7 @@ internal static class OutdoorPresentationChecks
                 where template.Tile(new(x, y)) is (2 or 8 or 0x16 or 0x2d)
                     && !MonsterPlacements.ForMap(id).Any(p => p.Contains(new(x, y)))
                 orderby Math.Abs(x - 6) + Math.Abs(y - 6) select new MapPosition(x, y)).First();
+            if (id == 10) start = new(7, 3); // Reported D2 viewpoint beside the river junctions.
             var scene = new Adventure(new GameSession(catalog, location: new() { MapId = id, RegionX = (id - 1) % 6 - 4,
                 RegionY = 2 - (id - 1) / 6, Position = start }));
             for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) scene.Visibility.RevealFrom(scene.Map, new(x, y));

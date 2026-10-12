@@ -6,6 +6,12 @@ using Microsoft.Xna.Framework.Input;
 using Yipe.Core;
 using Yipe.Desktop;
 
+if (args.Length == 2 && args[0] is "--write-room-fixtures" or "--read-room-fixtures" or "--interrupt-save-loop")
+{
+    await ReleasePersistenceChecks.Restart(args[0], args[1]);
+    return;
+}
+
 if (args.Length is 2 or 3 && args[0] is "--campaign-prefix" or "--campaign-route")
 {
     CampaignRouteChecks.Run(args[1], args[0] == "--campaign-route", args.Length == 3 ? args[2] : null);
@@ -55,6 +61,7 @@ var mapRecords = MapChecks.Run(Check, args.Length == 2 && args[0] == "--map-trac
 var sessionRecords = SessionChecks.Run(Check, args.Length == 2 && args[0] == "--session-trace" ? args[1] : null);
 await GameSaveChecks.Run(Check);
 await PersistenceChecks.Run(Check);
+await ReleasePersistenceChecks.Run(Check);
 var defaultRandom = new MsvcRandom();
 Check(defaultRandom.State == 1 && defaultRandom.Next() == 41 && defaultRandom.Next() == 18467
     && defaultRandom.Next() == 6334, "Default random seed reproduces the original sequence");

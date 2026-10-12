@@ -15,15 +15,17 @@ their respective dependency graphs.
 dotnet restore monogame/Yipe.slnx --locked-mode
 dotnet build monogame/Yipe.slnx -c Release --no-restore -p:CheckForOverflowUnderflow=true
 dotnet run --project monogame/Yipe.Tests -c Release --no-build
-python3 monogame/tools/package_macos.py --version 0.1.0-preview.6
-python3 monogame/tools/verify_macos_package.py build/monogame-packages/YipeIII-MonoGame-0.1.0-preview.6-macOS-arm64.tar.gz --tests monogame/Yipe.Tests/bin/Release/net10.0
+python3 monogame/tools/package_macos.py --version 0.1.0-preview.8
+python3 monogame/tools/verify_macos_package.py build/monogame-packages/YipeIII-MonoGame-0.1.0-preview.8-macOS-arm64.tar.gz --tests monogame/Yipe.Tests/bin/Release/net10.0 --graphics monogame/Yipe.GraphicsChecks/bin/Release/net10.0
 ```
 
 The builder refuses to overwrite an existing archive. Use a new version or a
 separate `--output` directory when repeating it. Package after the normal checks;
 avoid simultaneous restore/build/publish operations against shared project files.
 The existing root GitHub workflow still builds/releases the C++ game. MonoGame
-hosted CI, public upload and official signing/notarization remain separate work.
+regression CI now has its own workflow; public upload and official
+signing/notarization remain separate work. The new workflow has been linted
+locally; check GitHub Actions for hosted results after pushing this checkpoint.
 
 The `.tar.gz` contains `Yipe III MonoGame.app`, `README.txt` and a SHA-256 file
 manifest. A separate archive `.sha256` accompanies it. The launcher in
@@ -31,6 +33,10 @@ manifest. A separate archive `.sha256` accompanies it. The launcher in
 Managed assemblies belong with resources rather than Apple's nested-code
 directory. Native libraries, game apphost and bundle receive ad-hoc signatures.
 This is a development preview without Developer ID signing or notarization.
+
+The [pixel-art app icon](icons/README.md) appears in Finder and the Dock. The
+packager includes the multi-resolution ICNS, while an embedded BMP also gives
+ordinary local builds the same running-game icon.
 
 Publishing uses an empty runtime/targeting pack root so NuGet supplies Microsoft's
 official packs. Installed targeting-pack data remains available only for package
@@ -54,8 +60,13 @@ save continuation, 24 imports and 96 reload/item/save cycles. This reuses the
 established C++ expectations; it does not replace them with package output.
 Reports, subprocess logs and the startup capture remain under `--output`.
 
+With `--graphics`, an isolated runner also uses the packaged assemblies/runtime
+for normal Game.Run startup, ident/title animation, resizing, fullscreen and
+returning to a window. The extracted signed app remains untouched.
+
 Physical-controller play, real reconnect/focus testing and another user's Mac
-still need manual verification. Synthetic input and real graphics checks are
+still need manual verification. The user confirmed no controller is available
+on 2026-10-12 and requested that this remain documented as unverified. Synthetic input and real graphics checks are
 reported separately. The ordinary GPU runner is documented in
 [graphics checks](../Yipe.GraphicsChecks/README.md).
 
@@ -78,3 +89,14 @@ guide JSON retains the gameplay titles/body text from the checked-in
 question marks). The UI expands tabs for display. The seven obsolete commercial,
 hintbook and distribution topics are excluded; current controls appear separately. Updating the runtime version
 also requires refreshing its retained third-party notices.
+
+## Current release evidence
+
+[Preview.8 app icon report](../evidence/2026-10-12-app-icon/README.md) records the
+icon addition and fresh extracted-package/startup checks. No gameplay changed.
+
+[Preview.7 regression and performance report](../evidence/2026-10-12-release-readiness/README.md)
+records the gameplay tests, frame timings, captures, source hashes and package
+verification. See its physical-controller checklist before claiming hardware
+coverage. The package is an Apple Silicon development preview, not a notarized
+public release or a claim about other Macs.

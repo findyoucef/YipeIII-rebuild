@@ -13,9 +13,13 @@ internal static class PixelLightingChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
-            "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+            "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining" }
             .ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
         var catalog = (MapCatalog)Get("catalog")!;
@@ -110,7 +114,7 @@ internal static class PixelLightingChecks
                 "The light pass brightens existing colors gently without flattening terrain contrast");
 
             var town = Scene(17, new(8, 5));
-            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 4); Set("selectionY", 40f);
+            Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Atmosphere"); Set("selected", 0); Set("selectionY", 0f);
             var on = Frame(1); menu.Invoke(game, null); var off = Frame(1);
             check(!(bool)Get("pixelLighting")!, "Pixel lighting switches off through the pause menu");
             var profile = Get("profile")!; var profileType = profile.GetType();
@@ -119,7 +123,7 @@ internal static class PixelLightingChecks
             var data = profileType.GetProperty("Data")!.GetValue(reloaded)!;
             check(!(bool)data.GetType().GetProperty("PixelLighting")!.GetValue(data)!, "The lighting menu preference survives reopening its profile");
             Set("menuMessage", ""); off = Frame(1); Set("pixelLighting", true); on = Frame(1);
-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 84 * 4 || y >= 91 * 4
+            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 55 * 4 || y >= 62 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => on[i] == off[i]),
                 "Pixel lighting leaves the pause panel and every other label unchanged");
             Save(on, "menu.png");

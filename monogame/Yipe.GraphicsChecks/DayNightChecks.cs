@@ -13,12 +13,16 @@ internal static class DayNightChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
             "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining",
-            "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining", "timeOfDayMode", "dayNightSeconds", "dayNightUpdatedAt",
+            "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining", "timeOfDayMode", "dayNightSeconds", "dayNightUpdatedAt",
             "saving", "loading", "studioSplashRemaining" }
             .ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
@@ -117,7 +121,7 @@ internal static class DayNightChecks
                 select y * 320 + x).All(i => actionsDay[i] == actionsNight[i]),
                 "Night color never dims action panels or their text");
             Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f);
-            Set("graphicsMenuOpen", true); Set("selected", 9); Set("selectionY", 90f); Set("timeOfDayMode", 0);
+            Set("pausePage", "Atmosphere"); Set("selected", 4); Set("selectionY", 48f); Set("timeOfDayMode", 0);
             var phase = (double)Get("dayNightSeconds")!;
             for (var mode = 1; mode <= 4; mode++)
             {

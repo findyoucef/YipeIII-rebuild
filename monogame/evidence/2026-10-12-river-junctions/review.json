@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-12T17:41:32.077926+00:00",
+  "reported_view": {
+    "region": "D2",
+    "map": 10,
+    "position": [
+      7,
+      3
+    ]
+  },
+  "affected_regions": [
+    {
+      "map": 10,
+      "region": "D2",
+      "junctions": "5,2 and 8,2"
+    },
+    {
+      "map": 9,
+      "region": "C2",
+      "junctions": "10,2"
+    },
+    {
+      "map": 11,
+      "region": "E2",
+      "junctions": "2,2"
+    },
+    {
+      "map": 15,
+      "region": "C3",
+      "junctions": "7,5"
+    },
+    {
+      "map": 29,
+      "region": "E5",
+      "junctions": "3,2"
+    },
+    {
+      "map": 33,
+      "region": "C6",
+      "junctions": "10,9"
+    },
+    {
+      "map": 34,
+      "region": "D6",
+      "junctions": "6,6 and 9,8"
+    }
+  ],
+  "original_identity": "Tile 9: bitmap 143 lower-right cell, west/east/south stream junction.",
+  "before_run": "build/snow-narrow/complete-outdoors/yipe-graphics-20261012-074318-0283056c",
+  "after_run": "build/river-junction-fix/final/yipe-graphics-20261012-174006-2c30b90c",
+  "checks": 369,
+  "build": "Release; zero warnings/errors",
+  "captures": "Production rendering with isolated test saves; day/night gameplay at the reported position.",
+  "map_or_movement_changes": false,
+  "personal_file_count": 33,
+  "personal_files_changed_since_start": 1,
+  "personal_file_note": "All personal adventure files stayed byte-identical. Only the shared profile.json changed while the user game was also running. Tests used isolated saves/profiles; personal files were not restored.",
+  "source_sha256": {
+    "monogame/Yipe.Desktop/WorldTerrain.cs": "6a9eb4fe24544fd592ae7402b27d6478dd90c9eaccbda0b22aa9f618a7c32883",
+    "monogame/Yipe.Desktop/WorldWater.cs": "1bbbfed8db82c9166e26957edd55ef93ed7e27684805836ca6850fd693792211",
+    "monogame/Yipe.Desktop/WorldDesert.cs": "e5c535807416e1d1716269559de7bdd4109252344f5f43b815bedec269876db6",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "6454c68c55bbe752548a9e49906449df8428d0dd510b5b0427cf14a7b58f8d71",
+    "monogame/Yipe.Desktop/TownMapOverlay.cs": "08da6dfa040cae96c0135c7f2ae5103afb9369f7701d024935d08ba5f54b3499",
+    "monogame/Yipe.Desktop/PixelLighting.cs": "f13f9241ecdc7419c2fc048aa183053c955b99b1cb565daed469f6cf5ba72762",
+    "monogame/Yipe.GraphicsChecks/OutdoorPresentationChecks.cs": "1421da169c84e5271149dae8fd4b55d8a06a3c8b8f4cc9d391216d5b4430cee6",
+    "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "c5f9f6ef2c811dd617c1e83eb3463b51c0aac6ea9c35592b15953abd708fe08c",
+    "assets/maps/original-map-tables.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e",
+    "assets/embedded/bitmaps/143-1033.bmp": "f53c3deebbe832fa6d9deed4a5c177d1cba97348d3ceaef3e232992ce099fa4d"
+  },
+  "simplicity_review": "Scoped against pre-task source snapshots. Existing water masks, shoreline pass, ripple drawing and positional ambience reused; no new production types or caches.",
+  "personal_adventure_files_unchanged": true
+}

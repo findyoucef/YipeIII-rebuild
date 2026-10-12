@@ -6,19 +6,18 @@ internal sealed partial class TownGame
 {
     private Action<char>? textReceiver;
     private MsvcRandom creationRandom = new(1);
-    private void ShowWelcome() => Choices("Yipe! III", "The King's stamps and daughters are missing. Your adventure begins in Maynard.", [
-        new("New adventure", BeginCharacterCreation), new("Load saved adventure", () => { overlay = null; paused = true; menuMessage = "Loading..."; loading = saves.LoadAsync(); }),
-        new("Quit", Exit)]);
     private void ShowNewGameConfirmation()
     {
         var previous = overlay;
+        var wasPaused = paused; var wasMapOpen = mapOpen;
+        paused = false; pauseAmount = 0; mapOpen = false;
         var previousTextReceiver = textReceiver;
         textReceiver = null;
-        void KeepPlaying() { overlay = previous; textReceiver = previousTextReceiver; }
+        void KeepPlaying() { overlay = previous; textReceiver = previousTextReceiver; paused = wasPaused; mapOpen = wasMapOpen; }
         Choices("New adventure?", "Unsaved progress in this adventure will be lost.", [
             new("Keep playing", KeepPlaying), new("Start a new adventure", BeginCharacterCreation)], KeepPlaying);
     }
-    private void BeginCharacterCreation() { creationRandom = new(1); ShowCharacterType(); }
+    private void BeginCharacterCreation() { restorePauseOverlay = null; paused = false; creationRandom = new(1); ShowCharacterType(); }
     private void ShowCharacterType()
     {
         Choices("Create Character", "Choose starting attributes. Random can be rerolled before starting.",
@@ -56,7 +55,10 @@ internal sealed partial class TownGame
         {
             created.SillyMode = portrait >= 9; created.Inventory[28] = (ushort)portrait;
             command?.Dispose(); command = null; pendingEvent = null;
-            journal = new(); mapOpen = false;
+            journal = new(); mapOpen = false; titleScreen = false;
+            pausePage = PausePage.Main; selected = 0; selectionY = 0;
+            var slot = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N")[..8];
+            saves = new GameSaveStore(Path.Combine(adventureDirectory, "Saved Adventures", slot, "game.y3m"), catalog);
             session = new GameSession(catalog, created, randomState: creationRandom.State);
             dayNightSeconds = DayNightCycle.OpeningTime;
             adventure = new Adventure(session);

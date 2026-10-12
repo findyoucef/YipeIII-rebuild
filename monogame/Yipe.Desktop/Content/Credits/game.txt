@@ -1,0 +1,18 @@
+ICOSIUM LABS
+Development and creative direction of this remaster.
+Rebuilt for desktop with new pixel artwork, animation, lighting and atmosphere.
+
+ORIGINAL YIPE! III
+Original version 1.16
+Copyright (C) 2002-03, Kevin Kinell
+Programming and concept: Kevin Kinell
+Graphics: Pat Kelley
+Lead beta tester: Eric Johnson
+Originally written for Macintosh in 1996.
+Original game recordings are retained.
+
+CREATIVE TOOLS
+Development assistance: OpenAI Codex.
+New artwork created with OpenAI image generation, adapted and integrated by icosium labs.
+
+Thank you to the creators of the freely shared music, recordings and software credited in the following sections.

@@ -13,11 +13,15 @@ internal static class CloudShadowChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
-            "sunShaftStrength", "cloudShadowStrength", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+            "sunShaftStrength", "cloudShadowStrength", "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining" }
             .ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
         var catalog = (MapCatalog)Get("catalog")!;
@@ -111,7 +115,7 @@ internal static class CloudShadowChecks
             check(Enumerable.Range(0, native.Length).All(i => native[i] == native[i / 1280 / 4 * 4 * 1280 + i % 1280 / 4 * 4]),
                 "Cloud shade retains exact native pixels at window scale");
 
-            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 6); Set("selectionY", 60f);
+            Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Atmosphere"); Set("selected", 2); Set("selectionY", 24f);
             var paused = Frame(2, 1);
             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
             check((double)Get("sceneTime")! == 1 && paused.SequenceEqual(Frame(2, 1)), "Production pause freezes cloud movement and its framebuffer");
@@ -126,7 +130,7 @@ internal static class CloudShadowChecks
                     $"Cloud menu cycles to {expected} and saves independently of the sun-shaft preference");
             }
             Set("menuMessage", ""); var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 104 * 4 || y >= 111 * 4
+            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 79 * 4 || y >= 86 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
                 "Cloud shadows leave the pause panel and every other label unchanged");
             Set("paused", false); Set("pauseAmount", 0f); Call("ShowActions");

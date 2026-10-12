@@ -21,6 +21,7 @@ internal static class MountainPresentationChecks
             .GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
         var snowPalette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!
             .GetField("SnowPalette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var stonePalette = (Color[])mountains.GetType().GetField("StonePalette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
         var drawMap = type.GetMethod("DrawMap", flags)!;
         var directory = Path.Combine(output, "mountains"); Directory.CreateDirectory(directory);
         using var target = new RenderTarget2D(device, width, height);
@@ -40,9 +41,9 @@ internal static class MountainPresentationChecks
             .GetData(0, new Rectangle(0, 96, 48, 48), townCave, 0, townCave.Length);
         check(rock.All(c => c == palette[2] || c == palette[3] || c == palette[4])
             && rock.Average(Light) < 105 && rock.Count(c => c == palette[4]) is > 20 and < 110,
-            "Mountain stone uses dark slate with sparse authored highlights, without green-gray fill");
+            "The weathering source keeps the original slate colors and sparse highlights");
         check(Math.Abs(rock.Average(Light) - cave.Where(c => c == palette[2] || c == palette[3] || c == palette[4]).Average(Light)) < 10,
-            "Mountain stone and cave rim have matching average slate brightness");
+            "Weathering source and cave rim retain compatible slate tones");
         check(cave.SequenceEqual(townCave), "Village and world cave entrances share the same softened stone rim");
 
         var rimFixture = Enumerable.Repeat(palette[20], 144 * 144).ToArray();
@@ -72,7 +73,7 @@ internal static class MountainPresentationChecks
         foreach (var (id, map) in maps)
         {
             var pixels = Prepare(map); rendered[id] = pixels;
-            check(pixels.All(p => p.A == 0 || p.A == 255 && (palette.Contains(p) || snowPalette.Contains(p))),
+            check(pixels.All(p => p.A == 0 || p.A == 255 && (palette.Contains(p) || snowPalette.Contains(p) || stonePalette.Contains(p))),
                 $"Surface {id} mountains keep native palette colors and binary pixel edges");
             check(Enumerable.Range(0, pixels.Length).All(i => Rock(map.Tile(new(i % width / 32, i / width / 32)))
                 || pixels[i].A == 0), $"Surface {id} mountains leave every non-mountain cell unobstructed");
@@ -80,7 +81,7 @@ internal static class MountainPresentationChecks
                 where Rock(map.Tile(new(x / 32, y / 32))) && x % 32 is >= 12 and < 20 && y % 32 is >= 12 and < 20
                 select pixels[y * width + x];
             check(centers.All(p => p.A == 255), $"Surface {id} all blocked mountain cells retain a solid visible core");
-            if (id is not (1 or 6 or 17 or 18 or 22 or 23 or 24)) continue;
+            if (id is not (1 or 6 or 7 or 13 or 17 or 18 or 22 or 23 or 24 or 27)) continue;
             check(pixels.SequenceEqual(Prepare(map)), $"Surface {id} cached mountains remain deterministic");
             using (var file = File.Create(Path.Combine(directory, $"rock-{id:D3}.png"))) texture.SaveAsPng(file, width, height);
             var session = new GameSession(catalog, location: new()
@@ -100,6 +101,9 @@ internal static class MountainPresentationChecks
         var townTexture = (Texture2D)mountains.GetType().GetProperty("Texture", flags)!.GetValue(townMountains)!;
         var townPixels = new Color[width * height]; townTexture.GetData(townPixels);
         check(townPixels.SequenceEqual(rendered[17]), "Maynard gameplay and area maps share identical mountain and cave backing artwork");
+        check(new[] { 8, 328 }.All(start => Enumerable.Range(start, 80).All(x =>
+            Enumerable.Range(0, 8).All(y => stonePalette.Contains(rendered[17][y * width + x])))),
+            "Maynard's castle and cave ridges fill the upper sightline without distant grass or desert gaps");
 
         var comparisons = 0; var matched = true;
         foreach (var (id, map) in maps)
@@ -135,8 +139,7 @@ internal static class MountainPresentationChecks
 
         var diagonal = rendered[18];
         var ridgeEdges = Enumerable.Range(192, 32).Select(y => Enumerable.Range(64, 160).First(x =>
-            diagonal[y * width + x] == palette[2] || diagonal[y * width + x] == palette[3]
-            || diagonal[y * width + x] == palette[4] || diagonal[y * width + x] == palette[39])).ToArray();
+            stonePalette.Contains(diagonal[y * width + x]))).ToArray();
         check(ridgeEdges.Distinct().Count() >= 12 && ridgeEdges.Max() - ridgeEdges.Min() >= 24,
             "Surface F3 beside 2,6 has a long diagonal contour instead of a lightly rounded square step");
 
@@ -144,11 +147,27 @@ internal static class MountainPresentationChecks
         for (var y = 2; y <= 8; y++)
             for (var x = 3; x <= 6; x++) fixture.RestoreTile(new(x, y), 3);
         var block = Prepare(fixture);
-        var topLight = (from y in Enumerable.Range(240, 8) from x in Enumerable.Range(144, 48)
-            select Light(block[y * width + x])).Average();
-        var faceLight = (from y in Enumerable.Range(274, 7) from x in Enumerable.Range(144, 48)
-            select Light(block[y * width + x])).Average();
-        check(topLight - faceLight >= 18, "Mountain tops remain visibly lighter than the broad front cliff faces");
+        var peakPixels = (Color[])mountains.GetType().GetField("peaks", flags)!.GetValue(mountains)!;
+        var peakBounds = (Rectangle[])mountains.GetType().GetField("peakBounds", flags)!.GetValue(mountains)!;
+        check(peakBounds.Length == 8 && peakPixels.All(p => p.A == 0 || p.A == 255 && stonePalette.Contains(p)),
+            "Eight authored peak variants compile to native pixels with the local stone ramp and binary alpha");
+        var litSlopes = peakBounds.Select(bounds =>
+        {
+            var left = new List<double>(); var right = new List<double>();
+            for (var y = bounds.Y + bounds.Height / 4; y < bounds.Bottom - bounds.Height / 4; y++)
+                for (var x = bounds.X; x < bounds.Right; x++)
+                {
+                    var color = peakPixels[y * 256 + x];
+                    if (color.A == 0) continue;
+                    (x < bounds.Center.X ? left : right).Add(Light(color));
+                }
+            return left.Average() - right.Average();
+        }).ToArray();
+        var repeated = (from y in Enumerable.Range(128, 32) from x in Enumerable.Range(128, 32)
+            select block[y * width + x] != block[y * width + x + 32]).Count(value => value);
+        check(repeated > 256, "Broad mountain planes vary across tiles instead of repeating the same 32-pixel rock pattern");
+        check(litSlopes.All(difference => difference > 12),
+            "Every peak keeps its sunlit left slope visibly brighter than its shaded right slope");
         check(block.All(p => p.A == 0 || p != palette[0] && p != palette[1]),
             "Exposed mountain rock and ground contacts never acquire an artificial near-black outline");
         var contacts = (from y in Enumerable.Range(9 * 32 - 7, 7)

@@ -19,7 +19,7 @@ internal sealed partial class WorldRenderer
 
     internal static bool SnowTile(ushort tile) => tile is 0x1f or 0x20 or 0x21 or 0x69;
     internal bool SnowAt(int x, int y) => snowActive && x >= 0 && y >= 0 && x < SnowWidth && y < SnowHeight
-        && snowPixels[y * SnowWidth + x].A != 0;
+        && RetroArt.SnowPalette.Contains(snowPixels[y * SnowWidth + x]);
     internal bool SnowColdAt(int x, int y) => snowActive && x >= 0 && y >= 0 && x < SnowWidth && y < SnowHeight
         && snowCold[y * SnowWidth + x];
 
@@ -46,30 +46,75 @@ internal sealed partial class WorldRenderer
             for (var x = 0; x < SnowWidth; x++)
             {
                 var tile = snowTiles[y / 32 * Map.Width + x / 32];
-                snowField[y * SnowWidth + x] = tile == 0x20 ? .65f : SnowTile(tile) ? 1 : 0;
+                snowField[y * SnowWidth + x] = MountainTerrain.IsMountain(tile) ? -1
+                    : tile == 0x20 ? .65f : SnowTile(tile) ? 1 : 0;
             }
-        // Compile one connected footprint, rather than repeating a square snowy tile.
-        const int radius = 12, span = radius * 2 + 1;
+        // Rock is not exposed grass: exclude it from the ground blend so enclosed
+        // snow corners remain covered. Melting snow still blends into actual meadow.
+        var weights = new float[snowPixels.Length];
+        const int radius = 12;
         for (var y = 0; y < SnowHeight; y++)
         {
-            var sum = 0f;
-            for (var x = -radius; x <= radius; x++) sum += snowField[y * SnowWidth + Math.Clamp(x, 0, SnowWidth - 1)];
+            Vector2 Sample(int x)
+            {
+                var value = snowField[y * SnowWidth + Math.Clamp(x, 0, SnowWidth - 1)];
+                return value < 0 ? Vector2.Zero : new(value, 1);
+            }
+            var sum = Vector2.Zero;
+            for (var x = -radius; x <= radius; x++) sum += Sample(x);
             for (var x = 0; x < SnowWidth; x++)
             {
-                snowBlur[y * SnowWidth + x] = sum / span;
-                sum += snowField[y * SnowWidth + Math.Min(SnowWidth - 1, x + radius + 1)]
-                    - snowField[y * SnowWidth + Math.Max(0, x - radius)];
+                snowBlur[y * SnowWidth + x] = sum.X;
+                weights[y * SnowWidth + x] = sum.Y;
+                sum += Sample(x + radius + 1) - Sample(x - radius);
             }
         }
         for (var x = 0; x < SnowWidth; x++)
         {
-            var sum = 0f;
-            for (var y = -radius; y <= radius; y++) sum += snowBlur[Math.Clamp(y, 0, SnowHeight - 1) * SnowWidth + x];
+            Vector2 Sample(int y)
+            {
+                var i = Math.Clamp(y, 0, SnowHeight - 1) * SnowWidth + x;
+                return new(snowBlur[i], weights[i]);
+            }
+            var sum = Vector2.Zero;
+            for (var y = -radius; y <= radius; y++) sum += Sample(y);
             for (var y = 0; y < SnowHeight; y++)
             {
-                snowField[y * SnowWidth + x] = sum / span;
-                sum += snowBlur[Math.Min(SnowHeight - 1, y + radius + 1) * SnowWidth + x]
-                    - snowBlur[Math.Max(0, y - radius) * SnowWidth + x];
+                snowField[y * SnowWidth + x] = sum.Y > 0 ? Math.Clamp(sum.X / sum.Y, 0, 1) : 0;
+                sum += Sample(y + radius + 1) - Sample(y - radius);
+            }
+        }
+        // Smooth the open ground around the rock into broad snowfield curves.
+        // Two box passes round tile-sized notches without blurring the pixel art.
+        mountains.Prepare(map.Id, map.Tile);
+        var ridge = new Color[snowPixels.Length];
+        mountains.Texture.GetData(ridge);
+        for (var i = 0; i < ridge.Length; i++)
+            snowBlur[i] = ridge[i].A > 0 ? 0 : 1;
+        const int curveRadius = 18, curveWidth = curveRadius * 2 + 1;
+        for (var pass = 0; pass < 2; pass++)
+        {
+            for (var y = 0; y < SnowHeight; y++)
+            {
+                float Sample(int x) => snowBlur[y * SnowWidth + Math.Clamp(x, 0, SnowWidth - 1)];
+                var sum = 0f;
+                for (var x = -curveRadius; x <= curveRadius; x++) sum += Sample(x);
+                for (var x = 0; x < SnowWidth; x++)
+                {
+                    weights[y * SnowWidth + x] = sum / curveWidth;
+                    sum += Sample(x + curveRadius + 1) - Sample(x - curveRadius);
+                }
+            }
+            for (var x = 0; x < SnowWidth; x++)
+            {
+                float Sample(int y) => weights[Math.Clamp(y, 0, SnowHeight - 1) * SnowWidth + x];
+                var sum = 0f;
+                for (var y = -curveRadius; y <= curveRadius; y++) sum += Sample(y);
+                for (var y = 0; y < SnowHeight; y++)
+                {
+                    snowBlur[y * SnowWidth + x] = sum / curveWidth;
+                    sum += Sample(y + curveRadius + 1) - Sample(y - curveRadius);
+                }
             }
         }
         for (var y = 0; y < SnowHeight; y++)
@@ -79,7 +124,10 @@ internal sealed partial class WorldRenderer
                 var tile = snowTiles[y / 32 * Map.Width + x / 32];
                 var contour = snowField[i] - .36f + MathF.Sin(x * .061f + y * .025f) * .025f
                     + MathF.Sin(y * .10f - x * .043f) * .014f;
-                if (contour > 0 && WaterTile(tile) == 0 && (RetroArt.PathConnections(tile) == 0
+                var gx = (map.Id - 1) % 6 * 352 + x; var gy = (map.Id - 1) / 6 * 320 + y;
+                var coverage = Math.Clamp((contour + .07f) / .14f, 0, 1);
+                var grain = OutdoorHash(gx / 2 * 2, gy / 2 * 2) % 100 / 100f;
+                if (coverage > grain && WaterTile(tile) == 0 && (RetroArt.PathConnections(tile) == 0
                     || MountainTerrain.IsMountain(tile)))
                 {
                     // Small stepped drifts keep the same pixel scale as the meadow
@@ -91,8 +139,12 @@ internal sealed partial class WorldRenderer
                     var length = 7 + variation % 9;
                     var drift = px >= 0 && px < length && py >= 0 && py < 3
                         && px > (py == 0 ? 3 : 0) && px < length - (py == 2 ? 3 : 0);
-                    var rim = contour < .045f + (x / 3 * 3 + y / 2 * 5) % 7 * .004f;
-                    snowPixels[i] = RetroArt.SnowPalette[rim ? 2 : drift ? 1 : 0];
+                    // Leave a narrow strip of scree between the mountain foot
+                    // and the snowfield, with small powder patches along its edge.
+                    var setback = .60f + MathF.Sin(gx * .023f + gy * .018f) * .01f;
+                    var powder = Math.Clamp((snowBlur[i] - setback) / .035f, 0, 1);
+                    snowPixels[i] = powder <= grain ? MountainTerrain.SnowSoil(gx, gy)
+                        : RetroArt.SnowPalette[powder < .7f ? 2 : powder < 1 || drift || coverage < .9f ? 1 : 0];
                 }
                 snowCold[i] = snowPixels[i].A > 0 || MountainTerrain.IsMountain(tile) && NearSnow(x, y);
             }

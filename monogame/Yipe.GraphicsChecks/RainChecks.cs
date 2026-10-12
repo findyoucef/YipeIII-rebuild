@@ -13,11 +13,15 @@ internal static class RainChecks
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
         var type = game.GetType();
         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
-        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+        void Set(string name, object? value)
+        {
+            var field = type.GetField(name, flags)!;
+            field.SetValue(game, field.FieldType.IsEnum && value is string page ? Enum.Parse(field.FieldType, page) : value);
+        }
         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
-            "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+            "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining", "pausePage", "selected", "selectionY", "menuMessage", "messageRemaining" }
             .ToDictionary(name => name, Get);
         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
         var catalog = (MapCatalog)Get("catalog")!;
@@ -87,7 +91,7 @@ internal static class RainChecks
             check(Field(2, Vector2.Zero, water: Rectangle.Empty, tile: 1).All(p => p == Color.Black), "Ground impacts exclude solid building tiles");
             check(Field(2, Vector2.Zero, water: Rectangle.Empty, tile: 2).Any(p => p != Color.Black), "Open ground receives small splash pixels");
 
-            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 7); Set("selectionY", 70f);
+            Set("paused", true); Set("pauseAmount", 1f); Set("pausePage", "Atmosphere"); Set("selected", 3); Set("selectionY", 36f);
             var paused = Frame(2, 1);
             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
             check((double)Get("sceneTime")! == 1 && (double)Get("outdoorWeatherTime")! == wetTime && paused.SequenceEqual(Frame(2, 1)), "Production pause freezes rainfall, splashes and the automatic weather timer");
@@ -102,7 +106,7 @@ internal static class RainChecks
                     $"Rain menu cycles to {expected} and saves independently of cloud shadows");
             }
             Set("menuMessage", ""); var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 114 * 4 || y >= 121 * 4
+            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 91 * 4 || y >= 98 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
                 "Rain leaves the pause panel and other settings unchanged");
             Set("paused", false); Set("pauseAmount", 0f); Call("ShowActions");

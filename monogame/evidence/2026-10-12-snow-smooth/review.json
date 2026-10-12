@@ -1,0 +1,26 @@
+{
+  "changed_surface_maps": [
+    13,
+    21
+  ],
+  "unchanged_surface_maps": 34,
+  "personal_files_checked": 28,
+  "changed_personal_files": [],
+  "status": "Implemented and locally verified; user visual review pending",
+  "region": "Surface A3 / map 13, Ice (Zephyr) Cave entrance at 5,4",
+  "snow_checks": 45,
+  "outdoors_checks": 338,
+  "matching_mountain_overlap_pixels": 40960,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "repackaged": false,
+  "changes": [
+    "Round the overall snowfield shape using two cached smoothing passes.",
+    "Replace short contour waves with a gentle, broad variation.",
+    "Retain native pixel edges, the exposed gravel margin, cold weather and existing material-aware footsteps."
+  ],
+  "artwork": "Approved bare and winter sprite assets unchanged.",
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldSnow.cs": "871e129ed80ff2847ced95be0fab93a4b4b86938b9f91e23477912de4746f5ea"
+  }
+}

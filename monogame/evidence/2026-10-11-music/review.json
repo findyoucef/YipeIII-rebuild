@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-10-12T04:48:54.854811+00:00",
+  "core_checks": 641,
+  "focused_menu_music_checks": 129,
+  "focused_maynard_checks": 38,
+  "build_errors": 0,
+  "build_warnings": 0,
+  "personal_files_checked": 33,
+  "personal_files_unchanged": true,
+  "packaged": false,
+  "full_graphics_suite_rerun": false,
+  "screenshots": [
+    "sound-menu.png",
+    "music-credits.png",
+    "credits-menu.png",
+    "sound-credits.png"
+  ],
+  "production_assembly_sha256": "799e1013ef14b49c59c86d15dd712a0fd1eaa6931d37a4adeb712321adc42ec2",
+  "music_sources": "../../Yipe.Desktop/Content/Audio/Music/sources.json",
+  "technology_notices": "../../Yipe.Desktop/Content/Credits/sources.json",
+  "notes": [
+    "Real Ogg streams, repeat boundary, scene fades, focus/mute/resume and independent audio channels verified.",
+    "Credits navigation, creators, packaged notices and profile persistence verified.",
+    "Personal adventures, journals and profiles preserved.",
+    "Music and menu listening review pending.",
+    "Physical controller not attached; synthetic controller controls only."
+  ]
+}

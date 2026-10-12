@@ -41,6 +41,8 @@ internal static class SnowBiomeChecks
             var art = type.Assembly.GetType("Yipe.Desktop.RetroArt")!;
             var palette = (Color[])art.GetField("Palette", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
             var snowPalette = (Color[])art.GetField("SnowPalette", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+            var mountains = Field("mountains"); var mt = mountains.GetType();
+            var stonePalette = (Color[])mt.GetField("StonePalette", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
             check(atlas.Width == 96 && atlas.Height == 96 && pixels.All(p => p.A is 0 or 255 && (p.A == 0 || palette.Contains(p))),
                 "Winter art compiles to a native four-frame 48px atlas with binary alpha and the shared palette");
             check(Enumerable.Range(0, 4).All(frame => Enumerable.Range(0, 48 * 48)
@@ -54,9 +56,10 @@ internal static class SnowBiomeChecks
                 && snow.Map.Events.Message.Value == 12, "Surface A3 resolves to the authored Zephyr cave at 5,4 and sign at 8,2");
             Invoke("PrepareSnow", snow.Map);
             var ground = ((Color[])Field("snowPixels")).ToArray();
-            check(ground.Count(p => p.A == 255) > 10000 && ground.Where(p => p.A > 0).All(p => snowPalette.Contains(p)),
-                "Snow ground stays opaque and uses cold whites and blue-gray shading instead of the desert's cream highlights");
-            check(Enumerable.Range(160, 32).All(y => snowAt(191, y) && snowAt(192, y)),
+            check(ground.Count(p => snowPalette.Contains(p)) > 10000
+                && ground.All(p => p.A == 0 || p.A == 255 && (snowPalette.Contains(p) || stonePalette.Contains(p))),
+                "The cold basin retains opaque native snow and slate ground without warm desert colors");
+            check(Enumerable.Range(176, 32).All(y => snowAt(223, y) && snowAt(224, y)),
                 "Adjacent full snow cells join without a grid seam or exposed grass crack");
             var melting = (from y in Enumerable.Range(64, 32) from x in Enumerable.Range(224, 32) select snowAt(x, y)).ToArray();
             check(melting.Any(value => value) && melting.Any(value => !value), "The authored melting edge mixes snow and exposed ground at its actual footprint");
@@ -66,11 +69,31 @@ internal static class SnowBiomeChecks
                 "Searching or replacing hidden-gold snow with ordinary snow cannot reveal its position through artwork or mask changes");
             snow.Map.RestoreTile(new(5, 7), 0x69);
             var surface = wt.GetMethod("FootstepAt", flags)!;
+            var secretSurface = surface.Invoke(world, [snow.Map, new MapPosition(5, 7)])!.ToString();
+            snow.Map.RestoreTile(new(5, 7), 0x1f);
             check(surface.Invoke(world, [snow.Map, new MapPosition(5, 5)])!.ToString() == "Snow"
-                && surface.Invoke(world, [snow.Map, new MapPosition(5, 7)])!.ToString() == "Snow",
-                "Normal and secret snow select the same recorded snow-crunch surface");
+                && secretSurface == surface.Invoke(world, [snow.Map, new MapPosition(5, 7)])!.ToString(),
+                "Snow uses its recorded crunch, and secret terrain has the same surface sound as ordinary ground");
+            snow.Map.RestoreTile(new(5, 7), 0x69);
 
-            var mountains = Field("mountains"); var mt = mountains.GetType();
+            var snowPeaks = (Color[])mt.GetField("snowPeaks", flags)!.GetValue(mountains)!;
+            var snowPeakBounds = (Rectangle[])mt.GetField("snowPeakBounds", flags)!.GetValue(mountains)!;
+            check(snowPeakBounds.Length == 16 && snowPeaks.All(p => p.A == 0
+                || p.A == 255 && (snowPalette.Contains(p) || stonePalette.Contains(p))),
+                "Dedicated winter peaks compile to sixteen native sprites with binary alpha and snow/stone colors");
+            var snowCounts = snowPeakBounds.Select(bounds =>
+                (from y in Enumerable.Range(bounds.Y, bounds.Height)
+                 from x in Enumerable.Range(bounds.X, bounds.Width)
+                 select snowPeaks[y * 256 + x]).Count(p => snowPalette.Contains(p))).ToArray();
+            check(Enumerable.Range(0, 8).All(frame => snowCounts[frame] > 25
+                && snowCounts[frame + 8] > snowCounts[frame] * 1.5),
+                "Each mountain has authored light-dusting and deep-snow variants with distinct snow coverage");
+            using (var nativePeaks = new Texture2D(game.GraphicsDevice, 256, 256))
+            {
+                nativePeaks.SetData(snowPeaks);
+                using var file = File.Create(Path.Combine(directory, "snow-peaks-native.png"));
+                nativePeaks.SaveAsPng(file, 256, 256);
+            }
             Color[] Mountain(Map map)
             {
                 mt.GetMethod("Prepare", flags)!.Invoke(mountains, [map.Id, (Func<MapPosition, ushort>)map.Tile]);
@@ -88,6 +111,25 @@ internal static class SnowBiomeChecks
             check((from y in Enumerable.Range(32, 32) from x in Enumerable.Range(192, 32)
                 select ridge[y * 416 + x]).Any(p => snowPalette.Contains(p)),
                 "Light snow reaches the northern ridge beyond the basin's ground tiles instead of stopping at the tile boundary");
+            var contact = new Map(13, 0, Enumerable.Repeat((ushort)0x1f, Map.TileCount).ToArray());
+            for (var y = 3; y <= 7; y++)
+                for (var x = 3; x <= 6; x++) contact.RestoreTile(new(x, y), 3);
+            contact.RestoreTile(new(7, 5), 0x21);
+            check(Mountain(contact).All(p => p != palette[10] && p != palette[11]),
+                "Rock beside snowy pines and snow ground never grows a meadow-green fringe");
+            Invoke("PrepareSnow", contact);
+            var contactGround = (Color[])Field("snowPixels");
+            check(Enumerable.Range(0, contactGround.Length).Where(i => contact.Tile(new(i % 416 / 32, i / 416 / 32)) == 0x1f)
+                .All(i => contactGround[i].A == 255),
+                "The snowy basin has continuous snow or scree coverage without accidental meadow holes");
+            var contactRock = Mountain(contact);
+            check(Enumerable.Range(144, 32).All(y =>
+                Enumerable.Range(208, 28).Any(x => contactRock[y * 416 + x].A == 0
+                    && stonePalette.Contains(contactGround[y * 416 + x]) && !snowAt(x, y) && coldAt(x, y))
+                && snowAt(236, y)),
+                "A narrow cold stone margin separates snow from mountain feet, with snow returning within twelve pixels");
+            check(surface.Invoke(world, [contact, new MapPosition(4, 2)])!.ToString() == "Snow",
+                "Walking close to the mountains crunches where snow now covers the foot plant");
             var warm = Scene(7); Invoke("PrepareSnow", warm.Map);
             check(!Enumerable.Range(0, ground.Length).Any(i => snowAt(i % 416, i / 416))
                 && Effect("DrawSnowfall", warm, 2, 2f).All(p => p.A == 0), "A2's warm ground and weather do not retain A3 snow masks");

@@ -1,0 +1,51 @@
+FOOTSTEPS
+Nox_Sound - Footsteps_Walk.wav
+Grass, stone and water contacts.
+freesound.org/people/Nox_Sound/sounds/490951/
+
+Kenney - Impact Sounds
+Wood and snow contacts.
+kenney.nl/assets/impact-sounds
+
+Fantozzi - Grass/Sand & Stone Footsteps
+Sliced and shared by qubodup.
+Sand contacts and Earth Cave grit.
+opengameart.org/content/fantozzis-footsteps-grasssand-stone
+
+CAVES AND OUTDOORS
+JaggedStone - Loopable Dungeon Ambience
+opengameart.org/content/loopable-dungeon-ambience
+
+Blender Foundation / Yo Frankie!
+Lava loop - Fire Cave and Yipe Hell.
+CC BY 3.0:
+creativecommons.org/licenses/by/3.0/
+opengameart.org/content/lava-loop
+
+PagDev - Fireplace Sound loop
+opengameart.org/content/fireplace-sound-loop
+
+Independent.nu - Dripping water loop
+Shared by qubodup.
+opengameart.org/content/dripping-water-loop
+
+ecfike - Ice Crack 5.wav
+freesound.org/people/ecfike/sounds/177217/
+
+isaiah658 - Ambient Bird Sounds
+opengameart.org/content/ambient-bird-sounds
+
+Thimras - Park ambiences
+Wind and river recordings.
+opengameart.org/content/park-ambiences
+
+Wolfgang_ / Ted Kerr
+Crickets Ambient Noise - loopable
+opengameart.org/content/crickets-ambient-noise-loopable
+
+All recordings above use CC0 1.0 except Lava loop, which uses CC BY 3.0.
+creativecommons.org/publicdomain/zero/1.0/
+
+Adapted by icosium labs: trimming, filtering, mixing, pitch and level adjustments, resampling and loop crossfades. The Fire Cave and Hell mixes use CC BY 3.0.
+Source creators do not endorse this adaptation.
+Full source records and license notices accompany the audio in Content/Audio.

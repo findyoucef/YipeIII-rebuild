@@ -10,9 +10,21 @@ internal sealed partial class TownGame
     private static readonly Color CombatCoral = new(237, 126, 91);
     private static readonly Color CombatBlue = new(121, 174, 207);
 
-    private void ShowCombatResult(string title, string text, Action done, CombatPresentation presentation, bool autoAdvance) =>
-        overlay = new(title, text, [new("Continue", done)], done)
+    private void ShowCombatResult(string title, string text, Action done, CombatPresentation presentation, bool autoAdvance)
+    {
+        void Continue()
+        {
+            // Remember an early confirmation and finish the animation quickly, including death cues.
+            if (overlay!.CombatTime < presentation.Duration)
+            {
+                overlay.ContinueRequested = true;
+                return;
+            }
+            done();
+        }
+        overlay = new(title, text, [new("Continue", Continue)], Continue)
         { Combat = true, Presentation = presentation, AutoAdvance = autoAdvance };
+    }
 
     private bool UpdateCombatPresentation(double elapsed)
     {
@@ -23,23 +35,25 @@ internal sealed partial class TownGame
             return false;
         }
         var before = current.CombatTime;
-        current.CombatTime = Math.Min(presentation.Duration + 1, before + elapsed);
+        current.CombatTime = Math.Min(presentation.Duration + 1, before + elapsed * (current.ContinueRequested ? 3 : 1));
         bool Crossed(double time) => before < time && current.CombatTime >= time;
-        if (Crossed(CombatPresentation.Impact)) audio.Play(presentation.Sound);
+        if (Crossed(CombatPresentation.Impact)) audio.Play(presentation.Sound, overlap: true);
         for (var slot = 0; slot < 3; slot++)
         {
-            if (Crossed(presentation.CounterAt(slot)) && presentation.DamageFromMonsters[slot] > 0) audio.Play(134);
+            if (Crossed(presentation.CounterAt(slot)) && presentation.DamageFromMonsters[slot] > 0) audio.Play(134, overlap: true);
             if (presentation.Before[slot + 1].Health > 0 && presentation.After[slot + 1].Health <= 0
                 && presentation.After[slot + 1].Type > 0 && Crossed(.4 + slot * .08))
                 audio.MonsterDeath(presentation.Before[slot + 1].Type);
         }
         if (Crossed(presentation.RewardsAt))
         {
-            if (presentation.Turn.Outcome == CombatOutcome.Defeat) audio.Play(128);
-            if (presentation.Turn.Outcome == CombatOutcome.Victory) audio.Play(presentation.Turn.LevelUp.LeveledUp ? 129 : 145);
+            if (presentation.Turn.Outcome == CombatOutcome.Defeat) audio.Play(128, overlap: true);
+            if (presentation.Turn.Outcome == CombatOutcome.Victory) audio.Play(presentation.Turn.LevelUp.LeveledUp ? 129 : 145, overlap: true);
         }
-        if (!profile.Data.AutoBattle || !current.AutoAdvance || current.PageCount != 1
-            || current.CombatTime < presentation.Duration + .35) return false;
+        var confirmed = current.ContinueRequested && current.CombatTime >= presentation.Duration;
+        var automatic = profile.Data.AutoBattle && current.AutoAdvance && current.PageCount == 1
+            && current.CombatTime >= presentation.Duration + .35;
+        if (!confirmed && !automatic) return false;
         current.Options[0].Choose();
         return true; // Do not apply this frame's confirm or direction to the newly opened menu.
     }
@@ -112,7 +126,7 @@ internal sealed partial class TownGame
             {
                 var index = first + row; var y = startY + row * 11;
                 if (index == current.Selected) Fill(new(22, y - 2, 275, 11), new Color(64, 73, 87));
-                var label = current.Options[index].Label;
+                var label = current.ContinueRequested ? "Continuing..." : current.Options[index].Label;
                 font.Draw(batch, (index == current.Selected ? "> " : "  ") + (label.Length > 43 ? label[..40] + "..." : label),
                     24, y, index == current.Selected ? Accent : Ink);
             }
@@ -121,7 +135,7 @@ internal sealed partial class TownGame
         if (current.Targeting) font.Draw(batch, current.PreviewSpell < 0
             ? "LEFT/RIGHT: TARGET   ESC: FLEE" : "LEFT/RIGHT: TARGET", 24, 164, Muted);
         else if (current.PageCount > 1) font.Draw(batch, $"PAGE {current.Page + 1}/{current.PageCount}", 24, 164, Muted);
-        else if (current.AutoAdvance && profile.Data.AutoBattle) font.Draw(batch, "AUTO - CONTINUE TO SKIP", 24, 164, Muted);
+        else if (current.AutoAdvance && profile.Data.AutoBattle) font.Draw(batch, "AUTO - CONTINUE TO SPEED UP", 24, 164, Muted);
     }
 
     private void DrawEnemyInfo(Overlay current, CombatEncounter battle, int inspected)

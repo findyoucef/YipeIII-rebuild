@@ -7,13 +7,14 @@ internal sealed partial class TownGame
 {
     private int bindingAction = -1;
 
-    private void ReturnToPause() { overlay = null; paused = true; graphicsMenuOpen = false; }
 
-    private void ShowHelp() => Choices("Help & controls", "Choose current controls or the gameplay guide.", [
+    private void ShowHelp() => Choices("Help & credits", "Controls, the gameplay guide and the creators.", [
         new("Current controls", ShowCurrentControls), new("Gameplay guide", () =>
             Notice("Gameplay guide", "Gameplay notes from the original manual. Use Current controls for this port's keyboard and controller mappings.", ShowManualContents)),
         new("Stats and saves", () => Notice("Stats and saves",
             $"New adventurers use a stat limit of 50. Loaded games retain their saved limits.\nYour current stat limit: {Hero.MaximumStat}.\nPreferences and scores are stored separately from your adventure.", ShowHelp)),
+        new("About the game", ShowAbout),
+        new("Credits", ShowCredits),
         new("Back", ReturnToPause)], ReturnToPause);
 
     private void ShowCurrentControls()
@@ -21,10 +22,22 @@ internal sealed partial class TownGame
         var controls = profile.Data.Controls;
         var keyboard = string.Join("\n", ControlBindings.KeyboardActions.Select((action, index) => $"{action}: {controls.Keyboard[index]}"));
         var controller = string.Join("\n", ControlBindings.ControllerActions.Select((action, index) => $"{action}: {ControlBindings.ButtonName(controls.Controller[index])}"));
-        Notice("Current controls", $"GAMEPLAY KEYBOARD\n{keyboard}\nWASD also moves; Space opens Actions. Combine directions for diagonals.\nGAMEPLAY CONTROLLER\nD-pad / left stick: eight-way movement\n{controller}\nActions includes items, spells, Character, Read sign and Other.\nICE FLOORS\nFrozen cave floors take longer to gain traction. Hold a direction to glide; release or turn early to allow one tile of braking. Doors, stairs and room edges stop automatic drift.\nMENUS AND MAP\nAlways use arrows/WASD or D-pad/stick to select. Enter/Space or South confirms. Escape or East goes back; Start pauses. M or View closes the map; confirm switches area/world. Left/Right changes pages or map layers.\nBATTLE\nEscape or East attempts to flee from the main battle menu. In spell, inventory and enemy-info screens, it goes back. Left/Right selects living enemies in the battle menu and attack-spell power choices. High power highlights all affected enemies. HP/SP/AP remain visible while choosing actions. Enemy info shows current ratings, spell resistance and recorded defeats. Left/Right browses living enemies there; Back preserves your attack target. Inspecting uses no turn. Battle pacing in the pause menu offers Manual or Auto return after ordinary results; victories and defeats wait for confirmation.\nGRAPHICS\nVisual settings are in Pause > Graphics. Escape/East or Start returns to the pause menu; play stays paused while editing.\nTIME OF DAY\nAuto cycles through day, dusk, night and dawn over twenty minutes of elapsed time. Time continues through pause, menus, combat, maps and focus loss, and catches up after suspension. Movement and combat still pause normally. Day, Dusk and Night hold a fixed look. Rain and Pixel lighting have separate settings.\nTEXT ENTRY\nType your name or code. Enter confirms, Escape cancels, Backspace deletes.\nSAVE AND LOAD\nUse the pause menu. Finish an interaction before saving. Saving during a step records its accepted destination. Focus loss or controller disconnect pauses play.\nEdit controls changes gameplay shortcuts; menus keep these standard controls.", ShowHelp);
+        Notice("Current controls", $"GAMEPLAY KEYBOARD\n{keyboard}\nWASD also moves; Space opens Actions. Combine directions for diagonals.\nGAMEPLAY CONTROLLER\nD-pad / left stick: eight-way movement\n{controller}\nActions includes items, spells, Character, Read sign and Other.\nICE FLOORS\nOpen ice takes longer to gain traction. Hold a direction to glide; release or turn early to allow one tile of braking. Near walls, doors, stairs and room edges, normal footing lets you stop and turn precisely.\nMENUS AND MAP\nAlways use arrows/WASD or D-pad/stick to select. Enter/Space or South confirms. Escape or East goes back; Start pauses. M or View closes the map; confirm switches area/world. Left/Right changes pages or map layers.\nBATTLE\nEscape or East attempts to flee from the main battle menu. In spell, inventory and enemy-info screens, it goes back. Left/Right selects living enemies in the battle menu and attack-spell power choices. High power highlights all affected enemies. HP/SP/AP remain visible while choosing actions. Enemy info shows current ratings, spell resistance and recorded defeats. Left/Right browses living enemies there; Back preserves your attack target. Inspecting uses no turn. Battle pacing in Options offers Manual or Auto return after ordinary results; victories and defeats wait for confirmation.\nGRAPHICS\nVisual settings are in Options > Display and Options > Atmosphere. Escape/East or Start returns one menu level; play stays paused while editing.\nTIME OF DAY\nAuto cycles through day, dusk, night and dawn over twenty minutes of elapsed time. Time continues through pause, menus, combat, maps and focus loss, and catches up after suspension. Movement and combat still pause normally. Day, Dusk and Night hold a fixed look. Rain and Pixel lighting have separate settings.\nTEXT ENTRY\nType your name or code. Enter confirms, Escape cancels, Backspace deletes.\nSAVE AND LOAD\nUse Pause > Adventure. New adventures have separate save slots. Return to Title opens New Adventure, Load Game and Options. Finish an interaction before saving. Saving during a step records its accepted destination. Focus loss or controller disconnect pauses play.\nEdit controls changes gameplay shortcuts; menus keep these standard controls.", ShowHelp);
     }
 
-    private void ShowAbout() => Notice("About Quest of Yipe!", "Yipe! III, original version 1.16\nCopyright (C) 2002-03, Kevin Kinell\nProgramming and concept: Kevin Kinell\nGraphics: Pat Kelley\nLead beta tester: Eric Johnson\nOriginally written for Macintosh in 1996.\n\nicosium labs\nMonoGame reconstruction, 2026.\nClean-room gameplay port with adapted retro artwork and desktop controls.\nBuilt with MonoGame and .NET.\nHistorical contact: YipeSFT@aol.com\nHistorical website: www.yipesoftware.com", ReturnToPause);
+    private void ShowAbout() => Notice("About Quest of Yipe!",
+        File.ReadAllText(Path.Combine(contentDirectory, "Credits", "game.txt")), ShowHelp);
+
+    private void ShowCredits() => Choices("Credits", "The people behind the adventure.", [
+        new("Game & remaster", () => Notice("Game & remaster",
+            File.ReadAllText(Path.Combine(contentDirectory, "Credits", "game.txt")), ShowCredits)),
+        new("Music", () => Notice("Music credits",
+            File.ReadAllText(Path.Combine(contentDirectory, "Audio", "Music", "CREDITS.txt")), ShowCredits)),
+        new("Sound & ambience", () => Notice("Sound & ambience",
+            File.ReadAllText(Path.Combine(contentDirectory, "Credits", "sound.txt")), ShowCredits)),
+        new("Technology", () => Notice("Technology",
+            File.ReadAllText(Path.Combine(contentDirectory, "Credits", "technology.txt")), ShowCredits)),
+        new("Back", ShowHelp)], ShowHelp);
 
     private void ShowManualContents()
     {

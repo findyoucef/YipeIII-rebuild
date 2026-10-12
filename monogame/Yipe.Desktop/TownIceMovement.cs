@@ -10,28 +10,27 @@ internal sealed partial class TownGame
         var map = session.CurrentMap;
         var from = player.Position;
         var icy = WorldRenderer.IsIce(map) && map.Tile(from) is 0x53 or 0x49;
+        var slippery = icy && IsOpenIce(map, from);
         var direction = requested;
         nextStride = PlayerStride.Walk;
-        if (!icy) iceDirection = Point.Zero;
-        else if (iceDirection != Point.Zero && held != iceDirection)
+        if (!slippery) iceDirection = Point.Zero;
+        if (icy && iceDirection != Point.Zero && held != iceDirection)
         {
-            // One decelerating tile of momentum on release or a turn. Never drift through
-            // a doorway, depth exit, room boundary or onto a different floor material.
+            // One decelerating tile on open ice. Traction around narrow passages
+            // and exits lets the player line up, stop and turn without overshooting.
             direction = iceDirection;
             iceDirection = Point.Zero;
             var target = new MapPosition(from.X + direction.X, from.Y + direction.Y);
-            if (target.X is > 0 and < Map.Width - 1 && target.Y is > 0 and < Map.Height - 1
-                && map.Tile(target) is 0x53 or 0x49 && map.DepthActionAt(target) == 0)
+            if (IsOpenIce(map, target))
                 nextStride = PlayerStride.IceBrake;
             else direction = held == Point.Zero ? Point.Zero : requested;
         }
-        else if (iceDirection != Point.Zero) direction = held;
-        else if (held == Point.Zero) direction = Point.Zero;
+        else if (icy && iceDirection != Point.Zero) direction = held;
+        else if (icy && held == Point.Zero) direction = Point.Zero;
 
         if (direction == Point.Zero) return;
         var destination = new MapPosition(from.X + direction.X, from.Y + direction.Y);
-        if (icy && nextStride != PlayerStride.IceBrake && Map.Contains(destination)
-            && map.Tile(destination) is 0x53 or 0x49 && map.DepthActionAt(destination) == 0)
+        if (slippery && nextStride != PlayerStride.IceBrake && IsOpenIce(map, destination))
             nextStride = iceDirection == Point.Zero ? PlayerStride.IcePush : PlayerStride.IceGlide;
         player.Face(direction);
         try
@@ -43,5 +42,16 @@ internal sealed partial class TownGame
                 ? direction : Point.Zero;
         }
         finally { nextStride = PlayerStride.Walk; }
+    }
+
+    private static bool IsOpenIce(Map map, MapPosition cell)
+    {
+        // A one-tile margin around visible obstacles and travel points has normal
+        // footing, including opened doors whose terrain has become ordinary ice.
+        if (cell.X <= 1 || cell.X >= Map.Width - 2 || cell.Y <= 1 || cell.Y >= Map.Height - 2) return false;
+        for (var y = cell.Y - 1; y <= cell.Y + 1; y++)
+            for (var x = cell.X - 1; x <= cell.X + 1; x++)
+                if (map.Tile(new(x, y)) is not (0x53 or 0x49) || map.DepthActionAt(new(x, y)) != 0) return false;
+        return true;
     }
 }

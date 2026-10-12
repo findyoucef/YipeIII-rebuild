@@ -1,0 +1,47 @@
+{
+  "changed_surface_maps": [
+    17
+  ],
+  "unchanged_surface_maps": 35,
+  "personal_files_checked": 28,
+  "changed_personal_files": [
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json"
+  ],
+  "status": "Implemented and locally verified; user visual review pending",
+  "region": "Maynard, surface E3 / map 17",
+  "landmarks": {
+    "castle": [
+      11,
+      1
+    ],
+    "cave": [
+      1,
+      1
+    ]
+  },
+  "viewpoints": {
+    "castle": [
+      11,
+      2
+    ],
+    "cave": [
+      1,
+      2
+    ]
+  },
+  "change": "Enlarge the northern mountain sprites and continue their ridge above the viewport behind the castle and cave.",
+  "outdoors_checks": 338,
+  "maynard_checks": 38,
+  "matching_mountain_overlap_pixels": 40960,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "personal_preservation": "25 files unchanged; the root profile and active adventure save/journal changed during the user session and were left intact. Graphics checks use explicit isolated saves and profiles.",
+  "repackaged": false,
+  "source_hashes": {
+    "monogame/Yipe.Desktop/MountainTerrain.cs": "637b22096b89a9df7a3c9a6db8f3f97d85f068f91b39f36139ca67dc858dc79c",
+    "monogame/Yipe.GraphicsChecks/MountainPresentationChecks.cs": "533e059cb26b3131aaf721d7f59422f7a78fda3818d34686a33c209a0efda94e",
+    "monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs": "f8cb031017c36f5e897067d5f07961a7372255ba66f8af88efa331793ecd4777"
+  }
+}

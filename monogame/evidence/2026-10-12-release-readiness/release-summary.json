@@ -1,0 +1,20 @@
+{
+  "package_source_hashes_current": true,
+  "archive_sha256": "f426e69af77e45890afd38c6f3a544e60cf7dba416ba1bd7736899b9188c785e",
+  "goal_scope": "Local release-readiness pass with physical-controller testing explicitly documented as unverified per user; historical additional campaign fixtures and other platforms remain outside the verified preview claim.",
+  "checks": {
+    "core": 645,
+    "graphics": 4226,
+    "campaign_observations": 43080,
+    "campaign_full_saves": 66,
+    "performance_samples": 5400,
+    "physical_controller": "unverified\u2014no hardware available"
+  },
+  "source_files": {
+    "monogame/Yipe.Tests/ReleasePersistenceChecks.cs": "7483be153e3cd786b23dee8a89d2a17c4893bdec6942dad8b7941d48bb53d126",
+    "monogame/Yipe.GraphicsChecks/PerformanceChecks.cs": "aeafe419cf823e5f6470e5d70ed8a4bcf6a5cb006bf05d8975b3cc46db80db82",
+    "monogame/tools/package_macos.py": "f7aa8011a26e1782bcf600b0887ecfb155093ffb1aec51016dabd20010bf93c6",
+    "monogame/tools/verify_macos_package.py": "354a0a4b943f854877dff3cf5490820910d468479ddc57e97e855b7c37455c67",
+    ".github/workflows/monogame.yml": "5376f88dec58275fd1c6a0f5e95ea97cf7b2f7952d358f1504f1c670f6d55493"
+  }
+}

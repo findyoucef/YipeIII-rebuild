@@ -66,13 +66,15 @@ internal sealed partial class WorldRenderer
             surface ? Cell((cell.X * 3 + cell.Y * 7) % 4, 2, 32) : Cell(floor, 4, 32), Color.White);
 
         if (desertActive && !(map.Id <= 36 && map.Id != 17)) batch.Draw(sandLayer, bounds, bounds, Color.White);
+        // Gravel sits below the curved snowfield; cliff faces stay above it.
+        if (MountainTerrain.IsMountain(tile)) batch.Draw(mountains.Scree, bounds, bounds, Color.White);
         if (snowActive) batch.Draw(snowGround, bounds, bounds, Color.White);
         if (MountainTerrain.IsMountain(tile)) batch.Draw(mountains.Texture, bounds, bounds, Color.White);
         if (tile == 0x36) batch.Draw(desert, bounds, Cell(2, 2, 32), Color.White);
-        if (tile is 9 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a)
+        if (tile is 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a)
         {
             batch.Draw(floors, bounds, Cell(floor + 1, 4, 32), Color.White);
-            if (cell.Y < Map.Height - 1 && map.Tile(new(cell.X, cell.Y + 1)) is not (9 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a))
+            if (cell.Y < Map.Height - 1 && map.Tile(new(cell.X, cell.Y + 1)) is not (0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a))
                 batch.Draw(pixel, new Rectangle(bounds.X, bounds.Y + 29, 32, 3), RetroArt.Palette[0] * .45f);
         }
         if (!snowActive && tile is (0x1f or 0x20 or 0x69) || surface && tile is (>= 0x27 and <= 0x2b or 0x47 or 0x48 or 0x52 or 0x54 or 0x55 or 0x5d or 0x5e or 0x61))
@@ -150,6 +152,8 @@ internal sealed partial class WorldRenderer
             if (connected) source = vertical
                 ? new Rectangle(neighbor.X * 32 + (farEdge ? 0 : 32 - depth), neighbor.Y * 32 + along, depth, 1)
                 : new Rectangle(neighbor.X * 32 + along, neighbor.Y * 32 + (farEdge ? 0 : 32 - depth), 1, depth);
+            if (connected) batch.Draw(mountains.Scree, destination, source, Color.White, 0, Vector2.Zero,
+                vertical ? SpriteEffects.FlipHorizontally : SpriteEffects.FlipVertically, 0);
             batch.Draw(connected ? mountains.Texture : outdoors, destination, source, Color.White, 0, Vector2.Zero,
                 vertical ? SpriteEffects.FlipHorizontally : SpriteEffects.FlipVertically, 0);
         }

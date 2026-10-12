@@ -1,5 +1,12 @@
 # MonoGame desktop port
 
+Current local release pass: **645 core/input/persistence checks**, **4,226 visual
+integration checks**, and the earned campaign's **43,080 C++ state/RNG observations
+and 66 full saves** pass. Nine representative scenes hold about **60 FPS** at
+720p and 1080p on the tested Apple M5 Max. [Release evidence and limits](evidence/2026-10-12-release-readiness/README.md).
+Physical-controller testing is unverified: no controller was available.
+
+
 The chosen direction is a C# / MonoGame desktop game with controller support,
 preserving the 2D gameplay while improving art, menus, controls, and quality of
 life. Official Nintendo integration and hardware testing come later, once
@@ -20,6 +27,14 @@ self-contained Apple Silicon app, extraction checks and supported-platform limit
 Use the [port plan and progress tracker](PORTING_PLAN.md) for the full-game
 milestones, acceptance criteria, current task, and session resume instructions.
 
+## NPC animation
+
+The King, Skill Teacher and three Princess appearances now share native pixel-art
+idle, conversation and reward poses. NPC dialogue uses an animated portrait header;
+world and quest behavior remain unchanged. [Plan](NPC_ANIMATION_PLAN.md),
+[review gallery and video](evidence/2026-10-11-npc-animation/review.html), and
+[art sources](Yipe.Desktop/Content/Art/Retro/World/NPC_ANIMATIONS.md).
+
 ## Run
 
 Install the .NET 10 SDK, then run from the repository root:
@@ -30,6 +45,11 @@ dotnet run --project monogame/Yipe.Desktop -c Release
 
 During development, build and test locally. Create a new distributable package
 only when requested; ordinary visual iterations do not need repackaging.
+
+Normal macOS launches use the fixed 60 Hz game timer with OpenGL VSync disabled.
+This avoids an intermittent SDL display-link wait that could freeze startup;
+the temporary CloudPreview launcher is no longer needed. Windows/Linux keep
+their existing VSync behavior. Gameplay timing remains 60 Hz on every platform.
 
 MonoGame DesktopGL 3.8.5.1 is pinned in the desktop project. NuGet restores the
 framework and native dependencies. `global.json` accepts stable .NET 10 SDK
@@ -80,11 +100,47 @@ Losing application focus or disconnecting the only connected controller pauses p
 The game fills a **16:9 view**, starting in a 1280 x 720 window. A camera follows
 the player on both axes across each map, keeping tiles square and
 clamping at the map edges. There is no permanent sidebar or menu. Escape / Start
-opens a pause overlay containing save/load, new adventure and **Graphics**.
-The Graphics submenu contains Fullscreen, Scanlines, Miniature effect, Vignette,
-Pixel lighting, Sun shafts, Cloud shadows, Rain, Screen shake and Time of day.
-Both menus fit on one page. Escape / East or Start returns from Graphics to the
-pause menu without resuming play. Battle pacing remains in the main pause menu.
+opens a short pause menu: Continue, Adventure, Options, Return to title and Quit.
+Adventure groups Save game, Load game and New adventure. Options groups Display,
+Atmosphere, Sound, Battle pacing, Edit controls and Help & credits. Every page
+has a visible Back entry; Escape / East or Start returns one level and preserves
+the highlighted parent entry.
+
+Music starts enabled at 50% of the master volume. **Woodland Fantasy** by Matthew
+Pablo plays on the title and in the three towns; **Celtic Impulse** by Kevin MacLeod
+plays during surface exploration. **Battle Theme A** by cynicmusic (CC0) enters
+quickly in combat. **Cave Theme** by Brandon Morris / HaelDB (CC0) scores Earth,
+Stone, Fire, Monster Breeding Grounds, Final Cave and Hell; **Crystal Caves v1.2**
+by FoxSynergy (CC BY 3.0) scores Ice/Zephyr and Water Caves. Cave music runs at
+70% scene intensity to leave room for environmental sounds.
+
+Scene changes fade between recordings. Returning from a battle or cave restores
+the exploration song's interrupted position; crossing regions using the same
+score leaves playback continuous. Each new battle starts its opening cue, while
+victory lowers the score for reward sounds. Menus lower the music; focus loss
+pauses it. Options > Sound has separate Sound effects volume and Music volume
+controls, a music toggle, and master Sound/volume controls. Left/right lowers or
+raises a selected volume without moving the highlight; levels stop at 0% and
+100%. Enter toggles Sound/Music and leaves volume rows unchanged. The Actions
+menu opens this same Sound page, and Back restores its selected Sound entry. Effects includes footsteps and all
+environmental ambience, defaults to 100% of the existing master level, and can
+be muted without changing music. Preferences persist separately from adventures.
+Options > Help & credits > Credits groups Game & remaster, Music, Sound &
+ambience, and Technology. It credits icosium labs, the original team, every
+recorded-audio contributor and the runtime projects, with paged source and
+license details. Full technology notices are included under Content/Credits. The streamed Ogg recordings, full license
+texts and [source/processing record](Yipe.Desktop/Content/Audio/Music/sources.json)
+ship with local builds. The recordings have matched loudness; atmospheric loop
+joins are crossfaded, while the battle and crystal tracks retain their musical
+cadences with short edge fades. [Battle and cave listening review](evidence/2026-10-12-battle-cave-music/review.html).
+
+After the icosium labs ident, a traditional title screen shows an animated
+Maynard backdrop with New adventure, Load game, Options and Quit. The scenery
+uses its own clock and never advances gameplay. The title and pause menu share
+settings. Return to title asks before discarding unsaved progress. The title's
+Load game list shows saved characters, levels and modification dates.
+[Menu review screenshots and video](evidence/2026-10-11-title-menus/review.html).
+
 **Scanlines** is on by default and **Miniature effect** defaults to Strong.
 Select Miniature effect with Enter / the south face button to cycle through
 **Off / Subtle / Strong**. Scanline, miniature, vignette, pixel-lighting, sun-shaft,
@@ -473,6 +529,16 @@ draw over it so gameplay remains legible. Effects use scene time (eight-Hz wind,
 six-Hz vegetation), freeze with menus and consume no gameplay RNG. The area map
 uses the same softened terrain, with airborne weather omitted for readability.
 
+Overworld mountains use eight authored peak variants with warm lit ridges,
+cool shaded slopes and irregular heights. The approved pixel-art concept is
+compiled to a native 64-pixel sprite grid with an eleven-color local rock ramp,
+then arranged into connected ranges inside the original terrain footprint.
+World-cell placement keeps region overlaps and world wrap continuous. Dedicated dusted and deep-snow sprites give the basin shaped drifts and shaded
+ledges, with lighter winter variants toward its edges. Grass/sand foothills,
+secret passage appearance, fog, cave thresholds and collision stay intact.
+[Concept and actual in-game captures](evidence/2026-10-11-mountain-peaks/review.html).
+[Dedicated winter sprites and snow-basin comparison](evidence/2026-10-11-snow-mountain-sprites/review.html).
+
 Buildings cast consistent southeast shadows, with roof-overhang shading and
 restrained warm light in the forge and magic-shop windows.
 
@@ -518,16 +584,22 @@ blocks with clear outlines and highlights instead of an enlarged painted sprite.
 
 ## Saves
 
-Use **Save game** and **Load game** in the pause menu. Manual saves include the
+Use **Pause > Adventure > Save game / Load game** for the current adventure, or
+**Title > Load game** to choose a saved adventure. Manual saves include the
 complete character, inventory, progression, world position, RNG, persistent map
-changes, opened chests and defeated-placement IDs. They live at:
+changes, opened chests and defeated-placement IDs. Each newly created adventure
+gets a unique destination, so saving it never replaces the previously loaded
+adventure:
 
 ```text
-<LocalApplicationData>/YipeIII-MonoGame/game.y3m
+<LocalApplicationData>/YipeIII-MonoGame/Saved Adventures/<unique slot>/game.y3m
 ```
 
-On macOS this is normally
-`~/Library/Application Support/YipeIII-MonoGame/game.y3m`. The desktop captures a
+On macOS the library is `~/Library/Application Support/YipeIII-MonoGame/`.
+The title browser also includes the older root `game.y3m` and existing saved
+adventure folders. Explicit `--load-save` previews use their own directory as the
+library; selected files already inside `Saved Adventures` use its parent library.
+New slots are written when you choose Save game. The desktop captures a
 snapshot before asynchronous writing, flushes a unique temporary file, then
 replaces the destination. Loading checks the version, checksum, structure and
 state before changing the live session. Saving during movement records the
@@ -575,10 +647,11 @@ The [complete campaign evidence](evidence/2026-10-04-p234-complete/README.md)
 retains the actual inputs, native saves, compressed observations and exact replay
 commands. The late frontend independently defeats the final boss with earned
 resources, saves, reopens in a fresh process and earns the final rescue and ending.
-The [feature dispositions](FEATURE_DISPOSITIONS.md) account for remaining original
-desktop conveniences and inherited adaptations.
-Desktop release packaging, physical controllers, other operating systems and
-remaining desktop conveniences belong to P5/P6. Official console integration
+The [feature dispositions](FEATURE_DISPOSITIONS.md) record inherited adaptations
+and the user's decision to omit legacy desktop conveniences: Save As, native file
+browsers, recent-file menus, printing and desktop text/clipboard commands.
+Release verification, physical controllers and other operating systems remain
+P5/P6 work. Official console integration
 follows separately when platform access is available.
 
 Keep game rules in `Yipe.Core`, with no MonoGame or native platform references.

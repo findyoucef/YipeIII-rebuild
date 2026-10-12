@@ -1,0 +1,27 @@
+{
+  "changed_surface_maps": [
+    1,
+    6,
+    7,
+    11,
+    12,
+    13,
+    21
+  ],
+  "unchanged_surface_maps": 29,
+  "personal_files_checked": 28,
+  "changed_personal_files": [],
+  "status": "Implemented and locally verified; visual review pending",
+  "region": "Surface F1 (map 6), casino at local 9,6",
+  "cause": "Sand blending counted mountains as grass, exposing meadow pixels beside rock.",
+  "fix": "Exclude rock from the weighted sand footprint while retaining authored grass-sand transitions.",
+  "checks": 337,
+  "main_build": "0 warnings, 0 errors",
+  "launcher_build": "0 warnings, 0 errors",
+  "test_output": "build/desert-edge-fix/outdoors/yipe-graphics-20261012-061355-3ca9b0ec",
+  "repackaged": false,
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldDesert.cs": "d79b9a9dd34534f9bef61e25d75e2e686828d5bda45f84cfb6a61b8292200cdd",
+    "monogame/Yipe.GraphicsChecks/OutdoorPresentationChecks.cs": "0cd23c9f06f4f9b94c30619523f605570e9a36edc233d8f5ddbf7d21b78077a5"
+  }
+}

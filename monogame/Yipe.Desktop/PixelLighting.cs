@@ -289,7 +289,7 @@ internal sealed class PixelLighting : IDisposable
         return true;
     }
 
-    private static bool Blocked(ushort tile) => tile is 1 or 3 or 4 or 5 or 6 or 7 or 9 or 10
+    private static bool Blocked(ushort tile) => tile is 1 or 3 or 4 or 5 or 6 or 7 or 10
         or 0x22 or 0x23 or 0x24 or 0x25 or 0x30 or 0x39 or 0x3e or 0x3f or 0x40;
 
     public void Dispose()

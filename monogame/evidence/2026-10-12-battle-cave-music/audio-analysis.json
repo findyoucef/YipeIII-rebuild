@@ -1,0 +1,17 @@
+[
+  {
+    "file": "battle-theme-a.ogg",
+    "lufs": -20.06,
+    "true_peak_db": -10.07
+  },
+  {
+    "file": "cave-theme.ogg",
+    "lufs": -20.02,
+    "true_peak_db": -5.84
+  },
+  {
+    "file": "crystal-caves.ogg",
+    "lufs": -19.99,
+    "true_peak_db": -6.47
+  }
+]

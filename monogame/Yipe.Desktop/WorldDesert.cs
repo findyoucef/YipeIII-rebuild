@@ -11,7 +11,7 @@ internal sealed partial class WorldRenderer
     private readonly Color[] sandPattern = new Color[64 * 64];
     private readonly Color[] sandPixels = new Color[SandWidth * SandHeight];
     private readonly float[] sandField = new float[SandWidth * SandHeight];
-    private readonly float[] sandBlur = new float[SandWidth * SandHeight];
+    private readonly Vector2[] sandBlur = new Vector2[SandWidth * SandHeight];
     private readonly bool[] sandClear = new bool[SandWidth * SandHeight];
     private readonly List<Rectangle> tumbleRuns = new();
     private Map? sandMap;
@@ -72,27 +72,34 @@ internal sealed partial class WorldRenderer
                     0x1d => px >= py, 0x1e => px + py <= 31,
                     _ => FullSand(tile),
                 };
-                sandField[y * SandWidth + x] = inside ? 1 : 0;
+                // Rock has no grass footprint. Exclude it from the blend so sand
+                // reaches its foot without exposing green holes along every wall.
+                sandField[y * SandWidth + x] = MountainTerrain.IsMountain(tile) ? -1 : inside ? 1 : 0;
             }
-        const int radius = 12, span = radius * 2 + 1;
+        const int radius = 12;
         for (var y = 0; y < SandHeight; y++)
         {
-            var sum = 0f;
-            for (var x = -radius; x <= radius; x++) sum += sandField[y * SandWidth + Math.Clamp(x, 0, SandWidth - 1)];
+            // Carry sand amount and ground sample count through both blur passes.
+            Vector2 Sample(int x)
+            {
+                var value = sandField[y * SandWidth + Math.Clamp(x, 0, SandWidth - 1)];
+                return value < 0 ? Vector2.Zero : new(value, 1);
+            }
+            var sum = Vector2.Zero;
+            for (var x = -radius; x <= radius; x++) sum += Sample(x);
             for (var x = 0; x < SandWidth; x++)
             {
-                sandBlur[y * SandWidth + x] = sum / span;
-                sum += sandField[y * SandWidth + Math.Min(SandWidth - 1, x + radius + 1)]
-                    - sandField[y * SandWidth + Math.Max(0, x - radius)];
+                sandBlur[y * SandWidth + x] = sum;
+                sum += Sample(x + radius + 1) - Sample(x - radius);
             }
         }
         for (var x = 0; x < SandWidth; x++)
         {
-            var sum = 0f;
+            var sum = Vector2.Zero;
             for (var y = -radius; y <= radius; y++) sum += sandBlur[Math.Clamp(y, 0, SandHeight - 1) * SandWidth + x];
             for (var y = 0; y < SandHeight; y++)
             {
-                sandField[y * SandWidth + x] = sum / span;
+                sandField[y * SandWidth + x] = sum.Y > 0 ? sum.X / sum.Y : 0;
                 sum += sandBlur[Math.Min(SandHeight - 1, y + radius + 1) * SandWidth + x]
                     - sandBlur[Math.Max(0, y - radius) * SandWidth + x];
             }
@@ -103,7 +110,7 @@ internal sealed partial class WorldRenderer
             {
                 var index = y * SandWidth + x;
                 var tile = sandTiles[y / 32 * Map.Width + x / 32];
-                if (WaterTile(tile) != 0 || tile is 3 or 9 or 0x39 or 0x45) continue;
+                if (WaterTile(tile) != 0 || tile is 3 or 0x39 or 0x45) continue;
                 var gx = map.Id <= 36 ? Mod((map.Id - 1) % 6 * 352 + x, 2112) : x;
                 var gy = map.Id <= 36 ? Mod((map.Id - 1) / 6 * 320 + y, 1920) : y;
                 var weathering = map.Id <= 36

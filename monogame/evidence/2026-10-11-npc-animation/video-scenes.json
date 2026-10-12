@@ -1,0 +1,92 @@
+[
+  {
+    "actor": "king",
+    "scene": "world",
+    "start": 0.0,
+    "end": 5.0
+  },
+  {
+    "actor": "king",
+    "scene": "talk",
+    "start": 5.0,
+    "end": 8.0
+  },
+  {
+    "actor": "king",
+    "scene": "reward",
+    "start": 8.0,
+    "end": 11.0
+  },
+  {
+    "actor": "teacher",
+    "scene": "world",
+    "start": 11.0,
+    "end": 16.0
+  },
+  {
+    "actor": "teacher",
+    "scene": "talk",
+    "start": 16.0,
+    "end": 19.0
+  },
+  {
+    "actor": "teacher",
+    "scene": "trained",
+    "start": 19.0,
+    "end": 22.0
+  },
+  {
+    "actor": "princess-pink",
+    "scene": "world",
+    "start": 22.0,
+    "end": 27.0
+  },
+  {
+    "actor": "princess-pink",
+    "scene": "talk",
+    "start": 27.0,
+    "end": 30.0
+  },
+  {
+    "actor": "princess-pink",
+    "scene": "rescued",
+    "start": 30.0,
+    "end": 33.0
+  },
+  {
+    "actor": "princess-purple",
+    "scene": "world",
+    "start": 33.0,
+    "end": 38.0
+  },
+  {
+    "actor": "princess-purple",
+    "scene": "talk",
+    "start": 38.0,
+    "end": 41.0
+  },
+  {
+    "actor": "princess-purple",
+    "scene": "rescued",
+    "start": 41.0,
+    "end": 44.0
+  },
+  {
+    "actor": "princess-blue",
+    "scene": "world",
+    "start": 44.0,
+    "end": 49.0
+  },
+  {
+    "actor": "princess-blue",
+    "scene": "talk",
+    "start": 49.0,
+    "end": 52.0
+  },
+  {
+    "actor": "princess-blue",
+    "scene": "rescued",
+    "start": 52.0,
+    "end": 55.0
+  }
+]

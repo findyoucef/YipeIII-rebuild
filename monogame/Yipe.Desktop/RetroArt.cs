@@ -24,7 +24,8 @@ internal static class RetroArt
         new(128, 86, 129), new(175, 123, 158), new(155, 115, 47), new(217, 172, 79),
         new(217, 155, 112), new(168, 93, 64), new(113, 71, 45), new(82, 112, 112),
     ];
-    internal static Texture2D Load(GraphicsDevice device, string content, string name, int columns, int rows, int cellSize)
+    internal static Texture2D Load(GraphicsDevice device, string content, string name, int columns, int rows, int cellSize,
+        Color[]? palette = null)
     {
         using var stream = File.OpenRead(Path.Combine(content, "Art", "Retro", name));
         using var source = Texture2D.FromStream(device, stream);
@@ -59,7 +60,7 @@ internal static class RetroArt
                 var bestDistance = int.MaxValue;
                 // The cave's rock rim shares the mountain's slate shades, without moss colors.
                 var colors = name == "town.png" && x / cellSize == 0 && y / cellSize == 2
-                    ? Palette.AsSpan(0, 6) : Palette.AsSpan();
+                    ? Palette.AsSpan(0, 6) : (palette ?? Palette).AsSpan();
                 foreach (var candidate in colors)
                 {
                     var dr = average.R - candidate.R;

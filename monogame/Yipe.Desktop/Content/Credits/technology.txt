@@ -1,0 +1,35 @@
+GAME FRAMEWORK
+MonoGame Foundation and contributors
+Mono.Xna Team
+MonoGame 3.8.5.1 - MS-PL / MIT
+monogame.net
+
+.NET
+Microsoft and .NET contributors
+MIT; additional component notices included.
+dotnet.microsoft.com
+
+WINDOWS AND INPUT
+Sam Lantinga and SDL contributors
+SDL 2 - zlib license
+libsdl.org
+
+AUDIO
+Christopher Robinson and OpenAL Soft contributors
+OpenAL Soft - LGPL 2.0 or later
+Additional BSD portions by Archontis Politis, Anis A. Hireche and Christopher Robinson.
+openal-soft.org
+
+Andrew Ward - NVorbis
+MIT; Ogg Vorbis decoder.
+github.com/NVorbis/NVorbis
+
+IMAGE LOADING
+Sean Barrett and stb contributors
+StbImageSharp / StbImageWriteSharp contributors
+MIT / public domain
+github.com/nothings/stb
+
+THANK YOU
+To the people who build and maintain these open-source projects.
+Their full license texts and upstream third-party acknowledgments are included in Content/Credits/Licenses.

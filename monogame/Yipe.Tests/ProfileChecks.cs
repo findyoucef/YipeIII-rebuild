@@ -18,6 +18,8 @@ internal static class ProfileChecks
         try
         {
             var fresh = Open(); var data = Data(fresh);
+            check((bool)Get(data, "Music") && (float)Get(data, "MusicVolume") == .5f && (float)Get(data, "EffectsVolume") == 1f,
+                "Music starts enabled with its own moderate volume");
             check((int)Get(data, "TimeOfDayMode") == 0 && (double)Get(data, "DayNightSeconds") == 300,
                 "New profiles enable the automatic day/night cycle at midday");
             check((bool)Get(data, "Scanlines") && (int)Get(data, "Miniature") == 2 && (bool)Get(data, "Sound")
@@ -25,6 +27,7 @@ internal static class ProfileChecks
                 && (int)Get(data, "SunShaftStrength") == 1 && (int)Get(data, "CloudShadowStrength") == 1
                 && !(bool)Get(data, "AutoBattle") && !(bool)Get(data, "ScreenShake") && (int)Get(data, "RainStrength") == 1 && !File.Exists(path), "Missing desktop profile uses the approved defaults without writing a file");
             Set(data, "Scanlines", false); Set(data, "Miniature", 1); Set(data, "Sound", false); Set(data, "Volume", .4f);
+            Set(data, "Music", false); Set(data, "MusicVolume", .2f); Set(data, "EffectsVolume", .7f);
             Set(data, "Vignette", true);
             Set(data, "PixelLighting", false);
             Set(data, "SunShaftStrength", 2);
@@ -38,6 +41,8 @@ internal static class ProfileChecks
             HighScores.Update((HighScoreEntry[])Get(data, "Scores"), new Player { Name = "Profile Hero", Gold = 12345 }, true);
             Save(fresh);
             var reopened = Data(Open());
+            check(!(bool)Get(reopened, "Music") && (float)Get(reopened, "MusicVolume") == .2f && (float)Get(reopened, "EffectsVolume") == .7f,
+                "Music and effects volumes persist independently of master sound");
             check((int)Get(reopened, "TimeOfDayMode") == 3 && (double)Get(reopened, "DayNightSeconds") == 987.5,
                 "Fixed time-of-day preference and suspended automatic phase survive profile reopen");
             check(!(bool)Get(reopened, "Scanlines") && (int)Get(reopened, "Miniature") == 1 && !(bool)Get(reopened, "Sound")
@@ -60,10 +65,14 @@ internal static class ProfileChecks
             legacy.Remove("RainStrength");
             legacy.Remove("ScreenShake"); legacy.Remove("AutoBattle");
             legacy.Remove("Controls");
+            legacy.Remove("Music"); legacy.Remove("MusicVolume"); legacy.Remove("EffectsVolume");
             legacy.Remove("TimeOfDayMode"); legacy.Remove("DayNightSeconds");
             File.WriteAllText(path, legacy.ToJsonString());
             var legacyBytes = File.ReadAllBytes(path);
             reopened = Data(Open());
+            check((bool)Get(reopened, "Music") && (float)Get(reopened, "MusicVolume") == .5f
+                && !(bool)Get(reopened, "Sound") && (float)Get(reopened, "Volume") == .4f && (float)Get(reopened, "EffectsVolume") == 1f,
+                "Legacy profiles receive music defaults while retaining their existing sound preferences");
             check((int)Get(reopened, "TimeOfDayMode") == 0 && (double)Get(reopened, "DayNightSeconds") == 300,
                 "Legacy profiles enable the automatic cycle without modifying their file");
             check(!(bool)Get(reopened, "Vignette") && (bool)Get(reopened, "PixelLighting") && (int)Get(reopened, "Miniature") == 1
@@ -78,7 +87,8 @@ internal static class ProfileChecks
             foreach (var invalid in new[] { "{", "{\"Version\":99}", "{\"Version\":1,\"Volume\":9}", "{\"Version\":1,\"Scores\":[]}",
                 "{\"Controls\":null}", "{\"Controls\":{\"Keyboard\":[]}}", "{\"Controls\":{\"Controller\":[1,1,1,1]}}",
                 "{\"SunShaftStrength\":-1}", "{\"SunShaftStrength\":3}", "{\"CloudShadowStrength\":-1}", "{\"CloudShadowStrength\":3}", "{\"RainStrength\":-1}", "{\"RainStrength\":3}",
-                "{\"TimeOfDayMode\":-1}", "{\"TimeOfDayMode\":4}", "{\"DayNightSeconds\":-1}", "{\"DayNightSeconds\":1200}", "{\"DayNightSeconds\":1e999}" })
+                "{\"TimeOfDayMode\":-1}", "{\"TimeOfDayMode\":4}", "{\"DayNightSeconds\":-1}", "{\"DayNightSeconds\":1200}", "{\"DayNightSeconds\":1e999}",
+                "{\"MusicVolume\":-1}", "{\"MusicVolume\":2}", "{\"MusicVolume\":1e999}", "{\"EffectsVolume\":-1}", "{\"EffectsVolume\":2}", "{\"EffectsVolume\":1e999}" })
             {
                 File.WriteAllText(path, invalid);
                 var broken = Open(); var rejected = false;
