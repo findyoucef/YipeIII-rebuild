@@ -5,8 +5,10 @@ This repository is a clean-room, behavior-oriented reconstruction of Yipe! III 1
 The [C# / MonoGame desktop port](monogame/README.md) now plays the complete
 campaign with 16:9 retro graphics, overlay menus, keyboard/controller navigation
 and full-state saves. P1–P4 are complete, including an independently compared
-earned ending and fresh-process restarts. Desktop polish, release verification
-and eventual official console integration remain. The C++ reconstruction
+earned ending and fresh-process restarts. Help, gameplay remapping and a separate
+self-contained [MonoGame macOS preview package](monogame/packaging/README.md)
+are implemented. Physical-controller/other-machine checks, remaining desktop
+conveniences, hosted release work and official console integration remain. The C++ reconstruction
 described below remains the gameplay reference; its release packages are separate
 from the MonoGame port.
 

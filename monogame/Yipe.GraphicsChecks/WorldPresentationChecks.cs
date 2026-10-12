@@ -87,7 +87,7 @@ internal static class WorldPresentationChecks
             var random = session.Random.State;
             device.SetRenderTarget(target); device.Clear(Color.Black);
             batch.Begin(samplerState: SamplerState.PointClamp);
-            draw.Invoke(renderer, [batch, adventure, new PlayerMotion(new MapPosition(1, 1)), town, 1d, false]);
+            draw.Invoke(renderer, [batch, adventure, new PlayerMotion(new MapPosition(1, 1)), town, 1d, false, 0]);
             batch.End(); device.SetRenderTarget(null);
             var pixels = new Color[416 * 384]; target.GetData(pixels);
             check(pixels.Count(p => p != Color.Black) > 416 * 384 / 2 && session.Random.State == random,
@@ -123,6 +123,8 @@ internal static class WorldPresentationChecks
             prepareWater.Invoke(renderer, [map]);
             prepareDesert.Invoke(renderer, [map]);
             prepareMountains.Invoke(mountains, [map.Id, (Func<MapPosition, ushort>)map.Tile]);
+            type.GetMethod("PrepareSnow", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(renderer, [map]);
+            type.GetMethod("PrepareOutdoors", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(renderer, [map]);
             device.SetRenderTarget(target); device.Clear(Color.Transparent); batch.Begin(samplerState: SamplerState.PointClamp);
             ground.Invoke(renderer, [batch, map, new MapPosition(1, 1), 1d]); batch.End(); device.SetRenderTarget(null);
             var pixels = new Color[416 * 384]; target.GetData(pixels); return pixels;
@@ -199,7 +201,7 @@ internal static class WorldPresentationChecks
         Color[] PalmFrame(double time)
         {
             device.SetRenderTarget(target); device.Clear(Color.Transparent); batch.Begin(samplerState: SamplerState.PointClamp);
-            floraMethod.Invoke(renderer, [batch, 0, new MapPosition(4, 4), time]); batch.End(); device.SetRenderTarget(null);
+            floraMethod.Invoke(renderer, [batch, 0, new MapPosition(4, 4), time, true]); batch.End(); device.SetRenderTarget(null);
             var pixels = new Color[416 * 384]; target.GetData(pixels); return pixels;
         }
         var palmFirst = PalmFrame(0); var palmLater = PalmFrame(2);
@@ -211,7 +213,7 @@ internal static class WorldPresentationChecks
         for (var frame = 0; frame < 96; frame++)
         {
             device.SetRenderTarget(target); device.Clear(Color.Black); batch.Begin(samplerState: SamplerState.PointClamp);
-            draw.Invoke(renderer, [batch, windGame, new PlayerMotion(new MapPosition(6, 5)), town, frame / 12d, false]);
+            draw.Invoke(renderer, [batch, windGame, new PlayerMotion(new MapPosition(6, 5)), town, frame / 12d, false, 0]);
             batch.End(); device.SetRenderTarget(null);
             using var file = File.Create(Path.Combine(windDirectory, $"frame-{frame:D3}.png"));
             target.SaveAsPng(file, target.Width, target.Height);

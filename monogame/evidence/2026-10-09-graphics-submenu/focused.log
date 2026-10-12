@@ -1,0 +1,73 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/graphics-submenu/focused/yipe-graphics-20261009-060737-fe682d82
+Content startup and five initial frames: 3.17 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: The pause menu fits one page and keeps all ten visual settings in Graphics
+PASS: Confirm opens Graphics at its first setting while play stays paused
+PASS: UI capture renders at graphics-menu.png
+PASS: Up wraps to the last graphics setting
+PASS: Down wraps back to the first graphics setting
+PASS: Changing a graphics option stays in the paused submenu
+PASS: Escape returns to the highlighted Graphics entry without also resuming play
+PASS: UI capture renders at pause-menu.png
+PASS: Reopening Graphics resets its cursor cleanly
+PASS: Controller Start also returns from Graphics to the pause menu
+PASS: Backing out of the root resumes without consuming gameplay, scene time or RNG
+PASS: The studio ident advances on its own display clock
+PASS: UI capture renders at icosium-labs-splash.png
+PASS: Studio branding preserves gameplay state and RNG before the title screen
+PASS: The studio ident automatically opens the title screen after 3.2 seconds
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: Confirm, Back and Pause skip studio branding without activating a title choice
+PASS: Current help describes the actual default keyboard and physical controller bindings
+PASS: UI capture renders at help-default.png
+PASS: Long controls help advances through every page
+PASS: Help Back returns to its contents
+PASS: All 21 gameplay guide topics are reachable
+PASS: The recovered original manual opens its original first topic
+PASS: UI capture renders at original-manual.png
+PASS: The gameplay guide ends with controls rather than commercial pages
+PASS: About retains original attribution and credits icosium labs for the port/remaster
+PASS: UI capture renders at about.png
+PASS: About Back returns to the pause menu
+PASS: Keyboard, controller and reset options are always reachable
+PASS: The key that opened capture is not immediately rebound
+PASS: A conflicting captured key is rejected visibly
+PASS: A modifier chord cannot silently become a single-key binding
+PASS: Escape cancels keyboard capture without changing controls
+PASS: The standard controller Back action can cancel keyboard capture
+PASS: A valid captured key is applied and saved through the production preference path
+PASS: Help immediately reflects a changed gameplay binding
+PASS: Controller conflicts are rejected through the real chooser
+PASS: The controller chooser applies a physical West button remap
+PASS: UI-applied remaps reopen from the isolated profile
+PASS: UI capture renders at remapped-controls.png
+PASS: UI capture renders at controls-640x360.png
+PASS: UI capture renders at pause-640x360.png
+PASS: UI capture renders at graphics-640x360.png
+PASS: Controls can be reopened and canceled at 640x360
+PASS: UI capture renders at controls-1024x768.png
+PASS: UI capture renders at pause-1024x768.png
+PASS: UI capture renders at graphics-1024x768.png
+PASS: Controls can be reopened and canceled at 1024x768
+PASS: UI capture renders at controls-1920x1080.png
+PASS: UI capture renders at pause-1920x1080.png
+PASS: UI capture renders at graphics-1920x1080.png
+PASS: Controls can be reopened and canceled at 1920x1080
+PASS: Canceling reset retains gameplay bindings
+PASS: Confirmed reset restores standard gameplay bindings
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+PASS: Failed control-preference writes retain the session and preserve the unreadable file
+PASS: Help, About, remapping, display changes and preference failures preserve complete gameplay state/RNG
+Physical controllers connected: 0
+Passed 66 visual integration checks. Focused menu/help/control run.

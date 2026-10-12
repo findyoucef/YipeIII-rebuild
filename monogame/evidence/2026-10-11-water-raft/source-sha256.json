@@ -1,0 +1,14 @@
+{
+  "monogame/PORTING_PLAN.md": "16dc19458f64ff75c8edb3fce0d88b63c69f18dbc37c879da6b009ce5864fab6",
+  "monogame/README.md": "4b5b39dababa39ee3da7a3603941ae0a5330fe8397a45290f3e822fad79f4b8c",
+  "monogame/Yipe.Desktop/PlayerMotion.cs": "38885b119724bfa9b03e3b8c849781ac94ef6e685daf7dcc468028eb97791df6",
+  "monogame/Yipe.Desktop/TownGame.cs": "68dae8725708971ca2b783d3487e858a36091770f5e099a3b2d14f3f6fde67ba",
+  "monogame/Yipe.Desktop/TownOverlays.cs": "c84d4b31ef2fd813f1b7ad1b0fe8e6a9ed47026d97b5952653d5e0049d2180ad",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "8e5a38e1e2454d14e5897fbf31fb0d7f49f99bb8836f423687f567a83d2e2408",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "1993d0fddc1b1166bafb7664cd6894e2853a2b16c9a70529d1e7bad30125f91f",
+  "monogame/Yipe.GraphicsChecks/README.md": "544ddb801b4af289a8f6690d9fa865cd911080c23f2a3f739d395ff23e91f446",
+  "monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs": "b71ced6355ab526e312ef4af6fc9b7f3904ce1e25697ea10d9a15390bcb946a4",
+  "monogame/Yipe.Tests/Program.cs": "3d70ec7108422ca8e39173c320fcdac9d00d6920378642432f5778e3c297e8f4",
+  "monogame/Yipe.Desktop/WorldRaft.cs": "2654892564958d3cc1b2b3e2dbf6cb84e1132934b83f9b0395239504a50c8564",
+  "monogame/Yipe.GraphicsChecks/RaftMotionChecks.cs": "4cde89fb6c67e8838b524253e3273d89db16d1dd20982feabd785de0b9fd2eaa"
+}

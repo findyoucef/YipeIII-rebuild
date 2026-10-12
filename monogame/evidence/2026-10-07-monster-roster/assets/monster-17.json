@@ -1,0 +1,15 @@
+{
+  "batch": 6,
+  "id": 17,
+  "name": "Venus Man Trap",
+  "motion": "Leaf sway and jaw breathing; visible root lifts and root-to-root scooting when the game accepts travel",
+  "action": "Jaw lunge/snap; leaves recoil; stem bows, mouth closes and leaves droop",
+  "slug": "man-trap",
+  "source": "/Users/baouchiy/.codex/generated_images/01a117b4-228b-7910-8dfa-e79d7b1b727f/exec-9800c9b2-960f-4d11-a9e0-498665260761.png",
+  "original_source": null,
+  "destination": "monogame/Yipe.Desktop/Content/Art/Retro/World/monster-man-trap-animation.png",
+  "prompt": "Use case: stylized-concept. Production transparent PIXEL ART animation sheet for Venus Man Trap. Use ONLY row 1, column 1 of reference atlas for exact identity, colors, anatomy and silhouette.\nExactly SIXTEEN full-body poses in a FOUR-COLUMN FOUR-ROW equal square grid. Same RIGHT-facing slight top-down three-quarter camera, palette, head/body scale and pixel size in all cells. Genuine coarse 16-bit RPG PIXEL ART: author at native48x48 logical pixels per cell and enlarge NEAREST NEIGHBOR. Hard chunky square clusters, dark stepped outlines and a small flat-color palette. No smooth digital painting, tiny brush texture, gradients, antialiasing, blur, bloom or subpixel shading.\nEvery entire horn, wing, tail, tongue, staff, axe and claw must fit wholly inside its ORIGINAL equal cell, with at least 15% EMPTY TRANSPARENT padding on EVERY edge. Common lowest foot/body ground baseline at 85% cell height. Airborne offsets are game-rendered: keep lowest body edge at that baseline even for tucked flight poses. Consistent body scale across sixteen poses; the final collapsed creature stays recognizable and substantial, not tiny particles.\nEvery row must contain at least THREE unmistakably different silhouettes at native48. True transparent alpha. No checkerboard, opaque background, labels, words, numbers, guides, borders, shadows, ground lines, detached particles/flame specks/electrical dots, speed streaks or extra monsters. All fire/electric accents must be small flat pixel clusters attached to the body. Return the complete transparent 4x4 pixel sheet.\nRow ONE four distinct subtle IDLE poses from Leaf sway and jaw breathing.\nRow TWO four sequential travel poses based on visible root lifts and root-to-root scooting when the game accepts travel. Root scoot: C1 front/right roots visibly lift with a supporting rear root; C2 front/right roots plant and stem tilts forward; C3 opposite rear/left roots lift and curl while front roots support; C4 rear roots plant and stem recovers. Keep the huge toothed leaf mouth and curling green leaves from reference.\nRow THREE C1 WIND-UP, C2 STRIKE, C3 RECOVERY from Jaw lunge/snap, C4 HURT recoil from leaves recoil.\nRow FOUR four progressively lower DEFEAT poses ending in a complete substantial resting body based on stem bows, mouth closes and leaves droop.",
+  "correction": null,
+  "status": "Native art and movement inspected; batch 6 verified",
+  "source_sha256": "a0b32a19629963d54e2caeb8f1b2dab233b3b2e13c811fa33c6635b1bb5d08b0"
+}

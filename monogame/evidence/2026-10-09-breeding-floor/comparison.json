@@ -1,0 +1,52 @@
+{
+  "before": "build/breeding-floor/before/yipe-graphics-20261009-062345-053a3df0/breeding-grounds",
+  "after": "build/breeding-floor/final/yipe-graphics-20261009-062621-deda5d4e/breeding-grounds",
+  "rooms": [
+    {
+      "map": 59,
+      "changed_map_pixels": 49452,
+      "wall_core_pixels_checked": 10560,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    },
+    {
+      "map": 60,
+      "changed_map_pixels": 54338,
+      "wall_core_pixels_checked": 7872,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    },
+    {
+      "map": 65,
+      "changed_map_pixels": 45510,
+      "wall_core_pixels_checked": 11520,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    },
+    {
+      "map": 66,
+      "changed_map_pixels": 52178,
+      "wall_core_pixels_checked": 7680,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    },
+    {
+      "map": 105,
+      "changed_map_pixels": 43491,
+      "wall_core_pixels_checked": 11328,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    },
+    {
+      "map": 106,
+      "changed_map_pixels": 42983,
+      "wall_core_pixels_checked": 11328,
+      "wall_core_changes": 0,
+      "light_mask_identical": true
+    }
+  ],
+  "changed_source_files": [
+    "monogame/Yipe.Desktop/WorldBreeding.cs"
+  ],
+  "note": "Only floor generation changed. Wall core captures and all light masks match; source checks include core gameplay and original map data."
+}

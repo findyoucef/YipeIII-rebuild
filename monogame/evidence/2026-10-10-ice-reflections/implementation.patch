@@ -1,0 +1,456 @@
+--- a/monogame/PORTING_PLAN.md
++++ b/monogame/PORTING_PLAN.md
+@@ -19,9 +19,9 @@
+ | --- | --- |
+ | Local gameplay launch | No personal game was launched or navigated during the Ice Cave task. The latest local Release includes the remaster. For a requested launch, read the current full adventure from [launch record](../build/local-game-launch.json), never substitute the level-1 demo. The earlier `build/cloud-rework/launcher` avoids the known macOS display-link wait using process-only refresh-sync settings; rebuild it to refresh its copied Desktop assembly before reuse. |
+ | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
+-| Next task | Review the Ice / Zephyr Cave remaster in the local build. Cloud/overworld aesthetic review, prior Hell/breeding-floor review and physical-controller verification remain separate. |
+-| Last completed work | All eleven Ice / Zephyr Cave rooms: connected frozen rock, broad quieter ice sheets, frost/icicles, cold crystal contour lights, cool creature integration and recorded wind/ice ambience. [Ice evidence](evidence/2026-10-10-ice-cave/review.json). |
+-| Latest verification | Local Release rebuild: zero warnings/errors; 202 focused Ice checks, 3,306 full graphics checks with 360 tour frames, and 613 core checks passed. All 33 personal files and 27 core/original-map files remain byte-identical. Only the eleven Ice Cave maps differ among all 115 native map captures. No repackaging. [Full checks](evidence/2026-10-10-ice-cave/full-checks.log). |
++| Next task | Review the reflective Ice / Zephyr Cave floor in the local build. Cloud/overworld aesthetic review, prior Hell/breeding-floor review and physical-controller verification remain separate. |
++| Last completed work | Added quiet reflections of the hero and all static/roaming/pursuing monsters to polished ice. Frost and cracks weaken them; rock contours, doors, stairs and fog clip them. The previous eleven-room remaster's terrain, lights and audio remain intact. [Reflection evidence](evidence/2026-10-10-ice-reflections/review.json). |
++| Latest verification | Reflection integration: 3,322 full graphics checks and 360 tour frames passed. The final Ice-only corner/capture refinement passed 219 focused checks; final Release build has zero warnings/errors. All 33 personal files and 27 core/original-map files remain byte-identical; the previous core run passed 613 checks. Only the eleven Ice maps differ among 115 native captures; 24 other-room references remain identical. [Reflection checks](evidence/2026-10-10-ice-reflections/review.json). |
+ | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
+ | Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+ | Work left running or half implemented | No remaster task or test process remains running. Ice Cave implementation and verification are complete; user visual/audio approval is pending. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
+@@ -48,6 +48,37 @@
+ Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
+ with the working tree, and continue from the next unfinished task.”**
+ 
++
++## Reflective Ice Cave floors — 2026-10-10
++
++User follow-up: make the remastered ice reflective. Keep the existing frozen
++terrain, lights, sounds and gameplay; add quiet pixel-art reflections beneath
++the hero and monsters throughout the same eleven Zephyr Cave rooms.
++
++- [x] Reuse the actual hero/monster poses, native pixels, animated foot anchors,
++  facing, creature size and hover height.
++- [x] Cache reflectivity with the existing floor. Clear sheets reflect more;
++  frost, fractures and scuffs weaken the image. Fade with distance; no water ripples.
++- [x] Draw beneath scenery/actors; clip at walls, closed doors, stairs and fog.
++  Occlusion stops a reflection from resuming beyond a blocking wall or door.
++- [x] Inspect entrance, rescue and large-monster gameplay views and test frozen
++  and moving poses, aliases, clipping, changed terrain and gameplay/RNG isolation.
++- [x] Finish shared renderer regressions, retain evidence and open the updated preview.
++
++Focused validation: **219 Ice checks passed**, including 17 reflection checks.
++The local Release build has zero warnings/errors. The implementation adds one
++cached byte mask to `WorldIce` and reuses the sprite atlases/animation selection;
++no render targets, shaders, settings, new artwork or per-frame buffers.
++
++The shared reflection/animation integration passed **3,322 full graphics checks**
++and 360 tour frames. A final Ice-only mask refinement then enabled reflection in
++the exposed floor at carved rock corners; the 219-check focused run verifies
++that boundary and retains a walking sequence on a valid open route. Other cave
++and town water reflections remain pixel-identical in 24 comparison captures.
++Among 115 native full-map captures, only the eleven Ice rooms changed. All 33
++personal files and 27 core/map files remain unchanged. The scoped simplicity
++review found no remaining issues. User aesthetic approval is pending.
++[Updated preview, motion, comparisons and logs](evidence/2026-10-10-ice-reflections/review.json).
+ 
+ ## Ice / Zephyr Cave remaster — 2026-10-10
+ 
+--- a/monogame/README.md
++++ b/monogame/README.md
+@@ -226,6 +226,10 @@
+ The **Ice / Zephyr Cave** has a dedicated frozen interior across all eleven
+ upper/deep rooms: connected faceted ice and mineral rock, shaded wall faces,
+ broad ice sheets with sparse submerged fractures, frost pockets and icicles.
++The hero and monsters cast faint blue reflections on polished ice, weakened by
++frost and cracks. These follow their actual poses, travel, scale and hover height,
++fade away from the feet, and stop at walls, doors and unexplored ground. Solid ice
++keeps the reflection still; ordinary water retains its existing ripples.
+ Small embedded crystals cast cold light around the actual rock contours;
+ occasional glints and drifting frost follow the pausable scene clock. Creatures
+ share a cool tint and grounded shadows while retaining their existing animation
+@@ -235,8 +239,8 @@
+ focus, and becomes quieter in deep chambers. It uses CC0 recordings by Thimras
+ and ecfike; [credits and processing](Yipe.Desktop/Content/Audio/Ambience/ice-sources.json)
+ ship with the content. Hard frozen floors retain solid stone footfalls.
+-[Entrance preview](evidence/2026-10-10-ice-cave/gameplay-53.png) and
+-[verification](evidence/2026-10-10-ice-cave/review.json).
++[Reflective-floor preview](evidence/2026-10-10-ice-reflections/gameplay-53.png) and
++[verification](evidence/2026-10-10-ice-reflections/review.json).
+ 
+ **Zephyr's snow basin (surface A3)** now has connected cold-white snow with small
+ shaded drifts, partly melted grass edges, gradually snow-dusted cliffs, two snowy pine variants
+--- a/monogame/Yipe.Desktop/TownScenery.cs
++++ b/monogame/Yipe.Desktop/TownScenery.cs
+@@ -144,6 +144,15 @@
+ 
+     private void DrawReflection(SpriteBatch batch, PlayerMotion player, double time, Adventure? world, WorldRenderer? renderer)
+     {
++        if (world is not null && WorldRenderer.IsIce(world.Map))
++        {
++            var at = player.VisualPosition;
++            if (!world.Visibility.Contains(new((int)MathF.Floor(at.X), (int)MathF.Floor(at.Y)))) return;
++            var pose = HeroFrame(player, time); pose.Height = 28;
++            renderer!.DrawIceReflection(batch, world, HeroTexture, pose,
++                new((int)MathF.Round(at.X * 32) + 16, (int)MathF.Round(at.Y * 32) + 25));
++            return;
++        }
+         bool Water(int x, int y)
+         {
+             if (world is null) return IsWater(new(x, y, 1, 1));
+--- a/monogame/Yipe.Desktop/WorldIce.cs
++++ b/monogame/Yipe.Desktop/WorldIce.cs
+@@ -20,6 +20,7 @@
+     private readonly ushort[] iceTiles = new ushort[Map.TileCount];
+     private Map? iceMap;
+     private bool[] iceStone = [];
++    private byte[] icePolish = [];
+     private readonly List<Point> iceCrystals = new(), iceFalls = new();
+ 
+     internal static bool IsIce(Map map) => map.Id is 41 or 42 or 47 or 53 or 81 or 82 or 87 or 88 or 93 or 94 or 99;
+@@ -83,6 +84,7 @@
+         bool Rock(int x, int y) => x >= 0 && x < IceWidth && y >= 0 && y < IceHeight + 16
+             ? rock[y * IceWidth + x] : RockAt(x, y);
+         var data = new Color[IceWidth * IceHeight];
++        icePolish = new byte[data.Length];
+         for (var y = 0; y < IceHeight; y++) for (var x = 0; x < IceWidth; x++)
+         {
+             var i = y * IceWidth + x; var wx = x + ox; var wy = y + oy;
+@@ -121,6 +123,10 @@
+                 if (nearest <= 2) shade = 0;
+                 else if (nearest <= 8) shade = 1;
+                 else if (nearest < 25 && frost > .52f && grain % 4 != 0) shade = 6;
++                // Clear ice holds a quiet mirror; frost, scuffs and fractures roughen it.
++                var tile = map.Tile(new(x / 32, y / 32));
++                if (nearest > 8 && (tile is 0x53 or 0x49 || IceWall(tile)))
++                    icePolish[i] = (byte)(shade >= 5 ? 1 : frost > .58f ? 2 : seam < 1.25f && plate % 3 == 0 ? 1 : 3);
+             }
+             else
+             {
+@@ -196,7 +202,47 @@
+             if (x < 0 || x >= IceWidth || y < 0 || y >= IceHeight) return;
+             if (onRock && !rock[y * IceWidth + x]) return;
+             data[y * IceWidth + x] = IcePalette[shade];
+-        }
++            icePolish[y * IceWidth + x] = 0;
++        }
++    }
++
++    internal void DrawIceReflection(SpriteBatch batch, Adventure game, Texture2D texture, Rectangle source,
++        Point feet, int scale = 1, bool facingLeft = false, int lift = 0)
++    {
++        if (!IsIce(game.Map)) return;
++        var height = Math.Max(1, source.Height * scale * 2 / 3);
++        var left = feet.X - source.Width * scale / 2;
++        for (var column = 0; column < source.Width * scale; column++)
++        {
++            var x = left + column;
++            if (x < 0 || x >= IceWidth) continue;
++            var sx = source.X + (facingLeft ? source.Width - 1 - column / scale : column / scale);
++            for (var row = 0; row < height + lift * scale; row++)
++            {
++                var y = feet.Y + 1 + row;
++                if (y < 0 || y >= IceHeight || !game.Visibility.Contains(new(x / 32, y / 32))) break;
++                var polish = icePolish[y * IceWidth + x];
++                // A reflection cannot resume on the far side of an intervening wall or door.
++                if (polish == 0) break;
++                var reflectedRow = row - lift * scale;
++                if (reflectedRow < 0) continue;
++                var sy = source.Bottom - 1 - reflectedRow * source.Height / height;
++                var tint = new Color(160, 204, 232) * (.38f * (1 - reflectedRow / (height + 3f)));
++                batch.Draw(texture, new Rectangle(x, y, 1, 1), new Rectangle(sx, sy, 1, 1), tint * (polish / 3f));
++            }
++        }
++    }
++
++    private void DrawIceMonsterReflections(SpriteBatch batch, Adventure game, PlayerMotion hero, double time)
++    {
++        if (!IsIce(game.Map)) return;
++        // The whole reflection pass precedes scenery and actors, preserving their depth order.
++        foreach (var placement in game.ActivePlacements)
++            if (game.Visibility.Contains(placement.Position) && HasMonsterAnimation(placement.TypeId))
++                DrawMonsterActor(batch, placement.TypeId, new(placement.Position.X, placement.Position.Y),
++                    placement.OccupiesTwoByTwoTiles ? 2 : 1, time, hero.VisualPosition.X < placement.Position.X,
++                    reflection: game);
++        for (var row = 0; row < Map.Height; row++) DrawRoamingActor(batch, game, row, time, reflection: true);
+     }
+ 
+     private void DrawIceAtmosphere(SpriteBatch batch, Adventure game, double time)
+--- a/monogame/Yipe.Desktop/WorldMonsterAnimation.cs
++++ b/monogame/Yipe.Desktop/WorldMonsterAnimation.cs
+@@ -201,7 +201,7 @@
+                 ? (int)MathF.Round(MathF.Sin(motion.Progress * MathF.PI) * 3) : 0;
+ 
+     private void DrawMonsterActor(SpriteBatch batch, int type, Vector2 position, int scale, double time,
+-        bool facingLeft, MonsterMotion? motion = null)
++        bool facingLeft, MonsterMotion? motion = null, Adventure? reflection = null)
+     {
+         var feet = new Point((int)MathF.Round(position.X * 32) + 16 * scale,
+             (int)MathF.Round(position.Y * 32) + 32 * scale);
+@@ -213,6 +213,20 @@
+         var earthy = monsterMap is { } earth && IsEarth(earth);
+         var mineral = monsterMap is { } stone && IsStone(stone);
+         var frozen = monsterMap is { } ice && IsIce(ice);
++        var frame = motion is { IsMoving: true } ? 4 + Math.Min(3, (int)(progress * 4)) : MonsterIdleFrame(type, phase);
++        // A tile move is one footstep; hold its plant while the landing settles.
++        if (type is 7 or 8 or 9 or 12 or 15 or 16 or 19 or 20 or 30 or 31 or 33 or 34 or 36 or 37 or 39 or 40 or 41
++            && motion is not null && (motion.IsMoving || motion.LandingAge is >= 0 and < .12))
++            frame = 4 + (motion.AlternateStep ? 0 : 2) + (progress < .5f ? 0 : 1);
++        if (reflection is not null)
++        {
++            if (monsterAnimations.TryGetValue(type, out var sheet))
++            {
++                var pose = Cell(frame, 4, 48); pose.Height = monsterBottoms[type - 1];
++                DrawIceReflection(batch, reflection, sheet, pose, feet, scale, facingLeft, airborne);
++            }
++            return;
++        }
+         for (var row = 0; row < 4; row++)
+         {
+             var radius = (row is 1 or 2 ? 11 : 8) - (airborne > 0 ? 2 : 0);
+@@ -221,11 +235,6 @@
+                     (MonsterHovers(type) ? type is 5 or 14 ? .13f : .09f : row is 1 or 2 ? .22f : .12f)
+                     * (breeding ? 1.8f : volcanic ? 1.65f : earthy || mineral || frozen ? 1.6f : 1f));
+         }
+-        var frame = motion is { IsMoving: true } ? 4 + Math.Min(3, (int)(progress * 4)) : MonsterIdleFrame(type, phase);
+-        // A tile move is one footstep; hold its plant while the landing settles.
+-        if (type is 7 or 8 or 9 or 12 or 15 or 16 or 19 or 20 or 30 or 31 or 33 or 34 or 36 or 37 or 39 or 40 or 41
+-            && motion is not null && (motion.IsMoving || motion.LandingAge is >= 0 and < .12))
+-            frame = 4 + (motion.AlternateStep ? 0 : 2) + (progress < .5f ? 0 : 1);
+         DrawAnimatedMonster(batch, type, new(feet.X - 24 * scale,
+             feet.Y - (monsterBottoms[type - 1] + airborne) * scale, 48 * scale, 48 * scale), frame, facingLeft,
+             breeding ? new Color(210, 222, 236) : volcanic ? new Color(255, 226, 203) : earthy ? new Color(235, 225, 205)
+@@ -272,7 +281,7 @@
+         }
+     }
+ 
+-    private void DrawRoamingActor(SpriteBatch batch, Adventure game, int row, double time)
++    private void DrawRoamingActor(SpriteBatch batch, Adventure game, int row, double time, bool reflection = false)
+     {
+         Draw(game.Roaming, game.Roaming?.TypeId ?? 0, game.Roaming?.Position ?? default, roamingMotion);
+         Draw(game.Pursuer, game.Pursuer?.TypeId ?? 0, game.Pursuer?.Position ?? default, pursuingMotion);
+@@ -283,7 +292,8 @@
+             var position = tracked ? motion.VisualPosition : new Vector2(cell.X, cell.Y);
+             if (!game.Visibility.Contains(new((int)MathF.Floor(position.X), (int)MathF.Floor(position.Y)))) return;
+             if (Math.Clamp((int)MathF.Floor(position.Y), 0, Map.Height - 1) != row) return;
+-            DrawMonsterActor(batch, type, position, 1, time, tracked && motion.FacingLeft, tracked ? motion : null);
++            DrawMonsterActor(batch, type, position, 1, time, tracked && motion.FacingLeft, tracked ? motion : null,
++                reflection ? game : null);
+         }
+     }
+ 
+--- a/monogame/Yipe.Desktop/WorldRenderer.cs
++++ b/monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -172,6 +172,7 @@
+         DrawSnowWind(batch, game, time);
+         DrawSnowTracks(batch, game, time);
+         town.DrawWorldReflection(batch, hero, time, game, this);
++        DrawIceMonsterReflections(batch, game, hero, time);
+         if (map.Id is >= 1 and <= 40)
+             Rain.DrawSplashes(batch, pixel, time, rainStrength, map.Tile, WaterAt, SnowColdAt);
+         // Water and reflections precede every deck, so they cannot cover its planks.
+--- a/monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs
+@@ -184,7 +184,7 @@
+                 check(portrait.SequenceEqual(Portrait()), $"Cave creature {monster}: environmental colour leaves battle artwork unchanged");
+                 Scene(57);
+                 check(outside.SequenceEqual(Actor()), $"Cave creature {monster}: leaving restores its exact ordinary appearance");
+-                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!));
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
+                 Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
+             }
+ 
+--- a/monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs
+@@ -109,7 +109,7 @@
+                     $"Earth creature {monster}: earthy integration preserves silhouette and scale");
+                 check(portrait.SequenceEqual(Portrait()), $"Earth creature {monster}: battle artwork stays unchanged");
+                 Scene(54); check(outside.SequenceEqual(Actor()), $"Earth creature {monster}: leaving restores its original appearance");
+-                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!));
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
+                 Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
+             }
+             room = Scene(57); var beforeAudio = GameSaveCodec.Encode(room.Session, catalog);
+--- a/monogame/Yipe.GraphicsChecks/FireCaveChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/FireCaveChecks.cs
+@@ -231,7 +231,7 @@
+                     $"Volcanic creature {monster}: warm integration preserves outline, hover and scale");
+                 check(portrait.SequenceEqual(Portrait()), $"Volcanic creature {monster}: battle art is unchanged");
+                 Scene(57); check(outside.SequenceEqual(Actor()), $"Volcanic creature {monster}: leaving restores the ordinary appearance");
+-                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!));
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
+                 Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
+             }
+             room = Scene(113);
+--- a/monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs
+@@ -116,7 +116,7 @@
+                     {
+                         if (animated) type.GetMethod("DrawMonsterActor", flags)!.Invoke(world,
+                             [batch, placement.TypeId, new Vector2(placement.Position.X, placement.Position.Y), 1, 1d,
+-                                game.Location.Position.X < placement.Position.X, null]);
++                                game.Location.Position.X < placement.Position.X, null, null]);
+                         else monster.Invoke(world, [batch, placement.TypeId, placement.Position, 1]);
+                     });
+                     var body = Enumerable.Range(0, sprite.Length).Where(i => sprite[i].A == 255).ToArray();
+--- a/monogame/Yipe.GraphicsChecks/IceCaveChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/IceCaveChecks.cs
+@@ -100,9 +100,10 @@
+                     $"Ice creature {monster}: cool tint and contact shading preserve silhouette, hover and scale");
+                 check(portrait.SequenceEqual(Portrait()), $"Ice creature {monster}: battle artwork remains unchanged");
+                 Scene(54); check(outside.SequenceEqual(Actor()), $"Ice creature {monster}: leaving restores its original appearance");
+-                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!));
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
+                 Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
+             }
++            CheckReflections();
+             CheckAudio();
+             Scene(88); Set("miniatureMode", 2); Set("scanlines", true);
+             for (var frame = 0; frame < 64; frame++) { Set("sceneTime", frame / 8d); Gameplay(true, $"play-{frame:D2}.png"); }
+@@ -160,6 +161,89 @@
+             check(materials.SetEquals(["Stone"]), $"Ice {id}: hard frozen ground retains solid footfalls rather than water splashes");
+             check(snapshot.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), $"Ice {id}: terrain, light and atmosphere never change gameplay or RNG");
+         }
++        void CheckReflections()
++        {
++            var game = Scene(53);
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Map.RestoreTile(new(x, y), 0x53);
++            Reveal(game); Invoke("PrepareIce", game.Map); player.SnapTo(new(4, 4)); player.Face(new(1, 0));
++            var town = Get("town")!;
++            Color[] Hero(double time = 1) => Render(() => town.GetType().GetMethod("DrawWorldReflection", flags)!
++                .Invoke(town, [batch, player, time, game, world]));
++            var before = GameSaveCodec.Encode(game.Session, catalog);
++            var still = Hero(); Save(still, "reflection-hero.png");
++            check(still.Any(p => p.A > 0) && Enumerable.Range(0, still.Length).All(i => still[i].A == 0 || i / 416 > 153),
++                "Ice hero reflection begins below the boots and never draws over the character");
++            check(still.SequenceEqual(Hero()) && still.SequenceEqual(Hero(2)), "Solid ice holds a still reflection without water ripples");
++            player.MoveTo(new(5, 4)); player.Update(.125);
++            var moving = Hero(); Save(moving, "reflection-hero-moving.png");
++            check(!still.SequenceEqual(moving) && moving.SequenceEqual(Hero()), "Ice reflects the animated halfway position and freezes with the accepted step");
++            player.SnapTo(new(4, 4));
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Map.RestoreTile(new(x, y), 0x49);
++            Invoke("PrepareIce", game.Map);
++            check(still.SequenceEqual(Hero()), "Hidden ice floor has exactly the same reflectivity as ordinary ice");
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Map.RestoreTile(new(x, y), 0x53);
++            Invoke("PrepareIce", game.Map);
++            foreach (var (monster, scale) in new[] { (21, 1), (23, 1), (11, 2) })
++            {
++                var reflected = Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, game));
++                Save(reflected, $"reflection-monster-{monster}.png");
++                check(reflected.Any(p => p.A > 0) && Enumerable.Range(0, reflected.Length).All(i => reflected[i].A == 0 || i / 416 > (4 + scale) * 32),
++                    $"Ice reflection {monster}: grounded, hovering and large creatures stay below their ground anchor");
++            }
++            // A solid test sprite exposes clipping holes independently of the actor artwork.
++            using var solid = new Texture2D(host.GraphicsDevice, 48, 48); solid.SetData(Enumerable.Repeat(Color.White, 48 * 48).ToArray());
++            Color[] Patch() => Render(() => Invoke("DrawIceReflection", batch, game, solid, new Rectangle(0, 0, 48, 48), new Point(160, 154), 2, false, 0));
++            var clear = Patch();
++            check(clear.Where(p => p.A > 0).Select(p => p.A).Distinct().Count() > 10 && clear.Max(p => p.A) <= 97,
++                "Ice reflection is restrained and fades through frost, cracks and distance");
++            game.Map.RestoreTile(new(4, 5), 0x22); game.Map.RestoreTile(new(5, 5), 0x3e); game.Map.RestoreTile(new(6, 5), 0x3a);
++            Invoke("PrepareIce", game.Map); var clipped = Patch(); var stone = (bool[])Invoke("IceStone", game.Map)!;
++            check(!clipped.SequenceEqual(clear) && Enumerable.Range(0, clipped.Length).All(i => clipped[i].A == 0
++                || !stone[i] && game.Map.Tile(new(i % 416 / 32, i / 416 / 32)) is 0x53 or 0x49 or 0x22 or 0x43 or 0x23 or 0x44),
++                "Ice reflections stop at wall contours, closed doors and stairs");
++            check(Enumerable.Range(0, clipped.Length).Any(i => clipped[i].A > 0 && !stone[i]
++                && game.Map.Tile(new(i % 416 / 32, i / 416 / 32)) == 0x22),
++                "Exposed ice at a carved rock corner reflects without a square tile cutoff");
++            check(Enumerable.Range(192, 26).All(y => clipped[y * 416 + 176].A == 0),
++                "A large ice reflection cannot reappear beyond the far side of a closed door");
++            for (var x = 4; x <= 6; x++) game.Map.RestoreTile(new(x, 5), 0x53);
++            Invoke("PrepareIce", game.Map); check(clear.SequenceEqual(Patch()), "Opening changed terrain restores the exact ice reflection mask");
++            game.Visibility.Initialize(new Map(53, 4, Enumerable.Repeat((ushort)0x22, Map.TileCount).ToArray()), new(4, 4));
++            var fog = Patch(); check(Enumerable.Range(0, fog.Length).All(i => fog[i].A == 0
++                || game.Visibility.Contains(new(i % 416 / 32, i / 416 / 32))), "Ice reflection pixels cannot reveal undiscovered destinations");
++            game.Visibility.Initialize(new Map(53, 4, Enumerable.Repeat((ushort)0x22, Map.TileCount).ToArray()), new(0, 0));
++            check(Hero().All(p => p.A == 0) && Render(() => Invoke("DrawIceMonsterReflections", batch, game, player, 1d)).All(p => p.A == 0),
++                "Hidden actors cannot reveal themselves through an ice reflection");
++            Reveal(game);
++            check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), "Ice reflection rendering preserves the full adventure and RNG");
++            var roamer = new RoamingMonster(23, new(4, 4));
++            var pursuer = new PursuingMonster(21, new(7, 4), new(7, 4));
++            typeof(Adventure).GetField("roaming", flags)!.SetValue(game, roamer);
++            typeof(Adventure).GetProperty("Pursuer")!.SetValue(game, pursuer);
++            Invoke("SynchronizeMonsters", game, false, null!);
++            Color[] Roamers() => Render(() => Invoke("DrawRoamingActor", batch, game, 4, 1d, true));
++            var planted = Roamers(); roamer.Position = new(5, 4); pursuer.Position = new(6, 4);
++            Invoke("SynchronizeMonsters", game, true, null!); Invoke("UpdateMonsters", .125d);
++            var accepted = GameSaveCodec.Encode(game.Session, catalog); var halfway = Roamers();
++            check(planted.Any(p => p.A > 0) && !planted.SequenceEqual(halfway) && halfway.SequenceEqual(Roamers())
++                && accepted.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)),
++                "Roaming and pursuing reflections follow accepted visual travel without advancing gameplay");
++            game = Scene(54);
++            check(Render(() => Invoke("DrawIceReflection", batch, game, solid, new Rectangle(0, 0, 48, 48), new Point(160, 154), 2, false, 0)).All(p => p.A == 0),
++                "Ice reflectivity never leaks into another cave");
++            var walking = Scene(53); Set("miniatureMode", 2); Set("scanlines", true);
++            var start = walking.Location.Position;
++            var next = new[] { new MapPosition(start.X + 1, start.Y), new MapPosition(start.X - 1, start.Y) }
++                .First(p => Map.Contains(p) && walking.Map.Tile(p) is 0x53 or 0x49
++                    && !walking.ActivePlacements.Any(monster => monster.Contains(p)));
++            player.SnapTo(start); player.MoveTo(next);
++            for (var frame = 0; frame < 16; frame++)
++            {
++                if (frame > 0) player.Update(PlayerMotion.StepDuration / 15);
++                Set("sceneTime", frame / 60d); Gameplay(true, $"ice-step-{frame:D2}.png");
++            }
++        }
++
+         void CheckAudio()
+         {
+             var audio = Get("audio")!; var at = audio.GetType();
+--- a/monogame/Yipe.GraphicsChecks/MonsterAnimationChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/MonsterAnimationChecks.cs
+@@ -504,7 +504,7 @@
+         {
+             game.GraphicsDevice.SetRenderTarget(target); game.GraphicsDevice.Clear(Color.Transparent);
+             batch.Begin(samplerState: SamplerState.PointClamp);
+-            renderer.GetMethod("DrawMonsterActor", flags)!.Invoke(world, [batch, monster, new Vector2(1, 1), 1, 1d, false, motion]);
++            renderer.GetMethod("DrawMonsterActor", flags)!.Invoke(world, [batch, monster, new Vector2(1, 1), 1, 1d, false, motion, null]);
+             batch.End(); game.GraphicsDevice.SetRenderTarget(null);
+             var pixels = new Color[target.Width * target.Height]; target.GetData(pixels); return pixels;
+         }
+@@ -522,7 +522,7 @@
+         {
+             game.GraphicsDevice.SetRenderTarget(target); game.GraphicsDevice.Clear(Color.Transparent);
+             batch.Begin(samplerState: SamplerState.PointClamp);
+-            renderer.GetMethod("DrawMonsterActor", flags)!.Invoke(world, [batch, monster, new Vector2(1, 1), 2, time, false, null]);
++            renderer.GetMethod("DrawMonsterActor", flags)!.Invoke(world, [batch, monster, new Vector2(1, 1), 2, time, false, null, null]);
+             batch.End(); game.GraphicsDevice.SetRenderTarget(null);
+             var pixels = new Color[target.Width * target.Height]; target.GetData(pixels); return pixels;
+         }
+--- a/monogame/Yipe.GraphicsChecks/README.md
++++ b/monogame/Yipe.GraphicsChecks/README.md
+@@ -1,6 +1,6 @@
+ # MonoGame graphics checks
+ 
+-The full suite now passes **3,306 checks**, including all 41 animated monsters and
++The latest full run passed **3,322 checks**, including all 41 animated monsters and
+ the eleven remastered Ice Cave rooms. It includes the original 139 visual checks, eight diagonal
+ dispatch/animation checks, and six session checks for logical position/storage,
+ world transitions, shop handoff and RNG isolation, plus eight full-save checks
+@@ -84,13 +84,18 @@
+ ```
+ 
+ For local Ice / Zephyr Cave iterations, use `--ice-only`. The focused run passes
+-202 checks across all eleven upper/deep rooms (41/42/47/53/81/82/87/88/93/94/99)
++219 checks across all eleven upper/deep rooms (41/42/47/53/81/82/87/88/93/94/99)
+ and six comparison scenes. It covers frozen-floor/wall contrast, cache restoration,
+ secret aliases, all nine matching walkable overlaps, sparse frost animation and
+ fog, cold contour lighting and door occlusion, creature/battle isolation, solid
+ footsteps, the recorded ambience lifecycle, and unchanged full saves/RNG. Native,
+ lit/unlit gameplay, isolated-light captures and an eight-second gameplay sequence
+-are retained under `ice-cave/`. The full suite includes these checks.
++are retained under `ice-cave/`. Seventeen reflection checks also cover animated hero,
++grounded/hovering/large monsters, roaming and pursuit motion, restrained frost
++masking, secret aliases, wall/door/stair/fog clipping and changed-terrain restoration.
++The final focused pass also verifies reflection at a rock's carved open corner.
++Isolated reflections and a complete walking-step sequence are retained there too.
++The full suite includes these checks.
+ 
+ ```sh
+ dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --ice-only --output build/ice-checks
+--- a/monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs
++++ b/monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs
+@@ -166,7 +166,7 @@
+                     $"Stone creature {monster}: mineral tint and contact shading preserves silhouette and scale");
+                 check(portrait.SequenceEqual(Portrait()), $"Stone creature {monster}: battle artwork stays unchanged");
+                 Scene(54); check(outside.SequenceEqual(Actor()), $"Stone creature {monster}: leaving restores its original appearance");
+-                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!));
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
+                 Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
+             }
+             room = Scene(58); var beforeAudio = GameSaveCodec.Encode(room.Session, catalog);

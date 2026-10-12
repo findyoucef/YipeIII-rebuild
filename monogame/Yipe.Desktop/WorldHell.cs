@@ -216,9 +216,9 @@ internal sealed partial class WorldRenderer
                 if (x > 0 && y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth - 1] + 1.4142f);
                 if (x + 1 < HellWidth && y + 1 < HellHeight) distance[i] = Math.Min(distance[i], distance[i + HellWidth + 1] + 1.4142f);
                 var strength = Math.Max(0, 1 - distance[i] / 20);
-                var light = Math.Max(strength * strength * .12f, glow[i].A / 255f);
+                var light = Math.Max(strength * strength * .16f, glow[i].A / 255f);
                 light = MathF.Round((paving[i] ? light * .18f : light) * 32) / 32;
-                glow[i] = new Color(240, 94, 63) * light;
+                glow[i] = new Color(255, 64, 36) * light;
             }
         hellGround.SetData(ground); hellLava.SetData(lava); hellGlow.SetData(glow);
 
@@ -232,7 +232,10 @@ internal sealed partial class WorldRenderer
                 if (difference >= best) continue;
                 best = difference; closest = candidate;
             }
-            return closest;
+            // Enrich the existing warm ramp without changing its facet boundaries.
+            // Neutral ash and the entrance flagstones retain their readable contrast.
+            if (closest.R - closest.G <= 12) return closest;
+            return new Color(Math.Min(255, closest.R * 6 / 5), closest.G * 19 / 20, closest.B * 4 / 5);
         }
     }
 

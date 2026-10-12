@@ -1,0 +1,49 @@
+{
+  "task": "Remove square cave light cutoffs and dark ground borders",
+  "scope": {
+    "maps": [
+      59,
+      60,
+      65,
+      66,
+      105,
+      106
+    ],
+    "reference": "Upper caves A4/map59; default gameplay capture and native map inspected"
+  },
+  "changes": [
+    "Ground contact shadows follow the visible chipped stone silhouette with two palette steps",
+    "Cached per-light native-pixel occlusion uses the same stone silhouette and a one-pixel edge feather",
+    "Round cave lamp reach; doors, fog, secret equivalence, mutation invalidation and other-biome lighting retained"
+  ],
+  "verification": {
+    "build": "Checked Release; zero warnings/errors",
+    "focused_gpu_checks": 131,
+    "full_gpu_checks": 2414,
+    "tour_frames": 360,
+    "monster_types": 41,
+    "map_captures_compared": 115,
+    "changed_maps": [
+      59,
+      60,
+      65,
+      66,
+      105,
+      106
+    ],
+    "unchanged_map_captures": 109,
+    "other_lighting_captures_identical": 22,
+    "personal_files_unchanged": true,
+    "diff_check": "pass"
+  },
+  "visual_review": "Reviewed default gameplay A4/B4, lighting-on/off A4 and isolated native masks. Broad rectangular foot borders removed; fine stone detail and crisp pixel-art contours retained. User approved the updated local build: \u201cthis looks great!\u201d",
+  "simplicity_review": "Reviewed the task diff across WorldBreeding, PixelLighting, TownGame and BreedingGroundChecks. No outstanding findings: shared cached geometry avoids duplicate contour rules; existing patch/fog/flicker path is reused; no generic lighting framework.",
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:CheckForOverflowUnderflow=true",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --breeding-only --output build/breeding-light-contours/final",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --output build/breeding-light-contours/full --capture-monsters 1"
+  ],
+  "focused_output": "build/breeding-light-contours/final/yipe-graphics-20261009-044452-b27cddf4",
+  "full_output": "build/breeding-light-contours/full/yipe-graphics-20261009-044502-0e532b16",
+  "delivery": "Local build only. No package, save migration or gameplay/map-layout changes."
+}

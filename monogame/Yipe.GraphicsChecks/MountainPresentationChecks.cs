@@ -19,6 +19,8 @@ internal static class MountainPresentationChecks
         var texture = (Texture2D)mountains.GetType().GetProperty("Texture", flags)!.GetValue(mountains)!;
         var palette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!
             .GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var snowPalette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!
+            .GetField("SnowPalette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
         var drawMap = type.GetMethod("DrawMap", flags)!;
         var directory = Path.Combine(output, "mountains"); Directory.CreateDirectory(directory);
         using var target = new RenderTarget2D(device, width, height);
@@ -70,7 +72,7 @@ internal static class MountainPresentationChecks
         foreach (var (id, map) in maps)
         {
             var pixels = Prepare(map); rendered[id] = pixels;
-            check(pixels.All(p => p.A == 0 || p.A == 255 && palette.Contains(p)),
+            check(pixels.All(p => p.A == 0 || p.A == 255 && (palette.Contains(p) || snowPalette.Contains(p))),
                 $"Surface {id} mountains keep native palette colors and binary pixel edges");
             check(Enumerable.Range(0, pixels.Length).All(i => Rock(map.Tile(new(i % width / 32, i / width / 32)))
                 || pixels[i].A == 0), $"Surface {id} mountains leave every non-mountain cell unobstructed");
@@ -86,7 +88,7 @@ internal static class MountainPresentationChecks
             var snapshot = GameSaveCodec.Encode(session, catalog);
             device.SetRenderTarget(target); device.Clear(Color.Transparent);
             batch.Begin(samplerState: SamplerState.PointClamp);
-            drawMap.Invoke(world, [batch, session.CurrentMap, Enumerable.Repeat(true, Map.TileCount).ToArray(), 1d]);
+            drawMap.Invoke(world, [batch, session.CurrentMap, Enumerable.Repeat(true, Map.TileCount).ToArray(), 1d, town]);
             batch.End(); device.SetRenderTarget(null);
             using (var file = File.Create(Path.Combine(directory, $"area-{id:D3}.png"))) target.SaveAsPng(file, width, height);
             check(snapshot.SequenceEqual(GameSaveCodec.Encode(session, catalog)),
@@ -191,7 +193,7 @@ internal static class MountainPresentationChecks
 
         var seen = new bool[Map.TileCount]; seen[1 * Map.Height + 1] = true;
         device.SetRenderTarget(target); device.Clear(Color.Transparent); batch.Begin(samplerState: SamplerState.PointClamp);
-        drawMap.Invoke(world, [batch, maps[17], seen, 1d]); batch.End(); device.SetRenderTarget(null);
+        drawMap.Invoke(world, [batch, maps[17], seen, 1d, town]); batch.End(); device.SetRenderTarget(null);
         var fog = new Color[width * height]; target.GetData(fog);
         check(Enumerable.Range(0, fog.Length).All(i => seen[i % width / 32 * Map.Height + i / width / 32] || fog[i] == palette[0]),
             "Connected mountain formations and cave sprites cannot expose unseen area-map cells");

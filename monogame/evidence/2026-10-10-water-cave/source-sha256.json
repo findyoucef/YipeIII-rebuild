@@ -1,0 +1,20 @@
+{
+  "monogame/PORTING_PLAN.md": "37c28bb495bc1d6507cea4318946b2fd5198f6764dfeaee0cddbe002cf2123f3",
+  "monogame/README.md": "3330ceeed4a3f84d8ba85e1809f8e5b5c52a449dc8ac05442771c564ad37ad3e",
+  "monogame/Yipe.Desktop/GameAudio.cs": "9e1f548bb96e3b2bb94445843b1650aa8a0ceee6e4ea812ad6a00baedca83d71",
+  "monogame/Yipe.Desktop/PixelLighting.cs": "4a55c4b45e8f1c8e600576f66eac8685c1fa32515443ab72c6937a0fbfc75627",
+  "monogame/Yipe.Desktop/TownGame.cs": "c3c7034578416e213a3400674a38c56d91bce8b33b612b4e4ed72346b7e7b2a6",
+  "monogame/Yipe.Desktop/TownScenery.cs": "9b52aea7ac216db37151c5900629413649e9866c98adcfb241171eb2f3209543",
+  "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "f84e1c273fb2496bdedca42ad3af07d731a1640a5135b2079a1158d70377f30d",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "5b814ecc962dc36066521a09198a56351f46ebc1298d1fa46a644a30aeecc405",
+  "monogame/Yipe.Desktop/WorldTerrain.cs": "f4e0bc7f507601171653b06995c1a5bd08cde292c9c10e4e3ec11b5ce7c876ea",
+  "monogame/Yipe.Desktop/WorldWater.cs": "3adacd6e46e7bd92fb0f62de938264009b3635e0a4e33cb986191993a76da568",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "61238a28fe9b8ca9718bc518c6bde4cb8ef052245beefbaa17af31a697dc93b0",
+  "monogame/Yipe.GraphicsChecks/README.md": "654e910c7a9a110dee25c6da6c4c85381c8e24c3ef61bb39b7cb8ffff7f21fb4",
+  "monogame/Yipe.Desktop/WorldWaterCave.cs": "7f36be5859d055a1370d3f6bbabf878c578f6b4f8e069dfbd690a73d5f66abc7",
+  "monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs": "05e7b63d5a50232ecf340ea3cde3ffa0760ba76bef4d3add66bc6028acd37264",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/water-cave-sources.json": "51f4fcc53398ea6bf3ac14866ad55309c45fb9af913cec2cd5eee8c679c9c164",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/WATER-CAVE-CREDITS.txt": "2859a090fb104a84913dc5563aa43cc2c5f3ef57b61b83c5e22c3dfb4c4c0868",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/water-cave.wav": "5741ba71919f4d16223574592948e27dab2d982b064cb2f01c2bb4955d17b50d",
+  "monogame/evidence/2026-10-10-water-cave/mix_audio.py": "9328c8ad68fb2f55f80fa822cd481e3a86805f2b7fed5bb659c6c07a7bf135c0"
+}

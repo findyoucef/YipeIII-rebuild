@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-10",
+  "request": "Remaster Water Cave using the approved cave techniques after the user approved proceeding with the next remaining cave.",
+  "scope": {
+    "map_ids": [
+      44,
+      45,
+      46,
+      50,
+      56,
+      62,
+      68,
+      74,
+      90,
+      96,
+      102,
+      108,
+      114
+    ],
+    "upper": [
+      44,
+      45,
+      46,
+      50,
+      56,
+      62,
+      68,
+      74
+    ],
+    "deep": [
+      90,
+      96,
+      102,
+      108,
+      114
+    ],
+    "remaining_cave": "Final Cave, 15 rooms; separate task"
+  },
+  "implementation": [
+    "Connected eroded limestone with small facets, dark wet fronts, mineral trails and sparse rock-foot teeth.",
+    "Quiet worn limestone and sediment make dry routes distinct from dark turquoise pools; world-anchored erosion irregularizes the banks.",
+    "Visible algae on front and side faces motivates turquoise light clipped to the cached visible rock contour and closed doors.",
+    "Native-pixel drips, small ripples, submerged caustic fragments and thin water-only mist use deterministic presentation time.",
+    "Existing hero pose reflects in actual pools below raft planks; restrained creature tint and contact shadows preserve silhouette, hover and battle artwork.",
+    "Quiet 58-second recorded cave/river ambience reuses the single-voice audio lifecycle, with gentle pool proximity gain."
+  ],
+  "verification": {
+    "local_release_build": "0 warnings, 0 errors",
+    "core_input_checks": 627,
+    "focused_water_checks": 211,
+    "full_graphics_checks": 3560,
+    "tour_frames": 360,
+    "focused_output": "build/water-cave-remaster/focused/yipe-graphics-20261011-050804-69e9272e",
+    "full_output": "build/water-cave-remaster/full/yipe-graphics-20261011-050848-cda734b5",
+    "native_maps_compared": 115,
+    "changed_maps": [
+      44,
+      45,
+      46,
+      50,
+      56,
+      62,
+      68,
+      74,
+      90,
+      96,
+      102,
+      108,
+      114
+    ],
+    "unaffected_native_maps": 102,
+    "pixel_identical_reference_captures": 32,
+    "personal_files_unchanged": 33,
+    "original_core_map_files_unchanged": 27,
+    "boundaries": "Fog, aliases, tile/cache replacement, rock corners, closed doors, unchanged raft/events/gameplay/RNG, monster presentation and audio lifecycle are covered. Original overlaps with differing adjacent terrain are retained; exact continuity checks apply to matching authored neighborhoods.",
+    "simplicity_review": "Reviewed the task-relative production/test/documentation diff and analogous cave integrations. One local biome partial bakes cached terrain/contours; existing water, reflection, monster and audio paths carry the effect. No new shader, setting, generalized biome framework or gameplay system. Tests cover distinct material, scope, cache, clipping and lifecycle risks. No remaining findings.",
+    "driver_note": "The full run emits the same one-time macOS GL texture diagnostic present in the preceding Ice run; it exits successfully with all checks passed."
+  },
+  "artifacts": {
+    "gameplay": "gameplay-62.png",
+    "deep_gameplay": "gameplay-114.png",
+    "before": "gameplay-62-before.png",
+    "motion": "water-cave.mp4",
+    "native": "map-62.png",
+    "light_mask": "light-62.png",
+    "unlit": "gameplay-62-unlit.png",
+    "logs": [
+      "build.log",
+      "core-tests.log",
+      "focused.log",
+      "full.log"
+    ],
+    "comparisons": [
+      "map-comparison.json",
+      "reference-comparison.json"
+    ],
+    "preservation": "preservation.json",
+    "diff": "task.patch",
+    "source_hashes": "source-sha256.json",
+    "audio_recipe": "mix_audio.py"
+  },
+  "preserved": "Core movement, ordinary Water Cave traction, raft rules, doors, secrets, stairs, rescues, encounters and save formats. Ice traction remains separate.",
+  "approval": "Implementation and automated verification complete. User visual/audio approval is pending. Playback/lifecycle and audio metrics were checked; no subjective listening approval is claimed.",
+  "packaging": "Local build only; no distributable rebuilt. Personal adventures were not loaded or navigated for captures."
+}

@@ -1,0 +1,54 @@
+{
+  "baseline": "build/stone-remaster/full/yipe-graphics-20261009-075149-a24a714a",
+  "current": "build/hell-atmosphere/full/yipe-graphics-20261009-081831-d87efb9d",
+  "results": {
+    "maps": {
+      "identical": 116,
+      "changed": [
+        "map-117.png",
+        "map-118.png",
+        "map-119.png",
+        "map-120.png"
+      ],
+      "missing": []
+    },
+    "earth-cave": {
+      "identical": 116,
+      "changed": [],
+      "missing": []
+    },
+    "stone-cave": {
+      "identical": 68,
+      "changed": [],
+      "missing": []
+    },
+    "breeding-grounds": {
+      "identical": 73,
+      "changed": [],
+      "missing": []
+    },
+    "fire-cave": {
+      "identical": 129,
+      "changed": [],
+      "missing": []
+    },
+    "pixel-lighting": {
+      "identical": 10,
+      "changed": [
+        "map-117-combined.png",
+        "map-117-off.png",
+        "map-117-on.png",
+        "map-118-combined.png",
+        "map-118-off.png",
+        "map-118-on.png",
+        "map-119-combined.png",
+        "map-119-off.png",
+        "map-119-on.png",
+        "map-120-combined.png",
+        "map-120-off.png",
+        "map-120-on.png"
+      ],
+      "missing": []
+    }
+  }
+}

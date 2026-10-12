@@ -1,0 +1,13 @@
+{
+  "monogame/Yipe.Desktop/TownGame.cs": "823e679a908d991ee5a78dff068175292a76fa56f4b9153189f0cc03f0f607a3",
+  "monogame/Yipe.Desktop/TownHelp.cs": "d221cf7bcfcb1bc7af3a6641f10f3d7ae960b81081fc7cad6a1162eb7e0e423b",
+  "monogame/Yipe.Desktop/TownOverlays.cs": "efe4608e555c898abfb2312d65ee3b4fdaacb6b10456a801e75357bbca4f8aa1",
+  "monogame/Yipe.GraphicsChecks/CloudShadowChecks.cs": "ea02e35bd85617d7b763c818c8b951cc09cd8260eb4a183a9fbfd61970e7b8bc",
+  "monogame/Yipe.GraphicsChecks/CombatFeedbackChecks.cs": "f3501f546939fa1738652ae4d71bd83fb716749fa961cf14ca2e3e839a1d9b0c",
+  "monogame/Yipe.GraphicsChecks/DayNightChecks.cs": "8b56380ea55a5f55c5ad5c6ea862c64ef20009dd92f48c1e0ea0c59528168256",
+  "monogame/Yipe.GraphicsChecks/HelpControlChecks.cs": "e12ac990186b0c84279a4c902220cea378d3b0f55aac2db51a09a4bc7219c419",
+  "monogame/Yipe.GraphicsChecks/PixelLightingChecks.cs": "78149e0f5a3b5f70929a042991ed7327007742b0654d62b9de9677802efbdbe1",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "14f9a86f3d41b12263ea057d34accf282c91930f9d5f3ae8f85a19c31496da9c",
+  "monogame/Yipe.GraphicsChecks/RainChecks.cs": "3493ee6c3921f83c989e1a9ecb54ba3fc6c216d747685c44e08d8e34fda7dac1",
+  "monogame/Yipe.GraphicsChecks/SunShaftChecks.cs": "d7b4bba05ff95fdc25cf24db2096e3f3534985e2a90b11da2231bf2cdeed8fbd"
+}

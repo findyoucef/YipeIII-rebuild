@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-11",
+  "request": "Correct the character standing beside Water Cave rafts and their abrupt tile-to-tile movement.",
+  "scope": {
+    "maps_with_rafts": [
+      44,
+      50,
+      56,
+      62,
+      68,
+      74,
+      96,
+      108
+    ],
+    "reported_area": "Water Cave D4, upper layer, map 62",
+    "original_terrain_and_rules": "unchanged"
+  },
+  "causes": [
+    "The generic 48px prop placement left the visible log deck 19 native pixels above the hero foot anchor.",
+    "Rafts rendered their accepted logical tile immediately while the hero independently walked toward that tile."
+  ],
+  "changes": [
+    "Existing deck aligned at native sprite point (24,23) beneath the hero boots.",
+    "Each accepted raft movement eases over 0.9 seconds. Rider and raft share the same interpolated position and one-pixel bob.",
+    "Passive carrying preserves facing and planted feet; boarding still walks onto a moving deck and disembarking starts at its visible position.",
+    "Small native-pixel ripples, correct wood contact on boarding, and no repeated footsteps during passive travel.",
+    "Pause/map/actions freeze both visuals; map replacement/load reset stale interpolation."
+  ],
+  "verification": {
+    "local_release_build": "0 warnings, 0 errors",
+    "core_input_checks": 632,
+    "focused_water_checks": 257,
+    "full_graphics_checks": 3606,
+    "tour_frames": 360,
+    "full_output": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/water-raft/full/yipe-graphics-20261011-233920-7e75313a",
+    "focused_output": "build/water-raft/focused/yipe-graphics-20261011-233846-96a6f24c",
+    "coverage": "All eight authored raft rooms; mid-glide support by opaque deck pixels, facing, boarding during a raft tick, disembarking, wood contacts, silent passive movement, pause/map/actions, codec reload aboard, fog, Ice isolation and full gameplay/RNG preservation. Existing full-suite raft rescue, pause-menu save/load and safe return route passed.",
+    "native_map_comparison": {
+      "total": 115,
+      "identical": 107,
+      "changed": [
+        44,
+        50,
+        56,
+        62,
+        68,
+        74,
+        96,
+        108
+      ]
+    },
+    "unaffected_reference_captures_identical": 32,
+    "personal_files_unchanged": 33,
+    "core_and_original_map_files_unchanged": 27,
+    "simplicity_review": "Reviewed the complete task-relative diff. One 81-line WorldRenderer partial owns four transient raft fields and reuses the existing sprite/pixel draw path. PlayerMotion accepts an optional visible deck position and retains its existing boarding/disembarking interpolation; no new movement framework, shader, texture, setting or Core/save field. Distinct route, anchor, transition and lifecycle risks are covered. No remaining findings."
+  },
+  "artifacts": {
+    "aboard": "aboard.png",
+    "mid_glide": "mid-glide.png",
+    "motion": "raft-glide.mp4",
+    "same_route_before": "platform-before.png",
+    "same_route_after": "platform-after.png",
+    "rescue_return": "platform-rescued.png",
+    "logs": [
+      "build.log",
+      "tests-build.log",
+      "core-tests.log",
+      "focused.log",
+      "full.log"
+    ],
+    "comparisons": [
+      "reference-comparison.json",
+      "map-comparison.json"
+    ],
+    "preservation": "preservation.json",
+    "diff": "task.patch",
+    "source_hashes": "source-sha256.json"
+  },
+  "approval": "Implementation and verification complete; the user approved the raft presentation after the latest local launch on 2026-10-11. Captures use isolated adventures. Personal adventure was not navigated or replaced for testing.",
+  "packaging": "Local builds only."
+}

@@ -1,0 +1,13 @@
+{
+  "DayNightCycle.cs": "4dd4f13779bfedf38c10b4a1fd4836ca633c802c0d3ff52df43d4904ec39deca",
+  "TownGame.cs": "47bdd513d0add88076182fb3abb159e3a352ee0a9ee0e451cec70016cf3ebc03",
+  "TownOverlays.cs": "de7330edc04380bfbc1123818981fa60cda34e937e6ed49b570386f531a21091",
+  "TownCreation.cs": "a3c6e4fdcaf95172d9b364975b5f13ae8fc4af9bdb9fbfd6debd7ffbbefbdf38",
+  "DesktopProfile.cs": "0b68c8151b464f2c9d68271d1b6d64e50bcd3b9cd3c774df2bd72838a12777d9",
+  "PixelLighting.cs": "295ef868c0dd5c0ebdbc4a7a3c50202ae58da68d08aeac9d296db1e494894c22",
+  "SunShafts.cs": "2e14ede5ca636401951bad52123cd5bc2e4490425a4588cf0e1cdab27bb00894",
+  "HeatEffect.cs": "29b0ad790f5d3e3417786e831723ffc737b776aa364d2b251ee9d444124c0763",
+  "TownHelp.cs": "f080317fed67750b835d9c83b3220e48197acba417b57d8fd9857bb0dd6100ac",
+  "review": "Scoped production diff inspected: one pure phase evaluator, two profile-backed fields, a native multiplicative pass using the existing light-map bounds, window boost on existing visibility masks, shared daylight properties and existing heat strength. No per-frame texture creation or Core/source-art edits. Day bypasses ambient color exactly. Existing save errors remain recoverable; preference failure does not invalidate a completed adventure save.",
+  "live_verification": "Normal-speed town Auto clock and real menu persistence inspected; Hell save window preserved. No required verification remains."
+}

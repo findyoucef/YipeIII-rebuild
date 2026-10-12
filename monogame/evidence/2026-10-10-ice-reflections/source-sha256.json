@@ -1,0 +1,16 @@
+{
+  "monogame/PORTING_PLAN.md": "4f8060116e2b5889a796ffc025b90c3a0aead1f9b10e04c12fd5957c208e7efe",
+  "monogame/README.md": "39245d8345671a79f2c62e52939fdde18cf1e63fd4366c01b2065cd64bcedca2",
+  "monogame/Yipe.Desktop/TownScenery.cs": "b99e42d1da6d767eb452a3a3cf7d9eb09893b66a74b09b29002353ecb8db978e",
+  "monogame/Yipe.Desktop/WorldIce.cs": "403fde3847df7d409c57cf77806ce351e56bf7a4dcd407ec015268486dd64dcf",
+  "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "6361df57c1a8300509c777e273378bd80432351667d64bc772990441a97fefac",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "be46c6576a5c3be1d02b7c3c3fa0e829530a11652a951bc059b63ec85ce8c2e7",
+  "monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs": "6dcedd9ce7188bf4ea610e5fb88fa36bd4b57470d74f9084f2ecbb14db98fe02",
+  "monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs": "f8d629f24e732dccd544376a41a70c3e3c29b20f62248c362a49d5f4b91ae52d",
+  "monogame/Yipe.GraphicsChecks/FireCaveChecks.cs": "15b60f2da3f3ca2c6a98ec11af5c0e95fc97498c75055b5a3003107fc0c6a8cf",
+  "monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs": "3b7e747db794b7307700c5407b518ad8c3a32f8dcbccf0bce50789ec8e1bfd8b",
+  "monogame/Yipe.GraphicsChecks/IceCaveChecks.cs": "be3fa97bbcda4820bba25b0641d37a75ef46767cf668ffa679e42b0c1c11454e",
+  "monogame/Yipe.GraphicsChecks/MonsterAnimationChecks.cs": "b4173f30aca38f341d523a5ada46fb036bb0f2be54efcd78385afc8ec3761a2d",
+  "monogame/Yipe.GraphicsChecks/README.md": "f87e3c7b39490546ee2928b804df846df16646cb7507d3a7b20c442b697a2935",
+  "monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs": "fd244cd265fcc2419b1414fbf710dfaa8c4430ec4472d4d0a1b6a375db56a617"
+}

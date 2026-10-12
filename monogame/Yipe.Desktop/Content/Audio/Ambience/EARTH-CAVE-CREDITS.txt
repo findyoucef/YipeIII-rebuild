@@ -1,0 +1,16 @@
+Earth Cave ambience — upper and deep
+
+Loopable Dungeon Ambience by JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Dripping water loop by Independent.nu (submitted by qubodup)
+https://opengameart.org/content/dripping-water-loop
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Fantozzi’s footsteps: grass/sand, stone by Fantozzi (sliced by qubodup)
+https://opengameart.org/content/fantozzis-footsteps-grasssand-stone
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+58-second stereo 22050 Hz PCM16 loops. Existing cave air low-passed to 1100 Hz at half gain; dripping-water recording filtered 100–3800 Hz, gain 0.48 upper / 0.90 deep; quiet granular sample at three irregular offsets, no generated oscillators/noise. Final gain 2.0 with a 0.85 peak ceiling; two-second wrap crossfade. Mixed via build/earth-remaster/mix_audio.py; no peak normalization.
+License text: CC0-1.0.txt.

@@ -30,16 +30,20 @@ internal static class Program
                 return 1;
             }
         }
-        var selectedSave = args.Length == 2 && args[0] == "--load-save" ? args[1] : null;
         var smoke = args.Length >= 1 && args[0] == "--smoke-test";
-        if (args.Length != 0 && selectedSave is null && (!smoke || args.Length > 2))
+        var remaining = smoke ? args[1..] : args;
+        string? screenshot = null;
+        if (smoke && remaining.Length > 0 && !remaining[0].StartsWith("--"))
+        { screenshot = remaining[0]; remaining = remaining[1..]; }
+        var selectedSave = remaining.Length == 2 && remaining[0] == "--load-save" ? remaining[1] : null;
+        if (remaining.Length != 0 && selectedSave is null)
         {
-            Console.Error.WriteLine("Usage: Yipe.Desktop [--smoke-test [screenshot.png] | --import-save source destination.y3m | --load-save game.y3m]");
+            Console.Error.WriteLine("Usage: Yipe.Desktop [--smoke-test [screenshot.png]] [--load-save game.y3m] | --import-save source destination.y3m");
             return 2;
         }
         try
         {
-            using var game = new TownGame(smoke, smoke && args.Length == 2 ? args[1] : null, selectedSave);
+            using var game = new TownGame(smoke, screenshot, selectedSave);
             game.Run();
             if (smoke) Console.WriteLine("MonoGame graphics smoke test passed.");
             return 0;

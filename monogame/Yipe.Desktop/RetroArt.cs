@@ -5,6 +5,11 @@ namespace Yipe.Desktop;
 
 internal static class RetroArt
 {
+    // Snow needs a cold white ramp; the shared atlas highlights are warm cream.
+    // Keep this local to winter rendering so other biomes retain their palette.
+    internal static readonly Color[] SnowPalette =
+    [new(245, 249, 248), new(224, 235, 239), new(194, 214, 225)];
+
     // One palette for every atlas. Import removes gradients and partial-alpha edge pixels.
     internal static readonly Color[] Palette =
     [
@@ -67,7 +72,7 @@ internal static class RetroArt
                 }
             }
         var character = name == "hero.png" || name.StartsWith("World/heroes-", StringComparison.Ordinal);
-        if (character || name is "town.png" or "shops.png" or "details.png" or "World/quests.png")
+        if (character || name is "town.png" or "shops.png" or "details.png" or "World/quests.png" or "World/snow-props.png")
         {
             try { AlignFrames(native, width, columns, rows, cellSize, character, name == "details.png"); }
             catch (InvalidDataException error) { throw new InvalidDataException($"{name}: {error.Message}", error); }

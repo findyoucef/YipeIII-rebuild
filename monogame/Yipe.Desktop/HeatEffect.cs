@@ -27,7 +27,7 @@ internal sealed class HeatEffect : IDisposable
     }
 
     public Texture2D Apply(SpriteBatch batch, Texture2D source, WorldRenderer world,
-        Vector2 camera, Vector2 hero, double time, bool crisp = false)
+        Vector2 camera, Vector2 hero, double time, bool crisp = false, float strength = 1)
     {
         // Enlarge with point sampling first: subpixel refraction should not blur native art.
         device.SetRenderTarget(enlarged);
@@ -66,7 +66,7 @@ internal sealed class HeatEffect : IDisposable
             var distance = ((p - hero) / new Vector2(24, 32)).Length();
             var calm = MathHelper.SmoothStep(0, 1, Math.Clamp((distance - 1) / .65f, 0, 1));
             var edge = Math.Min(Math.Min(x, width - x), Math.Min(y, height - y));
-            var amount = world.HeatAt(p) * calm * MathHelper.SmoothStep(0, 1, Math.Clamp(edge / 8, 0, 1));
+            var amount = world.HeatAt(p) * calm * MathHelper.SmoothStep(0, 1, Math.Clamp(edge / 8, 0, 1)) * strength;
             // Two broad waves drift upward at different speeds. World coordinates keep
             // them attached to the landscape during camera movement, without screen shake.
             var dx = amount * (.7f * MathF.Sin(p.Y * .17f + t * 2.3f)

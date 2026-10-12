@@ -1,0 +1,12 @@
+{
+  "breeding": {
+    "baseline": "build/breeding-floor-soft-seams/balanced/yipe-graphics-20261009-065225-c5c13a5b",
+    "same_count": 73,
+    "different": []
+  },
+  "fire": {
+    "baseline": "build/graphics-submenu/full/yipe-graphics-20261009-060754-7b33b7e6",
+    "same_count": 129,
+    "different": []
+  }
+}

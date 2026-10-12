@@ -18,6 +18,41 @@ internal sealed partial class WorldRenderer
         if (!HasArtwork(tile)) throw new InvalidDataException($"No world artwork for tile {tile:x} in map {map.Id}.");
         var bounds = new Rectangle(cell.X * 32, cell.Y * 32, 32, 32);
         if (IsHell(map)) { DrawHellGround(batch, bounds, time); return; }
+        if (IsFire(map)) { DrawFireGround(batch, bounds, time); return; }
+        if (IsBreeding(map)) { batch.Draw(breedingGround, bounds, bounds, Color.White); return; }
+        if (IsIce(map)) { batch.Draw(iceGround, bounds, bounds, Color.White); return; }
+        if (IsWaterCave(map))
+        {
+            batch.Draw(waterCaveGround, bounds, bounds, Color.White);
+            DrawWater(batch, bounds, time);
+            return;
+        }
+        if (IsFinal(map))
+        {
+            batch.Draw(finalGround, bounds, bounds, Color.White);
+            DrawWater(batch, bounds, time);
+            // Authored instability remains legible above decorative floor wear.
+            if (tile is 0x29 or 0x2a)
+                for (var y = 4; y < 29; y++)
+                {
+                    var x = bounds.X + 15 + y / 4 % 3 - 1;
+                    batch.Draw(pixel, new Rectangle(x, bounds.Y + y, 2, 1), FinalPalette[0]);
+                    batch.Draw(pixel, new Rectangle(x + 2, bounds.Y + y, 1, 1), FinalPalette[8]);
+                }
+            if (tile == 0x2b)
+            {
+                batch.Draw(pixel, new Rectangle(bounds.X + 6, bounds.Y + 8, 22, 20), FinalPalette[6]);
+                batch.Draw(pixel, new Rectangle(bounds.X + 8, bounds.Y + 9, 19, 17), FinalPalette[0]);
+            }
+            if (tile == 0x71) DrawProp(batch, 12, cell);
+            return;
+        }
+        if (IsStone(map))
+        {
+            batch.Draw(stoneGround, bounds, bounds, Color.White);
+            DrawWater(batch, bounds, time);
+            return;
+        }
         if (IsEarth(map))
         {
             batch.Draw(earthGround, bounds, bounds, Color.White);
@@ -26,10 +61,12 @@ internal sealed partial class WorldRenderer
         }
         var surface = map.Id < 41;
         var floor = (Math.Clamp(map.Environment, 1, 7) - 1) * 2;
-        batch.Draw(surface ? meadow : floors, bounds,
+        if (surface && map.Id <= 36 && map.Id != 17) batch.Draw(outdoorGround, bounds, bounds, Color.White);
+        else batch.Draw(surface ? meadow : floors, bounds,
             surface ? Cell((cell.X * 3 + cell.Y * 7) % 4, 2, 32) : Cell(floor, 4, 32), Color.White);
 
-        if (desertActive) batch.Draw(sandLayer, bounds, bounds, Color.White);
+        if (desertActive && !(map.Id <= 36 && map.Id != 17)) batch.Draw(sandLayer, bounds, bounds, Color.White);
+        if (snowActive) batch.Draw(snowGround, bounds, bounds, Color.White);
         if (MountainTerrain.IsMountain(tile)) batch.Draw(mountains.Texture, bounds, bounds, Color.White);
         if (tile == 0x36) batch.Draw(desert, bounds, Cell(2, 2, 32), Color.White);
         if (tile is 9 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a)
@@ -38,7 +75,7 @@ internal sealed partial class WorldRenderer
             if (cell.Y < Map.Height - 1 && map.Tile(new(cell.X, cell.Y + 1)) is not (9 or 0x22 or 0x23 or 0x25 or 0x43 or 0x44 or 0x5a))
                 batch.Draw(pixel, new Rectangle(bounds.X, bounds.Y + 29, 32, 3), RetroArt.Palette[0] * .45f);
         }
-        if (tile is 0x1f or 0x20 or 0x69 || surface && tile is (>= 0x27 and <= 0x2b or 0x47 or 0x48 or 0x52 or 0x54 or 0x55 or 0x5d or 0x5e or 0x61))
+        if (!snowActive && tile is (0x1f or 0x20 or 0x69) || surface && tile is (>= 0x27 and <= 0x2b or 0x47 or 0x48 or 0x52 or 0x54 or 0x55 or 0x5d or 0x5e or 0x61))
             batch.Draw(floors, bounds, Cell(14, 4, 32), Color.White);
         if (tile is 0x29 or 0x2a) DrawCrack(batch, bounds);
         if (tile == 0x2b)
@@ -47,11 +84,12 @@ internal sealed partial class WorldRenderer
             batch.Draw(pixel, new Rectangle(bounds.X + 8, bounds.Y + 9, 19, 17), RetroArt.Palette[0]);
         }
         DrawWater(batch, bounds, time);
-        var connections = RetroArt.PathConnections(tile);
+        var connections = VillagePathConnections(map, cell);
         if (connections != 0)
         {
             var variant = cell.X % 2 + cell.Y % 2 * 2;
-            batch.Draw(paths, bounds, Cell(connections + variant * 16, 4, 32), Color.White);
+            batch.Draw(paths, bounds, Cell(connections + variant * 16, 4, 32),
+                map.Id == 8 ? new Color(245, 224, 188) : Color.White);
         }
         if (tile is 0x3c or 0x3d) DrawSpikes(batch, bounds, tile == 0x3d);
         if (tile is >= 0x65 and <= 0x68) DrawMountainFoot(batch, map, bounds, tile);
@@ -61,14 +99,14 @@ internal sealed partial class WorldRenderer
             0x2c => 8, 0x2f => 2, 0x32 => 3, 0x33 => 9, 0x34 => 7, 0x35 => 6,
             _ => -1,
         };
-        if (floraIndex >= 0) DrawFlora(batch, floraIndex, cell, time);
+        if (floraIndex >= 0) DrawFlora(batch, floraIndex, cell, time, surface);
     }
 
-    private void DrawFlora(SpriteBatch batch, int index, MapPosition cell, double time)
+    private void DrawFlora(SpriteBatch batch, int index, MapPosition cell, double time, bool surface)
     {
         var source = Cell(index, 4, 48);
         var position = new Vector2(cell.X * 32 - 8, cell.Y * 32 - 15);
-        if (index is not (0 or 2)) { batch.Draw(flora, position, source, Color.White); return; }
+        if (index is not (0 or 2) && !(surface && index is 5 or 10 or 11)) { batch.Draw(flora, position, source, Color.White); return; }
         var breeze = MathF.Sin((float)(Math.Floor(time * 6) / 6) * 1.8f + cell.X * .7f + cell.Y);
         // Crown/branch movement is at most one pixel; trunks and roots remain anchored.
         for (var row = 0; row < 48; row += 4)

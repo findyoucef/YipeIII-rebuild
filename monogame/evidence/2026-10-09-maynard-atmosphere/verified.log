@@ -1,0 +1,41 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/maynard-atmosphere/verified/yipe-graphics-20261009-084009-9825fee9
+Content startup and five initial frames: 2.87 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Maynard leaves are visible but occupy a sparse number of native pixels
+PASS: Leaves flutter on a discrete scene clock and freeze exactly
+PASS: Leaves stay over open grass and paths
+PASS: Leaves cannot cover opaque shop and castle artwork
+PASS: Leaves preserve the player's complete silhouette
+PASS: Both bridges retain the sound of water beneath them
+PASS: River loudness falls away to silence inland
+PASS: The river pans toward the correct bank
+PASS: River distance follows interpolated walking positions without tile-sized jumps
+PASS: Maynard starts independent outdoor and nearby-river recordings
+PASS: Town and river loops fade in at restrained master-volume levels
+PASS: paused silences both Maynard ambient layers
+PASS: mapOpen silences both Maynard ambient layers
+PASS: Resume continues both loops without restarting or stacking voices
+PASS: Action and shop overlays silence Maynard ambience
+PASS: Focus loss pauses both Maynard ambient layers
+PASS: Sound Off mutes both Maynard layers
+PASS: Zero master volume mutes both Maynard layers
+PASS: Master volume scales both recordings immediately
+PASS: Action sounds duck both layers without masking their cues
+PASS: Night replaces daytime birds with quieter recorded wind and preserves the river
+PASS: Day restores the bird-and-wind ambience
+PASS: Walking inland fades the river rather than cutting it off
+PASS: Distant river playback is released while town ambience continues
+PASS: Entering Hell releases both town layers and selects Hell ambience
+PASS: Maynard ambience does not leak into other towns
+PASS: Maynard leaves and positional audio preserve complete gameplay and RNG
+PASS: Maynard atmosphere rendering and audio preserve complete gameplay and RNG
+Passed 37 visual integration checks. Focused Maynard run.

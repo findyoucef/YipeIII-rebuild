@@ -1,0 +1,414 @@
+{
+  "goal": "Complete all 36 surface regions using cohesive pixel-art terrain, vegetation, towns, motion and recorded ambience while preserving gameplay.",
+  "status": "implemented and verified; user aesthetic review pending",
+  "validation": {
+    "full_graphics_log": "build/overworld-remaster/full/yipe-graphics-20261009-143645-baca38c2",
+    "focused_log": "build/overworld-remaster/verified/yipe-graphics-20261009-141749-b57c048d",
+    "final_capture_run": "build/overworld-remaster/full/yipe-graphics-20261009-143645-baca38c2",
+    "full_graphics_checks": 3104,
+    "focused_checks": 184,
+    "maynard_transition_checks": 38,
+    "core_checks": 613,
+    "tour_frames": 360,
+    "local_build_only": true,
+    "core_and_maps_unchanged": true
+  },
+  "map_comparisons": {
+    "map-001": false,
+    "map-002": false,
+    "map-003": false,
+    "map-004": false,
+    "map-005": false,
+    "map-006": false,
+    "map-007": false,
+    "map-008": false,
+    "map-009": false,
+    "map-010": false,
+    "map-011": false,
+    "map-012": false,
+    "map-013": false,
+    "map-014": false,
+    "map-015": false,
+    "map-016": false,
+    "map-017": true,
+    "map-018": false,
+    "map-019": false,
+    "map-020": false,
+    "map-021": false,
+    "map-022": false,
+    "map-023": false,
+    "map-024": false,
+    "map-025": false,
+    "map-026": false,
+    "map-027": false,
+    "map-028": false,
+    "map-029": false,
+    "map-030": false,
+    "map-031": false,
+    "map-032": false,
+    "map-033": false,
+    "map-034": false,
+    "map-035": false,
+    "map-036": false,
+    "map-041": true,
+    "map-042": true,
+    "map-043": true,
+    "map-044": true,
+    "map-045": true,
+    "map-046": true,
+    "map-047": true,
+    "map-048": true,
+    "map-049": true,
+    "map-050": true,
+    "map-051": true,
+    "map-052": true,
+    "map-053": true,
+    "map-054": true,
+    "map-055": true,
+    "map-056": true,
+    "map-057": true,
+    "map-058": true,
+    "map-059": true,
+    "map-060": true,
+    "map-061": true,
+    "map-062": true,
+    "map-063": true,
+    "map-064": true,
+    "map-065": true,
+    "map-066": true,
+    "map-067": true,
+    "map-068": true,
+    "map-069": true,
+    "map-070": true,
+    "map-071": true,
+    "map-072": true,
+    "map-073": true,
+    "map-074": true,
+    "map-075": true,
+    "map-076": true,
+    "map-081": true,
+    "map-082": true,
+    "map-083": true,
+    "map-084": true,
+    "map-085": true,
+    "map-086": true,
+    "map-087": true,
+    "map-088": true,
+    "map-089": true,
+    "map-090": true,
+    "map-091": true,
+    "map-092": true,
+    "map-093": true,
+    "map-094": true,
+    "map-095": true,
+    "map-096": true,
+    "map-097": true,
+    "map-098": true,
+    "map-099": true,
+    "map-100": true,
+    "map-101": true,
+    "map-102": true,
+    "map-103": true,
+    "map-104": true,
+    "map-105": true,
+    "map-106": true,
+    "map-107": true,
+    "map-108": true,
+    "map-109": true,
+    "map-110": true,
+    "map-111": true,
+    "map-112": true,
+    "map-113": true,
+    "map-114": true,
+    "map-115": true,
+    "map-116": true,
+    "map-117": true,
+    "map-118": true,
+    "map-119": true,
+    "map-120": true,
+    "map-121": true,
+    "map-127": true,
+    "map-133": true
+  },
+  "reviewed_regions": [
+    {
+      "id": 1,
+      "region": "A1",
+      "treatment": "palm desert and rocks"
+    },
+    {
+      "id": 2,
+      "region": "B1",
+      "treatment": "well and desert-edge meadow"
+    },
+    {
+      "id": 3,
+      "region": "C1",
+      "treatment": "river and boulders"
+    },
+    {
+      "id": 4,
+      "region": "D1",
+      "treatment": "lake and cave approach"
+    },
+    {
+      "id": 5,
+      "region": "E1",
+      "treatment": "lake with palm transition"
+    },
+    {
+      "id": 6,
+      "region": "F1",
+      "treatment": "desert foothill shop"
+    },
+    {
+      "id": 7,
+      "region": "A2",
+      "treatment": "palm desert edge"
+    },
+    {
+      "id": 8,
+      "region": "B2",
+      "treatment": "Quizilog dry town"
+    },
+    {
+      "id": 9,
+      "region": "C2",
+      "treatment": "river/desert transition"
+    },
+    {
+      "id": 10,
+      "region": "D2",
+      "treatment": "river bridges and groves"
+    },
+    {
+      "id": 11,
+      "region": "E2",
+      "treatment": "sand-road river crossing"
+    },
+    {
+      "id": 12,
+      "region": "F2",
+      "treatment": "desert cliff shop"
+    },
+    {
+      "id": 13,
+      "region": "A3",
+      "treatment": "Zephyr snow basin preserved; adjoining ground dressed"
+    },
+    {
+      "id": 14,
+      "region": "B3",
+      "treatment": "meadow/desert edge"
+    },
+    {
+      "id": 15,
+      "region": "C3",
+      "treatment": "river crossing"
+    },
+    {
+      "id": 16,
+      "region": "D3",
+      "treatment": "Maynard western road"
+    },
+    {
+      "id": 17,
+      "region": "E3",
+      "treatment": "Maynard accepted treatment preserved"
+    },
+    {
+      "id": 18,
+      "region": "F3",
+      "treatment": "cave approach and foothills"
+    },
+    {
+      "id": 19,
+      "region": "A4",
+      "treatment": "rock pass"
+    },
+    {
+      "id": 20,
+      "region": "B4",
+      "treatment": "woodland and cave"
+    },
+    {
+      "id": 21,
+      "region": "C4",
+      "treatment": "enclosed mixed rock/snow basin"
+    },
+    {
+      "id": 22,
+      "region": "D4",
+      "treatment": "road-river junction"
+    },
+    {
+      "id": 23,
+      "region": "E4",
+      "treatment": "river cave and chest approach"
+    },
+    {
+      "id": 24,
+      "region": "F4",
+      "treatment": "flower meadow and foothills"
+    },
+    {
+      "id": 25,
+      "region": "A5",
+      "treatment": "river cliff pass"
+    },
+    {
+      "id": 26,
+      "region": "B5",
+      "treatment": "cave and rock corridor"
+    },
+    {
+      "id": 27,
+      "region": "C5",
+      "treatment": "Ervyn garden town"
+    },
+    {
+      "id": 28,
+      "region": "D5",
+      "treatment": "road and lake meadow"
+    },
+    {
+      "id": 29,
+      "region": "E5",
+      "treatment": "riverbank and cliff"
+    },
+    {
+      "id": 30,
+      "region": "F5",
+      "treatment": "cliff meadow"
+    },
+    {
+      "id": 31,
+      "region": "A6",
+      "treatment": "palm desert and river"
+    },
+    {
+      "id": 32,
+      "region": "B6",
+      "treatment": "river cave corridor"
+    },
+    {
+      "id": 33,
+      "region": "C6",
+      "treatment": "lake and river junction"
+    },
+    {
+      "id": 34,
+      "region": "D6",
+      "treatment": "river and flower meadow"
+    },
+    {
+      "id": 35,
+      "region": "E6",
+      "treatment": "river confluence and grove"
+    },
+    {
+      "id": 36,
+      "region": "F6",
+      "treatment": "flower meadow and desert edge"
+    }
+  ],
+  "timing_context": "The 30-frame timing sample uses the full graphics-suite fixture settings; it is not an FPS benchmark of every default graphics option.",
+  "visual_review": "All 36 native region renders reviewed, plus town, woodland, river, snow and desert gameplay-scale day/night/rain views. Initial overly smooth tonal patches revised to quiet irregular pixel edges and grouped vegetation. Existing snow coverage and cave geometry preserved.",
+  "scope": "Presentation only. No original map, collision, encounter, core/save-format or player-save changes. Isolated test saves only; no packaging or live-game navigation.",
+  "audio_preview": "24-second offline preview: meadow day, meadow night, desert day, river day, each six seconds at in-game 65% master mix levels. Source clips, gain/filter recipe and provenance retained; not microphone-recorded gameplay.",
+  "simplify_review": "Reviewed task-relative diff: one existing-renderer partial for cached ground, bounded plants and local habitat queries; shared two-voice nature mixer; no generic biome framework, persistent state or simulation objects. Test fixtures render all regions and cover visibility, secret aliases, RNG, audio lifecycle and original town route access.",
+  "changed_code_and_existing_docs": [
+    "monogame/PORTING_PLAN.md",
+    "monogame/Yipe.Desktop/Content/Art/Retro/World/README.md",
+    "monogame/Yipe.Desktop/GameAudio.cs",
+    "monogame/Yipe.Desktop/TownGame.cs",
+    "monogame/Yipe.Desktop/WorldDesert.cs",
+    "monogame/Yipe.Desktop/WorldRenderer.cs",
+    "monogame/Yipe.Desktop/WorldTerrain.cs",
+    "monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs",
+    "monogame/Yipe.GraphicsChecks/Program.cs",
+    "monogame/Yipe.GraphicsChecks/README.md",
+    "monogame/Yipe.GraphicsChecks/WorldPresentationChecks.cs",
+    "monogame/Yipe.Desktop/WorldOutdoors.cs",
+    "monogame/Yipe.GraphicsChecks/OutdoorPresentationChecks.cs"
+  ],
+  "source_hashes": {
+    "monogame/PORTING_PLAN.md": "ddc1b3d8521f65b74773a27b8049aeef4fdd97f0d327a34c79fc08621277b43e",
+    "monogame/Yipe.Desktop/Content/Art/Retro/World/README.md": "bcd2bdb83aee1d6eff656839fab7e4f4b116c2c60473696f0aa7c0d2d0e7a685",
+    "monogame/Yipe.Desktop/GameAudio.cs": "2f42fa0e430f97e789935cda248c8c914af8dfbc26d2ab73783de8579db27edc",
+    "monogame/Yipe.Desktop/TownGame.cs": "cf3e35a75247c07500aa3e8b3b2511caf39b54f9c5534097ae5ffe2624dcb1fd",
+    "monogame/Yipe.Desktop/WorldDesert.cs": "ec26d27403b127522951dc11f14b808d3b133e6a020f1b8ff6fa901c49db5601",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "ad175b601340343e3bcb0659cd6b85faa4fe609a3fefdaf12c578f07165c2f92",
+    "monogame/Yipe.Desktop/WorldTerrain.cs": "f2abfe5e424140a5712d045e194ebc4d0e710224d74d3a1cdf59f13aadd5208b",
+    "monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs": "ab3f8fe887f5221ca75ac8030526b7b70308487a608b73587ce7a623ba17f64d",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "cc5347fa551b3dc3e88ba1c6f3b15cb299f7ac960c9859540b426808a3656351",
+    "monogame/Yipe.GraphicsChecks/README.md": "451361209d3197a2459b6ab6daa9514bb33d269fa5ccd4492bb0e61fb119041b",
+    "monogame/Yipe.GraphicsChecks/WorldPresentationChecks.cs": "507ac132618b4bccc4d7582776ab8bea536510e0e5ce7ee0ae9dcaeefd3787b7",
+    "monogame/Yipe.Desktop/WorldOutdoors.cs": "89dc6b1a0b581c2f55fb47ef7662b1b0f0a706e76d0b25165daf5dc68bdbe20c",
+    "monogame/Yipe.GraphicsChecks/OutdoorPresentationChecks.cs": "7d147ec627cc2bb05609acb45c80473601b89e2119e4b20fa91d9e9bdfe94592"
+  },
+  "new_audio_assets": {
+    "sources": [
+      {
+        "title": "Crickets Ambient Noise - loopable",
+        "author": "Wolfgang_ / Ted Kerr",
+        "source": "https://opengameart.org/content/crickets-ambient-noise-loopable",
+        "download": "https://opengameart.org/sites/default/files/crickets_1.mp3",
+        "license": "CC0-1.0",
+        "sha256": "5b5bd1f744087888c5623543c3ff80be9c2ce106093993e7c8a8492b0280b2c0"
+      },
+      {
+        "title": "Ambient Bird Sounds",
+        "author": "isaiah658",
+        "source": "https://opengameart.org/content/ambient-bird-sounds",
+        "download": "https://opengameart.org/sites/default/files/birds-isaiah658_0.ogg",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "sha256": "359e4e3f9da9d75aac64cede511c7e3ef8b461f9d9f8c230f8f80e44c4b3e35f"
+      },
+      {
+        "title": "Park ambiences \u2014 wind",
+        "author": "Thimras",
+        "source": "https://opengameart.org/content/park-ambiences",
+        "download": "https://opengameart.org/sites/default/files/park_ambience_wind.wav",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "sha256": "5c381856745b4706e7eba55eb9271a61a530e90c05df8126adb2db89ecfa6c5a"
+      },
+      {
+        "title": "Park ambiences \u2014 river",
+        "author": "Thimras",
+        "source": "https://opengameart.org/content/park-ambiences",
+        "download": "https://opengameart.org/sites/default/files/park_ambience_river.wav",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "sha256": "da0c0c9b1249a83a1611cc116d5737b0864a8db9f45f1ae8dcc079d0f7c0bbbf"
+      }
+    ],
+    "processing": "outdoor-birds.wav is the existing 28-second filtered bird-only recording from the Maynard recipe (280\u20137500Hz, two-second wrapped crossfade, PCM16 stereo 22050Hz). outdoor-night.wav: cricket clip trimmed to 11s, filtered 550\u20136500Hz, 0.5-second wrapped crossfade, RMS target 0.065, peak cap 0.75, PCM16 stereo 22050Hz. Reuses maynard-night.wav as the habitat wind bed and maynard-river.wav for positional water. No synthesized sounds added.",
+    "outputs": [
+      {
+        "file": "outdoor-birds.wav",
+        "duration_seconds": 28.0,
+        "channels": 2,
+        "sample_rate": 22050,
+        "rms": 0.052649607859042026,
+        "peak": 0.79998779296875,
+        "sha256": "2a73cc58c4bd33b0bb52ca2268d6956998c6e0b863e5e6e7532f4ebb79c126e9"
+      },
+      {
+        "file": "outdoor-night.wav",
+        "duration_seconds": 10.5,
+        "channels": 2,
+        "sample_rate": 22050,
+        "rms": 0.06500001412673198,
+        "peak": 0.371185302734375,
+        "sha256": "243e09e484b21999f3a7dbdecfe20e79c56871e04ebaa7d94951843563622fe2"
+      }
+    ]
+  },
+  "known_limits": [
+    "Physical controller and other OS verification remain separate.",
+    "User aesthetic review of the new overworld pass is pending; previously deferred cloud-shadow redesign is untouched."
+  ]
+}

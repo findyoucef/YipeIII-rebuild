@@ -1,0 +1,23 @@
+{
+  "orchestrator_model": "gemini-3.8-flash-low",
+  "route": "invoke_subagent / image-generator",
+  "elapsed_seconds": 54.4,
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "format": "JPEG",
+  "has_alpha": false,
+  "requested_grid": [
+    2,
+    2
+  ],
+  "actual_grid": [
+    4,
+    4
+  ],
+  "painted_checkerboard": true,
+  "ground_marks_present": true,
+  "accepted_for_production": false,
+  "exact_image_model_id": "not verified"
+}

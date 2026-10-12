@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Yipe.Core.csproj (in 70 ms).
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/Yipe.Desktop.csproj (in 80 ms).
+  Yipe.Core -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/bin/Release/net8.0/Yipe.Core.dll
+  Yipe.Desktop -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.53

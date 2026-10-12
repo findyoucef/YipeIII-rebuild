@@ -1,0 +1,13 @@
+{
+  "pid": 80637,
+  "existing_game_pids_preserved": [
+    79052
+  ],
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+  "preview_directory": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/monster-roster-complete-20261008-085509",
+  "copied_from": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/monster-roster-preview-20261008-081750",
+  "selected_save": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/monster-roster-complete-20261008-085509/game.y3m",
+  "log": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/monster-roster-complete-20261008-085509/launch.log",
+  "process_verified": true,
+  "startup_log": ""
+}

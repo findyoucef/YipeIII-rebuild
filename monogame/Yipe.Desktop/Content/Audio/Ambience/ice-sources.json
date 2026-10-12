@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-10",
+  "sources": [
+    {
+      "title": "Park ambiences \u2014 wind",
+      "author": "Thimras",
+      "source": "https://opengameart.org/content/park-ambiences",
+      "license": "CC0-1.0",
+      "input": "maynard-night.wav",
+      "input_sha256": "f0299d8bb2b1e54f9faa39cc0eb5488aa92132b31036286fe40c1631a08a9c79",
+      "original_credit_record": "maynard-sources.json"
+    },
+    {
+      "title": "Ice Crack 5.wav",
+      "author": "ecfike",
+      "source": "https://freesound.org/people/ecfike/sounds/177217/",
+      "download": "https://cdn.freesound.org/previews/177/177217_2337290-hq.mp3",
+      "format": "Public HQ MP3 preview of the CC0 recording",
+      "license": "CC0-1.0",
+      "source_sha256": "41eeb59634b26337649bba5564e8da7174e89d0b885e567a641e665c5b9c463d"
+    }
+  ],
+  "processing": "58-second recorded wind loop; 120\u20132100 Hz filter and 0.055 RMS. Recorded ice crack filtered 150\u20135000 Hz with quiet 140/290ms echoes, peak 0.18/0.14 at 13/39 seconds. Stereo PCM16 22050Hz. No synthesized audio. Reproducible recipe retained with evidence.",
+  "output": {
+    "file": "ice-cave.wav",
+    "duration_seconds": 58.0,
+    "rms": 0.055031702138890554,
+    "peak": 0.524383544921875,
+    "sha256": "7a5e49b50d1037bbed091846d7aac2798ada06bf3647c93393992dace24fa8ef"
+  }
+}

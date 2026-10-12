@@ -1,0 +1,14 @@
+Ice Cave ambience
+
+Park ambiences — wind, by Thimras
+https://opengameart.org/content/park-ambiences
+Reused processed maynard-night.wav; original provenance in maynard-sources.json.
+
+Ice Crack 5.wav, by ecfike
+https://freesound.org/people/ecfike/sounds/177217/
+Public HQ preview used.
+
+Both recordings: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Filtered and mixed with restrained echo; processing and hashes in ice-sources.json.

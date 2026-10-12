@@ -1,0 +1,42 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/snow-biome/reviewed-focused/yipe-graphics-20261008-194457-b522f078
+Content startup and five initial frames: 3.38 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Winter art compiles to a native four-frame 48px atlas with binary alpha and the shared palette
+PASS: Both snowy pines, the Zephyr arch and the rock/branch detail have nonempty native frames
+PASS: Surface A3 resolves to the authored Zephyr cave at 5,4 and sign at 8,2
+PASS: Snow is connected, opaque native terrain with quiet cream coverage rather than dense repeating grain
+PASS: Adjacent full snow cells join without a grid seam or exposed grass crack
+PASS: The authored melting edge mixes snow and exposed ground at its actual footprint
+PASS: Searching or replacing hidden-gold snow with ordinary snow cannot reveal its position through artwork or mask changes
+PASS: Normal and secret snow select the same recorded snow-crunch surface
+PASS: The matching snow-capped A3/A2 ridge spine retains shared contour and color continuity
+PASS: The ridge combines snow-covered tops with visible dark slate cliff faces
+PASS: A2's warm ground and weather do not retain A3 snow masks
+PASS: Snow weather stays outside the Zephyr cave interior
+PASS: Snowfall repeats at fixed scene time and drifts when that clock advances
+PASS: Precipitation Off bypasses snowfall and Strong increases its sparse density
+PASS: Every snowflake remains inside the compiled cold basin
+PASS: Snowfall cannot expose an unexplored snowy cell or cliff
+PASS: Cold pixels receive no rain streaks while every warm rain pixel keeps its original rendering
+PASS: Warm ground impacts cannot splash a neighboring snow pixel at the cold boundary
+PASS: A walking step produces no snow track before its foot plant
+PASS: An accepted planted walking step produces one snow boot/powder contact
+PASS: Snow boot impressions and contact powder are clipped to actual snow pixels
+PASS: Boot trails repeat at fixed time, powder lifts briefly, and both fade without permanent marks
+PASS: Pause freezes snow contacts and their fading scene clock
+PASS: Passive movement and idle updates cannot create snow footprints
+PASS: Restoring or snapping the player clears old snow contacts
+PASS: A real map synchronization clears the prior basin's snow trail
+PASS: Removing snow on the same map instance invalidates ground and cold-weather caches
+PASS: Snow rendering, contacts, weather and art inspection preserve the same-session gameplay/RNG snapshots
+PASS: Snow and moonlight compose with miniature, scanlines, vignette and local lighting
+Passed 38 visual integration checks. Focused snow-biome run.

@@ -1,0 +1,26 @@
+{
+  "59": {
+    "changed_pixels": 34108,
+    "changed_pixels_outside_wall_cells": 0
+  },
+  "60": {
+    "changed_pixels": 25052,
+    "changed_pixels_outside_wall_cells": 0
+  },
+  "65": {
+    "changed_pixels": 36589,
+    "changed_pixels_outside_wall_cells": 0
+  },
+  "66": {
+    "changed_pixels": 23565,
+    "changed_pixels_outside_wall_cells": 0
+  },
+  "105": {
+    "changed_pixels": 35624,
+    "changed_pixels_outside_wall_cells": 0
+  },
+  "106": {
+    "changed_pixels": 35349,
+    "changed_pixels_outside_wall_cells": 0
+  }
+}

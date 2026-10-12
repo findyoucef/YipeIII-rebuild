@@ -1,0 +1,74 @@
+{
+  "task": "Remaster all Fire Cave interiors as an active volcano in crisp pixel art",
+  "scope": {
+    "upper": [
+      67,
+      71,
+      72,
+      73
+    ],
+    "deep": [
+      95,
+      100,
+      101,
+      107,
+      111,
+      112,
+      113
+    ],
+    "entrance": "Surface B6/map32"
+  },
+  "goal": "Implementation and local verification complete; user visual/audio review pending",
+  "changes": [
+    "Connected finely fractured basalt and quiet ash/cooled-flow floors",
+    "Recessed animated magma and cooling crust within existing blocked rock; bubbles, mineral flecks and cooled fragments",
+    "Shared visible stone mask for ground contact and contour amber light",
+    "Localized crisp heat, embers, intermittent vent smoke and falling ash; stronger deep chambers",
+    "Warm world creatures/contact shadows; unchanged original artwork, movement and battle portraits",
+    "Licensed 58-second sampled lava/fire ambience with existing audio lifecycle and recorded stone/grit footsteps"
+  ],
+  "verification": {
+    "build": "Checked Release; zero warnings/errors",
+    "core_checks": 613,
+    "focused_gpu_checks": 206,
+    "full_gpu_checks": 2614,
+    "monster_types": 41,
+    "tour_frames": 360,
+    "maps_compared": 115,
+    "changed_maps": [
+      67,
+      71,
+      72,
+      73,
+      95,
+      100,
+      101,
+      107,
+      111,
+      112,
+      113
+    ],
+    "unchanged_maps": 104,
+    "unchanged_other_lighting_captures": 22,
+    "unchanged_breeding_captures": 73,
+    "core_and_original_map_diff": "none",
+    "desktop_matches_tested_binary": true,
+    "diff_check": "pass",
+    "isolated_save_rng_checks": "pass",
+    "personal_files": "Initial-to-later hashes changed during the session. No task restore/replacement; stable between later observation and completion. See personal-files.json."
+  },
+  "visual_review": "Inspected all 11 native rooms, entrance and deep default gameplay, isolated contour light, before/after native maps and frames across the deep-room animation. Floors were reduced in contrast through three iterations. Original unstable-floor warning cracks, routes, doors and rescue scenes remain readable. This is implementation review, not user approval.",
+  "simplicity_review": "Reviewed WorldFire, scoped WorldRenderer/Terrain/Desert/MonsterAnimation, PixelLighting, TownGame, GameAudio and GraphicsChecks changes against the task snapshots and established breeding/Hell implementations. No outstanding findings: one cached terrain/animation pass, shared existing contour-lighting path, existing heat compositor and single ambience lifecycle; no new gameplay state or general effects framework. Production code was not refactored for test convenience.",
+  "audio_sources": "monogame/Yipe.Desktop/Content/Audio/Ambience/fire-cave-sources.json",
+  "commands": [
+    "dotnet build monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:CheckForOverflowUnderflow=true",
+    "dotnet build monogame/Yipe.Tests/Yipe.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:CheckForOverflowUnderflow=true",
+    "dotnet monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --fire-only --output build/fire-cave/third",
+    "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --output build/fire-cave/full --capture-monsters 1"
+  ],
+  "focused_output": "build/fire-cave/third/yipe-graphics-20261009-053340-db41b2c6",
+  "full_output": "build/fire-cave/full/yipe-graphics-20261009-053623-10fa78ca",
+  "comparison_baseline": "build/breeding-light-contours/full/yipe-graphics-20261009-044502-0e532b16",
+  "delivery": "Local build only; no package, automatic launch, live-save navigation or save-format change."
+}

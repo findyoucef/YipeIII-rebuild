@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-08",
+  "status": "implemented and verified locally",
+  "locations": [
+    {
+      "name": "Quizilog",
+      "region": "B2",
+      "layer": "surface",
+      "map_id": 8
+    },
+    {
+      "name": "Ervyn",
+      "region": "C5",
+      "layer": "surface",
+      "map_id": 27
+    }
+  ],
+  "cause": "Maynard had a dedicated building and scenery pass; the other towns used generic world buildings and ground.",
+  "changes": [
+    "Reuse Maynard shop signs, facade shading, shadows, glowing windows and smith smoke.",
+    "Connect all Quizilog shop approaches with warm stone lanes, preserving blocked palms; add trade props and desert planting.",
+    "Connect Ervyn shops and its eastern road with a garden loop, flowers, shrubs and butterflies.",
+    "Show new paving in area maps and select stone footsteps; cover props and shadows in unexplored cells."
+  ],
+  "verification": {
+    "build": "Release, checked arithmetic, zero warnings/errors",
+    "core_checks": 613,
+    "visual_integration_checks": 2292,
+    "town_checks": 13,
+    "town_coverage": [
+      "walkability and connected shop approaches",
+      "stone versus adjoining soil footsteps",
+      "scene-time animation and fixed-time determinism",
+      "opaque unexplored area-map cells",
+      "full gameplay/save/RNG preservation",
+      "Ervyn eastern road exit"
+    ],
+    "graphics_command": "dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --output build/town-upgrades/passed --capture-monsters 1",
+    "graphics_output": "build/town-upgrades/passed/yipe-graphics-20261008-224806-788df839",
+    "test_maintenance": "Updated the older mountain color assertion to accept the existing approved SnowPalette while retaining binary alpha and contour checks. No mountain artwork changed for this task.",
+    "simplicity_review": "Reuse existing building and prop renderers and path atlas; two authored layouts, no new textures, persistent state, simulation or extension framework."
+  },
+  "previews": {
+    "Quizilog": [
+      "Quizilog-before.png",
+      "Quizilog.png",
+      "Quizilog.gif"
+    ],
+    "Ervyn": [
+      "Ervyn-before.png",
+      "Ervyn.png",
+      "Ervyn.gif"
+    ]
+  },
+  "capture": "Isolated fixtures; actual native game rendering at 2x nearest-neighbor scale, no post-processing. GIFs contain 32 frames sampled at 8 fps.",
+  "preservation": "No core map, collision, quest, encounter, save-format or personal-save edits. Local builds only; no package generated.",
+  "source_sha256": {
+    "monogame/Yipe.Desktop/TownRenderer.cs": "dd19d0dd81f7f30ff2b442ecdb0091b758f71e28422d6b6ffbde51d673686428",
+    "monogame/Yipe.Desktop/TownScenery.cs": "2cc58d1417ae4b2d571b3836326c46700096e5793dadcb75fb17b1d2475521b6",
+    "monogame/Yipe.Desktop/TownMapOverlay.cs": "31ec3fc5a5aae6f99efee250cb4507c8314902300c6c4135b742a5f687d02210",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "c1ff77486baf25a85ba88ad2ce996c94c02875938f190cd3b22db3abd6c256ed",
+    "monogame/Yipe.Desktop/WorldTerrain.cs": "fe0dfb5fd6db14f11a1b754c881fdf0fdfebaac5e993d9222dcb546b81b1196b",
+    "monogame/Yipe.Desktop/WorldVillages.cs": "0d19480a2fc3f1598984690bf7bd9e06aa75511fb733972114704c69dd5861f3",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "9bfd48ca9cb39d96cc47496dadc3652563cd328db2e99a07f1f51a145f403646",
+    "monogame/Yipe.GraphicsChecks/VillagePresentationChecks.cs": "9bb213168d67702f15d6f60c6a98e7a689836e1c0852cc6d7e0bdffcb22dcdd7",
+    "monogame/Yipe.GraphicsChecks/MountainPresentationChecks.cs": "cff3b977c210c236cc67575f37b7f5ed86cfedb1924917b1000095f8d4da71be",
+    "monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs": "76a236a6e6460797860b2b07330f8e00a102f51b8675c00d2e2372a4f5bee6c7",
+    "monogame/Yipe.GraphicsChecks/EarthPresentationChecks.cs": "c5188b26e6e29627d915c4d8121938e4f4fd6326f1f2a4aa1025230c035a135d"
+  }
+}

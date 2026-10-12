@@ -1,0 +1,95 @@
+{
+  "task": "Review Earth Cave against remaster-yipe-caves and diagnose missing ambience",
+  "scope": {
+    "upper": {
+      "E3": 57,
+      "E4": 63,
+      "E5": 69,
+      "E6": 75
+    },
+    "deep": {
+      "E4": 103,
+      "E5": 109,
+      "E6": 115
+    }
+  },
+  "identity_to_preserve": [
+    "Warm earth and sedimentary rock",
+    "Roots and fossils",
+    "Room landmarks and damp lower chambers",
+    "Existing shallow puddles and reflections",
+    "Original layouts, collisions, secrets, encounters and rescue locations"
+  ],
+  "findings": [
+    {
+      "priority": 1,
+      "area": "Ambient audio",
+      "observed": "UpdateCaveAmbience selects Fire or breeding audio only; Earth falls through to no track.",
+      "source": "monogame/Yipe.Desktop/TownGame.cs:300",
+      "recommendation": "Add an Earth-specific recorded cave loop, with low underground air, distant drips and sparse settling grit. Reuse existing fade, mute, pause/focus and effects-ducking behavior. Select and credit a suitable licensed recording before implementing."
+    },
+    {
+      "priority": 2,
+      "area": "Visual atmosphere",
+      "observed": "Earth already renders fungus glow, falling drips, ripple rings and faint dust. Sources are sparse and their low opacity is easy to lose at gameplay scale.",
+      "source": "monogame/Yipe.Desktop/WorldEarth.cs:319",
+      "recommendation": "Use deliberate drip positions near wet rock and puddles, clearer pixel ripples, restrained visible motes near light, and occasional wall grit. Keep density localized and test with default presentation."
+    },
+    {
+      "priority": 3,
+      "area": "Contour lighting",
+      "observed": "Only breeding and volcanic maps select BuildCaveMask; Earth uses the older tile-level visibility and torch cutoff. Fungi use a separate translucent glow rather than the contour-light path.",
+      "source": "monogame/Yipe.Desktop/PixelLighting.cs:132",
+      "recommendation": "Provide the Earth silhouette and its own light positions to contour lighting. Integrate fungus and lamp sources, preserve closed-door and fog blocking, inspect isolated masks and light-on/off views."
+    },
+    {
+      "priority": 4,
+      "area": "Wall material",
+      "observed": "Warm earthen identity and landmarks are useful, but broad mottled wall faces and continuous bright edging read softer and flatter than the approved caves.",
+      "source": "monogame/Yipe.Desktop/WorldEarth.cs:95",
+      "recommendation": "Keep warm sedimentary rock, roots and fossils; add finer facets and selective layered cuts, varied chipped edges and stronger front-face depth. Anchor detail across matching room overlaps instead of map-local seeds."
+    },
+    {
+      "priority": 5,
+      "area": "Floor and footsteps",
+      "observed": "The floor relies on brown patches, dither and scattered grit. Ordinary dry Earth terrain selects Grass footsteps; water and stone overrides happen earlier.",
+      "source": "monogame/Yipe.Desktop/WorldRenderer.cs:87",
+      "recommendation": "Add compacted dirt, restrained embedded stones, worn routes and damp silt at puddles. Avoid a dense fractured-slate floor. Choose existing granular recordings for dirt/gravel while preserving water contacts."
+    },
+    {
+      "priority": 6,
+      "area": "Creature integration",
+      "observed": "Earth creatures retain ordinary tint and contact-shadow strength; breeding and Fire have biome-specific treatment.",
+      "source": "monogame/Yipe.Desktop/WorldMonsterAnimation.cs:211",
+      "recommendation": "Evaluate restrained warm-earth tint, material-matched landing dust and modest contact shadows, preserving silhouettes, animations, hover height and battle art."
+    }
+  ],
+  "suggested_order": "Ambient audio and visual atmosphere first, then contour lighting, then targeted walls/floor and creature integration.",
+  "inspection": {
+    "native_rooms_reviewed": [
+      57,
+      63,
+      69,
+      75,
+      103,
+      109,
+      115
+    ],
+    "gameplay_views_reviewed": [
+      "upper E3 and deep E5 presentation",
+      "upper E3/E4 with local lighting"
+    ],
+    "captures_source": "build/graphics-submenu/full/yipe-graphics-20261009-060754-7b33b7e6",
+    "capture_note": "Retained prior verified captures, not a fresh graphics run. WorldEarth, PixelLighting, WorldRenderer and WorldMonsterAnimation hashes match the snapshot taken immediately after that full run and before the breeding-floor iterations. Later production floor changes are confined to WorldBreeding.",
+    "tests": "No fresh tests run for this read-only review. Prior full run passed 2629 checks. Existing Earth tests cover visual atmosphere, not an Earth ambient audio lifecycle."
+  },
+  "source_hashes": {
+    "monogame/Yipe.Desktop/WorldEarth.cs": "8d16db4ae7b4ed5386f69e5137d44852ce9e71f1516598f7e1335bdfcc8d0c9e",
+    "monogame/Yipe.Desktop/PixelLighting.cs": "fa8a77a920691f530dc2b11de86ae7a643c54c1552fdb6672e3389baf75333c1",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "61bc5f2af99fdb8a6a1a2241fd14eb593bcb68722e31808c577f5af11ee8418e",
+    "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "b83e6881d0dfccd77634072075669632bcecae52fc62d3b47c7cfbf5a7a82e4c",
+    "monogame/Yipe.Desktop/GameAudio.cs": "9290cffd3b6b6bab144c3ee5af8a92f67ceb330eb3dca0722043916c09ef73d2",
+    "monogame/Yipe.Desktop/TownGame.cs": "823e679a908d991ee5a78dff068175292a76fa56f4b9153189f0cc03f0f607a3"
+  },
+  "delivery": "Review and recommendations only. No gameplay/rendering/audio code or assets changed; no live adventure navigation or relaunch."
+}

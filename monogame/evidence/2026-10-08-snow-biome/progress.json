@@ -1,0 +1,29 @@
+{
+  "goal_status": "implemented; latest transition awaiting user review",
+  "location": {
+    "layer": "Surface",
+    "region": "A3",
+    "map": 13,
+    "entrance": [
+      5,
+      4
+    ],
+    "sign": [
+      8,
+      2
+    ]
+  },
+  "phase": "User approved the cold-white correction. Follow-up ridge taper and continuous snowfall built and visually inspected; 39 focused GPU checks passed.",
+  "core_checks": 613,
+  "steps": {
+    "snow_ground": "cold-white correction accepted by user",
+    "cliffs": "64px patchy taper implemented and visually inspected",
+    "vegetation": "implemented and verified",
+    "entrance": "implemented and verified",
+    "weather": "steady basin snowfall; storm intensification",
+    "contacts_audio": "implemented and verified"
+  },
+  "graphics_checks": 2278,
+  "focused_checks": 39,
+  "prior_check_results": "613 core and 2278 full graphics describe the initial implementation; 39 focused checks verify the current snow rendering."
+}

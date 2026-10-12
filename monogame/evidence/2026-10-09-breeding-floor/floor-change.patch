@@ -1,0 +1,55 @@
+--- before/WorldBreeding.cs
++++ monogame/Yipe.Desktop/WorldBreeding.cs
+@@ -115,15 +115,45 @@
+             for (var x = 0; x < width; x++)
+             {
+                 var i = y * width + x; var wx = x + ox; var wy = y + oy;
+-                var broad = EarthNoise(wx / 87f, wy / 71f, 37 + layer);
+-                var grain = EarthSeed(wx / 2, wy / 2, 53 + layer);
+-                var dust = EarthNoise(wx / 29f, wy / 23f, 23 + layer);
+-                var threshold = (dither[(wy & 3) * 4 + (wx & 3)] + .5f) / 16f;
+-                var color = BreedingSoilPalette[broad + (threshold - .5f) * .12f < .40f ? 1 : 2];
+-                if (dust > .5f && grain % 19 == 0 && x % 2 == 0) color = BreedingSoilPalette[3];
+-                if (grain % 173 == 0 && x % 2 == 0 && y % 2 == 0) color = RetroArt.Palette[2];
++                var color = BreedingSoilPalette[2];
+                 if (!stone[i])
+                 {
++                    // Compacted mineral earth, with scattered flat slate partly
++                    // buried in it. All marks cross region borders in world space.
++                    var broad = EarthNoise(wx / 59f, wy / 43f, 37 + layer);
++                    var dust = EarthNoise(wx / 23f, wy / 17f, 23 + layer);
++                    var threshold = (dither[(wy & 3) * 4 + (wx & 3)] + .5f) / 16f;
++                    var shade = broad + (threshold - .5f) * .07f < .44f ? 1 : 2;
++                    for (var sy = wy / 20 - 1; sy <= wy / 20 + 1; sy++)
++                        for (var sx = wx / 28 - 1; sx <= wx / 28 + 1; sx++)
++                        {
++                            var seed = EarthSeed(sx, sy, 149 + layer);
++                            var dx = wx - (sx * 28 + 5 + seed % 19);
++                            var dy = wy - (sy * 20 + 4 + seed / 19 % 13);
++                            var skew = dx + dy * ((seed / 247 % 5) - 2) * .25f;
++                            var rx = 8 + seed % 8; var ry = 2 + seed / 7 % 3;
++                            var edge = Math.Max(Math.Abs(skew) / rx, Math.Abs(dy) / (float)ry);
++                            edge = Math.Max(edge, (Math.Abs(skew) + Math.Abs(dy) * 1.3f) / (rx + ry * .7f));
++                            if (seed % 3 == 0 && dust > .35f && edge < 1
++                                && (edge < .75f || dy < 0 && dust > .45f))
++                            {
++                                shade = edge > .85f ? 1 : 2;
++                                if (dy < 0 && edge is > .6f and < .85f && (int)(skew + rx) / 5 % 3 != seed % 3) shade = 3;
++                                if (dy + (int)(skew / 4) == 0 && seed % 2 == 0) shade = 1;
++                            }
++                            // Short, broken scrapes in the packed earth; no
++                            // continuous outlines or raised paving across paths.
++                            else if (seed % 5 == 1 && Math.Abs(dx) < 5 && dust < .6f)
++                            {
++                                var scrape = dy + (dx + 6) / 4;
++                                if (scrape == 0) shade = 1;
++                                else if (scrape == 1 && broad > .5f) shade = 2;
++                            }
++                        }
++                    var grain = EarthSeed(wx, wy, 53 + layer);
++                    if (grain % 131 == 0) shade = 1;
++                    else if (dust > .52f && grain % 97 == 0) shade = 3;
++                    color = BreedingSoilPalette[shade];
+                     // A short, stepped contact shadow follows the actual chipped
+                     // rock, including cut corners, rather than the square map cell.
+                     var nearest = 9;

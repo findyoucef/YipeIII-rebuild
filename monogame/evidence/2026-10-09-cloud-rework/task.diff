@@ -1,0 +1,283 @@
+--- before/monogame/Yipe.Desktop/SunShafts.cs
++++ after/monogame/Yipe.Desktop/SunShafts.cs
+@@ -62,35 +62,47 @@
+                 var level = MathF.Floor(light * 4) / 4;
+                 maskPixels[y * mask.Width + x] = new Color(48, 38, 20) * level;
+             }
+-        // Separate cloud icons: rounded crowns, small side puffs and a mostly flat base.
+-        // Stagger their placement and vary size/handedness without letting the shapes merge.
++        // Connected puffs give each small cloud a distinct crown and rounded underside.
++        // Build only the shadow mask here: terrain and sprite pixels are never filtered.
++        (float X, float Y, float Radius)[][] silhouettes =
++        [
++            [(-23, 6, 7), (-13, 0, 10), (0, -5, 14), (16, 2, 10), (24, 7, 7)],
++            [(-24, 6, 7), (-12, -1, 12), (9, -6, 14), (23, 5, 8)],
++            [(-20, 6, 9), (-9, 0, 11), (4, -9, 13), (18, 3, 10)],
++            [(-24, 5, 7), (-13, -5, 11), (2, 0, 11), (16, -2, 10), (24, 7, 7)],
++        ];
+         var cloudRandom = new Random(17);
+-        for (var row = 0; row < 5; row++)
+-            for (var column = 0; column < 5; column++)
+-            {
+-                var centerX = 44 + column * Period / 5 + row % 2 * 42 + cloudRandom.Next(-10, 11);
+-                var centerY = 48 + row * Period / 5 + cloudRandom.Next(-24, 25);
+-                var scale = .85f + cloudRandom.Next(4) * .08f;
+-                var flip = cloudRandom.Next(2) == 0 ? -1 : 1;
+-                (float X, float Y, float Radius)[] puffs =
+-                    [(-22, 4, 10), (-6 + cloudRandom.Next(5), -3, 15), (13, 0, 12), (24, 6, 8)];
+-                for (var dy = -22; dy <= 16; dy++)
+-                    for (var dx = -36; dx <= 36; dx++)
+-                    {
+-                        var x = dx / scale * flip; var y = dy / scale;
+-                        if (y > 14) continue;
+-                        var covered = x is >= -22 and <= 24 && y is >= 3 and <= 14;
+-                        foreach (var puff in puffs)
+-                            covered |= (x - puff.X) * (x - puff.X) + (y - puff.Y) * (y - puff.Y) <= puff.Radius * puff.Radius;
+-                        if (!covered) continue;
+-                        var cover = .8f + .2f * Math.Clamp((y + 18) / 32, 0, 1);
+-                        var index = ((centerY + dy + Period) % Period) * Period + (centerX + dx + Period) % Period;
+-                        cloudPixels[index] = Color.Black * cover;
+-                    }
+-            }
++        var centers = new List<Point>(20);
++        for (var attempt = 0; attempt < 400 && centers.Count < 20; attempt++)
++        {
++            var center = new Point(cloudRandom.Next(Period), cloudRandom.Next(Period));
++            // Leave clear air between silhouettes, including across the wrapped edges.
++            if (centers.Any(other => Math.Min(Math.Abs(center.X - other.X), Period - Math.Abs(center.X - other.X)) < 78
++                && Math.Min(Math.Abs(center.Y - other.Y), Period - Math.Abs(center.Y - other.Y)) < 60)) continue;
++            centers.Add(center);
++            var puffs = silhouettes[cloudRandom.Next(silhouettes.Length)];
++            var scale = .75f + cloudRandom.Next(6) * .05f;
++            var flip = cloudRandom.Next(2) == 0 ? -1 : 1;
++            var density = .76f + cloudRandom.Next(5) * .05f;
++            for (var dy = -26; dy <= 23; dy++)
++                for (var dx = -34; dx <= 34; dx++)
++                {
++                    var x = dx / scale * flip; var y = dy / scale;
++                    // A shallow oval joins the crown to one calm, curved base.
++                    var covered = x * x / (25 * 25) + (y - 7) * (y - 7) / (8 * 8) <= 1;
++                    foreach (var puff in puffs)
++                        covered |= (x - puff.X) * (x - puff.X) + (y - puff.Y) * (y - puff.Y) <= puff.Radius * puff.Radius;
++                    if (!covered) continue;
++                    // One density envelope keeps the connected puffs from looking like bubbles.
++                    var core = Math.Clamp(1 - x * x / (32 * 32) - y * y / (28 * 28), 0, 1);
++                    var cover = density * (.78f + .22f * core);
++                    var index = ((center.Y + dy + Period) % Period) * Period + (center.X + dx + Period) % Period;
++                    cloudPixels[index] = Color.Black * cover;
++                }
++        }
+         // Feather just the shadow mask, once at startup. Weighted horizontal and vertical
+         // passes keep the cloud centers defined and fade both sides of each edge, including seams.
+-        const int featherRadius = 6;
++        const int featherRadius = 3;
+         const int featherWeight = (featherRadius + 1) * (featherRadius + 1);
+         var horizontal = new float[cloudPixels.Length];
+         for (var y = 0; y < Period; y++)
+@@ -127,7 +139,7 @@
+         return maskPixels[y * Period + x].R / 48f * Amount(time, strength) * (1 - cover) * Daylight;
+     }
+ 
+-    private static Vector2 CloudDrift(double time) => new((float)(time * 3.2 % Period), (float)(time * .7 % Period));
++    private static Vector2 CloudDrift(double time) => new((float)(time * 2.4 % Period), (float)(time * .55 % Period));
+ 
+     private float CloudAt(Vector2 position, double time)
+     {
+--- before/monogame/Yipe.GraphicsChecks/CloudShadowChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/CloudShadowChecks.cs
+@@ -37,7 +37,7 @@
+             Set("paused", false); Set("pauseAmount", 0f); Set("overlay", null); Set("mapOpen", false);
+             Set("miniatureMode", 0); Set("scanlines", false); Set("vignette", false); Set("messageRemaining", 0d);
+             Set("sunShaftStrength", 1);
+-            foreach (var id in new[] { 17, 1, 7, 41, 57, 117, 118 })
++            foreach (var id in new[] { 17, 1, 7, 8, 22, 27, 41, 57, 117, 118 })
+             {
+                 var adventure = Scene(id);
+                 var snapshot = GameSaveCodec.Encode(adventure.Session, catalog);
+@@ -139,7 +139,7 @@
+             var mapOff = Frame(0, 1);
+             check(mapOff.SequenceEqual(Frame(2, 1)), "Clouds never shade the area map or its labels");
+             Set("mapOpen", false); Set("miniatureMode", 2); Set("scanlines", true);
+-            for (var frame = 0; frame < 192; frame++) Save(Frame(1, frame / 24d), $"animation-{frame:D3}.png");
++            for (var frame = 0; frame < 288; frame++) Save(Frame(1, frame / 12d), $"animation-{frame:D3}.png");
+         }
+         finally
+         {
+--- before/monogame/Yipe.GraphicsChecks/Program.cs
++++ after/monogame/Yipe.GraphicsChecks/Program.cs
+@@ -29,6 +29,7 @@
+         var hellOnly = false;
+         var maynardOnly = false;
+         var outdoorsOnly = false;
++        var cloudsOnly = false;
+         var menusOnly = false;
+         for (var i = 0; i < args.Length; i++)
+         {
+@@ -40,6 +41,7 @@
+                 Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
+                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
+                 Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
++                Console.WriteLine("--clouds-only runs focused cloud, sunlight, actor, weather and day/night checks.");
+                 Console.WriteLine("--maynard-only runs focused Maynard leaves and positional-audio checks.");
+                 Console.WriteLine("--hell-only runs focused Hell presentation and ambient-audio checks.");
+                 Console.WriteLine("--stone-only runs focused Stone Cave terrain, light and ambience checks.");
+@@ -55,6 +57,7 @@
+             else if (args[i] == "--monsters-only") monstersOnly = true;
+             else if (args[i] == "--snow-only") snowOnly = true;
+             else if (args[i] == "--outdoors-only") outdoorsOnly = true;
++            else if (args[i] == "--clouds-only") cloudsOnly = true;
+             else if (args[i] == "--maynard-only") maynardOnly = true;
+             else if (args[i] == "--hell-only") hellOnly = true;
+             else if (args[i] == "--stone-only") stoneOnly = true;
+@@ -83,6 +86,8 @@
+                 return 2;
+             }
+         }
++        if (cloudsOnly && (outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
++        { Console.Error.WriteLine("--clouds-only cannot be combined with other capture or route modes."); return 2; }
+         if (outdoorsOnly && (maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+         { Console.Error.WriteLine("--outdoors-only cannot be combined with other capture or route modes."); return 2; }
+         if (opening && record) { Console.Error.WriteLine("Use --record for the visual tour or --opening-route for the earned replay."); return 2; }
+@@ -137,7 +142,7 @@
+                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
+                     }
+                 }
+-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly);
++                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly);
+                 return 0;
+             }
+             catch (Exception error)
+@@ -179,7 +184,7 @@
+         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
+     }
+ 
+-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly)
++    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly)
+     {
+         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
+         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
+@@ -290,6 +295,17 @@
+         DayNightChecks.Run(game, outputDirectory, Check);
+         // Auto is exercised above; hold Day for deterministic comparisons of other effects.
+         Set("timeOfDayMode", 1);
++        if (cloudsOnly)
++        {
++            RainChecks.Run(game, outputDirectory, Check);
++            Set("rainStrength", 0);
++            CloudShadowChecks.Run(game, outputDirectory, Check);
++            Set("cloudShadowStrength", 0);
++            SunShaftChecks.Run(game, outputDirectory, Check);
++            SunActorChecks.Run(game, outputDirectory, Check);
++            Log($"Passed {checks} visual integration checks. Focused cloud and sunlight run.");
++            return;
++        }
+         FootstepChecks.Run(game, outputDirectory, Check);
+         if (!monstersOnly) SnowBiomeChecks.Run(game, outputDirectory, Check);
+         MonsterAnimationChecks.Run(game, outputDirectory, Check, monsterCaptures);
+--- before/monogame/PORTING_PLAN.md
++++ after/monogame/PORTING_PLAN.md
+@@ -17,14 +17,14 @@
+ 
+ | Field | Current state |
+ | --- | --- |
+-| Local gameplay launch | The latest local build opens the full adventure with 55 explored regions from `/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m`. Use this full adventure for ordinary local-build launch requests; the level-1 town demo is only for explicit testing. The prior recovered source and its latest personal updates are preserved. [Launch record](../build/local-game-launch.json). |
++| Local gameplay launch | Latest full adventure is open with the cloud rework, using the byte-identical local Desktop assembly through `build/cloud-rework/launcher` with refresh sync disabled for this process only (normal startup stalled in macOS display-link wait). Saved preferences unchanged. Screenshot confirms restored Maynard adventure; no save replacement. Use the full adventure specified by [launch record](../build/local-game-launch.json), never the level-1 demo. |
+ | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
+-| Next task | Review the completed overworld remaster in the local build. Prior Hell, breeding-floor, cloud-shadow and physical-controller reviews remain separate. |
+-| Last completed work | All 36 surface regions covered: Ervyn and Quizilog planting, connected meadow/sand variation, worn verges, clustered vegetation, leaves/wildlife, habitat wind/day/night nature and positional river/lake audio. Maynard and approved snow coverage preserved. [Ervyn](evidence/2026-10-09-overworld/comparison-27.png), [riverbanks](evidence/2026-10-09-overworld/comparison-35.png), [evidence](evidence/2026-10-09-overworld/review.json). |
+-| Latest verification | River-volume follow-up: checked local build, zero warnings/errors and 37 focused checks passed. The preceding full remaster passed graphics checks: 2,941 plus 360 tour frames; core checks: 613. All map, cave and other-town reference captures match exactly. Core source and original maps unchanged. The personal game saved/exited during final checks; its newer 55-region adventure and matching journal remain intact. [Evidence](evidence/2026-10-09-maynard-atmosphere/review.json). No repackaging. |
++| Next task | Review the reworked cloud shadows in the local build. Overworld aesthetic review, prior Hell/breeding-floor review and physical-controller verification remain separate. |
++| Last completed work | Cloud shadows: four varied puff silhouettes, curved bases, smaller separated footprints, irregular placement, coherent density, narrower feathering and slower drift. All 36 surface regions were remastered in the preceding task. [Cloud evidence](evidence/2026-10-09-cloud-rework/review.json). |
++| Latest verification | Cloud rework: local Release build, zero warnings/errors; 211 focused graphics checks passed, including clouds, sun/actor/dust, day/night and rain. All 33 personal files remained byte-identical before launch. Prior overworld full suite: 3,104 graphics checks, 360 tour frames and 613 core checks. No repackaging. [Cloud checks](evidence/2026-10-09-cloud-rework/checks.log). |
+ | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
+-| Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. After deferring earlier silhouettes, the user requested feathered edges; the softened revision is ready for review. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+-| Work left running or half implemented | The full monster roster is complete: 41 types, 656 pixel-art poses and final earned routes verified. Three NPC atlas entries remain separate. Cloud-shadow feathering still awaits visual review. Automatic rain, expanded battle presentation and the focused Stats/Details Enemy info layout were accepted. Physical-controller testing is explicitly open (zero connected). Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
++| Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
++| Work left running or half implemented | The full monster roster is complete: 41 types, 656 pixel-art poses and final earned routes verified. Three NPC atlas entries remain separate. The revised cloud silhouettes and feathering still await user visual review. Automatic rain, expanded battle presentation and the focused Stats/Details Enemy info layout were accepted. Physical-controller testing is explicitly open (zero connected). Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
+ | Blocking dependencies | Physical-controller/other-OS verification needs the actual environments; official console work needs approved access. |
+ | Save preservation | Cycle and graphics checks use isolated saves/profiles and compare full gameplay/RNG snapshots. Core source remains byte-identical; .y3m and map-journal formats remain unchanged. Cycle mode/phase live in the presentation profile. [Latest file checks](evidence/2026-10-08-day-night/personal-files.json). |
+ | Repository checkpoint | The first MonoGame checkpoint on main is titled `Add complete MonoGame desktop port with retro presentation`, based on C++ commit 349fffe71e052dd4e011f1fe09c0e3080f5bb723. It includes the port, artwork, fixtures, evidence and resume documentation. Use `git log -- monogame/PORTING_PLAN.md` to locate it. Evidence hashes describe files at capture time; later documentation updates may differ. |
+@@ -48,6 +48,42 @@
+ Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
+ with the working tree, and continue from the next unfinished task.”**
+ 
++
++## Cloud silhouette rework — 2026-10-09
++
++Goal: rework the unapproved cloud shadows into small, recognizable puffy pixel-art
++silhouettes with restrained shading, feathered edges and natural drift. Preserve
++terrain sharpness, coordinated sunlight/hero/dust response, weather, controls,
++gameplay and personal saves. Test locally without repackaging and open the finished
++build with the existing adventure for user review.
++
++- [x] Inspect the existing mask and in-game captures: repeated flat-bottom shapes,
++  regular spacing and broad blur weaken the cloud crowns.
++- [x] Replace the common stamp with varied connected puff silhouettes, rounded
++  undersides, irregular separated placement, smaller sizes and thinner edges.
++- [x] Inspect native masks, normal gameplay captures and moving sequences; refine
++  based on the rendered result.
++- [x] Verify clouds, sunlight/actor sampling, weather/day-night, settings, native
++  pixels and gameplay isolation; review the scoped diff for simplicity.
++- [x] Open the verified local build with the user's latest existing adventure.
++
++Validation: clean local Release build and **211 focused graphics checks** passed.
++The final mask contains 20 separate clouds, 46–65 native pixels wide and 27–37 high
++at alpha >= 32; occupied area is 9.9%. Connected crowns share one density envelope
++so the lobes do not become separate dark bubbles. The feather radius is three
++native pixels rather than six; scene artwork remains sharp. Horizontal drift is
++2.4 rather than 3.2 pixels/second. Existing shade strengths remain unchanged.
++
++The scoped simplicity review covered the mask/drift change, focused runner and
++capture additions: no new production fields, settings, dependencies, per-frame
++allocations or gameplay paths. No findings remain. Six outdoor scenes, neutral
++masks and sampled frames across 24 seconds were inspected. All 33 personal files
++remained unchanged through verification. The latest adventure is open and verified
++by screenshot. Normal startup encountered a local macOS display-link wait; a
++temporary launcher runs the identical Desktop assembly with refresh sync disabled
++for this process only. Game timing and saved preferences are unchanged. Diagnose
++the normal-launch stall separately. User aesthetic approval is still pending.
++[Captures, motion clip, logs and review](evidence/2026-10-09-cloud-rework/review.json).
+ 
+ ## Overworld remaster — 2026-10-09
+ 
+@@ -713,7 +749,7 @@
+ | Feature | Status | Intended behavior |
+ | --- | --- | --- |
+ | Localized pixel lighting | Done | Windows, wall torches and lava light nearby scenery and actors with restrained flicker, stepped shading and a saved toggle. Respects walls, fog and existing gameplay. |
+-| Moving cloud shadows | Feathered edges implemented; awaiting visual review | Small rounded cloud silhouettes now fade through a wider soft edge while retaining defined centers, 7%/14% shade, smooth drift, sun-shaft attenuation and shared hero/dust light sampling. Only the mask is softened at startup; scene pixels stay sharp. Separate saved Off/Subtle/Strong control. The user reopened cloud refinement after deferring the hard-edged version. [Evidence](evidence/2026-10-07-feathered-clouds/README.md). |
++| Moving cloud shadows | Reworked; awaiting user visual review | Four distinct small puff silhouettes, shallow curved bases, irregular separated placement, coherent density and three-pixel feathering replace the repeated flat-bottom stamps. Drift is 25% slower horizontally. Retains 7%/14% shade, coordinated shafts and hero/dust sampling, saved Off/Subtle/Strong control and native scene pixels. [Evidence](evidence/2026-10-09-cloud-rework/review.json). |
+ | Sun shafts | Implemented; ready for visual review | Restrained warm diagonal bands drift outdoors, with native pixel shading and separate saved Off/Subtle/Strong settings. Walking through them adds a warm character highlight, small equipment glint and sparse dry-ground dust. [Shaft evidence](evidence/2026-10-07-sun-shafts/README.md), [actor evidence](evidence/2026-10-07-sun-actor/README.md). |
+ | Rain and surface splashes | Appearance approved; automatic weather verified | Fine pixel streaks, ground splashes and shoreline-clipped rings. Off/Auto Subtle/Auto Strong control; 5–10 minute clear spells, 30–60 second showers and four-second transitions, timed only during active outdoor play. Existing saved intensity choices remain. [Rain evidence](evidence/2026-10-07-rain/README.md), [automatic weather evidence](evidence/2026-10-07-automatic-rain/README.md). |
+ | Combat feedback | Expanded presentation and simplified Enemy info accepted | Animated outgoing and individual incoming turns with timed sound, persistent HP/SP/AP and animated bars, direct targeting/area previews, distinct spell/ability effects, optional automatic return to commands, and victory/level-up celebrations. Enemy info now separates a focused portrait/stats card from optional Details after the user found the first panel crowded; inspection remains free and preserves the attack target. Pacing defaults Manual; Screen shake stays separately Off by default. Core combat/reward/RNG/save behavior is preserved. [Plan](BATTLE_UPGRADE_PLAN.md), [battle evidence](evidence/2026-10-07-battle-upgrades/README.md), [inspection layout evidence](evidence/2026-10-07-enemy-info-layout/README.md). |
+--- before/monogame/Yipe.GraphicsChecks/README.md
++++ after/monogame/Yipe.GraphicsChecks/README.md
+@@ -40,6 +40,10 @@
+ terrain regression run, use `--capture-monsters 1` to avoid exporting videos
+ for the entire unchanged roster while retaining its checks.
+ 
++For cloud iterations, use `--clouds-only`. This runs the existing cloud, sun-shaft,
++hero/dust, rain and day/night checks with isolated saves and settings. It captures
++all three towns, open meadow and desert, including a 24-second cloud sequence.
++
+ For overworld iterations, use `--outdoors-only`. This renders all 36 surface maps,
+ checks deterministic scenery, fog, secret aliases and gameplay/RNG preservation,
+ and exercises habitat mixing, positional water, night/cold wildlife, mute/focus
+@@ -159,15 +163,15 @@
+ pause, map exclusion and full gameplay/RNG preservation. It retains close-up
+ sprite/dust captures and 96 frames of a controlled outdoor walk at 24 fps.
+ 
+-`cloud-shadows/` adds 41 checks for outdoor/cave/Hell scope, bounded shade and
++`cloud-shadows/` adds 50 checks for outdoor/cave/Hell scope, bounded shade and
+ density variation, exact Off/black-pixel behavior, frozen/drifting shade,
+ smooth fractional movement, camera anchoring and texture wrapping, independently
+ moving clouds attenuating shafts and matching hero/dust light samples,
+ independent saved strength, production pause, sharp UI/maps and complete
+ gameplay/RNG isolation. It retains Off/Subtle/Strong and clouds-only town/desert
+ captures, the raw cloud silhouette alpha mask, a neutral-background feathering
+-capture, combined effects, the Graphics submenu and 192 animation frames at
+-24 frames per second. Cloud shadows are disabled after these checks to preserve
++capture, combined effects, the Graphics submenu and 288 animation frames at
++12 frames per second. Cloud shadows are disabled after these checks to preserve
+ the existing effects' isolated tests.
+ 
+ `rain/` covers the separate weather preference, outdoor/indoor scope, full gameplay

@@ -1,0 +1,64 @@
+{
+  "task": "Refine Monster Breeding Grounds floor using the updated remaster-yipe-caves skill",
+  "scope": {
+    "upper": {
+      "A4": 59,
+      "B4": 60,
+      "A5": 65,
+      "B5": 66
+    },
+    "deep": {
+      "A5": 105,
+      "B5": 106
+    }
+  },
+  "changes": [
+    "Low-contrast compacted mineral-earth patches",
+    "Thin partly buried slate fragments with broken highlights and shallow fractures",
+    "Short earth scrape marks and sparse one-pixel grit"
+  ],
+  "preserved": [
+    "Four-shade mineral palette",
+    "Approved wall geometry/detail and contour lighting",
+    "Authored nests, eggs, bones, drips and other props",
+    "Creature tint, contact shadows, animation and battle artwork",
+    "Map topology, collision, encounters, events, save formats and gameplay RNG"
+  ],
+  "verification": {
+    "build": "Checked Release, zero warnings/errors",
+    "focused_gpu_checks": 131,
+    "wall_core_pixels_unchanged": 60288,
+    "all_six_light_masks_identical": true,
+    "matching_room_overlaps": "pass",
+    "core_and_map_source_hashes": "unchanged",
+    "diff_check": "passed",
+    "local_desktop_matches_tested_assembly": true,
+    "full_suite": "Not rerun for this isolated WorldBreeding floor correction; prior menu build passed 2629 full checks."
+  },
+  "visual_review": "Compared before/after upper A4/B4 and deep A5 gameplay, native upper A4 and deep B5. Flattened the first iteration after its stones appeared too raised. Final fragments sit within quiet earth, retain readable creatures/nests and preserve wall contrast. User review pending.",
+  "simplicity_review": "Reviewed the complete task diff against the starting snapshot. One existing floor branch changed, reusing world-coordinate seeds, the four-shade palette and terrain cache. No new production files, types, settings, assets or duplicated wall/light geometry. No actionable findings.",
+  "source_sha256": "97a0c0c088f4d9813806ce3cede69d8ddc8855f2569c2cd4f82b88852402b051",
+  "personal_files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "before": "583d353f6e91212cff5a1567f76c4231b11d975a8135473b8f2b3685a2b7f78b",
+      "after": "583d353f6e91212cff5a1567f76c4231b11d975a8135473b8f2b3685a2b7f78b",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "before": "e8ac89555e59d33a86e2aa4b2f546e0a9bf1f3b79352080b8e0e5519686c3268",
+      "after": "e8ac89555e59d33a86e2aa4b2f546e0a9bf1f3b79352080b8e0e5519686c3268",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "before": "b2cb80142ef678549834858e6df419650ae1773436aa48883b0ba5a3bbb83978",
+      "after": "b2cb80142ef678549834858e6df419650ae1773436aa48883b0ba5a3bbb83978",
+      "unchanged": true
+    }
+  ],
+  "personal_file_note": "Tests used isolated sessions. Observed personal-file changes, if any, were left intact; the live adventure was not navigated, replaced or relaunched.",
+  "focused_output": "build/breeding-floor/final/yipe-graphics-20261009-062621-deda5d4e",
+  "delivery": "Local build only, no package or relaunch."
+}

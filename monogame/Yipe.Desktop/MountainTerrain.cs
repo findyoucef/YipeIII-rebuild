@@ -60,6 +60,13 @@ internal sealed class MountainTerrain : IDisposable
             var dy = y < 0 ? -1 : y >= Map.Height ? 1 : 0;
             return neighbors[dx + 1, dy + 1]!.Tile(new(x - dx * (Map.Width - 2), y - dy * (Map.Height - 2)));
         }
+
+        // Include nearby regions so the dusting tapers across map edges too.
+        var snowCells = new List<Rectangle>();
+        for (var y = -2; y < Map.Height + 2; y++)
+            for (var x = -2; x < Map.Width + 2; x++)
+                if (WorldRenderer.SnowTile(Tile(x, y))) snowCells.Add(new(x * 32, y * 32, 32, 32));
+
         bool Joins(int x, int y, int tx, int ty)
         {
             var tile = Tile(x, y);
@@ -146,6 +153,26 @@ internal sealed class MountainTerrain : IDisposable
                 }
                 var foot = edge - inset;
                 if (foot < 3 && color == RetroArt.Palette[4]) color = RetroArt.Palette[3];
+
+                // Snow thins over two tiles in small, world-anchored patches.
+                // Using distance to the basin avoids a hard nearest-ground boundary.
+                if (snowCells.Count > 0 && !face && foot > 3
+                    && (color == RetroArt.Palette[4] || color == RetroArt.Palette[3]))
+                {
+                    var distanceSquared = 64 * 64;
+                    foreach (var cell in snowCells)
+                    {
+                        var dx = Math.Max(0, Math.Max(cell.Left - x, x - cell.Right + 1));
+                        var dy = Math.Max(0, Math.Max(cell.Top - y, y - cell.Bottom + 1));
+                        distanceSquared = Math.Min(distanceSquared, dx * dx + dy * dy);
+                    }
+                    var coverage = 1 - MathF.Sqrt(distanceSquared) / 64;
+                    var grain = (wx / 6 * 17 + wy / 5 * 29 + wx / 6 * (wy / 5) * 3) % 23 / 23f;
+                    if (color == RetroArt.Palette[4] && grain < coverage)
+                        color = RetroArt.SnowPalette[coverage > .7f ? 0 : coverage > .4f ? 1 : 2];
+                    else if (color == RetroArt.Palette[3] && grain + .25f < coverage)
+                        color = RetroArt.SnowPalette[2];
+                }
 
                 // Grass and sand overlap small parts of the rock foot, rather than
                 // tracing its perimeter. The solid middle and cave mouth stay clear.

@@ -1,0 +1,7 @@
+{
+  "skill": "/Users/baouchiy/.codex/skills/delegate-to-agy/SKILL.md",
+  "model_checklist": "gemini-3.8-flash-medium",
+  "checklist": "Draft risk checklist reviewed against current code; secret aliases, bounds, clocks and masks included in GPU checks.",
+  "candidate_fixture": "Headless command permission auto-denied; no candidate file created. Primary implemented and reviewed the fixture. No permissions changed.",
+  "source_files_modified_by_worker": []
+}

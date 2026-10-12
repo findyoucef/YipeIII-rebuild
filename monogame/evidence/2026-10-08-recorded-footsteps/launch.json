@@ -1,0 +1,14 @@
+{
+  "pid": 97453,
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+  "save": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+  "log": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/recorded-footsteps-20261008-180337.log",
+  "source": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806",
+  "backup": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Backups/before-recorded-footsteps-20261008-180337",
+  "mapped_regions": 44,
+  "existing_game_pids_preserved": [],
+  "purpose": "Latest full recovered adventure. Use this save for ordinary local-build launches; never substitute the level-1 town demo.",
+  "process_verified": true,
+  "live_walkthrough": "Opened the latest local build on the existing full adventure; left the loaded game paused for user review.",
+  "audio": "CC0 recorded footsteps by Nox_Sound, Kenney and Fantozzi"
+}

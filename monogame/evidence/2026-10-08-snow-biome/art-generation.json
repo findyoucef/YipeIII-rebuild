@@ -1,0 +1,18 @@
+{
+  "tool": "built-in imagegen",
+  "mode": "generate; map image is style reference only",
+  "source_reference": "build/snow-biome/map-013-before.png",
+  "source_artifact": "monogame/Yipe.Desktop/Content/Art/Retro/World/snow-props.png",
+  "source_sha256": "ff2d9d0b959c64d387e6d7e2d6114737b1c9ae46cb1e0d7d50ead694852a2e6d",
+  "runtime_import": "RetroArt.Load, 2 columns \u00d7 2 rows \u00d7 48 native pixels; shared palette, binary alpha, bottom44 anchor; PointClamp rendering",
+  "grid": [
+    96,
+    96
+  ],
+  "frames": [
+    "snow-loaded pine",
+    "wind-bent snowy pine",
+    "Zephyr arch with snow/short icicles",
+    "frosted rocks and fallen branch"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "task": "Improve Fire Cave floors after acceptance of hotter wall/room treatment",
+  "scope": [
+    67,
+    71,
+    72,
+    73,
+    95,
+    100,
+    101,
+    107,
+    111,
+    112,
+    113
+  ],
+  "changes": [
+    "Irregular flat cooled-lava plates with thin dark separations",
+    "Subtle folded flow ridges, fine ash/grit and sparse sealed ember veins",
+    "Original long unstable-floor warning cracks drawn above the ground texture"
+  ],
+  "verification": {
+    "checked_release": "zero warnings/errors",
+    "focused_gpu_checks": 207,
+    "all_fire_rooms_rendered": 11,
+    "wall_magma_core_pixels_unchanged": true,
+    "all_local_light_masks_identical": true,
+    "personal_files_unchanged": false,
+    "diff_check": "pass",
+    "full_suite": "Not rerun for this floor-only correction in WorldFire. Previous red-glow revision passed 2615 checks; this revision uses the existing dedicated 207-check suite.",
+    "personal_files_note": "Personal files changed during the session; task rendering used isolated sessions and did not restore/replace the personal files. See observations."
+  },
+  "visual_review": "Compared entrance72, open upper67 and deep113 at default gameplay scale; reviewed unstable-floor73 and linked101/112 native rooms. The floor is quieter than the bright walls and uses fine pixel detail instead of broad smooth patches. User visual review of this floor is pending.",
+  "simplicity_review": "Reviewed the only production diff in WorldFire.cs against its pre-task snapshot. Reuses the terrain cache, world-coordinate seeds and existing palette; replaces the previous floor pattern directly, preserving wall/magma branches, lighting, audio and gameplay. No new texture, type, state, settings or tests. No outstanding findings.",
+  "focused_output": "build/fire-floor/first/yipe-graphics-20261009-055605-d238b855",
+  "delivery": "Local build only, no package; personal adventure not navigated or replaced."
+}

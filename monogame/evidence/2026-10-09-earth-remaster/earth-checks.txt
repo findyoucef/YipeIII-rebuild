@@ -1,0 +1,265 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/earth-remaster/final-earth/yipe-graphics-20261009-073254-22c7322c
+Content startup and five initial frames: 2.92 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+Earth 57 terrain preparation: 50.0 ms
+PASS: Earth 57 terrain fills every native pixel without gaps
+PASS: Earth 57 terrain and landmarks use only the retro and Earth soil palettes
+Earth 57 wall/floor luminance separation: 58.0/255
+PASS: Earth 57 wall tops remain clearly brighter than the walkable floor
+Earth 57 100 cached preparations: 0.8 ms
+PASS: Earth 57 cached preparation is deterministic
+PASS: Earth 57 ambient effects never reveal unexplored tiles
+PASS: Earth 57 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 57 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 57 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 57 still water uses a small warm palette with discrete shades
+PASS: Earth 57 puddle ripples freeze and animate strictly inside water
+PASS: Earth 57 puddle 3,4 reflects the character faintly inside visible water
+PASS: Earth 57 puddle 3,4 reflection freezes and ripples with scene time
+PASS: Earth 57 puddle 8,8 reflects the character faintly inside visible water
+PASS: Earth 57 puddle 8,8 reflection freezes and ripples with scene time
+PASS: Earth 57 reflection cannot reveal an unexplored puddle
+PASS: Earth 57 a new wall removes cached puddle water immediately
+PASS: Earth 57 restoring the floor restores the exact puddle shoreline
+PASS: Accepting a step toward an Earth puddle does not pop the reflection ahead of the character
+PASS: Walking into an Earth puddle fades the reflection through intermediate strengths
+PASS: The Earth reflection disappears after leaving the puddle
+PASS: Earth 57 ambient animation stays sparse
+PASS: Earth 57 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 57 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 57 changed terrain invalidates the cached formation
+PASS: Earth 57 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 63 terrain preparation: 30.3 ms
+PASS: Earth 63 terrain fills every native pixel without gaps
+PASS: Earth 63 terrain and landmarks use only the retro and Earth soil palettes
+Earth 63 wall/floor luminance separation: 60.3/255
+PASS: Earth 63 wall tops remain clearly brighter than the walkable floor
+Earth 63 100 cached preparations: 0.1 ms
+PASS: Earth 63 cached preparation is deterministic
+PASS: Earth 63 ambient effects never reveal unexplored tiles
+PASS: Earth 63 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 63 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 63 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 63 still water uses a small warm palette with discrete shades
+PASS: Earth 63 puddle ripples freeze and animate strictly inside water
+PASS: Earth 63 puddle 5,5 reflects the character faintly inside visible water
+PASS: Earth 63 puddle 5,5 reflection freezes and ripples with scene time
+PASS: Earth 63 puddle 9,3 reflects the character faintly inside visible water
+PASS: Earth 63 puddle 9,3 reflection freezes and ripples with scene time
+PASS: Earth 63 reflection cannot reveal an unexplored puddle
+PASS: Earth 63 a new wall removes cached puddle water immediately
+PASS: Earth 63 restoring the floor restores the exact puddle shoreline
+PASS: Earth 63 ambient animation stays sparse
+PASS: Earth 63 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 63 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 63 changed terrain invalidates the cached formation
+PASS: Earth 63 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 69 terrain preparation: 29.1 ms
+PASS: Earth 69 terrain fills every native pixel without gaps
+PASS: Earth 69 terrain and landmarks use only the retro and Earth soil palettes
+Earth 69 wall/floor luminance separation: 63.7/255
+PASS: Earth 69 wall tops remain clearly brighter than the walkable floor
+Earth 69 100 cached preparations: 0.1 ms
+PASS: Earth 69 cached preparation is deterministic
+PASS: Earth 69 ambient effects never reveal unexplored tiles
+PASS: Earth 69 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 69 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 69 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 69 still water uses a small warm palette with discrete shades
+PASS: Earth 69 puddle ripples freeze and animate strictly inside water
+PASS: Earth 69 puddle 8,6 reflects the character faintly inside visible water
+PASS: Earth 69 puddle 8,6 reflection freezes and ripples with scene time
+PASS: Earth 69 puddle 4,2 reflects the character faintly inside visible water
+PASS: Earth 69 puddle 4,2 reflection freezes and ripples with scene time
+PASS: Earth 69 reflection cannot reveal an unexplored puddle
+PASS: Earth 69 a new wall removes cached puddle water immediately
+PASS: Earth 69 restoring the floor restores the exact puddle shoreline
+PASS: Earth 69 ambient animation stays sparse
+PASS: Earth 69 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 69 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 69 changed terrain invalidates the cached formation
+PASS: Earth 69 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 75 terrain preparation: 20.3 ms
+PASS: Earth 75 terrain fills every native pixel without gaps
+PASS: Earth 75 terrain and landmarks use only the retro and Earth soil palettes
+Earth 75 wall/floor luminance separation: 62.0/255
+PASS: Earth 75 wall tops remain clearly brighter than the walkable floor
+Earth 75 100 cached preparations: 0.1 ms
+PASS: Earth 75 cached preparation is deterministic
+PASS: Earth 75 ambient effects never reveal unexplored tiles
+PASS: Earth 75 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 75 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 75 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 75 still water uses a small warm palette with discrete shades
+PASS: Earth 75 puddle ripples freeze and animate strictly inside water
+PASS: Earth 75 puddle 7,6 reflects the character faintly inside visible water
+PASS: Earth 75 puddle 7,6 reflection freezes and ripples with scene time
+PASS: Earth 75 puddle 8,2 reflects the character faintly inside visible water
+PASS: Earth 75 puddle 8,2 reflection freezes and ripples with scene time
+PASS: Earth 75 reflection cannot reveal an unexplored puddle
+PASS: Earth 75 a new wall removes cached puddle water immediately
+PASS: Earth 75 restoring the floor restores the exact puddle shoreline
+PASS: Earth 75 ambient animation stays sparse
+PASS: Earth 75 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 75 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 75 changed terrain invalidates the cached formation
+PASS: Earth 75 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 103 terrain preparation: 20.1 ms
+PASS: Earth 103 terrain fills every native pixel without gaps
+PASS: Earth 103 terrain and landmarks use only the retro and Earth soil palettes
+Earth 103 wall/floor luminance separation: 61.4/255
+PASS: Earth 103 wall tops remain clearly brighter than the walkable floor
+Earth 103 100 cached preparations: 0.1 ms
+PASS: Earth 103 cached preparation is deterministic
+PASS: Earth 103 ambient effects never reveal unexplored tiles
+PASS: Earth 103 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 103 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 103 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 103 still water uses a small warm palette with discrete shades
+PASS: Earth 103 puddle ripples freeze and animate strictly inside water
+PASS: Earth 103 puddle 6,5 reflects the character faintly inside visible water
+PASS: Earth 103 puddle 6,5 reflection freezes and ripples with scene time
+PASS: Earth 103 puddle 8,8 reflects the character faintly inside visible water
+PASS: Earth 103 puddle 8,8 reflection freezes and ripples with scene time
+PASS: Earth 103 reflection cannot reveal an unexplored puddle
+PASS: Earth 103 a new wall removes cached puddle water immediately
+PASS: Earth 103 restoring the floor restores the exact puddle shoreline
+PASS: Earth 103 ambient animation stays sparse
+PASS: Earth 103 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 103 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 103 changed terrain invalidates the cached formation
+PASS: Earth 103 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 109 terrain preparation: 21.0 ms
+PASS: Earth 109 terrain fills every native pixel without gaps
+PASS: Earth 109 terrain and landmarks use only the retro and Earth soil palettes
+Earth 109 wall/floor luminance separation: 62.0/255
+PASS: Earth 109 wall tops remain clearly brighter than the walkable floor
+Earth 109 100 cached preparations: 0.1 ms
+PASS: Earth 109 cached preparation is deterministic
+PASS: Earth 109 ambient effects never reveal unexplored tiles
+PASS: Earth 109 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 109 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 109 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 109 still water uses a small warm palette with discrete shades
+PASS: Earth 109 puddle ripples freeze and animate strictly inside water
+PASS: Earth 109 puddle 7,5 reflects the character faintly inside visible water
+PASS: Earth 109 puddle 7,5 reflection freezes and ripples with scene time
+PASS: Earth 109 puddle 7,1 reflects the character faintly inside visible water
+PASS: Earth 109 puddle 7,1 reflection freezes and ripples with scene time
+PASS: Earth 109 reflection cannot reveal an unexplored puddle
+PASS: Earth 109 a new wall removes cached puddle water immediately
+PASS: Earth 109 restoring the floor restores the exact puddle shoreline
+PASS: Earth 109 ambient animation stays sparse
+PASS: Earth 109 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 109 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 109 changed terrain invalidates the cached formation
+PASS: Earth 109 rendering and cache restoration preserve the full gameplay snapshot and RNG
+Earth 115 terrain preparation: 22.9 ms
+PASS: Earth 115 terrain fills every native pixel without gaps
+PASS: Earth 115 terrain and landmarks use only the retro and Earth soil palettes
+Earth 115 wall/floor luminance separation: 62.1/255
+PASS: Earth 115 wall tops remain clearly brighter than the walkable floor
+Earth 115 100 cached preparations: 0.0 ms
+PASS: Earth 115 cached preparation is deterministic
+PASS: Earth 115 ambient effects never reveal unexplored tiles
+PASS: Earth 115 animation freezes at a fixed clock and advances with scene time
+PASS: Earth 115 small puddles cover only ordinary walkable floor and need no water equipment
+PASS: Earth 115 puddles leave treasure, stairs and rescue positions dry
+PASS: Earth 115 still water uses a small warm palette with discrete shades
+PASS: Earth 115 puddle ripples freeze and animate strictly inside water
+PASS: Earth 115 puddle 4,8 reflects the character faintly inside visible water
+PASS: Earth 115 puddle 4,8 reflection freezes and ripples with scene time
+PASS: Earth 115 puddle 8,2 reflects the character faintly inside visible water
+PASS: Earth 115 puddle 8,2 reflection freezes and ripples with scene time
+PASS: Earth 115 reflection cannot reveal an unexplored puddle
+PASS: Earth 115 a new wall removes cached puddle water immediately
+PASS: Earth 115 restoring the floor restores the exact puddle shoreline
+PASS: Earth 115 ambient animation stays sparse
+PASS: Earth 115 open terrain has distinct patches rather than repeated tiles
+PASS: Earth 115 secret terrain and ambient details are visually identical to ordinary terrain
+PASS: Earth 115 changed terrain invalidates the cached formation
+PASS: Earth 115 rendering and cache restoration preserve the full gameplay snapshot and RNG
+PASS: Earth effects are absent from other biome 17
+PASS: Earth effects are absent from other biome 41
+PASS: Earth effects are absent from other biome 117
+PASS: Earth 57: visible cave sources cast local light
+PASS: Earth 57: lights use the native contour mask
+PASS: Earth 57: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 57: the default presentation stays opaque
+PASS: Earth 57: lighting and presentation preserve gameplay and RNG
+PASS: Earth 63: visible cave sources cast local light
+PASS: Earth 63: lights use the native contour mask
+PASS: Earth 63: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 63: the default presentation stays opaque
+PASS: Earth 63: lighting and presentation preserve gameplay and RNG
+PASS: Earth 69: visible cave sources cast local light
+PASS: Earth 69: lights use the native contour mask
+PASS: Earth 69: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 69: the default presentation stays opaque
+PASS: Earth 69: lighting and presentation preserve gameplay and RNG
+PASS: Earth 75: visible cave sources cast local light
+PASS: Earth 75: lights use the native contour mask
+PASS: Earth 75: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 75: the default presentation stays opaque
+PASS: Earth 75: lighting and presentation preserve gameplay and RNG
+PASS: Earth 103: visible cave sources cast local light
+PASS: Earth 103: lights use the native contour mask
+PASS: Earth 103: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 103: the default presentation stays opaque
+PASS: Earth 103: lighting and presentation preserve gameplay and RNG
+PASS: Earth 109: visible cave sources cast local light
+PASS: Earth 109: lights use the native contour mask
+PASS: Earth 109: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 109: the default presentation stays opaque
+PASS: Earth 109: lighting and presentation preserve gameplay and RNG
+PASS: Earth 115: visible cave sources cast local light
+PASS: Earth 115: lights use the native contour mask
+PASS: Earth 115: dry soil uses granular steps and actual puddle contacts use water
+PASS: Earth 115: the default presentation stays opaque
+PASS: Earth 115: lighting and presentation preserve gameplay and RNG
+PASS: Earth 57/63: shared walkable overlap stays aligned (0/384)
+PASS: Earth 63/69: shared walkable overlap stays aligned (0/384)
+PASS: Earth 69/75: shared walkable overlap stays aligned (0/384)
+PASS: Earth 109/115: shared walkable overlap stays aligned (0/384)
+PASS: Earth contour light stops behind a closed door
+PASS: Opening the Earth door restores the cached light exactly
+PASS: Earth corner occlusion divides actual rock contours inside a tile
+PASS: Earth secret rock has exactly the ordinary contour shadow
+PASS: Earth's unchanged stone mask remains cached
+PASS: Earth lighting cannot expose an undiscovered source
+PASS: Earth creature 8: earthy integration preserves silhouette and scale
+PASS: Earth creature 8: battle artwork stays unchanged
+PASS: Earth creature 8: leaving restores its original appearance
+PASS: Earth creature 9: earthy integration preserves silhouette and scale
+PASS: Earth creature 9: battle artwork stays unchanged
+PASS: Earth creature 9: leaving restores its original appearance
+PASS: Earth creature 11: earthy integration preserves silhouette and scale
+PASS: Earth creature 11: battle artwork stays unchanged
+PASS: Earth creature 11: leaving restores its original appearance
+PASS: Earth ambience starts with a quiet fade and a single looping voice
+PASS: Earth ambience fades to its restrained master-volume level
+PASS: Earth upper-room transitions retain the same looping voice
+PASS: Pause silences Earth ambience
+PASS: Resume continues the Earth loop
+PASS: Map view silences Earth ambience
+PASS: Action/combat overlays silence Earth ambience
+PASS: Focus loss pauses Earth ambience
+PASS: Sound Off mutes Earth ambience
+PASS: Zero master volume mutes Earth ambience
+PASS: Descending replaces the dry Earth loop with the wetter deep recording
+PASS: Deep Earth transitions retain their looping voice
+PASS: Earth to Fire replaces rather than stacks ambience
+PASS: Fire to breeding grounds preserves the original ambience route
+PASS: Returning to Earth selects its own ambience
+PASS: Leaving caves releases the ambient voice
+PASS: Earth audio never changes gameplay or RNG
+Passed 240 visual integration checks. Focused Earth Cave run.

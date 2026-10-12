@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "title": "Loopable Dungeon Ambience",
+      "author": "JaggedStone",
+      "source": "https://opengameart.org/content/loopable-dungeon-ambience",
+      "license": "CC0-1.0",
+      "input": "breeding-ground.wav",
+      "input_sha256": "739ecb8902dc2ee65d3cc40bf72d911128a6fea63e1a66ea6970575385f4c34e",
+      "original_credit_record": "sources.json"
+    },
+    {
+      "title": "Ice Crack 5.wav",
+      "author": "ecfike",
+      "source": "https://freesound.org/people/ecfike/sounds/177217/",
+      "license": "CC0-1.0",
+      "input": "Public HQ MP3 preview; reused from Ice Cave source",
+      "input_sha256": "41eeb59634b26337649bba5564e8da7174e89d0b885e567a641e665c5b9c463d",
+      "original_credit_record": "ice-sources.json"
+    }
+  ],
+  "processing": "58-second stereo PCM16 22050Hz loop. Recorded dungeon air filtered 55\u2013680Hz, with a 75%-speed 45\u2013190Hz rumble layer; combined bed RMS 0.042. Recorded crack slowed to half speed and filtered 70\u20131100Hz with 230/510ms echoes for distant stone creaks at 9,31,46 seconds, peak 0.12/0.095/0.13. Two-second wrap crossfade. No synthesized audio. Reproducible mix_audio.py retained with evidence.",
+  "output": {
+    "file": "final-cave.wav",
+    "duration_seconds": 58.0,
+    "rms": 0.04205260720133076,
+    "peak": 0.74151611328125,
+    "seam_delta": 0.000732421875,
+    "sha256": "8f246a41883baceb03cf4fce063a2078d2328aff654ded0e27193bde45d27e85"
+  }
+}

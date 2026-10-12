@@ -1,0 +1,39 @@
+{
+  "maps": {
+    "same_count": 111,
+    "different": [
+      "map-051.png",
+      "map-052.png",
+      "map-058.png",
+      "map-064.png",
+      "map-070.png",
+      "map-076.png",
+      "map-104.png",
+      "map-110.png",
+      "map-116.png"
+    ],
+    "not_yet_captured": []
+  },
+  "earth-cave": {
+    "same_count": 116,
+    "different": [],
+    "not_yet_captured": []
+  },
+  "breeding-grounds": {
+    "baseline": "build/earth-remaster/final-breeding/yipe-graphics-20261009-073303-5f2dc711",
+    "same_count": 73,
+    "different": [],
+    "not_yet_captured": [],
+    "note": "Uses the final corrected audio-exit fixture baseline, avoiding the older full-run disposed-town-renderer capture artifact."
+  },
+  "fire-cave": {
+    "same_count": 129,
+    "different": [],
+    "not_yet_captured": []
+  },
+  "pixel-lighting": {
+    "same_count": 22,
+    "different": [],
+    "not_yet_captured": []
+  }
+}

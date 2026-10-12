@@ -36,6 +36,11 @@ if (args.Length != 0 && (args.Length != 2 || args[0] is not ("--player-trace" or
 var checks = 0;
 ItemNameChecks.Run(Check, args.Length == 2 && args[0] == "--items-trace" ? args[1] : null);
 ProfileChecks.Run(Check);
+RainWeatherChecks.Run(Check);
+DayNightClockChecks.Run(Check);
+FootstepAssetChecks.Run(Check);
+ControlChecks.Run(Check);
+IceMotionChecks.Run(Check);
 await MapJournalChecks.Run(Check);
 ScoreChecks.Run(Check, args.Length == 2 && args[0] == "--scores-trace" ? args[1] : null);
 OpeningRouteChecks.Run(Check);
@@ -199,6 +204,22 @@ catch (ArgumentException) { checks++; }
 Check(boundedStep.Position == new MapPosition(5, 5) && !boundedStep.IsMoving, "Rejected animation leaves position unchanged");
 
 var motion = new PlayerMotion(new(5, 5));
+var rider = new PlayerMotion(new(4, 5));
+rider.Face(new(1, 0));
+rider.CarryTo(new(4, 6)); rider.Update(.45, new Vector2(4, 5.5f));
+Check(rider.Position == new MapPosition(4, 6) && rider.VisualPosition == new Vector2(4, 5.5f)
+    && !rider.IsMoving && rider.FacingRow == 2 && rider.AnimationFrame == 0,
+    "Raft travel follows its deck without walking in place or changing facing");
+rider.Update(.45, new Vector2(4, 6)); rider.MoveTo(new(5, 6)); rider.Update(.125);
+Check(rider.VisualPosition == new Vector2(4.5f, 6) && rider.IsMoving,
+    "Disembarking starts an ordinary step from the visible deck");
+rider.SnapTo(new(3, 5)); rider.MoveTo(new(4, 5)); rider.Update(.125, new Vector2(4, 5.25f));
+Check(rider.VisualPosition == new Vector2(3.5f, 5.125f), "Boarding walks toward the moving deck rather than its logical tile");
+rider.CarryTo(new(4, 6)); rider.Update(.125, new Vector2(4, 5.5f));
+Check(!rider.IsMoving && rider.VisualPosition == new Vector2(4, 5.5f) && rider.Position == new MapPosition(4, 6),
+    "A raft tick during boarding preserves the step and lands the boots on its deck");
+rider.SnapTo(new(7, 7)); rider.Update(.2);
+Check(rider.VisualPosition == new Vector2(7, 7), "Restoring a land position removes all carrier offset");
 var relaxedWalk = new PlayerMotion(new(5, 5));
 relaxedWalk.MoveTo(new(6, 5));
 relaxedWalk.Update(0.18);

@@ -1,0 +1,17 @@
+{
+  "backup": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Backups/before-recorded-footsteps-20261008-180337",
+  "files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "sha256": "54721931ee07bdc45a06fc1427efd5731d5115f49504fcb5742f394b16a378a5"
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "sha256": "07eef2f6929ef4c8303ae19af95a5425aa3fda89b0decc8784c4a682ddbd37ce"
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "sha256": "3e078fae2ffb7c78b1a76824d2b9faf886ca136e9a7be963983d28e27574e913"
+    }
+  ]
+}

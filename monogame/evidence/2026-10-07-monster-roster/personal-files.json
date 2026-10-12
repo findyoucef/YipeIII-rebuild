@@ -1,0 +1,31 @@
+{
+  "before": {
+    "game.y3m": "30afb5019217589daadbff16147e5e3c782cbfabea5a30a62a46a29069d1d1c1",
+    "game.map.json": "46c36e72109ea8ef7658ab3d4b7ea43f49025a44b55fed710f2986ca7bb069be",
+    "profile.json": "6f82666af7c8dab3d19a68fdf2d7c2a12a8a861c20448455ef7d9a5c0f695308",
+    "town-preview.json": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3"
+  },
+  "after": {
+    "game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed",
+    "town-preview.json": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3"
+  },
+  "unchanged": false,
+  "modification_times_utc": {
+    "game.y3m": "2026-10-08T03:06:48.237758+00:00",
+    "game.map.json": "2026-10-08T03:06:48.247365+00:00",
+    "profile.json": "2026-10-08T03:05:53.354149+00:00",
+    "town-preview.json": "2026-10-02T18:49:15.951718+00:00"
+  },
+  "first_graphics_run_utc": "2026-10-08T03:08:06+00:00",
+  "differences_precede_first_graphics_run": true,
+  "note": "The earlier pre-goal hashes differ, but those modifications predate the first graphics run. Do not restore or overwrite personal files. Graphics checks use selected isolated saves with per-save profiles; after hashes establish the final-route/launch preservation checkpoint.",
+  "after_final_routes_and_launch": {
+    "game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed",
+    "town-preview.json": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3"
+  },
+  "unchanged_during_final_verification": true
+}

@@ -1,0 +1,1003 @@
+--- before/monogame/PORTING_PLAN.md
++++ after/monogame/PORTING_PLAN.md
+@@ -19,8 +19,8 @@
+ | --- | --- |
+ | Local gameplay launch | The latest local build opens the full adventure with 55 explored regions from `/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m`. Use this full adventure for ordinary local-build launch requests; the level-1 town demo is only for explicit testing. The prior recovered source and its latest personal updates are preserved. [Launch record](../build/local-game-launch.json). |
+ | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
+-| Next task | Review the quieter Maynard river mix; the user accepted the leaves and overall ambience. Hell’s latest red/audio pass, calmer breeding floors and cloud shadows still await feedback. Physical-controller verification remains open. |
+-| Last completed work | Maynard surface E3/map17: fluttering pixel leaves, recorded daytime birds/wind, quieter night wind and smoothly fading/panned river audio tied to the real banks and both bridges. [Preview](evidence/2026-10-09-maynard-atmosphere/leaves-and-ambience.mp4), [river sample](evidence/2026-10-09-maynard-atmosphere/river-distance-preview.wav), [evidence](evidence/2026-10-09-maynard-atmosphere/review.json). |
++| Next task | Review the completed overworld remaster in the local build. Prior Hell, breeding-floor, cloud-shadow and physical-controller reviews remain separate. |
++| Last completed work | All 36 surface regions covered: Ervyn and Quizilog planting, connected meadow/sand variation, worn verges, clustered vegetation, leaves/wildlife, habitat wind/day/night nature and positional river/lake audio. Maynard and approved snow coverage preserved. [Ervyn](evidence/2026-10-09-overworld/comparison-27.png), [riverbanks](evidence/2026-10-09-overworld/comparison-35.png), [evidence](evidence/2026-10-09-overworld/review.json). |
+ | Latest verification | River-volume follow-up: checked local build, zero warnings/errors and 37 focused checks passed. The preceding full remaster passed graphics checks: 2,941 plus 360 tour frames; core checks: 613. All map, cave and other-town reference captures match exactly. Core source and original maps unchanged. The personal game saved/exited during final checks; its newer 55-region adventure and matching journal remain intact. [Evidence](evidence/2026-10-09-maynard-atmosphere/review.json). No repackaging. |
+ | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
+ | Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. After deferring earlier silhouettes, the user requested feathered edges; the softened revision is ready for review. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+@@ -48,6 +48,50 @@
+ Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
+ with the working tree, and continue from the next unfinished task.”**
+ 
++
++## Overworld remaster — 2026-10-09
++
++Goal: complete a cohesive pixel-art presentation pass across all 36 surface
++regions, with Maynard as the accepted quality reference. Preserve routes,
++encounters, secrets, map/save formats and the approved snow footprint. Use local
++builds, without repackaging. The region audit identified Ervyn C5/map27, Quizilog
++B2/map8, the D3/D4/E4 travel corridor and B4/map20 woodland as initial references.
++
++- [x] Extend Ervyn with clustered garden planting and tended soil beds; extend
++  Quizilog with dry scrub, pebbles, palm shade/litter and quieter sand variation.
++  Existing paved shop approaches remain intact.
++- [x] Replace repeated meadow fields with connected, restrained native-pixel
++  variation, greener banks, shaded tree ground and broken worn road verges.
++  Shared world coordinates account for overlapping rooms and wrapping edges.
++- [x] Dress every remaining surface region with grouped low vegetation following
++  rivers, cliffs, existing trees and flower clearings. Reuse the Maynard plant
++  art and preserve open ground, door approaches, water and snow.
++- [x] Add canopy leaves, shrub leaves in Ervyn, butterflies, bank insects and
++  drifting meadow seeds. Surface crowns/reeds sway by one pixel with stationary
++  roots. Daytime wildlife stays out of night/rain; dry dust stays out of showers.
++- [x] Add smoothly mixed daytime birds, quiet night crickets and habitat wind.
++  Proximity-based water fades/pans from actual water pixels; lakes are quieter
++  than streams. Mute, master volume, focus, overlays and action ducking apply.
++  Sources and processing: `Content/Audio/Ambience/outdoor-sources.json` and
++  `OUTDOOR-CREDITS.txt`; reuse existing Maynard wind/river recordings.
++- [x] Finish full graphics verification, retained comparisons and review record.
++
++Validation: Release build has zero warnings/errors; 184 focused overworld checks,
++38 focused Maynard transition checks, **3,104 full graphics checks**, **360 tour
++frames** and **613 core checks** pass. Full verification used `--record
++--capture-monsters 1`: all monster checks run, with extra videos limited to one
++unchanged roster example. The old river-transition assertion was updated to
++verify the intentional fade and eventual voice disposal instead of immediate
++silence. All 27 core/map source files remain byte-identical to the task baseline.
++Of 115 matching full-map captures, precisely the 35 targeted surface maps changed;
++Maynard and all 79 underground/alternate captures remain byte-identical.
++[Region checklist, previews, logs, audio provenance and review](evidence/2026-10-09-overworld/review.json).
++
++Implementation uses a cached surface texture and bounded lists in the existing
++partial WorldRenderer; it introduces no gameplay objects or persistent state.
++The initial smooth ground patches were revised to lower contrast with broken
++pixel edges and more grouped vegetation after visual review. Maynard's own
++renderer and reduced river mix remain intact. User aesthetic review is pending.
+ 
+ ## Maynard leaves and ambient sound — 2026-10-09
+ 
+--- before/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md
++++ after/monogame/Yipe.Desktop/Content/Art/Retro/World/README.md
+@@ -236,3 +236,21 @@
+ Landmarks and source art are unchanged. Default-settings captures include
+ scanlines and Strong miniature.
+ [Current visual evidence](../../../../../evidence/2026-10-04-hell-flagstones/README.md).
++
++
++## Overworld dressing (2026-10-09)
++
++`WorldOutdoors.cs` reuses the compiled native meadow and Maynard detail sprites
++for the 35 surface regions outside Maynard. Ground variation is cached at native
++416x384 resolution, with broken pixel edges, worn path verges and bank/tree
++colour shifts. Keep tonal differences small: smooth contrasting blobs read as
++camouflage and were rejected during the implementation review. Use grouped
++planting near existing terrain features, with quiet clearings between groups.
++
++New planting is low scenery drawn before actors, with road/water/snow/landmark
++clearance. Do not turn decorative plants into new collisions or hide original
++interactions. Large trees keep their original blocking footprints. Surface
++leaves, seed flecks and insects use deterministic scene time; no gameplay RNG.
++The seed and ground field use wrapped world coordinates with the original
++two-tile room overlap. Maynard and the approved snow terrain retain their own
++rendering. Ervyn has authored garden borders; Quizilog keeps its dry palm setting.
+--- before/monogame/Yipe.Desktop/GameAudio.cs
++++ after/monogame/Yipe.Desktop/GameAudio.cs
+@@ -23,6 +23,9 @@
+     private float riverGain;
+     private SoundEffectInstance? ambience;
+     private float ambienceGain;
++    private SoundEffect? outdoorBirdSound, outdoorNightSound;
++    private SoundEffectInstance? outdoorBirds, outdoorNight;
++    private float outdoorBirdGain, outdoorNightGain;
+     public bool Enabled { get; set; } = true;
+     public float Volume { get; set; } = .65f;
+     public string Error { get; private set; } = "";
+@@ -68,6 +71,10 @@
+             townNightAmbience = SoundEffect.FromStream(nightStream);
+             using var riverStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "maynard-river.wav"));
+             riverSound = SoundEffect.FromStream(riverStream);
++            using var birdStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "outdoor-birds.wav"));
++            outdoorBirdSound = SoundEffect.FromStream(birdStream);
++            using var cricketStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "outdoor-night.wav"));
++            outdoorNightSound = SoundEffect.FromStream(cricketStream);
+         }
+         catch (Exception error) when (error is NoAudioHardwareException or IOException or InvalidDataException or InvalidOperationException or NotSupportedException)
+         {
+@@ -108,7 +115,7 @@
+     }
+     public void Update(bool active)
+     {
+-        if (!Enabled || !active || Volume <= 0) { ambience?.Pause(); river?.Pause(); }
++        if (!Enabled || !active || Volume <= 0) { ambience?.Pause(); river?.Pause(); outdoorBirds?.Pause(); outdoorNight?.Pause(); }
+         if (!Enabled || !active) current?.Stop();
+         if (!Enabled || !active || Volume <= 0 || footstep?.State == SoundState.Stopped) StopFootsteps();
+         if (footstep is not null) footstep.Volume = Volume * .28f;
+@@ -151,6 +158,35 @@
+     public void StopRiver()
+     {
+         river?.Stop(); river?.Dispose(); river = null; riverGain = 0;
++    }
++
++    public void UpdateOutdoorAmbience(float dry, float cold, float wood, float daylight, float rain, bool playing, double elapsed)
++    {
++        var wind = .10f + dry * .04f + cold * .07f + rain * .03f - wood * .025f;
++        UpdateAmbientTrack(townNightAmbience, playing, elapsed, wind);
++        var birds = (.12f + wood * .025f) * daylight * (1 - dry * .96f) * (1 - cold) * (1 - rain * .85f);
++        var insects = .075f * (1 - daylight) * (1 - dry * .8f) * (1 - cold) * (1 - rain * .85f);
++        UpdateOutdoorVoice(ref outdoorBirds, outdoorBirdSound, ref outdoorBirdGain, birds, playing, elapsed);
++        UpdateOutdoorVoice(ref outdoorNight, outdoorNightSound, ref outdoorNightGain, insects, playing, elapsed);
++    }
++
++    private void UpdateOutdoorVoice(ref SoundEffectInstance? voice, SoundEffect? sound, ref float gain,
++        float target, bool playing, double elapsed)
++    {
++        if (Error.Length != 0 || sound is null) { voice?.Dispose(); voice = null; gain = 0; return; }
++        if (!Enabled || !playing || Volume <= 0) { voice?.Pause(); return; }
++        gain += (target - gain) * (1 - MathF.Exp(-(float)Math.Clamp(elapsed, 0, 1) * 2));
++        if (target <= .001f && gain < .001f) { voice?.Dispose(); voice = null; gain = 0; return; }
++        if (voice is null) { voice = sound.CreateInstance(); voice.IsLooped = true; }
++        voice.Volume = Volume * gain * (current?.State == SoundState.Playing ? .4f : 1);
++        if (voice.State == SoundState.Paused) voice.Resume();
++        else if (voice.State == SoundState.Stopped) voice.Play();
++    }
++
++    public void StopOutdoorNature()
++    {
++        outdoorBirds?.Stop(); outdoorBirds?.Dispose(); outdoorBirds = null; outdoorBirdGain = 0;
++        outdoorNight?.Stop(); outdoorNight?.Dispose(); outdoorNight = null; outdoorNightGain = 0;
+     }
+ 
+     private void UpdateAmbientTrack(SoundEffect? track, bool playing, double elapsed, float volume)
+@@ -185,6 +221,8 @@
+         townAmbience?.Dispose(); townAmbience = null;
+         townNightAmbience?.Dispose(); townNightAmbience = null;
+         riverSound?.Dispose(); riverSound = null;
++        StopOutdoorNature(); outdoorBirdSound?.Dispose(); outdoorBirdSound = null;
++        outdoorNightSound?.Dispose(); outdoorNightSound = null;
+         foreach (var sound in effects.Values) sound.Dispose();
+         foreach (var sound in monsters.Values) sound.Dispose();
+         effects.Clear(); monsters.Clear();
+--- before/monogame/Yipe.Desktop/TownGame.cs
++++ after/monogame/Yipe.Desktop/TownGame.cs
+@@ -302,11 +302,23 @@
+         var playing = IsActive && !paused && overlay is null && !mapOpen && saving is null && loading is null && studioSplashRemaining <= 0;
+         if (session.CurrentMap.Id == TownMap.Id)
+         {
++            audio.StopOutdoorNature();
+             var water = town.RiverSoundAt(player.VisualPosition);
+             audio.UpdateTownAmbience(DayNightCycle.At(dayNightSeconds, timeOfDayMode).Daylight, playing, elapsed);
+             audio.UpdateRiverAmbience(water.Gain, water.Pan, playing, elapsed);
+             return;
+         }
++        if (session.CurrentMap.Id is >= 1 and <= 36)
++        {
++            var habitat = world.OutdoorHabitatAt(session.CurrentMap, player.VisualPosition);
++            var water = world.OutdoorWaterSoundAt(session.CurrentMap, player.VisualPosition);
++            var daylight = DayNightCycle.At(dayNightSeconds, timeOfDayMode).Daylight;
++            var rain = rainStrength == 0 ? 0 : Rain.WeatherAmount(outdoorWeatherTime);
++            audio.UpdateOutdoorAmbience(habitat.Dry, habitat.Cold, habitat.Wood, daylight, rain, playing, elapsed);
++            audio.UpdateRiverAmbience(water.Gain, water.Pan, playing, elapsed);
++            return;
++        }
++        audio.StopOutdoorNature();
+         audio.StopRiver();
+         if (session.CurrentMap.Id is >= 117 and <= 120)
+             audio.UpdateHellAmbience(playing, elapsed);
+@@ -460,7 +472,11 @@
+         var rainAmount = rainStrength == 0 ? 0 : rainStrength * Rain.WeatherAmount(outdoorWeatherTime);
+         batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
+         if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount);
+-        else world.Draw(batch, adventure, player, town, sceneTime, miniatureMode != 0, rainAmount);
++        else
++        {
++            world.OutdoorDaylight = daylight.Daylight;
++            world.Draw(batch, adventure, player, town, sceneTime, miniatureMode != 0, rainAmount);
++        }
+         if (pixelLighting) lighting.DrawTorches(batch, adventure.Visibility, sceneTime);
+         batch.End();
+         sunShafts.DrawClouds(batch, session.CurrentMap, cameraPosition, sceneTime, cloudShadowStrength);
+--- before/monogame/Yipe.Desktop/WorldDesert.cs
++++ after/monogame/Yipe.Desktop/WorldDesert.cs
+@@ -104,16 +104,27 @@
+                 var index = y * SandWidth + x;
+                 var tile = sandTiles[y / 32 * Map.Width + x / 32];
+                 if (WaterTile(tile) != 0 || tile is 3 or 9 or 0x39 or 0x45) continue;
+-                var weathering = MathF.Sin(x * .045f + y * .061f) * .10f
+-                    + MathF.Sin(x * .17f - y * .11f) * .035f;
++                var gx = map.Id <= 36 ? Mod((map.Id - 1) % 6 * 352 + x, 2112) : x;
++                var gy = map.Id <= 36 ? Mod((map.Id - 1) / 6 * 320 + y, 1920) : y;
++                var weathering = map.Id <= 36
++                    ? MathF.Sin(gx * MathF.Tau * 15 / 2112 + gy * MathF.Tau * 18 / 1920) * .10f
++                        + MathF.Sin(gx * MathF.Tau * 57 / 2112 - gy * MathF.Tau * 34 / 1920) * .035f
++                    : MathF.Sin(x * .045f + y * .061f) * .10f + MathF.Sin(x * .17f - y * .11f) * .035f;
+                 var coverage = Math.Clamp((sandField[index] - .5f + weathering) * 3.5f + .5f, 0, 1);
+                 if (sandField[index] == 0) coverage = 0;
+-                var grain = (x * 13 + y * 7 + x * y * 3) % 23 / 23f;
+-                var variant = tile == 0x2c ? 3 : (x / 32 + y / 32) % 2;
++                var grain = map.Id <= 36 ? OutdoorHash(gx, gy) % 23 / 23f : (x * 13 + y * 7 + x * y * 3) % 23 / 23f;
++                var variant = tile == 0x2c ? 3 : (gx / 32 + gy / 32) % 2;
+                 var color = sandPattern[(variant / 2 * 32 + y % 32) * 64 + variant % 2 * 32 + x % 32];
++                if (map.Id <= 36)
++                {
++                    var field = MeadowField(gx, gy);
++                    // Slightly quieter sand between worn, wind-combed patches, using the existing sand art.
++                    if (field > .57f + grain * .06f) color = Color.Lerp(color, RetroArt.Palette[18], .25f);
++                    else if (field < .31f + grain * .05f) color = Color.Lerp(color, RetroArt.Palette[17], .10f);
++                }
+                 // A broken dry-grass fringe replaces the ruler-straight contrast line.
+                 if (coverage > grain) sandPixels[index] = coverage < .65f && grain > coverage * .6f
+-                    ? RetroArt.Palette[(x + y * 3) % 3 == 0 ? 12 : 13] : color;
++                    ? RetroArt.Palette[(gx + gy * 3) % 3 == 0 ? 12 : 13] : color;
+                 sandClear[index] = coverage > .94f && tile is 2 or 0x46 or 0x2d or 0x42 or >= 0x1b and <= 0x1e;
+             }
+         sandLayer.SetData(sandPixels);
+--- before/monogame/Yipe.Desktop/WorldRenderer.cs
++++ after/monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -34,7 +34,10 @@
+         mountains = new MountainTerrain(device, outdoors, catalog, desert);
+         water = CreateWater(device);
+         paths = RetroArt.CreatePaths(device, outdoors);
++        paths.GetData(outdoorPathPattern);
+         meadow = RetroArt.Load(device, content, "meadow.png", 2, 2, 32);
++        meadow.GetData(meadowPattern);
++        outdoorGround = new Texture2D(device, WaterWidth, WaterHeight);
+         buildings = RetroArt.Load(device, content, "town.png", 3, 3, 48);
+         shops = RetroArt.Load(device, content, "shops.png", 3, 3, 48);
+         monsters = [RetroArt.Load(device, content, "World/monsters-01.png", 4, 4, 48),
+@@ -138,6 +141,7 @@
+         PrepareFire(map);
+         PrepareSnow(map);
+         mountains.Prepare(map.Id, map.Tile);
++        PrepareOutdoors(map);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+             {
+@@ -147,11 +151,16 @@
+                 if (map.Events.Overlay is { Value: > 0 } overlay && overlay.Position == cell) DrawProp(batch, 12, cell);
+             }
+ 
+-        if (IsVillage(map))
+-            for (var y = 0; y < Map.Height; y++)
+-                for (var x = 0; x < Map.Width; x++)
+-                    if (game.Visibility.Contains(new(x, y))) DrawVillageDetails(batch, map, new(x, y), town, time);
+-        DrawDesertWind(batch, game, time);
++        for (var y = 0; y < Map.Height; y++)
++            for (var x = 0; x < Map.Width; x++)
++                if (game.Visibility.Contains(new(x, y)))
++                {
++                    DrawOutdoorPlants(batch, map, new(x, y), town, time);
++                    if (IsVillage(map)) DrawVillageDetails(batch, map, new(x, y), town, time);
++                }
++        DrawOutdoorActivity(batch, game, time, rainStrength, OutdoorDaylight);
++        if (rainStrength < .15f && OutdoorDaylight > .35f) DrawVillageActivity(batch, game, time);
++        if (rainStrength < .15f) DrawDesertWind(batch, game, time);
+         DrawHellAtmosphere(batch, game, time);
+         DrawEarthAtmosphere(batch, game, time);
+         DrawStoneAtmosphere(batch, game, time);
+@@ -205,9 +214,8 @@
+             DrawRoamingActor(batch, game, y, time);
+         }
+         if (!heroDrawn) town.DrawHero(batch, hero, time, miniature, footsteps: false);
+-        DrawVillageActivity(batch, game, time);
+         // Hide unknown terrain and atmosphere, but keep a known door's crown intact.
+-        if (IsHell(map) || IsVillage(map))
++        if (IsHell(map) || map.Id <= 36)
+             for (var y = 0; y < Map.Height; y++)
+                 for (var x = 0; x < Map.Width; x++)
+                     if (!game.Visibility.Contains(new(x, y)))
+@@ -229,13 +237,17 @@
+         PrepareFire(map);
+         PrepareSnow(map);
+         mountains.Prepare(map.Id, map.Tile);
++        PrepareOutdoors(map);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+                 if (seen[x * Map.Height + y]) DrawGround(batch, map, new(x, y), time);
+-        if (IsVillage(map))
+-            for (var y = 0; y < Map.Height; y++)
+-                for (var x = 0; x < Map.Width; x++)
+-                    if (seen[x * Map.Height + y]) DrawVillageDetails(batch, map, new(x, y), town, time);
++        for (var y = 0; y < Map.Height; y++)
++            for (var x = 0; x < Map.Width; x++)
++                if (seen[x * Map.Height + y])
++                {
++                    DrawOutdoorPlants(batch, map, new(x, y), town, time);
++                    if (IsVillage(map)) DrawVillageDetails(batch, map, new(x, y), town, time);
++                }
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+             {
+@@ -280,7 +292,7 @@
+         };
+         if (prop >= 0) DrawProp(batch, prop, cell);
+         var plant = tile switch { 0x12 => 10, 0x13 => 11, 0x21 => 4, 0x2e or 0x57 => 0, 0x31 or 0x56 => 5, _ => -1 };
+-        if (plant >= 0) DrawFlora(batch, plant, cell, time);
++        if (plant >= 0) DrawFlora(batch, plant, cell, time, map.Id <= 36);
+         if (tile == 4) DrawCasinoSign(batch, cell);
+     }
+ 
+@@ -313,5 +325,6 @@
+         breedingGround.Dispose(); fireGround.Dispose(); fireLava.Dispose();
+         mountains.Dispose();
+         snowGround.Dispose(); snowProps.Dispose();
++        outdoorGround.Dispose();
+     }
+ }
+--- before/monogame/Yipe.Desktop/WorldTerrain.cs
++++ after/monogame/Yipe.Desktop/WorldTerrain.cs
+@@ -34,10 +34,11 @@
+         }
+         var surface = map.Id < 41;
+         var floor = (Math.Clamp(map.Environment, 1, 7) - 1) * 2;
+-        batch.Draw(surface ? meadow : floors, bounds,
++        if (surface && map.Id <= 36 && map.Id != 17) batch.Draw(outdoorGround, bounds, bounds, Color.White);
++        else batch.Draw(surface ? meadow : floors, bounds,
+             surface ? Cell((cell.X * 3 + cell.Y * 7) % 4, 2, 32) : Cell(floor, 4, 32), Color.White);
+ 
+-        if (desertActive) batch.Draw(sandLayer, bounds, bounds, Color.White);
++        if (desertActive && !(map.Id <= 36 && map.Id != 17)) batch.Draw(sandLayer, bounds, bounds, Color.White);
+         if (snowActive) batch.Draw(snowGround, bounds, bounds, Color.White);
+         if (MountainTerrain.IsMountain(tile)) batch.Draw(mountains.Texture, bounds, bounds, Color.White);
+         if (tile == 0x36) batch.Draw(desert, bounds, Cell(2, 2, 32), Color.White);
+@@ -71,14 +72,14 @@
+             0x2c => 8, 0x2f => 2, 0x32 => 3, 0x33 => 9, 0x34 => 7, 0x35 => 6,
+             _ => -1,
+         };
+-        if (floraIndex >= 0) DrawFlora(batch, floraIndex, cell, time);
++        if (floraIndex >= 0) DrawFlora(batch, floraIndex, cell, time, surface);
+     }
+ 
+-    private void DrawFlora(SpriteBatch batch, int index, MapPosition cell, double time)
++    private void DrawFlora(SpriteBatch batch, int index, MapPosition cell, double time, bool surface)
+     {
+         var source = Cell(index, 4, 48);
+         var position = new Vector2(cell.X * 32 - 8, cell.Y * 32 - 15);
+-        if (index is not (0 or 2)) { batch.Draw(flora, position, source, Color.White); return; }
++        if (index is not (0 or 2) && !(surface && index is 5 or 10 or 11)) { batch.Draw(flora, position, source, Color.White); return; }
+         var breeze = MathF.Sin((float)(Math.Floor(time * 6) / 6) * 1.8f + cell.X * .7f + cell.Y);
+         // Crown/branch movement is at most one pixel; trunks and roots remain anchored.
+         for (var row = 0; row < 48; row += 4)
+--- before/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/MaynardAtmosphereChecks.cs
+@@ -102,8 +102,12 @@
+             Scene(117); Call("UpdateCaveAmbience", .8d);
+             check(river.IsDisposed && Voice("river") is null && ambient.IsDisposed && Voice("ambience")!.State == SoundState.Playing, "Entering Hell releases both town layers and selects Hell ambience");
+             Scene(17); Call("UpdateCaveAmbience", .8d); river = Voice("river")!; ambient = Voice("ambience")!;
++            var leavingRiverVolume = river.Volume;
+             Scene(8); Call("UpdateCaveAmbience", .1d);
+-            check(river.IsDisposed && ambient.IsDisposed && Voice("river") is null && Voice("ambience") is null, "Maynard ambience does not leak into other towns");
++            check(ReferenceEquals(river, Voice("river")) && river.Volume < leavingRiverVolume && ambient.IsDisposed
++                && Voice("ambience") is { State: SoundState.Playing }, "Leaving Maynard selects habitat ambience and smoothly fades the former river");
++            for (var i = 0; i < 24; i++) Call("UpdateCaveAmbience", .1d);
++            check(river.IsDisposed && Voice("river") is null, "The previous town river reaches silence and releases its voice on dry ground");
+             check(before.SequenceEqual(GameSaveCodec.Encode(townScene.Session, catalog)), "Maynard leaves and positional audio preserve complete gameplay and RNG");
+             Scene(17); Set("sceneTime", 2d); Capture("bridge-day.png");
+             player.SnapTo(new(5, 5)); Call("RestorePosition", new MapPosition(5, 5)); Capture("square-day.png");
+@@ -114,6 +118,7 @@
+         }
+         finally
+         {
++            at.GetMethod("StopOutdoorNature")!.Invoke(audio, null);
+             at.GetMethod("StopRiver")!.Invoke(audio, null); at.GetMethod("UpdateAmbience")!.Invoke(audio, [false, false, 0d]);
+             at.GetProperty("Enabled")!.SetValue(audio, enabled); at.GetProperty("Volume")!.SetValue(audio, volume);
+             foreach (var entry in saved) Set(entry.Key, entry.Value);
+--- before/monogame/Yipe.GraphicsChecks/Program.cs
++++ after/monogame/Yipe.GraphicsChecks/Program.cs
+@@ -28,6 +28,7 @@
+         var stoneOnly = false;
+         var hellOnly = false;
+         var maynardOnly = false;
++        var outdoorsOnly = false;
+         var menusOnly = false;
+         for (var i = 0; i < args.Length; i++)
+         {
+@@ -38,6 +39,7 @@
+                 Console.WriteLine("--capture-monsters 7,9 selects monster clips; all registered monsters are still checked.");
+                 Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
+                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
++                Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
+                 Console.WriteLine("--maynard-only runs focused Maynard leaves and positional-audio checks.");
+                 Console.WriteLine("--hell-only runs focused Hell presentation and ambient-audio checks.");
+                 Console.WriteLine("--stone-only runs focused Stone Cave terrain, light and ambience checks.");
+@@ -52,6 +54,7 @@
+             else if (args[i] == "--record") record = true;
+             else if (args[i] == "--monsters-only") monstersOnly = true;
+             else if (args[i] == "--snow-only") snowOnly = true;
++            else if (args[i] == "--outdoors-only") outdoorsOnly = true;
+             else if (args[i] == "--maynard-only") maynardOnly = true;
+             else if (args[i] == "--hell-only") hellOnly = true;
+             else if (args[i] == "--stone-only") stoneOnly = true;
+@@ -80,6 +83,8 @@
+                 return 2;
+             }
+         }
++        if (outdoorsOnly && (maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
++        { Console.Error.WriteLine("--outdoors-only cannot be combined with other capture or route modes."); return 2; }
+         if (opening && record) { Console.Error.WriteLine("Use --record for the visual tour or --opening-route for the earned replay."); return 2; }
+         if (lateInput is not null && (opening || record)) { Console.Error.WriteLine("Run late-route checks separately from the opening or tour."); return 2; }
+         if (monsterCaptures is not null && (opening || lateInput is not null))
+@@ -132,7 +137,7 @@
+                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
+                     }
+                 }
+-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly);
++                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly);
+                 return 0;
+             }
+             catch (Exception error)
+@@ -174,7 +179,7 @@
+         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
+     }
+ 
+-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly)
++    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly)
+     {
+         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
+         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
+@@ -235,6 +240,13 @@
+         {
+             Set("timeOfDayMode", 1); SnowBiomeChecks.Run(game, outputDirectory, Check);
+             Log($"Passed {checks} visual integration checks. Focused snow-biome run.");
++            return;
++        }
++        if (outdoorsOnly)
++        {
++            OutdoorPresentationChecks.Run(game, outputDirectory, Check);
++            VillagePresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
++            Log($"Passed {checks} visual integration checks. Focused overworld run.");
+             return;
+         }
+         if (maynardOnly)
+@@ -1002,6 +1014,7 @@
+                     atlasIndex < 3 ? $"Monster/NPC sprite {atlasIndex * 16 + cell + 1} is nonempty with a clear atlas border" : $"Map atlas {atlasIndex + 1} prop {cell + 1} has a clear atlas border");
+             }
+         }
++        OutdoorPresentationChecks.Run(game, outputDirectory, Check);
+         MaynardAtmosphereChecks.Run(game, outputDirectory, Check);
+         WorldPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+         VillagePresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+--- before/monogame/Yipe.GraphicsChecks/README.md
++++ after/monogame/Yipe.GraphicsChecks/README.md
+@@ -1,6 +1,6 @@
+ # MonoGame graphics checks
+ 
+-The full suite now passes **2,629 checks**, including all 41 animated monsters. It includes the original 139 visual checks, eight diagonal
++The full suite now passes **3,104 checks**, including all 41 animated monsters. It includes the original 139 visual checks, eight diagonal
+ dispatch/animation checks, and six session checks for logical position/storage,
+ world transitions, shop handoff and RNG isolation, plus eight full-save checks
+ for complete state/renderer replacement and non-destructive failure handling,
+@@ -36,7 +36,15 @@
+ art iterations, use `--monsters-only --capture-monsters 10,11`: all registered
+ monster art, motion and real combat checks still run, while full clips are
+ limited to the selected IDs. Omit `--monsters-only` for full-suite verification;
+-`--capture-monsters` only limits exported clips, not monster coverage.
++`--capture-monsters` only limits exported clips, not monster coverage. For a full
++terrain regression run, use `--capture-monsters 1` to avoid exporting videos
++for the entire unchanged roster while retaining its checks.
++
++For overworld iterations, use `--outdoors-only`. This renders all 36 surface maps,
++checks deterministic scenery, fog, secret aliases and gameplay/RNG preservation,
++and exercises habitat mixing, positional water, night/cold wildlife, mute/focus
++and town road access. It also exports day/night views, rain views, motion clips
++and a region coverage CSV under `outdoors/`. All saves are isolated test fixtures.
+ 
+ For local menu iterations, use `--menus-only`. This checks entering Graphics,
+ wrapping its cursor, changing settings while paused, returning one level with
+--- before/monogame/Yipe.GraphicsChecks/WorldPresentationChecks.cs
++++ after/monogame/Yipe.GraphicsChecks/WorldPresentationChecks.cs
+@@ -123,6 +123,8 @@
+             prepareWater.Invoke(renderer, [map]);
+             prepareDesert.Invoke(renderer, [map]);
+             prepareMountains.Invoke(mountains, [map.Id, (Func<MapPosition, ushort>)map.Tile]);
++            type.GetMethod("PrepareSnow", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(renderer, [map]);
++            type.GetMethod("PrepareOutdoors", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(renderer, [map]);
+             device.SetRenderTarget(target); device.Clear(Color.Transparent); batch.Begin(samplerState: SamplerState.PointClamp);
+             ground.Invoke(renderer, [batch, map, new MapPosition(1, 1), 1d]); batch.End(); device.SetRenderTarget(null);
+             var pixels = new Color[416 * 384]; target.GetData(pixels); return pixels;
+@@ -199,7 +201,7 @@
+         Color[] PalmFrame(double time)
+         {
+             device.SetRenderTarget(target); device.Clear(Color.Transparent); batch.Begin(samplerState: SamplerState.PointClamp);
+-            floraMethod.Invoke(renderer, [batch, 0, new MapPosition(4, 4), time]); batch.End(); device.SetRenderTarget(null);
++            floraMethod.Invoke(renderer, [batch, 0, new MapPosition(4, 4), time, true]); batch.End(); device.SetRenderTarget(null);
+             var pixels = new Color[416 * 384]; target.GetData(pixels); return pixels;
+         }
+         var palmFirst = PalmFrame(0); var palmLater = PalmFrame(2);
+--- /dev/null
++++ monogame/Yipe.Desktop/WorldOutdoors.cs
+@@ -0,0 +1,291 @@
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++
++namespace Yipe.Desktop;
++
++internal sealed partial class WorldRenderer
++{
++    private readonly Texture2D outdoorGround;
++    private readonly Color[] meadowPattern = new Color[64 * 64];
++    private readonly Color[] outdoorPathPattern = new Color[128 * 512];
++    private readonly ushort[] outdoorTiles = new ushort[Map.TileCount];
++    private readonly Dictionary<int, Map> surfaceNeighbors = new();
++    private readonly List<(int Sprite, Point Feet)> outdoorPlants = new();
++    private readonly List<Point> outdoorLeaves = new();
++    private Map? outdoorMap;
++    internal float OutdoorDaylight { get; set; } = 1;
++
++    // Cosmetic aliases must have the same plants, soil and sound as ordinary terrain.
++    private static ushort OutdoorTile(ushort tile) => tile switch
++    {
++        0x46 => 2, 0x42 => 0x2d, 0x56 => 0x31, 0x57 => 0x2e,
++        0x58 => 0x11, 0x59 => 0x0e, 0x69 => 0x1f, 0x45 => 3, _ => tile,
++    };
++
++    private ushort SurfaceTile(Map map, int x, int y)
++    {
++        if (Map.Contains(new(x, y))) return OutdoorTile(map.Tile(new(x, y)));
++        // Rooms overlap by two tiles. Wrap on the original six-by-six world.
++        var gx = Mod((map.Id - 1) % 6 * 11 + x, 66);
++        var gy = Mod((map.Id - 1) / 6 * 10 + y, 60);
++        var id = gy / 10 * 6 + gx / 11 + 1;
++        if (!surfaceNeighbors.TryGetValue(id, out var neighbor))
++            surfaceNeighbors[id] = neighbor = catalog.CreateMap(id)!;
++        return OutdoorTile(neighbor.Tile(new(gx % 11, gy % 10)));
++    }
++
++    private static int Mod(int value, int size) => (value % size + size) % size;
++    private static uint OutdoorHash(int x, int y)
++    {
++        var value = (uint)(Mod(x, 2112) * 374761393 + Mod(y, 1920) * 668265263);
++        value = (value ^ (value >> 13)) * 1274126177;
++        return value ^ (value >> 16);
++    }
++
++    private static float MeadowField(int x, int y)
++    {
++        // A periodic field shares identical pixels through overlapping rooms and world edges.
++        var gx = Mod(x, 2112); var gy = Mod(y, 1920);
++        var fx = MathHelper.SmoothStep(0, 1, gx % 96 / 96f);
++        var fy = MathHelper.SmoothStep(0, 1, gy % 96 / 96f);
++        float Corner(int dx, int dy) => (OutdoorHash(gx / 96 * 96 + dx, gy / 96 * 96 + dy) & 65535) / 65535f;
++        return MathHelper.Lerp(MathHelper.Lerp(Corner(0, 0), Corner(96, 0), fx),
++            MathHelper.Lerp(Corner(0, 96), Corner(96, 96), fx), fy);
++    }
++
++    private void PrepareOutdoors(Map map)
++    {
++        if (map.Id is < 1 or > 36 || map.Id == 17) return;
++        var changed = !ReferenceEquals(outdoorMap, map);
++        for (var y = 0; y < Map.Height; y++)
++            for (var x = 0; x < Map.Width; x++)
++            {
++                var tile = OutdoorTile(map.Tile(new(x, y)));
++                var index = y * Map.Width + x;
++                changed |= outdoorTiles[index] != tile;
++                outdoorTiles[index] = tile;
++            }
++        if (!changed) return;
++        outdoorMap = map;
++        outdoorPlants.Clear(); outdoorLeaves.Clear();
++        var pixels = new Color[WaterWidth * WaterHeight];
++        var ox = (map.Id - 1) % 6 * 352; var oy = (map.Id - 1) / 6 * 320;
++        for (var cy = 0; cy < Map.Height; cy++)
++            for (var cx = 0; cx < Map.Width; cx++)
++            {
++                var tile = OutdoorTile(map.Tile(new(cx, cy)));
++                var path = VillagePathConnections(map, new(cx, cy));
++                var pathCell = Cell(path, 4, 32);
++                var trees = new List<Point>();
++                var rock = false; var flowers = false;
++                for (var dy = -1; dy <= 1; dy++)
++                    for (var dx = -1; dx <= 1; dx++)
++                    {
++                        var near = SurfaceTile(map, cx + dx, cy + dy);
++                        if (near is 0x31 or 0x2e) trees.Add(new((cx + dx) * 32 + 16, (cy + dy) * 32 + 23));
++                        rock |= MountainTerrain.IsMountain(near);
++                        flowers |= near is 0x32 or 0x33;
++                    }
++                if (tile == 0x31) outdoorLeaves.Add(new(cx * 32 + 16, cy * 32 + 4));
++                for (var py = 0; py < 32; py++)
++                    for (var px = 0; px < 32; px++)
++                    {
++                        var x = cx * 32 + px; var y = cy * 32 + py; var i = y * WaterWidth + x;
++                        var gx = ox + x; var gy = oy + y;
++                        var grain = (OutdoorHash(gx / 3 * 3, gy / 2 * 2) % 100) / 100f;
++                        var field = MeadowField(gx / 2 * 2, gy / 2 * 2) + (grain - .5f) * .08f;
++                        var shade = 0f;
++                        foreach (var tree in trees) shade = Math.Max(shade, Math.Max(0, 1 - Vector2.Distance(new(x, y), tree.ToVector2()) / 44));
++                        var wet = Math.Clamp((23 - shoreDistance[i]) / 23, 0, 1);
++                        var baseColor = field < .35f ? new Color(102, 131, 70)
++                            : field > .66f ? new Color(112, 139, 75) : RetroArt.Palette[11];
++                        if (wet > .55f + grain * .15f || shade > .55f + grain * .12f) baseColor = new Color(94, 122, 67);
++                        else if (wet > .2f + grain * .1f || shade > .23f + grain * .15f) baseColor = new Color(102, 129, 68);
++                        var source = meadowPattern[Mod(gy, 64) * 64 + Mod(gx, 64)];
++                        // Preserve the original grass's fine native-pixel marks inside broad quiet patches.
++                        pixels[i] = source == RetroArt.Palette[11] ? baseColor : Color.Lerp(source, baseColor, .25f);
++                        if (shade > .45f && OutdoorHash(gx / 3 * 3, gy / 2 * 2) % 29 == 0)
++                            pixels[i] = RetroArt.Palette[(gx / 3 + gy / 2) % 3 == 0 ? 17 : 10];
++                        if (desertActive && sandPixels[i].A > 0)
++                        {
++                            pixels[i] = shade > .35f + grain * .1f
++                                ? Color.Lerp(sandPixels[i], RetroArt.Palette[16], .12f) : sandPixels[i];
++                            if (shade > .55f && OutdoorHash(gx / 4 * 4, gy / 2 * 2) % 31 == 0)
++                                pixels[i] = RetroArt.Palette[17];
++                        }
++                        if (path != 0)
++                        {
++                            bool Paved(int dx, int dy) => outdoorPathPattern[(pathCell.Y + Math.Clamp(py + dy, 0, 31)) * 128
++                                + pathCell.X + Math.Clamp(px + dx, 0, 31)].A > 0;
++                            var reach = grain > .6f ? 2 : 3;
++                            if (!Paved(0, 0) && (Paved(reach, 0) || Paved(-reach, 0) || Paved(0, reach) || Paved(0, -reach)))
++                                pixels[i] = Color.Lerp(pixels[i], RetroArt.Palette[17], .27f);
++                        }
++                    }
++
++                // A jittered world-space candidate per cell; clusters follow terrain, never simulation RNG.
++                var hash = OutdoorHash(ox + cx * 32, oy + cy * 32);
++                var feet = new Point(cx * 32 + 5 + (int)(hash % 23), cy * 32 + 9 + (int)(hash / 23 % 23));
++                if (!OutdoorPlantFits(map, feet)) continue;
++                var ground = feet.Y * WaterWidth + feet.X;
++                var waterNear = shoreDistance[ground] is > 4 and < 23;
++                var dry = sandField[ground] > .65f && desertActive;
++                var fieldHere = MeadowField(ox + feet.X, oy + feet.Y);
++                var roadNear = false;
++                for (var dy = -1; dy <= 1; dy++)
++                    for (var dx = -1; dx <= 1; dx++)
++                        roadNear |= RetroArt.PathConnections(SurfaceTile(map, cx + dx, cy + dy)) != 0;
++                var chance = waterNear ? 85 : trees.Count > 0 ? 65 : flowers ? 65 : rock ? 48 : roadNear ? 35
++                    : fieldHere > .62f ? 45 : fieldHere < .33f ? 25 : 5;
++                if (IsVillage(map)) chance = map.Id == 27 ? 30 : 22;
++                if (hash / 31 % 100 >= chance) continue;
++                var sprite = waterNear ? 4 : dry ? (hash % 3 == 0 ? 2 : 3)
++                    : rock && hash % 3 == 0 ? 2 : flowers || fieldHere > .58f ? (int)(hash % 2)
++                    : trees.Count > 0 && hash % 2 == 0 ? 5 : 3;
++                outdoorPlants.Add((sprite, feet));
++                if (hash % 3 == 0)
++                {
++                    var companion = new Point(feet.X + 13, feet.Y + 7);
++                    if (OutdoorPlantFits(map, companion)) outdoorPlants.Add((sprite is 0 or 1 ? 3 : sprite, companion));
++                }
++            }
++        // Authored garden borders extend Ervyn's existing beds, leaving its roads and door approaches clear.
++        if (map.Id == 27)
++            foreach (var feet in new Point[] { new(78, 116), new(180, 93), new(234, 90), new(331, 119),
++                new(73, 266), new(184, 301), new(245, 305), new(343, 270), new(60, 166), new(364, 180) })
++                if (OutdoorPlantFits(map, feet))
++                {
++                    outdoorPlants.Add((5, feet));
++                    outdoorLeaves.Add(new(feet.X, feet.Y - 18));
++                }
++        outdoorPlants.Sort((a, b) => a.Feet.Y.CompareTo(b.Feet.Y));
++        if (map.Id == 27)
++        {
++            // Two tended flower borders with broken, native-pixel soil edges.
++            foreach (var bed in new Rectangle[] { new(102, 76, 60, 12), new(252, 77, 67, 12),
++                new(106, 265, 55, 16), new(256, 267, 58, 16) })
++                for (var y = bed.Top; y < bed.Bottom; y++)
++                    for (var x = bed.Left; x < bed.Right; x++)
++                    {
++                        var rim = Math.Min(Math.Min(x - bed.Left, bed.Right - 1 - x), Math.Min(y - bed.Top, bed.Bottom - 1 - y));
++                        if (rim < OutdoorHash(x / 2, y) % 3 || map.Tile(new(x / 32, y / 32)) != 2) continue;
++                        pixels[y * WaterWidth + x] = (x / 3 + y / 2) % 5 == 0 ? new Color(117, 103, 63) : new Color(100, 94, 57);
++                    }
++        }
++        outdoorGround.SetData(pixels);
++    }
++
++    private bool OutdoorPlantFits(Map map, Point feet)
++    {
++        // Low plant art has no collision. Reserve the complete footprint around paths, props and water.
++        for (var y = feet.Y - 10; y <= feet.Y + 2; y += 2)
++            for (var x = feet.X - 9; x <= feet.X + 9; x += 3)
++            {
++                if (x < 0 || y < 0 || x >= WaterWidth || y >= WaterHeight) return false;
++                var cell = new MapPosition(x / 32, y / 32);
++                var tile = OutdoorTile(map.Tile(cell));
++                if (tile is not (2 or 0x2d or >= 0x1b and <= 0x1e) || VillagePathConnections(map, cell) != 0
++                    || WaterAt(x, y) || SnowColdAt(x, y)) return false;
++                if (map.Events.Chests.Contains(cell) || map.Events.Depth.Any(e => e.HasPosition && e.Position == cell)
++                    || map.Events.Message is { HasPosition: true } sign && sign.Position == cell) return false;
++            }
++        return true;
++    }
++
++    private void DrawOutdoorPlants(SpriteBatch batch, Map map, MapPosition cell, TownRenderer town, double time)
++    {
++        if (map.Id is < 1 or > 36 || map.Id == 17) return;
++        foreach (var plant in outdoorPlants)
++            if (plant.Feet.X / 32 == cell.X && plant.Feet.Y / 32 == cell.Y)
++                town.DrawProp(batch, plant.Sprite, plant.Feet.ToVector2(), time);
++    }
++
++    private void DrawOutdoorActivity(SpriteBatch batch, Adventure game, double time, float rain, float daylight)
++    {
++        if (game.Map.Id is < 1 or > 36 || game.Map.Id == 17) return;
++        var clock = Math.Floor(time * 10) / 10;
++        foreach (var source in outdoorLeaves)
++            for (var leaf = 0; leaf < 3; leaf++)
++            {
++                var phase = (clock + source.X * .13 + source.Y * .07 + leaf * 5.7) % 19;
++                if (phase > 12) continue;
++                var fall = Math.Min(1, phase / 7);
++                var x = source.X - 12 + leaf * 8 + (int)(fall * 25 + Math.Sin(phase * 2 + leaf) * 4);
++                var y = source.Y + (int)(fall * 42);
++                if (!Visible(x, y)) continue;
++                var color = RetroArt.Palette[leaf == 0 ? 17 : 12] * (float)Math.Min(1, (12 - phase) / 2);
++                batch.Draw(pixel, new Rectangle(x, y, (int)(phase * 4) % 3 == 0 ? 1 : 3, 1), color);
++                batch.Draw(pixel, new Rectangle(x + 1, y + 1, 1, 1), RetroArt.Palette[10]);
++            }
++        if (rain > .15f || daylight < .35f) return;
++        foreach (var plant in outdoorPlants)
++        {
++            if (plant.Sprite is not (0 or 1 or 3 or 4) || (plant.Feet.X + plant.Feet.Y) % 3 != 0) continue;
++            var phase = clock * .8 + plant.Feet.X;
++            var x = plant.Feet.X + (int)(Math.Sin(phase) * 12);
++            var y = plant.Feet.Y - 13 + (int)(Math.Cos(phase * .7) * 6);
++            if (!Visible(x, y)) continue;
++            if (plant.Sprite == 3)
++            {
++                if (desertActive && sandField[plant.Feet.Y * WaterWidth + plant.Feet.X] > .3f) continue;
++                x += (int)(clock % 9 * 2); y -= (int)(clock % 9);
++                if (Visible(x, y)) batch.Draw(pixel, new Rectangle(x, y, 2, 1), RetroArt.Palette[13] * .5f);
++            }
++            else if (plant.Sprite == 4)
++            {
++                batch.Draw(pixel, new Rectangle(x, y, 3, 1), RetroArt.Palette[29]);
++                batch.Draw(pixel, new Rectangle(x + 1, y - 1, 1, 3), RetroArt.Palette[6] * .65f);
++            }
++            else
++            {
++                var wings = (int)(clock * 10 + plant.Feet.Y) % 3 == 0 ? 1 : 2;
++                batch.Draw(pixel, new Rectangle(x - wings, y, wings * 2 + 1, 1), RetroArt.Palette[plant.Sprite == 0 ? 33 : 6]);
++                batch.Draw(pixel, new Rectangle(x, y + 1, 1, 1), RetroArt.Palette[15]);
++            }
++        }
++        bool Visible(int x, int y) => x >= 1 && y >= 1 && x < WaterWidth - 4 && y < WaterHeight - 3
++            && game.Visibility.Contains(new(x / 32, y / 32)) && !SnowColdAt(x, y)
++            && !MountainTerrain.IsMountain(game.Map.Tile(new(x / 32, y / 32)));
++    }
++
++    internal (float Dry, float Cold, float Wood) OutdoorHabitatAt(Map map, Vector2 position)
++    {
++        PrepareWater(map); PrepareDesert(map); PrepareSnow(map);
++        var feet = position * 32 + new Vector2(16, 25);
++        float dry = 0, cold = 0, wood = 0, weight = 0;
++        // Blend over the same nearby material footprint while walking between habitats.
++        for (var dy = -64; dy <= 64; dy += 16)
++            for (var dx = -64; dx <= 64; dx += 16)
++            {
++                var x = Math.Clamp((int)feet.X + dx, 0, WaterWidth - 1);
++                var y = Math.Clamp((int)feet.Y + dy, 0, WaterHeight - 1);
++                var w = Math.Max(0, 1 - MathF.Sqrt(dx * dx + dy * dy) / 80);
++                weight += w;
++                dry += (desertActive ? sandField[y * WaterWidth + x] : 0) * w;
++                cold += (SnowColdAt(x, y) ? 1 : 0) * w;
++                wood += (OutdoorTile(map.Tile(new(x / 32, y / 32))) == 0x31 ? 1 : 0) * w;
++            }
++        return (dry / weight, cold / weight, Math.Min(1, wood / weight * 4));
++    }
++
++    internal (float Gain, float Pan) OutdoorWaterSoundAt(Map map, Vector2 position)
++    {
++        PrepareWater(map);
++        var feet = position * 32 + new Vector2(16, 25);
++        const int reach = 104;
++        var amount = 0f; var waterX = feet.X;
++        for (var y = Math.Max(0, (int)(feet.Y - reach) / 4 * 4); y < Math.Min(WaterHeight, feet.Y + reach); y += 4)
++            for (var x = Math.Max(0, (int)(feet.X - reach) / 4 * 4); x < Math.Min(WaterWidth, feet.X + reach); x += 4)
++            {
++                if (!WaterAt(x, y)) continue;
++                var tile = WaterTile(map.Tile(new(x / 32, y / 32)));
++                var gain = tile is 0x0c or 0x0d or >= 0x4a and <= 0x51 ? .35f : 1;
++                var distance = Math.Clamp((Vector2.Distance(feet, new(x, y)) - 12) / (reach - 12), 0, 1);
++                var strength = gain * (1 - MathHelper.SmoothStep(0, 1, distance));
++                if (strength <= amount) continue;
++                amount = strength; waterX = x;
++            }
++        return (amount, Math.Clamp((waterX - feet.X) / 80, -.65f, .65f));
++    }
++}
+--- /dev/null
++++ monogame/Yipe.GraphicsChecks/OutdoorPresentationChecks.cs
+@@ -0,0 +1,195 @@
++using System.Reflection;
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Audio;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++using Yipe.Desktop;
++
++namespace Yipe.GraphicsChecks;
++
++internal static class OutdoorPresentationChecks
++{
++    internal static void Run(Game host, string output, Action<bool, string> check)
++    {
++        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
++        var type = host.GetType();
++        object Get(string name) => type.GetField(name, flags)!.GetValue(host)!;
++        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(host, value);
++        void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(host, args);
++        var world = Get("world"); var wt = world.GetType(); var town = Get("town");
++        object? World(string name, params object[] args) => wt.GetMethod(name, flags | BindingFlags.Public)!.Invoke(world, args);
++        var catalog = (MapCatalog)Get("catalog");
++        var directory = Path.Combine(output, "outdoors"); Directory.CreateDirectory(directory);
++        var saved = new[] { "session", "adventure", "renderedMap", "cameraPosition", "sceneTime", "paused", "pauseAmount", "overlay", "mapOpen",
++            "worldMapOpen", "saving", "loading", "studioSplashRemaining", "walkingStep", "pendingDirection", "messageRemaining", "timeOfDayMode", "outdoorWeatherTime" }.ToDictionary(n => n, Get);
++        var player = (PlayerMotion)Get("player"); var position = player.Position;
++        var audio = Get("audio"); var at = audio.GetType();
++        void Audio(string name, params object[] args) => at.GetMethod(name)!.Invoke(audio, args);
++        SoundEffectInstance? Voice(string name) => (SoundEffectInstance?)at.GetField(name, flags)!.GetValue(audio);
++        var enabled = at.GetProperty("Enabled")!.GetValue(audio); var volume = at.GetProperty("Volume")!.GetValue(audio);
++        using var target = new RenderTarget2D(host.GraphicsDevice, 416, 384);
++        using var batch = new SpriteBatch(host.GraphicsDevice);
++        using var presented = new Texture2D(host.GraphicsDevice, 1280, 720);
++        var buffer = new Color[1280 * 720];
++        var counts = new List<string>();
++        try
++        {
++            for (var id = 1; id <= 36; id++)
++            {
++                var scene = Scene(id); var map = scene.Map;
++                var before = GameSaveCodec.Encode(scene.Session, catalog);
++                var seen = Enumerable.Repeat(true, Map.TileCount).ToArray();
++                var pixels = Render(() => World("DrawMap", batch, map, seen, 2d, town)); Save($"map-{id:D3}.png");
++                check(pixels.SequenceEqual(Render(() => World("DrawMap", batch, map, seen, 2d, town))), $"Surface {id}: scenery freezes deterministically at the same time");
++                if (id != 17)
++                {
++                    var plants = ((System.Collections.ICollection)wt.GetField("outdoorPlants", flags)!.GetValue(world)!).Count;
++                    counts.Add($"{(char)('A' + (id - 1) % 6)}{(id - 1) / 6 + 1}, {id}, {plants}");
++                    check(plants is > 0 and < 100, $"Surface {id}: bounded habitat planting leaves room for routes and encounters ({plants} clumps)");
++                }
++                Array.Clear(seen); seen[6 * Map.Height + 6] = true;
++                var fog = Render(() => World("DrawMap", batch, map, seen, 2d, town));
++                check(Enumerable.Range(0, fog.Length).Where(i => !seen[i % 416 / 32 * Map.Height + i / 416 / 32])
++                    .Select(i => fog[i]).Distinct().Count() == 1, $"Surface {id}: planting and shadows cannot reveal unexplored cells");
++                check(before.SequenceEqual(GameSaveCodec.Encode(scene.Session, catalog)), $"Surface {id}: complete gameplay, map state and RNG stay unchanged");
++                if (id == 17) continue;
++                // Review the actual game presentation, with lighting and weather, as well as the map view.
++                foreach (var mode in new[] { 1, 3 })
++                {
++                    Set("timeOfDayMode", mode); Set("sceneTime", 2d); Set("outdoorWeatherTime", 0d);
++                    Capture($"play-{id:D3}-{(mode == 1 ? "day" : "night")}.png");
++                }
++            }
++            File.WriteAllLines(Path.Combine(directory, "region-coverage.csv"), new[] { "region,map,plant_clumps", "E3,17,existing Maynard treatment" }.Concat(counts));
++            var meadow = catalog.CreateMap(16)!;
++            var all = Enumerable.Repeat(true, Map.TileCount).ToArray();
++            meadow.RestoreTile(new(2, 2), 2);
++            var ordinary = Render(() => World("DrawMap", batch, meadow, all, 2d, town));
++            meadow.RestoreTile(new(2, 2), 0x46);
++            check(ordinary.SequenceEqual(Render(() => World("DrawMap", batch, meadow, all, 2d, town))), "Secret grass has identical soil and vegetation to ordinary grass");
++            foreach (var pair in new[] { (Normal: (ushort)0x31, Secret: (ushort)0x56), (Normal: (ushort)0x2e, Secret: (ushort)0x57) })
++            {
++                meadow.RestoreTile(new(2, 2), pair.Normal);
++                ordinary = Render(() => World("DrawMap", batch, meadow, all, 2d, town));
++                meadow.RestoreTile(new(2, 2), pair.Secret);
++                check(ordinary.SequenceEqual(Render(() => World("DrawMap", batch, meadow, all, 2d, town))), $"Secret tree {pair.Secret:x} retains ordinary planting, canopy motion and leaf litter");
++            }
++            var field = wt.GetMethod("MeadowField", BindingFlags.Static | BindingFlags.NonPublic)!;
++            float Field(int x, int y) => (float)field.Invoke(null, [x, y])!;
++            check(Enumerable.Range(0, 120).All(i => Field(i * 17, i * 11) == Field(i * 17 + 2112, i * 11 + 1920)), "Ground variation wraps seamlessly across the six-by-six world");
++            var dryScene = Scene(8);
++            var dryHabitat = ((float Dry, float Cold, float Wood))World("OutdoorHabitatAt", dryScene.Map, new Vector2(9, 8))!;
++            var snowHabitat = ((float Dry, float Cold, float Wood))World("OutdoorHabitatAt", catalog.CreateMap(13)!, new Vector2(6, 6))!;
++            check(dryHabitat.Dry > .8f && dryHabitat.Cold == 0 && snowHabitat.Cold > .5f,
++                "Habitat sound follows authored sand and snow footprints rather than whole-region labels");
++            var riverMap = catalog.CreateMap(3)!;
++            (float Gain, float Pan) Water(float x, float y) => ((float, float))World("OutdoorWaterSoundAt", riverMap, new Vector2(x, y))!;
++            check(Water(10, 2).Gain > Water(8, 2).Gain && Water(5, 2).Gain == 0, "Outdoor river sound falls to silence inland");
++            check(Water(9, 2).Pan > 0 && Water(12, 2).Pan < 0, "Outdoor water pans toward its actual bank");
++            var forest = Scene(20);
++            var leaves = Render(() => World("DrawOutdoorActivity", batch, forest, 2d, 0f, 1f)); Save("woodland-particles.png");
++            check(leaves.Any(c => c.A > 0) && leaves.Count(c => c.A > 0) < 1000, "Woodland leaves and insects remain sparse native pixels");
++            check(leaves.SequenceEqual(Render(() => World("DrawOutdoorActivity", batch, forest, 2d, 0f, 1f)))
++                && !leaves.SequenceEqual(Render(() => World("DrawOutdoorActivity", batch, forest, 4d, 0f, 1f))), "Outdoor movement is deterministic and advances with scene time");
++            foreach (var id in new[] { 8, 27, 20, 22 })
++            {
++                var scene = Scene(id); Set("timeOfDayMode", 1); Set("outdoorWeatherTime", 0d);
++                for (var frame = 0; frame < 48; frame++) { Set("sceneTime", frame / 12d); Capture($"clip-{id}-{frame:D3}.png"); }
++                Set("outdoorWeatherTime", RainTime()); Capture($"rain-{id}.png");
++            }
++            Audio("Update", false); Audio("StopOutdoorNature"); Audio("StopRiver");
++            at.GetProperty("Enabled")!.SetValue(audio, true); at.GetProperty("Volume")!.SetValue(audio, .5f);
++            Scene(20); Set("timeOfDayMode", 1); Set("outdoorWeatherTime", 0d);
++            Call("UpdateCaveAmbience", 1d);
++            var birds = Voice("outdoorBirds"); var wind = Voice("ambience");
++            check(birds is { State: SoundState.Playing, IsLooped: true } && wind is { State: SoundState.Playing, IsLooped: true }, "Outdoor ambience plays bounded independent nature and wind loops");
++            var birdLevel = birds!.Volume;
++            Audio("UpdateOutdoorAmbience", 1f, 0f, 0f, 1f, 0f, true, 1d);
++            check(ReferenceEquals(birds, Voice("outdoorBirds")) && ReferenceEquals(wind, Voice("ambience")) && birds.Volume < birdLevel, "Entering dry ground fades bird activity without restarting ambience");
++            foreach (var gate in new[] { "paused", "mapOpen" })
++            {
++                Set(gate, true); Call("UpdateCaveAmbience", .1d);
++                check(birds.State == SoundState.Paused && wind!.State == SoundState.Paused, $"Outdoor sound obeys {gate}");
++                Set(gate, false); Call("UpdateCaveAmbience", .1d);
++            }
++            Audio("Update", false);
++            check(birds.State == SoundState.Paused && wind!.State == SoundState.Paused, "Focus loss silences outdoor ambience");
++            at.GetProperty("Enabled")!.SetValue(audio, false); Call("UpdateCaveAmbience", .1d);
++            check(birds.State == SoundState.Paused, "Sound Off mutes outdoor nature");
++            at.GetProperty("Enabled")!.SetValue(audio, true); Call("UpdateCaveAmbience", .1d);
++            Set("timeOfDayMode", 3);
++            for (var i = 0; i < 8; i++) Call("UpdateCaveAmbience", .5d);
++            var insects = Voice("outdoorNight");
++            check(birds.IsDisposed && insects is { State: SoundState.Playing, IsLooped: true } && ReferenceEquals(wind, Voice("ambience")),
++                "Night crossfades daytime birds to quiet crickets while preserving wind playback");
++            at.GetProperty("Volume")!.SetValue(audio, 0f); Call("UpdateCaveAmbience", .1d);
++            check(insects!.State == SoundState.Paused && wind!.State == SoundState.Paused, "Zero master volume silences both night layers");
++            at.GetProperty("Volume")!.SetValue(audio, .5f);
++            for (var i = 0; i < 8; i++) Audio("UpdateOutdoorAmbience", 0f, 1f, 0f, 0f, 0f, true, .5d);
++            check(insects.IsDisposed && Voice("outdoorNight") is null && Voice("outdoorBirds") is null, "Cold snow habitat suppresses warm-weather wildlife audio");
++            var timer = System.Diagnostics.Stopwatch.StartNew();
++            Scene(27); Set("timeOfDayMode", 1); Set("outdoorWeatherTime", 0d);
++            var setupMs = timer.Elapsed.TotalMilliseconds;
++            Call("Draw", new GameTime()); host.GraphicsDevice.GetBackBufferData(buffer);
++            timer.Restart();
++            for (var frame = 0; frame < 30; frame++)
++            {
++                Set("sceneTime", frame / 30d); Call("Draw", new GameTime());
++                host.GraphicsDevice.GetBackBufferData(buffer);
++            }
++            File.WriteAllText(Path.Combine(directory, "render-timing.json"), System.Text.Json.JsonSerializer.Serialize(new
++            {
++                scene = "Ervyn with normal presentation effects", fixture_setup_ms = setupMs,
++                synchronized_draw_average_ms = timer.Elapsed.TotalMilliseconds / 30,
++                frames = 30, includes_gpu_readback = true, excludes_png_encoding = true,
++            }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
++            Scene(17); Call("UpdateCaveAmbience", .8d);
++            check(birds.IsDisposed && Voice("outdoorBirds") is null, "Returning to Maynard releases the extra outdoor nature voice");
++        }
++        finally
++        {
++            Audio("StopOutdoorNature"); Audio("StopRiver"); Audio("UpdateAmbience", false, false, 0d);
++            at.GetProperty("Enabled")!.SetValue(audio, enabled); at.GetProperty("Volume")!.SetValue(audio, volume);
++            foreach (var entry in saved) Set(entry.Key, entry.Value);
++            player.SnapTo(position);
++            World("SynchronizeMonsters", Get("adventure"), false, new Rectangle(0, 0, 416, 384));
++            Call("Draw", new GameTime());
++        }
++        Adventure Scene(int id)
++        {
++            var template = catalog.CreateMap(id)!;
++            var start = (from x in Enumerable.Range(1, 11) from y in Enumerable.Range(1, 10)
++                where template.Tile(new(x, y)) is (2 or 8 or 0x16 or 0x2d)
++                    && !MonsterPlacements.ForMap(id).Any(p => p.Contains(new(x, y)))
++                orderby Math.Abs(x - 6) + Math.Abs(y - 6) select new MapPosition(x, y)).First();
++            var scene = new Adventure(new GameSession(catalog, location: new() { MapId = id, RegionX = (id - 1) % 6 - 4,
++                RegionY = 2 - (id - 1) / 6, Position = start }));
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) scene.Visibility.RevealFrom(scene.Map, new(x, y));
++            Set("session", scene.Session); Set("adventure", scene); Set("renderedMap", scene.Map);
++            Set("paused", false); Set("pauseAmount", 0f); Set("overlay", null); Set("mapOpen", false); Set("worldMapOpen", false);
++            Set("saving", null); Set("loading", null); Set("studioSplashRemaining", 0d); Set("walkingStep", false); Set("pendingDirection", Point.Zero); Set("messageRemaining", 0d);
++            player.SnapTo(start); Call("RestorePosition", start);
++            World("SynchronizeMonsters", scene, false, new Rectangle(0, 0, 416, 384));
++            // Prepare the map without advancing the simulation or altering the user's save.
++            Render(() => World("DrawMap", batch, scene.Map, Enumerable.Repeat(true, Map.TileCount).ToArray(), 2d, town));
++            return scene;
++        }
++        double RainTime()
++        {
++            var weather = typeof(GameInput).Assembly.GetType("Yipe.Desktop.Rain")!.GetMethod("WeatherAmount")!;
++            return Enumerable.Range(300, 360).First(t => (float)weather.Invoke(null, [(double)t])! > .99f);
++        }
++        Color[] Render(Action draw)
++        {
++            host.GraphicsDevice.SetRenderTarget(target); host.GraphicsDevice.Clear(Color.Transparent);
++            batch.Begin(samplerState: SamplerState.PointClamp); draw(); batch.End(); host.GraphicsDevice.SetRenderTarget(null);
++            var data = new Color[416 * 384]; target.GetData(data); return data;
++        }
++        void Save(string name) { using var file = File.Create(Path.Combine(directory, name)); target.SaveAsPng(file, 416, 384); }
++        void Capture(string name)
++        {
++            Call("Draw", new GameTime()); host.GraphicsDevice.GetBackBufferData(buffer); presented.SetData(buffer);
++            using var file = File.Create(Path.Combine(directory, name)); presented.SaveAsPng(file, 1280, 720);
++        }
++    }
++}

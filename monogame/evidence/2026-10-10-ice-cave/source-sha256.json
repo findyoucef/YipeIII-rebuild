@@ -1,0 +1,21 @@
+{
+  "monogame/PORTING_PLAN.md": "fbbcaece242658e9a801213a4e45ea536389dbe7c498689f956b2f8c6dfe64c8",
+  "monogame/README.md": "52f3a80f3dd5dc117dc25f4bbf7db0e06334ccc6d7fa1907394022cb6ef5e811",
+  "monogame/Yipe.Desktop/GameAudio.cs": "b7b6923a4c02ceefc8b2ffb4bf2a814ad438d589a985f44d2316ddba92dee301",
+  "monogame/Yipe.Desktop/PixelLighting.cs": "a8338cccb93e17ac745661695c11abfefb45fa7931eceae1d39c84f9bb31436d",
+  "monogame/Yipe.Desktop/TownGame.cs": "886306a464e0b496ca9b13088a44fa404f1fc68be80468f31c81e4aeaef40516",
+  "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "684981340c0c06401798a07b90425209cb695a7127b5250de1fa9850b850606f",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "c5b885f3ff372c429a3bc6821c025772d6169bccfd0359c7dea5e18329a69fec",
+  "monogame/Yipe.Desktop/WorldTerrain.cs": "246a7aef794041610d66f7b2f4c7652b90f31b9ae3c3d87a2ee7ecd19cbe2765",
+  "monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs": "b185cccc9c4e232643392eb2fe0c38cedab8cd34a3e50afb9f0274d0c79759f5",
+  "monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs": "01fc7a0493c0394431a043b64aa6383240d0e3c9ded0ecd42a0ae43674f0626a",
+  "monogame/Yipe.GraphicsChecks/FireCaveChecks.cs": "22de9a0078cee22c184eacde1c6a6866e27c1d4ac72c9f8d4bb7bdc7db7aa4ce",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "321cab714c4362dc770cedac15d2ed2cbadab27b239a03970f21fe86266ec873",
+  "monogame/Yipe.GraphicsChecks/README.md": "874fd7b5e0ccd669175f530c37f10f4741d96f4d5cb7cfffa851fc0f8e24b010",
+  "monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs": "fa239d06c5b78b858443d1143d7a6e18bdb39d9b0581e948c3f2f61a90eed083",
+  "monogame/Yipe.Desktop/WorldIce.cs": "85cd3991c4b03fe03ca354fefb3d16c09ab66d2a4077fada41e8ab0a38d00a92",
+  "monogame/Yipe.GraphicsChecks/IceCaveChecks.cs": "c91b6a84158512d80679e0c2542ef967fd8458aab152d0c0c74761b631986d42",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/ice-sources.json": "3d158011d6153933ca0176d03484c779ebcb72fdfe9903e7845bbdc76067ed38",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/ICE-CREDITS.txt": "7983c000ee9ba56dc47dd8621b9beca26eb43f9a562a2999ab063a7c78e54140",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/ice-cave.wav": "7a5e49b50d1037bbed091846d7aac2798ada06bf3647c93393992dace24fa8ef"
+}

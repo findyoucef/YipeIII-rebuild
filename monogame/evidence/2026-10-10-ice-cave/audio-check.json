@@ -1,0 +1,12 @@
+{
+  "seconds": 58.0,
+  "sample_rate": 22050,
+  "channels": 2,
+  "clipped_samples": 0,
+  "boundary_delta": [
+    0.004302978515625,
+    0.0089111328125
+  ],
+  "first_second_rms": 0.05190333945574759,
+  "last_second_rms": 0.03929087156780699
+}

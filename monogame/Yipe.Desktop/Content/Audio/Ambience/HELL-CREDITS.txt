@@ -1,0 +1,16 @@
+Yipe Hell ambience
+
+Lava loop — Blender Foundation
+https://opengameart.org/content/lava-loop
+CC-BY-3.0: https://creativecommons.org/licenses/by/3.0/
+
+Fireplace Sound loop — PagDev
+https://opengameart.org/content/fireplace-sound-loop
+CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Loopable Dungeon Ambience — JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Adapted by icosium labs for Yipe III: mixing, filtering, pitch adjustment, resampling and a wrap crossfade. The adapted mix is distributed under CC BY 3.0. Source authors do not endorse this adaptation.
+See hell-sources.json for processing and source/output hashes.

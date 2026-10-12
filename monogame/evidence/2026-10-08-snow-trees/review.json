@@ -1,0 +1,7 @@
+{
+  "location": "Surface A3/map13, Zephyr Cave 5,4",
+  "change": "Stagger the five pines within their authored collision tiles; vary sprite size, silhouette and facing. Keep trunks anchored during crown sway and preserve point sampling.",
+  "verification": "Local checked Release: zero warnings/errors; 39 focused GPU checks pass. Native and enlarged day views inspected.",
+  "scope": "Only the existing DrawSnowScenery tree branch changed. No map, save, gameplay, weather or source art edits.",
+  "running_game": "Prior build remains running until restart."
+}

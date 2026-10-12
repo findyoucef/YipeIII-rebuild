@@ -1,0 +1,15 @@
+Final Cave ambience
+
+Loopable Dungeon Ambience, by JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+Reused breeding-ground.wav; provenance in sources.json.
+
+Ice Crack 5.wav, by ecfike
+https://freesound.org/people/ecfike/sounds/177217/
+Reused public HQ preview from Ice Cave; provenance in ice-sources.json.
+
+Both recordings: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Filtered and slowed, with quiet echoes and a loop crossfade.
+Processing and hashes: final-cave-sources.json.

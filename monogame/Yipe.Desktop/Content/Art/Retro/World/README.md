@@ -1,5 +1,11 @@
 # World art for the complete port
 
+All 41 canonical monsters have dedicated sixteen-pose pixel-art animation sheets. See
+[Monster animation assets](MONSTER_ANIMATIONS.md) for their cell layout,
+generation provenance and native compilation.
+The Stone Golem has a separate four-pose walking replacement with alternating
+foot lifts and plants, recorded in the same manifest.
+
 ## Character appearances
 
 Four native 32-pixel atlases provide all twelve original appearance slots, with down/left/right/up directions and two alternating walking poses per character. First two rows per character are stride A/B. The approved original `hero.png` remains the in-world animation for portrait 0/1; the new first knight also illustrates its creation preview. All other appearances use these sheets, the same foot anchor, 250 ms steps, four-Hz cycle, trail and bridge reflection. Original appearance slot numbers and Silly Mode (9–12) are preserved; names in the selection overlay are new descriptive labels.
@@ -110,6 +116,7 @@ the town. No gameplay RNG is used by rendering or animation.
 | File | Grid | Native cell | Contents |
 | --- | --- | --- | --- |
 | terrain.png | 4 × 4 | 32 × 32 | Floor/wall pairs: earth, stone, fire, Zephyr, water, final cave, Hell, snow |
+| snow-props.png | 2 × 2 | 48 × 48 | Two snow-laden pines, Zephyr's frosted cave arch, frost-capped rocks/fallen branch |
 | monsters-01.png | 4 × 4 | 48 × 48 | Monster IDs 1–16 |
 | monsters-02.png | 4 × 4 | 48 × 48 | Monster IDs 17–32 |
 | monsters-03.png | 4 × 3 | 48 × 48 | Monster IDs 33–41, King, princess, teacher |
@@ -229,3 +236,21 @@ wall corners are rounded with worn perimeters; shared wall edges stay joined.
 Landmarks and source art are unchanged. Default-settings captures include
 scanlines and Strong miniature.
 [Current visual evidence](../../../../../evidence/2026-10-04-hell-flagstones/README.md).
+
+
+## Overworld dressing (2026-10-09)
+
+`WorldOutdoors.cs` reuses the compiled native meadow and Maynard detail sprites
+for the 35 surface regions outside Maynard. Ground variation is cached at native
+416x384 resolution, with broken pixel edges, worn path verges and bank/tree
+colour shifts. Keep tonal differences small: smooth contrasting blobs read as
+camouflage and were rejected during the implementation review. Use grouped
+planting near existing terrain features, with quiet clearings between groups.
+
+New planting is low scenery drawn before actors, with road/water/snow/landmark
+clearance. Do not turn decorative plants into new collisions or hide original
+interactions. Large trees keep their original blocking footprints. Surface
+leaves, seed flecks and insects use deterministic scene time; no gameplay RNG.
+The seed and ground field use wrapped world coordinates with the original
+two-tile room overlap. Maynard and the approved snow terrain retain their own
+rendering. Ervyn has authored garden borders; Quizilog keeps its dry palm setting.

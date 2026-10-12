@@ -1,0 +1,15 @@
+{
+  "pid": 94241,
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/cloud-rework/launcher/bin/Release/net10.0/CloudPreview",
+  "game_assembly": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll",
+  "save": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+  "session_id": 52211,
+  "process_verified": true,
+  "window_title": "Yipe! III | Enter / A: actions | Esc / Start: pause",
+  "window_id": 17298,
+  "verified_at": "2026-10-09T22:41:35.381932+00:00",
+  "purpose": "Latest local build with the existing full adventure; no save replacement. Screenshot confirms restored adventure paused in Maynard.",
+  "refresh_workaround": "The normal app stalled in Cocoa_GL_SwapWindow. This temporary launcher instantiates the identical Desktop game assembly with SynchronizeWithVerticalRetrace=false before Run; no saved preference or production code changed.",
+  "tested_assembly_matches": true,
+  "screenshot": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/evidence/2026-10-09-cloud-rework/local-launch.png"
+}

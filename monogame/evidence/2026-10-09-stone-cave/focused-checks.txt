@@ -1,0 +1,196 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/stone-remaster/verified/yipe-graphics-20261009-075118-834efcd9
+Content startup and five initial frames: 2.90 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Stone 51: native terrain uses only the restrained stone palette
+Stone 51: wall/floor contrast 53.6/255
+PASS: Stone 51: walls stay clearly raised above the quieter floor
+PASS: Stone 51: original flooded/dry topology is retained
+PASS: Stone 51: scene time freezes and advances the native atmosphere
+PASS: Stone 51: atmospheric movement stays sparse
+PASS: Stone 51: dust and drips never reveal unexplored cells
+PASS: Stone 51: secrets have identical terrain and atmosphere
+PASS: Stone 51: changed terrain invalidates the cache
+PASS: Stone 51: restoring terrain restores the exact ground and water masks
+PASS: Stone 51: visible cave sources cast local light
+PASS: Stone 51: lights use the native contour mask
+PASS: Stone 51: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 51: the default presentation stays opaque
+PASS: Stone 51: lighting and presentation preserve gameplay and RNG
+PASS: Stone 51: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 52: native terrain uses only the restrained stone palette
+Stone 52: wall/floor contrast 52.7/255
+PASS: Stone 52: walls stay clearly raised above the quieter floor
+PASS: Stone 52: original flooded/dry topology is retained
+PASS: Stone 52: scene time freezes and advances the native atmosphere
+PASS: Stone 52: atmospheric movement stays sparse
+PASS: Stone 52: dust and drips never reveal unexplored cells
+PASS: Stone 52: secrets have identical terrain and atmosphere
+PASS: Stone 52: changed terrain invalidates the cache
+PASS: Stone 52: restoring terrain restores the exact ground and water masks
+PASS: Stone 52: visible cave sources cast local light
+PASS: Stone 52: lights use the native contour mask
+PASS: Stone 52: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 52: the default presentation stays opaque
+PASS: Stone 52: lighting and presentation preserve gameplay and RNG
+PASS: Stone 52: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 58: native terrain uses only the restrained stone palette
+Stone 58: wall/floor contrast 52.3/255
+PASS: Stone 58: walls stay clearly raised above the quieter floor
+PASS: Stone 58: original flooded/dry topology is retained
+PASS: Stone 58: scene time freezes and advances the native atmosphere
+PASS: Stone 58: atmospheric movement stays sparse
+PASS: Stone 58: dust and drips never reveal unexplored cells
+PASS: Stone 58: secrets have identical terrain and atmosphere
+PASS: Stone 58: changed terrain invalidates the cache
+PASS: Stone 58: restoring terrain restores the exact ground and water masks
+PASS: Stone 58: visible cave sources cast local light
+PASS: Stone 58: lights use the native contour mask
+PASS: Stone 58: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 58: the default presentation stays opaque
+PASS: Stone 58: lighting and presentation preserve gameplay and RNG
+PASS: Stone 58: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 64: native terrain uses only the restrained stone palette
+Stone 64: wall/floor contrast 52.5/255
+PASS: Stone 64: walls stay clearly raised above the quieter floor
+PASS: Stone 64: original flooded/dry topology is retained
+PASS: Stone 64: scene time freezes and advances the native atmosphere
+PASS: Stone 64: atmospheric movement stays sparse
+PASS: Stone 64: dust and drips never reveal unexplored cells
+PASS: Stone 64: secrets have identical terrain and atmosphere
+PASS: Stone 64: changed terrain invalidates the cache
+PASS: Stone 64: restoring terrain restores the exact ground and water masks
+PASS: Stone 64: visible cave sources cast local light
+PASS: Stone 64: lights use the native contour mask
+PASS: Stone 64: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 64: the default presentation stays opaque
+PASS: Stone 64: lighting and presentation preserve gameplay and RNG
+PASS: Stone 64: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 70: native terrain uses only the restrained stone palette
+Stone 70: wall/floor contrast 50.9/255
+PASS: Stone 70: walls stay clearly raised above the quieter floor
+PASS: Stone 70: original flooded/dry topology is retained
+PASS: Stone 70: scene time freezes and advances the native atmosphere
+PASS: Stone 70: atmospheric movement stays sparse
+PASS: Stone 70: dust and drips never reveal unexplored cells
+PASS: Stone 70: secrets have identical terrain and atmosphere
+PASS: Stone 70: changed terrain invalidates the cache
+PASS: Stone 70: restoring terrain restores the exact ground and water masks
+PASS: Stone 70: visible cave sources cast local light
+PASS: Stone 70: lights use the native contour mask
+PASS: Stone 70: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 70: the default presentation stays opaque
+PASS: Stone 70: lighting and presentation preserve gameplay and RNG
+PASS: Stone 70: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 76: native terrain uses only the restrained stone palette
+Stone 76: wall/floor contrast 52.0/255
+PASS: Stone 76: walls stay clearly raised above the quieter floor
+PASS: Stone 76: original flooded/dry topology is retained
+PASS: Stone 76: scene time freezes and advances the native atmosphere
+PASS: Stone 76: atmospheric movement stays sparse
+PASS: Stone 76: dust and drips never reveal unexplored cells
+PASS: Stone 76: secrets have identical terrain and atmosphere
+PASS: Stone 76: changed terrain invalidates the cache
+PASS: Stone 76: restoring terrain restores the exact ground and water masks
+PASS: Stone 76: visible cave sources cast local light
+PASS: Stone 76: lights use the native contour mask
+PASS: Stone 76: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 76: the default presentation stays opaque
+PASS: Stone 76: lighting and presentation preserve gameplay and RNG
+PASS: Stone 76: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 104: native terrain uses only the restrained stone palette
+Stone 104: wall/floor contrast 52.0/255
+PASS: Stone 104: walls stay clearly raised above the quieter floor
+PASS: Stone 104: original flooded/dry topology is retained
+PASS: Stone 104: scene time freezes and advances the native atmosphere
+PASS: Stone 104: atmospheric movement stays sparse
+PASS: Stone 104: dust and drips never reveal unexplored cells
+PASS: Stone 104: secrets have identical terrain and atmosphere
+PASS: Stone 104: changed terrain invalidates the cache
+PASS: Stone 104: restoring terrain restores the exact ground and water masks
+PASS: Stone 104: visible cave sources cast local light
+PASS: Stone 104: lights use the native contour mask
+PASS: Stone 104: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 104: the default presentation stays opaque
+PASS: Stone 104: lighting and presentation preserve gameplay and RNG
+PASS: Stone 104: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 110: native terrain uses only the restrained stone palette
+Stone 110: wall/floor contrast 52.2/255
+PASS: Stone 110: walls stay clearly raised above the quieter floor
+PASS: Stone 110: original flooded/dry topology is retained
+PASS: Stone 110: scene time freezes and advances the native atmosphere
+PASS: Stone 110: atmospheric movement stays sparse
+PASS: Stone 110: dust and drips never reveal unexplored cells
+PASS: Stone 110: secrets have identical terrain and atmosphere
+PASS: Stone 110: changed terrain invalidates the cache
+PASS: Stone 110: restoring terrain restores the exact ground and water masks
+PASS: Stone 110: visible cave sources cast local light
+PASS: Stone 110: lights use the native contour mask
+PASS: Stone 110: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 110: the default presentation stays opaque
+PASS: Stone 110: lighting and presentation preserve gameplay and RNG
+PASS: Stone 110: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 116: native terrain uses only the restrained stone palette
+Stone 116: wall/floor contrast 53.7/255
+PASS: Stone 116: walls stay clearly raised above the quieter floor
+PASS: Stone 116: original flooded/dry topology is retained
+PASS: Stone 116: scene time freezes and advances the native atmosphere
+PASS: Stone 116: atmospheric movement stays sparse
+PASS: Stone 116: dust and drips never reveal unexplored cells
+PASS: Stone 116: secrets have identical terrain and atmosphere
+PASS: Stone 116: changed terrain invalidates the cache
+PASS: Stone 116: restoring terrain restores the exact ground and water masks
+PASS: Stone 116: visible cave sources cast local light
+PASS: Stone 116: lights use the native contour mask
+PASS: Stone 116: dry bedrock uses stone steps and flooded ground uses water
+PASS: Stone 116: the default presentation stays opaque
+PASS: Stone 116: lighting and presentation preserve gameplay and RNG
+PASS: Stone 116: doors, secrets, water and the original tile layout remain unchanged
+PASS: Stone 52/58: shared walkable overlap stays aligned (0/384)
+PASS: Stone 58/64: shared walkable overlap stays aligned (0/384)
+PASS: Stone 64/70: shared walkable overlap stays aligned (0/384)
+PASS: Stone 70/76: shared walkable overlap stays aligned (0/384)
+PASS: Stone 104/110: shared walkable overlap stays aligned (0/384)
+PASS: Stone 110/116: shared walkable overlap stays aligned (0/768)
+PASS: Stone 51/52: flooded-chamber exit has aligned dry floor (0/192)
+PASS: Stone contour light stops behind a closed door
+PASS: Opening the Stone door restores the cached light exactly
+PASS: Stone corner occlusion divides actual rock contours inside a tile
+PASS: Stone secret rock has exactly the ordinary contour shadow
+PASS: Stone's unchanged stone mask remains cached
+PASS: Stone lighting cannot expose an undiscovered source
+PASS: Stone creature 10: mineral tint and contact shading preserves silhouette and scale
+PASS: Stone creature 10: battle artwork stays unchanged
+PASS: Stone creature 10: leaving restores its original appearance
+PASS: Stone creature 35: mineral tint and contact shading preserves silhouette and scale
+PASS: Stone creature 35: battle artwork stays unchanged
+PASS: Stone creature 35: leaving restores its original appearance
+PASS: Stone creature 11: mineral tint and contact shading preserves silhouette and scale
+PASS: Stone creature 11: battle artwork stays unchanged
+PASS: Stone creature 11: leaving restores its original appearance
+PASS: Stone ambience starts with a quiet fade and a single looping voice
+PASS: Stone ambience fades to its restrained master-volume level
+PASS: Stone upper-room transitions retain the same looping voice
+PASS: Pause silences Stone ambience
+PASS: Resume continues the Stone loop
+PASS: Map view silences Stone ambience
+PASS: Action/combat overlays silence Stone ambience
+PASS: Focus loss pauses Stone ambience
+PASS: Sound Off mutes Stone ambience
+PASS: Zero master volume mutes Stone ambience
+PASS: Entering the flooded Stone chamber switches to the existing wetter recording
+PASS: Stone to Earth selects the Earth ambience
+PASS: Earth to Fire replaces rather than stacks ambience
+PASS: Fire to breeding grounds preserves the original ambience route
+PASS: Stone reuses the licensed air recording without stacking voices and applies its quieter level
+PASS: Leaving caves releases the ambient voice
+PASS: Stone audio never changes gameplay or RNG
+Passed 183 visual integration checks. Focused Stone Cave run.

@@ -1,0 +1,78 @@
+{
+  "completed_utc": "2026-10-09T08:22:27.563600+00:00",
+  "scope": {
+    "layer": "Yipe Hell / alternate",
+    "regions": [
+      "A4",
+      "B4",
+      "C4",
+      "D4"
+    ],
+    "map_ids": [
+      117,
+      118,
+      119,
+      120
+    ],
+    "generated_fixtures": "118\u2013120 tested at seeds 1,7,99; these are isolated layouts, not a reproduction of the live adventure."
+  },
+  "request": "Preserve Hell's liked architecture; make it somewhat redder and add atmospheric audio.",
+  "changes": [
+    "Existing warm terrain palette enriched after quantization; facet, floor, silhouette and prop geometry preserved; neutral ash/entrance paving unchanged.",
+    "Slightly stronger, redder existing molten-seam glow; existing flames, smoke, embers, ash and heat motion retained.",
+    "Dedicated 58-second recorded lava/rumble/crackle/cavern-air loop with one voice; existing fade, pause/map/overlay/focus/mute gates, action ducking and exit disposal."
+  ],
+  "validation": {
+    "checked_release_build": "0 warnings/errors",
+    "focused_checks": 119,
+    "full_graphics_checks": 2913,
+    "tour_frames": 360,
+    "core_checks": 613,
+    "comparisons": "comparisons.json",
+    "audio_provenance": "../../Yipe.Desktop/Content/Audio/Ambience/hell-sources.json",
+    "built_audio_and_credits_match_source": true,
+    "gameplay_rng_layout_events": "Preserved by isolated fixture snapshots and original-source hashes",
+    "protected_file_hashes": {
+      "monogame/Yipe.Core/WorldLocation.cs": "43f9b67f1adbbd5772ec3388f84e3a1a9c7c23a29ecc3e229406de5c3fbcee80",
+      "monogame/Yipe.Core/Exploration.cs": "d2d299dc8fa0c615207d7a8b8883997bad72d4608144ca1458913ca9e262dc6a",
+      "monogame/Yipe.Core/Combat.cs": "3043fa8c78368bf8e67651e995cb485b3af96bf26bac5ff0ee7c57ebe429374a",
+      "monogame/Yipe.Core/Quests.cs": "07e5d10363e3f624910d1efe3e8a707c401e1c7ea6b88c747eda913cc04109d2",
+      "monogame/Yipe.Core/Adventure.cs": "6559b61ba91d251c9cd2dd36ecf38a739a32e1b3d0e226160c33573dbd906446",
+      "monogame/Yipe.Core/MapCatalog.cs": "655e610516be97b0a16ed6ebb558db3c89f3b774c873888c6d2f8d712747ced0",
+      "monogame/Yipe.Core/Casino.cs": "1e8f63290ae1a5c2b2d2b9fad52411bed748e02d72ff6285aa9a31e8e0749c46",
+      "monogame/Yipe.Core/ItemNames.cs": "3ea8cb24eaa55b23bec44274b975417616c72e76bb8e877f63de3399ce328d24",
+      "monogame/Yipe.Core/Spells.cs": "8674e3674fa3a0157192611fdf4416be9975b1a2384756e358318219c7b6ebe6",
+      "monogame/Yipe.Core/WorldActions.cs": "ea0a8541cf8964092578a7cc288e83dd12066ab03035f0ea64e20a1135f0ffa0",
+      "monogame/Yipe.Core/GameSession.cs": "35f9c21bf5dcdc3f6ef092e085646736233b3106661751f4d4aae2fdfaa90d4b",
+      "monogame/Yipe.Core/CombatModels.cs": "7f8b1009b4d8d57cbbeaf72859c232f2604e459815e4b7b11a07cfa9a89217b8",
+      "monogame/Yipe.Core/CombatCatalog.cs": "dfe546df6da24b1e0ad63a344a024741a414c93d8f74e48a0fdfda7c462e06aa",
+      "monogame/Yipe.Core/GeneratedMap.cs": "7a5944b9511bf5f37d706e18de3e1a2ca62fd522b5fdae8b02edc093ad8d257b",
+      "monogame/Yipe.Core/HighScores.cs": "c7fb2f6b74ede8628675eabef6cac02ce0cbe7274fbc2114a67e9f4548b4a2ec",
+      "monogame/Yipe.Core/Shops.cs": "0165f2185bcc6889a1c7ac34ca6b4554d6a2c86bac8b73f2134a5ea85a0c47dc",
+      "monogame/Yipe.Core/AudioCatalog.cs": "8fecc84bd5cc090248c1d28f2cfceeb72067b91012b7e6f334bf32393549bacc",
+      "monogame/Yipe.Core/MonsterPlacements.cs": "0e4950ea18bb1d40294833f65649da4c9a69b38b2db13dc96f8a00e79dba8620",
+      "monogame/Yipe.Core/Encounters.cs": "9475fc4059b46da0d6506fee26a235d8903f3a72a333a79bf6c693cedd71d0ff",
+      "monogame/Yipe.Core/Map.cs": "321fa622b7301aed964773fea5c8a87633eac60aca43271691955a489335bd41",
+      "monogame/Yipe.Core/SaveImporter.cs": "77fe8c3c264d1c76aa86e63db2857ff9bbcc64c91a400b3702b3f5e16a7520eb",
+      "monogame/Yipe.Core/GameSaveCodec.cs": "83639493103ca2d75d1a88c99bb27964b860df5b92b50eabb589090b126445d6",
+      "monogame/Yipe.Core/MsvcRandom.cs": "67e0b651cb2716741df6484b5cb34763d66440cba9923f583b983b009329c839",
+      "monogame/Yipe.Core/Player.cs": "7fda56b6df8d6897acd8c3a751c590d52b23aac4cff2ee194f47b640d87b5f60",
+      "monogame/Yipe.Core/TownMap.cs": "3e9454161e578bb327319c95613b82cc7972c1a7d60b7bac56c645fe3571d9b7",
+      "monogame/Yipe.Core/MapVisibility.cs": "3495d81eee5ecbfbe8fcc69476e885b6087f2743ad06d259e1aa08650f20d5b5",
+      "assets/maps/original-map-tables.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e",
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m": "acc14cc24ea2b2c51996f5e1f214f53c9fde0f3755e7f5dee8abb4bb2b8d9e4a",
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json": "71d0a8f5c6eb722d69197a3e4ebb78d39ce70ac3434b8f6f240ee934f28812e2",
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json": "0f6e788d7f288c73bf3c9d068d60760fdd228160a249357492cd807d1985fc95"
+    }
+  },
+  "source_sha256": {
+    "monogame/Yipe.Desktop/WorldHell.cs": "be08c66e7e6e7be2c3a518545924fae46f37847553184a98aad1530866a77adf",
+    "monogame/Yipe.Desktop/GameAudio.cs": "510e5b3387c43771d01c0038ce18d72c40e1822bc07871755ec3e1ef16a0fe0c",
+    "monogame/Yipe.Desktop/TownGame.cs": "7dfa55375837941599ba6daa0c9f4bc4b889d763c26797b3eb3f088c152ba1ff",
+    "monogame/Yipe.GraphicsChecks/HellPresentationChecks.cs": "c4579e3035d9a12da7a124ccb940ef23840cbadb357a11d70624308bb81669ca",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "1711ab4b8bfd741a804cc0a8b327c01af8f1166695194c49683cbf5223d91e8d"
+  },
+  "preview": "atmosphere.mp4 has the recorded loop at default master volume (0.65 \u00d7 0.24); no action sounds included.",
+  "user_review": "Pending; technical checks and visual inspection do not establish user approval. Stone Cave was accepted before this task.",
+  "distribution": "Local build only; no repackaging or save replacement."
+}

@@ -1,0 +1,15 @@
+Overworld nature ambience
+
+Crickets Ambient Noise - loopable — Wolfgang_ / Ted Kerr
+https://opengameart.org/content/crickets-ambient-noise-loopable
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+Daytime birds — isaiah658, Ambient Bird Sounds
+https://opengameart.org/content/ambient-bird-sounds
+CC0 1.0
+
+Wind and positional river — Thimras, Park ambiences
+https://opengameart.org/content/park-ambiences
+CC0 1.0. Existing Maynard recordings; see MAYNARD-CREDITS.txt.
+
+Adapted by icosium labs: filtering, level matching, loop crossfades and habitat mixing. See outdoor-sources.json for provenance and output hashes.

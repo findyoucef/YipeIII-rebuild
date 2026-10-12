@@ -1,0 +1,212 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/fire-red-glow/verified/yipe-graphics-20261009-054812-4b764a71
+Content startup and five initial frames: 2.85 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Fire 67: molten openings cast warm local light
+PASS: Fire 67: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 67: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 67: terrain cache is stable
+PASS: Fire 67: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 67: visible magma activates localized heat
+PASS: Fire 67: embers, ash and smoke remain sparse native pixels
+PASS: Fire 67: particles and light respect undiscovered terrain
+PASS: Fire 67: hidden magma sources cast no visible light
+PASS: Fire 67: secret wall and floor aliases have identical appearance
+PASS: Fire 67: removing source rock invalidates magma and light caches
+PASS: Fire 67: restoring source rock restores its exact rendering
+PASS: Fire 67: heat and the default presentation preserve opaque output
+PASS: Fire 67: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 71: molten openings cast warm local light
+PASS: Fire 71: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 71: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 71: terrain cache is stable
+PASS: Fire 71: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 71: visible magma activates localized heat
+PASS: Fire 71: embers, ash and smoke remain sparse native pixels
+PASS: Fire 71: particles and light respect undiscovered terrain
+PASS: Fire 71: hidden magma sources cast no visible light
+PASS: Fire 71: secret wall and floor aliases have identical appearance
+PASS: Fire 71: removing source rock invalidates magma and light caches
+PASS: Fire 71: restoring source rock restores its exact rendering
+PASS: Fire 71: heat and the default presentation preserve opaque output
+PASS: Fire 71: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 72: molten openings cast warm local light
+PASS: Fire 72: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 72: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 72: terrain cache is stable
+PASS: Fire 72: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 72: visible magma activates localized heat
+PASS: Fire 72: embers, ash and smoke remain sparse native pixels
+PASS: Fire 72: particles and light respect undiscovered terrain
+PASS: Fire 72: hidden magma sources cast no visible light
+PASS: Fire 72: secret wall and floor aliases have identical appearance
+PASS: Fire 72: removing source rock invalidates magma and light caches
+PASS: Fire 72: restoring source rock restores its exact rendering
+PASS: Fire 72: heat and the default presentation preserve opaque output
+PASS: Fire 72: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 73: molten openings cast warm local light
+PASS: Fire 73: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 73: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 73: terrain cache is stable
+PASS: Fire 73: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 73: visible magma activates localized heat
+PASS: Fire 73: embers, ash and smoke remain sparse native pixels
+PASS: Fire 73: particles and light respect undiscovered terrain
+PASS: Fire 73: hidden magma sources cast no visible light
+PASS: Fire 73: secret wall and floor aliases have identical appearance
+PASS: Fire 73: removing source rock invalidates magma and light caches
+PASS: Fire 73: restoring source rock restores its exact rendering
+PASS: Fire 73: heat and the default presentation preserve opaque output
+PASS: Fire 73: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 95: molten openings cast warm local light
+PASS: Fire 95: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 95: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 95: terrain cache is stable
+PASS: Fire 95: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 95: visible magma activates localized heat
+PASS: Fire 95: embers, ash and smoke remain sparse native pixels
+PASS: Fire 95: particles and light respect undiscovered terrain
+PASS: Fire 95: hidden magma sources cast no visible light
+PASS: Fire 95: secret wall and floor aliases have identical appearance
+PASS: Fire 95: removing source rock invalidates magma and light caches
+PASS: Fire 95: restoring source rock restores its exact rendering
+PASS: Fire 95: heat and the default presentation preserve opaque output
+PASS: Fire 95: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 100: molten openings cast warm local light
+PASS: Fire 100: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 100: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 100: terrain cache is stable
+PASS: Fire 100: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 100: visible magma activates localized heat
+PASS: Fire 100: embers, ash and smoke remain sparse native pixels
+PASS: Fire 100: particles and light respect undiscovered terrain
+PASS: Fire 100: hidden magma sources cast no visible light
+PASS: Fire 100: secret wall and floor aliases have identical appearance
+PASS: Fire 100: removing source rock invalidates magma and light caches
+PASS: Fire 100: restoring source rock restores its exact rendering
+PASS: Fire 100: heat and the default presentation preserve opaque output
+PASS: Fire 100: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 101: molten openings cast warm local light
+PASS: Fire 101: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 101: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 101: terrain cache is stable
+PASS: Fire 101: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 101: visible magma activates localized heat
+PASS: Fire 101: embers, ash and smoke remain sparse native pixels
+PASS: Fire 101: particles and light respect undiscovered terrain
+PASS: Fire 101: hidden magma sources cast no visible light
+PASS: Fire 101: secret wall and floor aliases have identical appearance
+PASS: Fire 101: removing source rock invalidates magma and light caches
+PASS: Fire 101: restoring source rock restores its exact rendering
+PASS: Fire 101: heat and the default presentation preserve opaque output
+PASS: Fire 101: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 107: molten openings cast warm local light
+PASS: Fire 107: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 107: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 107: terrain cache is stable
+PASS: Fire 107: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 107: visible magma activates localized heat
+PASS: Fire 107: embers, ash and smoke remain sparse native pixels
+PASS: Fire 107: particles and light respect undiscovered terrain
+PASS: Fire 107: hidden magma sources cast no visible light
+PASS: Fire 107: secret wall and floor aliases have identical appearance
+PASS: Fire 107: removing source rock invalidates magma and light caches
+PASS: Fire 107: restoring source rock restores its exact rendering
+PASS: Fire 107: heat and the default presentation preserve opaque output
+PASS: Fire 107: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 111: molten openings cast warm local light
+PASS: Fire 111: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 111: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 111: terrain cache is stable
+PASS: Fire 111: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 111: visible magma activates localized heat
+PASS: Fire 111: embers, ash and smoke remain sparse native pixels
+PASS: Fire 111: particles and light respect undiscovered terrain
+PASS: Fire 111: hidden magma sources cast no visible light
+PASS: Fire 111: secret wall and floor aliases have identical appearance
+PASS: Fire 111: removing source rock invalidates magma and light caches
+PASS: Fire 111: restoring source rock restores its exact rendering
+PASS: Fire 111: heat and the default presentation preserve opaque output
+PASS: Fire 111: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 112: molten openings cast warm local light
+PASS: Fire 112: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 112: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 112: terrain cache is stable
+PASS: Fire 112: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 112: visible magma activates localized heat
+PASS: Fire 112: embers, ash and smoke remain sparse native pixels
+PASS: Fire 112: particles and light respect undiscovered terrain
+PASS: Fire 112: hidden magma sources cast no visible light
+PASS: Fire 112: secret wall and floor aliases have identical appearance
+PASS: Fire 112: removing source rock invalidates magma and light caches
+PASS: Fire 112: restoring source rock restores its exact rendering
+PASS: Fire 112: heat and the default presentation preserve opaque output
+PASS: Fire 112: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 113: molten openings cast warm local light
+PASS: Fire 113: opaque native terrain uses the restrained volcanic palette
+PASS: Fire 113: substantial exposed magma stays inside existing blocked rock
+PASS: Fire 113: terrain cache is stable
+PASS: Fire 113: magma and particles animate with scene time and repeat exactly when paused
+PASS: Fire 113: visible magma activates localized heat
+PASS: Fire 113: embers, ash and smoke remain sparse native pixels
+PASS: Fire 113: particles and light respect undiscovered terrain
+PASS: Fire 113: hidden magma sources cast no visible light
+PASS: Fire 113: secret wall and floor aliases have identical appearance
+PASS: Fire 113: removing source rock invalidates magma and light caches
+PASS: Fire 113: restoring source rock restores its exact rendering
+PASS: Fire 113: heat and the default presentation preserve opaque output
+PASS: Fire 113: the complete save, hazards, encounters and RNG are unchanged
+PASS: Fire 71/72: shared walkable overlap stays world-aligned (0/384 differ)
+PASS: Fire 72/73: shared walkable overlap stays world-aligned (0/384 differ)
+PASS: Fire 100/101: shared walkable overlap stays world-aligned (0/384 differ)
+PASS: Fire 111/112: shared walkable overlap stays world-aligned (0/576 differ)
+PASS: Fire 112/113: shared walkable overlap stays world-aligned (0/384 differ)
+PASS: Fire heat moves existing pixel colours, stays crisp and freezes exactly with scene time
+PASS: Fire Cave keeps its internal heat and lighting through surface night
+PASS: Room-wide red glow preserves black/transparent controls and alpha, with stronger deep bounce (black 2, changed 0/0, bright 158750, deep 682026)
+PASS: Fire footsteps use recorded stone and loose-grit variants on their matching materials
+PASS: Volcanic light grazes a carved corner but stops inside the adjacent solid face
+PASS: Volcanic light cannot pass through a closed door
+PASS: Opening the volcanic light path removes its cached door shadow
+PASS: Volcanic ambience loads on the real audio device
+PASS: Volcanic ambience retains the 58-second sample-based loop
+PASS: Volcanic ambience fades in below actions and uses one looping voice
+PASS: Pause silences volcanic ambience
+PASS: Resume preserves the same volcanic voice
+PASS: The map silences volcanic ambience
+PASS: Action and combat overlays silence volcanic ambience
+PASS: Focus loss pauses volcanic ambience
+PASS: Sound Off suppresses volcanic ambience
+PASS: Master volume zero suppresses volcanic ambience
+PASS: The deep chambers have stronger volcanic ambience at the representative route
+PASS: Moving between Fire Cave rooms keeps one continuous ambience voice
+PASS: Entering the breeding grounds switches to its original cave loop
+PASS: Leaving both cave biomes releases the ambient voice
+PASS: Volcanic audio updates preserve gameplay and RNG
+PASS: Volcanic particles remain absent in unrelated map 17
+PASS: Volcanic particles remain absent in unrelated map 53
+PASS: Volcanic particles remain absent in unrelated map 57
+PASS: Volcanic particles remain absent in unrelated map 59
+PASS: Volcanic particles remain absent in unrelated map 60
+PASS: Volcanic particles remain absent in unrelated map 105
+PASS: Volcanic particles remain absent in unrelated map 117
+PASS: Volcanic particles remain absent in unrelated map 121
+PASS: Volcanic creature 12: warm integration preserves outline, hover and scale
+PASS: Volcanic creature 12: battle art is unchanged
+PASS: Volcanic creature 12: leaving restores the ordinary appearance
+PASS: Volcanic creature 14: warm integration preserves outline, hover and scale
+PASS: Volcanic creature 14: battle art is unchanged
+PASS: Volcanic creature 14: leaving restores the ordinary appearance
+PASS: Volcanic creature 16: warm integration preserves outline, hover and scale
+PASS: Volcanic creature 16: battle art is unchanged
+PASS: Volcanic creature 16: leaving restores the ordinary appearance
+UNSUPPORTED (log once): POSSIBLE ISSUE: unit 0 GLD_TEXTURE_INDEX_2D is unloadable and bound to sampler type (Float) - using zero texture because texture unloadable
+Passed 207 visual integration checks. Focused Fire Cave run.

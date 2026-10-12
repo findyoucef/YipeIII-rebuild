@@ -1,0 +1,32 @@
+{
+  "maps": {
+    "total": 115,
+    "missing": [],
+    "changed": [
+      "map-067.png",
+      "map-071.png",
+      "map-072.png",
+      "map-073.png",
+      "map-095.png",
+      "map-100.png",
+      "map-101.png",
+      "map-107.png",
+      "map-111.png",
+      "map-112.png",
+      "map-113.png"
+    ],
+    "unchanged": 104
+  },
+  "pixel-lighting": {
+    "total": 22,
+    "missing": [],
+    "changed": [],
+    "unchanged": 22
+  },
+  "breeding-grounds": {
+    "total": 73,
+    "missing": [],
+    "changed": [],
+    "unchanged": 73
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-10",
+  "request": "Make the Ice Cave floor reflective",
+  "status": "Complete: local build, final Ice verification and visual review finished; user approval pending",
+  "scope": [
+    41,
+    42,
+    47,
+    53,
+    81,
+    82,
+    87,
+    88,
+    93,
+    94,
+    99
+  ],
+  "treatment": "Subtle blue-tinted, vertically compressed reflections of the actual hero and static/roaming/pursuing monster poses. Clear ice is more reflective; frost, cracks and scuffs weaken it. Images fade with distance, stay steady on frozen ground and preserve native pixels. Walls, doors, stairs and fog stop reflection columns, including destinations beyond an intervening obstruction.",
+  "preservation": "Terrain artwork, lights, ambient sound, topology, gameplay/RNG, battle portraits and water reflections are preserved. No new settings or packages.",
+  "visual_review": [
+    "Native/gameplay entrance 53",
+    "Rescue room 88",
+    "Large-monster room 99",
+    "Frozen and walking hero reflection"
+  ],
+  "verification": {
+    "focused_checks": 219,
+    "reflection_checks": 17,
+    "unaffected_reference_captures_identical": 24,
+    "personal_files_unchanged": 33,
+    "core_and_map_files_unchanged": 27,
+    "build_warnings": 0,
+    "build_errors": 0,
+    "full_graphics_checks": 3322,
+    "tour_frames": 360,
+    "full_run": "build/ice-reflections/full/yipe-graphics-20261011-043053-a1faa0a4",
+    "full_run_scope": "Shared sprite/reflection integration; followed by a final Ice-only corner-mask refinement and corrected walking capture, verified separately in the focused run.",
+    "focused_run": "build/ice-reflections/final/yipe-graphics-20261011-043452-ca78c93c",
+    "final_desktop_dll_sha256": "add7cf4d34e65347e6063a9b0935408bff4bb2d01c7dcf25e15f23b8241badf8",
+    "native_map_comparisons": 115,
+    "native_maps_changed": [
+      41,
+      42,
+      47,
+      53,
+      81,
+      82,
+      87,
+      88,
+      93,
+      94,
+      99
+    ]
+  },
+  "simplicity_review": {
+    "production_scope": [
+      "WorldIce.cs",
+      "WorldRenderer.cs",
+      "WorldMonsterAnimation.cs",
+      "TownScenery.cs"
+    ],
+    "new_state": "One byte-per-native-pixel polish mask rebuilt with existing terrain cache.",
+    "reuse": "Existing hero/monster atlases, pose selection, animated anchors, visibility and draw ordering. No new GPU textures, render targets, shaders, packages, settings or per-frame buffers.",
+    "tests": "Existing reflection-based actor checks pass the newly optional render argument explicitly; behavior assertions retained. Added boundary checks cover frozen vs moving images, aliases, hovering/large actors, obstacles/fog, cache restoration, transient travel and full save/RNG isolation.",
+    "findings": []
+  },
+  "user_approval": "Pending",
+  "artifacts": {
+    "preview": "gameplay-53.png",
+    "rescue": "gameplay-88.png",
+    "large_monster": "gameplay-99.png",
+    "references": "unaffected-comparison.json",
+    "walking": "ice-walking-slow.mp4",
+    "walking_description": "One 0.25-second accepted step, replayed at roughly four times slower speed for inspection.",
+    "motion": "ice-reflections.mp4",
+    "focused_checks": "focused-checks.log",
+    "full_checks": "full-checks.log",
+    "build": "build.log",
+    "diff": "implementation.patch",
+    "hashes": "source-sha256.json",
+    "all_maps": "all-map-comparison.json"
+  }
+}

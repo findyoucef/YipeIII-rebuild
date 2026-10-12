@@ -1,0 +1,10 @@
+{
+  "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "bc298c6032d1a57432969df87c955fb7cfa468d37a0bd33fc27b1f6d9ee8da55",
+  "monogame/Yipe.Desktop/MonsterMotion.cs": "6b0ea12619371608a350101c464dfd125c8daebb1a39a4607f5bc28fb37ff48f",
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "1c192d15ad1cd194942fcd40dfe86b44d52fd107f116441e6e127f9e2fb97e7a",
+  "monogame/Yipe.Desktop/CombatPresentation.cs": "de20ba2f79c1f438369bf224754efbc1c060d8440436ca4fe9f599ba7ecbd5f4",
+  "monogame/Yipe.Desktop/TownCombatFeedback.cs": "daa824db53ca487ad7a2662111d81772d7b158ef99668d8deb6e63ca765063af",
+  "monogame/Yipe.GraphicsChecks/MonsterAnimationChecks.cs": "f5799ad7583a5f69dab790221e3090c89520c414bda9280a9aa61345710c362c",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "1a9c09415332de0977a7c706b5441b5b1a7a269b99d18d0bcc4294a29787a2ff",
+  "review": "Scoped pre-goal comparison reviewed: no Core/game-data edits, no new animation framework, only existing render/motion integration. Compilation and variant texture creation occur at load and are disposed. Existing nine native sheets preserved byte-for-byte. Native art cleanup for six source sheets and its detached-mark regression check inspected. Checked Release: 569 core / 2162 full graphics; earned opening/reload and late boss/save/restart/finale pass with the final assets. Completed local build launched and process verified using a separate copy of the current preview save; existing game process and personal files preserved."
+}

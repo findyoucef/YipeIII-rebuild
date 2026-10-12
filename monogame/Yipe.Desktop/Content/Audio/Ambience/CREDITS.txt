@@ -1,0 +1,5 @@
+Loopable Dungeon Ambience by JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+CC0 1.0 Universal (public domain dedication).
+Converted from the full supplied Ogg loop to 22050 Hz stereo PCM WAV.
+Used quietly in the Monster Breeding Grounds.

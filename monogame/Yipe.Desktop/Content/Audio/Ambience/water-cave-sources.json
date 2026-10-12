@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-10",
+  "sources": [
+    {
+      "title": "Loopable Dungeon Ambience",
+      "author": "JaggedStone",
+      "source": "https://opengameart.org/content/loopable-dungeon-ambience",
+      "license": "CC0-1.0",
+      "input": "breeding-ground.wav",
+      "input_sha256": "739ecb8902dc2ee65d3cc40bf72d911128a6fea63e1a66ea6970575385f4c34e",
+      "original_credit_record": "sources.json"
+    },
+    {
+      "title": "Park ambiences \u2014 river",
+      "author": "Thimras",
+      "source": "https://opengameart.org/content/park-ambiences",
+      "license": "CC0-1.0",
+      "input": "maynard-river.wav",
+      "input_sha256": "9ae3912a7e688669b06c5110d0267bcd004aa02dc1ae30cabe631bc3dee97583",
+      "original_credit_record": "maynard-sources.json"
+    }
+  ],
+  "processing": "Recorded cave air/drips filtered 90\u20132800 Hz at0.85 gain, recorded river filtered140\u20132200 Hz at0.22 gain with quiet89/173ms echoes. Two-second wrap crossfade. RMS target0.075 and peak cap0.65. No synthesized sound. Stereo PCM16 22050Hz.",
+  "output": {
+    "file": "water-cave.wav",
+    "duration_seconds": 58.0,
+    "rms": 0.03281904815387812,
+    "peak": 0.649993896484375,
+    "seam_delta": 0.000701904296875,
+    "sha256": "5741ba71919f4d16223574592948e27dab2d982b064cb2f01c2bb4955d17b50d"
+  }
+}

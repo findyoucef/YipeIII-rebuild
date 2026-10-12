@@ -1,0 +1,16 @@
+{
+  "baseline": "build/town-upgrades/passed/yipe-graphics-20261008-224806-788df839/maps",
+  "current": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/breeding-grounds/full/yipe-graphics-20261009-035027-f855d71f/maps",
+  "baseline_maps": 115,
+  "current_maps": 115,
+  "missing": [],
+  "changed": [
+    "map-059.png",
+    "map-060.png",
+    "map-065.png",
+    "map-066.png",
+    "map-105.png",
+    "map-106.png"
+  ],
+  "unchanged": 109
+}

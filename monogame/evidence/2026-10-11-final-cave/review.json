@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-11",
+  "scope": {
+    "name": "Final Cave",
+    "maps": [
+      43,
+      48,
+      49,
+      54,
+      55,
+      61,
+      83,
+      84,
+      85,
+      86,
+      89,
+      91,
+      92,
+      97,
+      98
+    ],
+    "upper": [
+      "C1",
+      "B2",
+      "C2",
+      "B3",
+      "C3",
+      "C4"
+    ],
+    "deep": [
+      "C1",
+      "D1",
+      "E1",
+      "F1",
+      "C2",
+      "E2",
+      "F2",
+      "E3",
+      "F3"
+    ]
+  },
+  "changes": [
+    "Connected native-pixel dark rock, fine facets/stratification and contour contact shadows",
+    "Broad worn bedrock slabs, abrasion, wall-foot chips and readable unstable-floor fissures",
+    "Visible crimson garnet clusters and contour-clipped light, including matching room-edge crystal continuity",
+    "Sparse deterministic ash, falling grit and thin ground haze clipped to discovered floor",
+    "Quiet 58-second CC0 recorded dungeon air/rumble and slowed crack recordings for distant stone creaks",
+    "Restrained creature tint, contact shadows and landing dust; unchanged poses/hover/scale/battle portraits"
+  ],
+  "verification": {
+    "release_build": "0 warnings, 0 errors",
+    "core_input_checks": 632,
+    "focused_checks": 265,
+    "full_graphics_checks": 3862,
+    "tour_frames": 360,
+    "native_maps_compared": 115,
+    "changed_native_maps": [
+      43,
+      48,
+      49,
+      54,
+      55,
+      61,
+      83,
+      84,
+      85,
+      86,
+      89,
+      91,
+      92,
+      97,
+      98
+    ],
+    "unchanged_native_maps": 100,
+    "unchanged_other_region_captures": 32,
+    "personal_files_unchanged": 33,
+    "core_and_original_map_files_unchanged": 27,
+    "focused_output": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/final-cave/focused-verified/yipe-graphics-20261012-004355-2ca7ce13",
+    "full_output": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/final-cave/full-verified/yipe-graphics-20261012-004428-466c4008"
+  },
+  "coverage": [
+    "All rooms: frozen rendering, palette/readability, visible light sources, alias secrecy, cache invalidation, fog and full session/RNG preservation",
+    "Matching rock/crystal/floor overlaps, including neighboring rooms beyond the current map edge",
+    "Closed door, carved corner and undiscovered-source occlusion",
+    "Unstable floor warning stages, hidden linked floors and open holes",
+    "Creature silhouette, scale, hover, battle artwork and biome-exit restoration",
+    "Real audio loading, one loop across upper/deep rooms, pause/maps/actions/focus/mute/master-volume/biome exit",
+    "Full existing frontend rescue routes and 360-frame tour"
+  ],
+  "review": {
+    "visual": "Inspected native and gameplay views, open rooms, narrow wall junctions, keyed-door rooms, hazard rooms and isolated light masks. Softened slab contrast; added side-wall crystal sources; replaced old blue floor warnings with material-matched fissures. User approved the appearance after reviewing the local build on 2026-10-11.",
+    "simplicity": "Reviewed the task-scoped diff. One cached WorldRenderer partial follows the established cave pattern; shared hooks are scoped by explicit map IDs. Existing light/audio lifecycle and recorded sources are reused. No new gameplay state, shader, configuration menu, generic biome framework or production test API. No remaining findings.",
+    "test_fixture_update": "The shared fallback torch fixture formerly occupied Final Cave map 43. Since every authored cave now has dedicated rendering, generic torch coverage uses an isolated unused map 78; all fallback assertions are retained."
+  },
+  "evidence": {
+    "preview": "gameplay-92.png",
+    "before": "gameplay-92-before.png",
+    "motion": "atmosphere.mp4",
+    "audio_provenance": "final-cave-sources.json",
+    "audio_recipe": "mix_audio.py",
+    "map_comparison": "map-comparison.json",
+    "other_regions": "reference-comparison.json",
+    "preservation": "preservation.json",
+    "patch": "task.patch",
+    "source_hashes": "source-sha256.json"
+  },
+  "approval": "Implementation and verification complete; user visual approval received on 2026-10-11: 'ok looks good'. Tests used isolated adventures. The requested review launch used a separate preview copy; the main adventure was not navigated or replaced.",
+  "packaging": "Local builds only; no repackaging. The user subsequently requested a launch and reviewed an isolated Final Cave preview."
+}

@@ -1,0 +1,15 @@
+Maynard outdoor ambience and river
+
+Ambient Bird Sounds — isaiah658
+https://opengameart.org/content/ambient-bird-sounds
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Park ambiences — wind — Thimras
+https://opengameart.org/content/park-ambiences
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Park ambiences — river — Thimras
+https://opengameart.org/content/park-ambiences
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Adapted by icosium labs: filtering, level matching, mixing, resampling and loop crossfades. Recorded sources only. See maynard-sources.json for provenance and hashes.

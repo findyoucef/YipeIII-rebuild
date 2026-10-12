@@ -1,0 +1,18 @@
+Fire Cave volcanic ambience
+
+Contains adapted audio from:
+
+Lava loop — Blender Foundation, from Yo Frankie!
+https://opengameart.org/content/lava-loop
+Licensed under Creative Commons Attribution 3.0 Unported:
+https://creativecommons.org/licenses/by/3.0/
+
+Fireplace Sound loop — PagDev
+https://opengameart.org/content/fireplace-sound-loop
+Dedicated to the public domain under CC0 1.0:
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Adapted by icosium labs for Yipe III: mixing, filtering, lower-pitched bass layer,
+resampling and a wrap crossfade. Source authors do not endorse this adaptation.
+The adapted mix is distributed under CC BY 3.0.
+See fire-cave-sources.json for provenance and file hashes.

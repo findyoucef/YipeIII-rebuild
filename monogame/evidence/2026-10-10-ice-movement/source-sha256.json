@@ -1,0 +1,12 @@
+{
+  "monogame/Yipe.Desktop/GameInput.cs": "c9fe3b344817c95d1d5cd61413ae58feccb5bf117bb8d2cc505db00a34975717",
+  "monogame/Yipe.Desktop/PlayerMotion.cs": "a109fbf0c73612a6517f5c86d2fe3e3eb75e053239b8d117d68d22fbf024b8ea",
+  "monogame/Yipe.Desktop/TownGame.cs": "a4bd7f382a55fdfbbf7dc2cce0f44ec4649ef8c9bd8724f32d6c50251cc05a8a",
+  "monogame/Yipe.Desktop/TownIceMovement.cs": "0549265cfd468925b00fa91cbe68604c60d204b3c08edea6357472a907fd63dc",
+  "monogame/Yipe.Desktop/TownOverlays.cs": "9cea1e3eadca58ad02d3ea0cbccdbd18620fc3826ed67309141b87a65001da59",
+  "monogame/Yipe.Desktop/TownHelp.cs": "0e47dbda8e225a6a1a515aa08208bf1c696713cc320940d90909aa0040ba0469",
+  "monogame/Yipe.Tests/IceMotionChecks.cs": "2f1ccfd302ace4a7996631e17eb06f82b5fd078ad6d89594167ab7c56709c68c",
+  "monogame/Yipe.Tests/Program.cs": "8aef20db6c6ff8176e48f66e4780b8712df253b165ba8611c64078c5734b59b8",
+  "monogame/Yipe.GraphicsChecks/IceMovementChecks.cs": "b9201e5c2b6bad9c110b1e46d2db07269d68f39bf6f7c03ee07d6bd4a5d77be5",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "0d617a4461b3192822a80aaa58911cdeae48a4ea5b74c27f7efa4a2003a81545"
+}

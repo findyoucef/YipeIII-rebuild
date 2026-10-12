@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-10",
+  "task": "Remaster all eleven Ice / Zephyr Cave rooms using remaster-yipe-caves",
+  "status": "Complete: implemented, locally built, visually inspected and verified; user review pending",
+  "scope": {
+    "upper": [
+      41,
+      42,
+      47,
+      53
+    ],
+    "deep": [
+      81,
+      82,
+      87,
+      88,
+      93,
+      94,
+      99
+    ],
+    "resolved_from": "Surface A3/map13 Zephyr sign and depth entrance; original connected map geometry and cave events",
+    "excluded": "Surface snow basin and other cave families"
+  },
+  "material": {
+    "walls": "Connected frozen rock, narrow small ice facets, mineral inclusions, shaded fronts, icicles and sparse embedded crystals",
+    "floor": "Broad frozen sheets, selected submerged fractures, sparse scuffs, frost deposits and contour contact darkness",
+    "lighting": "Steady cold local crystal light; native rock contour occlusion, shared soft pixel boundary and existing fog/door behavior",
+    "atmosphere": "Presentation-clock glints, falling frost and slow low motes; no gameplay RNG",
+    "creatures": "Subtle cool world tint, existing strengthened contact shadows and icy landing dust; same silhouette, hover, scale and battle artwork",
+    "audio": "One quiet 58-second CC0 recorded wind/ice loop, upper/deep gains 0.18/0.16; standard lifecycle and existing stone footsteps"
+  },
+  "visual_review": {
+    "native_rooms": [
+      41,
+      42,
+      47,
+      53,
+      81,
+      82,
+      87,
+      88,
+      93,
+      94,
+      99
+    ],
+    "representative_gameplay": [
+      53,
+      88
+    ],
+    "comparison_rooms": [
+      17,
+      51,
+      57,
+      59,
+      67,
+      117
+    ],
+    "reference_pixel_comparisons": 24,
+    "reference_differences": 0,
+    "user_approval": "Pending; implementation checks do not establish aesthetic or auditory approval"
+  },
+  "verification": {
+    "focused_checks": 202,
+    "core_checks": 613,
+    "core_and_original_map_files_unchanged": 27,
+    "personal_files_unchanged": 33,
+    "focused_run": "build/ice-remaster/verified/yipe-graphics-20261011-041418-1695eace",
+    "baseline_run": "build/ice-remaster/baseline/yipe-graphics-20261011-040212-2a44bc2d",
+    "focused_overflow_checks": true,
+    "full_graphics_checks": 3306,
+    "tour_frames": 360,
+    "full_run": "build/ice-remaster/full-release/yipe-graphics-20261011-041718-a9efc7c5",
+    "release_warnings": 0,
+    "release_errors": 0,
+    "native_map_comparisons": 115,
+    "native_maps_changed": [
+      41,
+      42,
+      47,
+      53,
+      81,
+      82,
+      87,
+      88,
+      93,
+      94,
+      99
+    ],
+    "build": "Fresh default-overflow Release rebuild after the isolated overflow-enabled Ice run"
+  },
+  "simplicity": {
+    "scope": "New WorldIce partial and IceCaveChecks plus task-relative diffs in renderer, lighting, monster tint, audio, runner and docs",
+    "approach": "Existing Stone/Earth layout, shared deterministic seed/noise, one cached terrain texture, cached tile/silhouette/source data, shared contour lighting and single ambience lifecycle",
+    "findings": [],
+    "test_fixture_changes": "Four cave checks use untreated map54 instead of newly remastered map53; original DayNightChecks restored byte-for-byte after a temporary diagnostic"
+  },
+  "artifacts": {
+    "entrance": "gameplay-53.png",
+    "rescue_room": "gameplay-88.png",
+    "large_monster_rescue": "gameplay-99.png",
+    "motion": "ice-atmosphere.mp4",
+    "reference_comparison": "reference-comparison.json",
+    "audio_source_record": "../../Yipe.Desktop/Content/Audio/Ambience/ice-sources.json",
+    "audio_recipe": "mix_audio.py",
+    "motion_metadata": "motion-check.json",
+    "full_checks": "full-checks.log",
+    "build": "build-release.log",
+    "all_map_comparison": "all-map-comparison.json",
+    "source_changes": "implementation.patch",
+    "source_hashes": "source-sha256.json"
+  },
+  "limitations": [
+    "User aesthetic and audio review remain pending.",
+    "No packaging or release claim.",
+    "No launch or navigation of the personal adventure was needed.",
+    "Extra overflow-check builds pass Ice checks; the existing outdoor hash requires default wraparound arithmetic for the full suite."
+  ],
+  "recipe": "Run mix_audio.py from the repository root after copying ice-crack-ecfike.mp3 into build/ice-remaster/. Requires ffmpeg; uses the existing maynard-night.wav input."
+}

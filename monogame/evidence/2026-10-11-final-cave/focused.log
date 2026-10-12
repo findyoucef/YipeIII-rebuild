@@ -1,0 +1,269 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/final-cave/focused-verified/yipe-graphics-20261012-004355-2ca7ce13
+Content startup and five initial frames: 2.83 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Final review 43: rendering preserves full gameplay and RNG
+PASS: Final 43: frozen presentation is deterministic
+PASS: Final 43: terrain uses only its native rock/crimson palette
+PASS: Final 43: unchanged terrain reuses the cached contour
+PASS: Final 43: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 43: embedded crimson crystals supply the local light
+PASS: Final 43: every light has a visible crystal embedded at its source
+PASS: Final 43: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 43: opening rock invalidates terrain and silhouette together
+PASS: Final 43: restoring terrain restores its exact art and lighting
+PASS: Final 43: worn rock retains stone footsteps
+PASS: Final 43: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 43: atmosphere never reveals undiscovered terrain
+PASS: Final 43: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 48: rendering preserves full gameplay and RNG
+PASS: Final 48: frozen presentation is deterministic
+PASS: Final 48: terrain uses only its native rock/crimson palette
+PASS: Final 48: unchanged terrain reuses the cached contour
+PASS: Final 48: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 48: embedded crimson crystals supply the local light
+PASS: Final 48: every light has a visible crystal embedded at its source
+PASS: Final 48: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 48: opening rock invalidates terrain and silhouette together
+PASS: Final 48: restoring terrain restores its exact art and lighting
+PASS: Final 48: worn rock retains stone footsteps
+PASS: Final 48: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 48: atmosphere never reveals undiscovered terrain
+PASS: Final 48: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 49: rendering preserves full gameplay and RNG
+PASS: Final 49: frozen presentation is deterministic
+PASS: Final 49: terrain uses only its native rock/crimson palette
+PASS: Final 49: unchanged terrain reuses the cached contour
+PASS: Final 49: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 49: embedded crimson crystals supply the local light
+PASS: Final 49: every light has a visible crystal embedded at its source
+PASS: Final 49: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 49: opening rock invalidates terrain and silhouette together
+PASS: Final 49: restoring terrain restores its exact art and lighting
+PASS: Final 49: worn rock retains stone footsteps
+PASS: Final 49: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 49: atmosphere never reveals undiscovered terrain
+PASS: Final 49: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 54: rendering preserves full gameplay and RNG
+PASS: Final 54: frozen presentation is deterministic
+PASS: Final 54: terrain uses only its native rock/crimson palette
+PASS: Final 54: unchanged terrain reuses the cached contour
+PASS: Final 54: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 54: embedded crimson crystals supply the local light
+PASS: Final 54: every light has a visible crystal embedded at its source
+PASS: Final 54: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 54: opening rock invalidates terrain and silhouette together
+PASS: Final 54: restoring terrain restores its exact art and lighting
+PASS: Final 54: worn rock retains stone footsteps
+PASS: Final 54: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 54: atmosphere never reveals undiscovered terrain
+PASS: Final 54: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 55: rendering preserves full gameplay and RNG
+PASS: Final 55: frozen presentation is deterministic
+PASS: Final 55: terrain uses only its native rock/crimson palette
+PASS: Final 55: unchanged terrain reuses the cached contour
+PASS: Final 55: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 55: embedded crimson crystals supply the local light
+PASS: Final 55: every light has a visible crystal embedded at its source
+PASS: Final 55: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 55: opening rock invalidates terrain and silhouette together
+PASS: Final 55: restoring terrain restores its exact art and lighting
+PASS: Final 55: worn rock retains stone footsteps
+PASS: Final 55: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 55: atmosphere never reveals undiscovered terrain
+PASS: Final 55: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 61: rendering preserves full gameplay and RNG
+PASS: Final 61: frozen presentation is deterministic
+PASS: Final 61: terrain uses only its native rock/crimson palette
+PASS: Final 61: unchanged terrain reuses the cached contour
+PASS: Final 61: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 61: embedded crimson crystals supply the local light
+PASS: Final 61: every light has a visible crystal embedded at its source
+PASS: Final 61: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 61: opening rock invalidates terrain and silhouette together
+PASS: Final 61: restoring terrain restores its exact art and lighting
+PASS: Final 61: worn rock retains stone footsteps
+PASS: Final 61: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 61: atmosphere never reveals undiscovered terrain
+PASS: Final 61: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 83: rendering preserves full gameplay and RNG
+PASS: Final 83: frozen presentation is deterministic
+PASS: Final 83: terrain uses only its native rock/crimson palette
+PASS: Final 83: unchanged terrain reuses the cached contour
+PASS: Final 83: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 83: embedded crimson crystals supply the local light
+PASS: Final 83: every light has a visible crystal embedded at its source
+PASS: Final 83: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 83: opening rock invalidates terrain and silhouette together
+PASS: Final 83: restoring terrain restores its exact art and lighting
+PASS: Final 83: worn rock retains stone footsteps
+PASS: Final 83: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 83: atmosphere never reveals undiscovered terrain
+PASS: Final 83: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 84: rendering preserves full gameplay and RNG
+PASS: Final 84: frozen presentation is deterministic
+PASS: Final 84: terrain uses only its native rock/crimson palette
+PASS: Final 84: unchanged terrain reuses the cached contour
+PASS: Final 84: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 84: embedded crimson crystals supply the local light
+PASS: Final 84: every light has a visible crystal embedded at its source
+PASS: Final 84: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 84: opening rock invalidates terrain and silhouette together
+PASS: Final 84: restoring terrain restores its exact art and lighting
+PASS: Final 84: worn rock retains stone footsteps
+PASS: Final 84: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 84: atmosphere never reveals undiscovered terrain
+PASS: Final 84: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 85: rendering preserves full gameplay and RNG
+PASS: Final 85: frozen presentation is deterministic
+PASS: Final 85: terrain uses only its native rock/crimson palette
+PASS: Final 85: unchanged terrain reuses the cached contour
+PASS: Final 85: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 85: embedded crimson crystals supply the local light
+PASS: Final 85: every light has a visible crystal embedded at its source
+PASS: Final 85: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 85: opening rock invalidates terrain and silhouette together
+PASS: Final 85: restoring terrain restores its exact art and lighting
+PASS: Final 85: worn rock retains stone footsteps
+PASS: Final 85: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 85: atmosphere never reveals undiscovered terrain
+PASS: Final 85: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 86: rendering preserves full gameplay and RNG
+PASS: Final 86: frozen presentation is deterministic
+PASS: Final 86: terrain uses only its native rock/crimson palette
+PASS: Final 86: unchanged terrain reuses the cached contour
+PASS: Final 86: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 86: embedded crimson crystals supply the local light
+PASS: Final 86: every light has a visible crystal embedded at its source
+PASS: Final 86: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 86: opening rock invalidates terrain and silhouette together
+PASS: Final 86: restoring terrain restores its exact art and lighting
+PASS: Final 86: worn rock retains stone footsteps
+PASS: Final 86: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 86: atmosphere never reveals undiscovered terrain
+PASS: Final 86: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 89: rendering preserves full gameplay and RNG
+PASS: Final 89: frozen presentation is deterministic
+PASS: Final 89: terrain uses only its native rock/crimson palette
+PASS: Final 89: unchanged terrain reuses the cached contour
+PASS: Final 89: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 89: embedded crimson crystals supply the local light
+PASS: Final 89: every light has a visible crystal embedded at its source
+PASS: Final 89: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 89: opening rock invalidates terrain and silhouette together
+PASS: Final 89: restoring terrain restores its exact art and lighting
+PASS: Final 89: worn rock retains stone footsteps
+PASS: Final 89: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 89: atmosphere never reveals undiscovered terrain
+PASS: Final 89: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 91: rendering preserves full gameplay and RNG
+PASS: Final 91: frozen presentation is deterministic
+PASS: Final 91: terrain uses only its native rock/crimson palette
+PASS: Final 91: unchanged terrain reuses the cached contour
+PASS: Final 91: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 91: embedded crimson crystals supply the local light
+PASS: Final 91: every light has a visible crystal embedded at its source
+PASS: Final 91: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 91: opening rock invalidates terrain and silhouette together
+PASS: Final 91: restoring terrain restores its exact art and lighting
+PASS: Final 91: worn rock retains stone footsteps
+PASS: Final 91: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 91: atmosphere never reveals undiscovered terrain
+PASS: Final 91: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 92: rendering preserves full gameplay and RNG
+PASS: Final 92: frozen presentation is deterministic
+PASS: Final 92: terrain uses only its native rock/crimson palette
+PASS: Final 92: unchanged terrain reuses the cached contour
+PASS: Final 92: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 92: embedded crimson crystals supply the local light
+PASS: Final 92: every light has a visible crystal embedded at its source
+PASS: Final 92: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 92: opening rock invalidates terrain and silhouette together
+PASS: Final 92: restoring terrain restores its exact art and lighting
+PASS: Final 92: worn rock retains stone footsteps
+PASS: Final 92: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 92: atmosphere never reveals undiscovered terrain
+PASS: Final 92: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 97: rendering preserves full gameplay and RNG
+PASS: Final 97: frozen presentation is deterministic
+PASS: Final 97: terrain uses only its native rock/crimson palette
+PASS: Final 97: unchanged terrain reuses the cached contour
+PASS: Final 97: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 97: embedded crimson crystals supply the local light
+PASS: Final 97: every light has a visible crystal embedded at its source
+PASS: Final 97: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 97: opening rock invalidates terrain and silhouette together
+PASS: Final 97: restoring terrain restores its exact art and lighting
+PASS: Final 97: worn rock retains stone footsteps
+PASS: Final 97: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 97: atmosphere never reveals undiscovered terrain
+PASS: Final 97: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 98: rendering preserves full gameplay and RNG
+PASS: Final 98: frozen presentation is deterministic
+PASS: Final 98: terrain uses only its native rock/crimson palette
+PASS: Final 98: unchanged terrain reuses the cached contour
+PASS: Final 98: broad quiet floor slabs sit below detailed raised walls
+PASS: Final 98: embedded crimson crystals supply the local light
+PASS: Final 98: every light has a visible crystal embedded at its source
+PASS: Final 98: secret wall/floor aliases have identical art, atmosphere and contour lighting
+PASS: Final 98: opening rock invalidates terrain and silhouette together
+PASS: Final 98: restoring terrain restores its exact art and lighting
+PASS: Final 98: worn rock retains stone footsteps
+PASS: Final 98: sparse pixel ash/grit/haze advances only with presentation time
+PASS: Final 98: atmosphere never reveals undiscovered terrain
+PASS: Final 98: routes, secrets, encounters, rescues and full saved state/RNG remain intact
+PASS: Final review 17: rendering preserves full gameplay and RNG
+PASS: Final review 51: rendering preserves full gameplay and RNG
+PASS: Final review 53: rendering preserves full gameplay and RNG
+PASS: Final review 57: rendering preserves full gameplay and RNG
+PASS: Final review 59: rendering preserves full gameplay and RNG
+PASS: Final review 62: rendering preserves full gameplay and RNG
+PASS: Final review 67: rendering preserves full gameplay and RNG
+PASS: Final review 117: rendering preserves full gameplay and RNG
+PASS: Final 49/55: matching overlaps retain identical rock, crystals and floor (0/384)
+PASS: Final 83/84: matching overlaps retain identical rock, crystals and floor (0/1152)
+PASS: Final 83/89: matching overlaps retain identical rock, crystals and floor (0/384)
+PASS: Final 92/98: matching overlaps retain identical rock, crystals and floor (0/384)
+PASS: Final 97/98: matching overlaps retain identical rock, crystals and floor (0/768)
+PASS: Final crystal light stops at a closed door
+PASS: Opening a Final Cave door restores the exact contour light
+PASS: Final light follows carved rock corners without a square cutoff
+PASS: Undiscovered Final Cave crystals cannot reveal hidden terrain
+PASS: Final unstable floors and opened holes retain their original visible warning stages
+PASS: Untriggered linked floor remains visually hidden
+PASS: Final creature 18: ambient tint/contact shadow preserve silhouette, hover and scale
+PASS: Final creature 18: battle artwork is unchanged
+PASS: Final creature 18: its outdoor appearance returns on leaving
+PASS: Final creature 19: ambient tint/contact shadow preserve silhouette, hover and scale
+PASS: Final creature 19: battle artwork is unchanged
+PASS: Final creature 19: its outdoor appearance returns on leaving
+PASS: Final creature 20: ambient tint/contact shadow preserve silhouette, hover and scale
+PASS: Final creature 20: battle artwork is unchanged
+PASS: Final creature 20: its outdoor appearance returns on leaving
+PASS: Final Cave atmosphere stays out of Water Cave
+PASS: Final Cave selects its dedicated recorded ambience on the real audio device
+PASS: Final audio stays quiet, looped and under master volume
+PASS: Upper/deep Final Cave transitions retain the same continuous loop
+PASS: Final ambience pauses for paused
+PASS: Final ambience resumes the same voice
+PASS: Final ambience pauses for mapOpen
+PASS: Final ambience resumes the same voice
+PASS: Final ambience pauses for worldMapOpen
+PASS: Final ambience resumes the same voice
+PASS: Action panels pause Final ambience
+PASS: Focus loss pauses Final ambience
+PASS: Sound Off silences Final ambience
+PASS: Zero master volume silences Final ambience
+PASS: Leaving Final for Water replaces the old ambient voice
+PASS: No ambient track releases the active voice
+PASS: Final audio lifecycle preserves the complete adventure and RNG
+PASS: Final atmosphere captures preserve the complete adventure and RNG
+Passed 265 visual integration checks. Focused Final Cave run.

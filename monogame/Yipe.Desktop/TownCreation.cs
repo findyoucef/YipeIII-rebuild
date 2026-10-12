@@ -58,6 +58,7 @@ internal sealed partial class TownGame
             command?.Dispose(); command = null; pendingEvent = null;
             journal = new(); mapOpen = false;
             session = new GameSession(catalog, created, randomState: creationRandom.State);
+            dayNightSeconds = DayNightCycle.OpeningTime;
             adventure = new Adventure(session);
             SynchronizeWorld(false); tickRemaining = .5;
             Notice("The King", $"Hello {created.Name}.\n\nThe city of Yipe! needs you once again!\n\nMy collection of six rare stamps has been stolen!  I know that you are a brave and loyal adventurer.  Therefore I am giving this very important mission to you.\n\nPlease search the world and return my stamps to me.  Oh... I almost forgot to mention something else.  All of my daughters are missing.  I have no idea where they have gone.\n\nI will highly reward you for returning both my stamp collection and all of my daughters.  (I don't really remember exactly how many princesses I have.)\n\nTake this simple weapon and armor and begin your exploring.  Be sure to stop by my castle from time to time to check in with me.");

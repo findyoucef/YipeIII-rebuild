@@ -1,0 +1,42 @@
+{
+  "before": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.y3m": "44abe37dca900dc3366ec42a063c1ececd910fc300a0f37af719469d1a42d769",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.map.json": "96543ea1068e0d104f5f11c02607a515c734a17215d80e389f0318308172df9f",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.profile.json": "c758c885adc5331f360a21cbf564091e884e564faa2448beb1fe13777e30030d",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed"
+  },
+  "after_tests": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.y3m": "a904e5217559bcc9d0b036d0e0e9605271e10da1d7e1ea64692cb331d5b80403",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.map.json": "ce85cf9167a5c79d0d6c0c51756049b7619b2b04ca68048f8b3b1786a49f568c",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.profile.json": "ef583729b586de77662bf423edb87075cd94278d1bed49a24f942222c77acf0a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed"
+  },
+  "unchanged_during_tests": false,
+  "changed_files_modification_times_utc": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.y3m": "2026-10-08T16:47:53.062011+00:00",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.map.json": "2026-10-08T16:47:53.070304+00:00",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.profile.json": "2026-10-08T16:48:06.333479+00:00"
+  },
+  "note": "The already-running recovered adventure was saved and closed during early development. Its recovered save, map journal and profile changes predate the first graphics run (17:08:42 UTC). Main personal files remain unchanged. Do not restore old hashes: the final launch copies the latest valid full adventure (level 18, 613 defeats, 44 mapped regions). Tests use selected isolated files.",
+  "after_latest_personal_save_checkpoint": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.y3m": "a904e5217559bcc9d0b036d0e0e9605271e10da1d7e1ea64692cb331d5b80403",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.map.json": "ce85cf9167a5c79d0d6c0c51756049b7619b2b04ca68048f8b3b1786a49f568c",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.profile.json": "ef583729b586de77662bf423edb87075cd94278d1bed49a24f942222c77acf0a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed"
+  },
+  "after_local_launch": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.y3m": "a904e5217559bcc9d0b036d0e0e9605271e10da1d7e1ea64692cb331d5b80403",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.map.json": "ce85cf9167a5c79d0d6c0c51756049b7619b2b04ca68048f8b3b1786a49f568c",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806/game.profile.json": "ef583729b586de77662bf423edb87075cd94278d1bed49a24f942222c77acf0a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.y3m": "f7f10d48bfa7583f385d8c8d40791dee18c836d05aa9f29fc004c643086af92a",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/game.map.json": "eb30369981e5de59cdfc2c31eb01a015620b1e44b0ac8742ad1ab8ff3e6732be",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/profile.json": "f65084d233e5c57107fbaf78bf07b5d6fd3a40a463ea69932d5d116a5568abed"
+  },
+  "unchanged_from_latest_personal_checkpoint": true
+}

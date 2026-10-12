@@ -1,0 +1,1008 @@
+--- before/monogame/README.md
++++ monogame/README.md
+@@ -223,6 +223,23 @@
+ ship alongside the audio. [Entrance preview](evidence/2026-10-09-fire-floor/gameplay-72.png)
+ and [implementation evidence](evidence/2026-10-09-fire-cave/README.md).
+ 
++The **Final Cave** has an ancient, ominous treatment across all fifteen upper/deep
++rooms. Connected dark rock surrounds broad worn bedrock slabs, shallow abrasion,
++and small chips at the wall feet. Embedded crimson crystals illuminate the actual
++rock contours; native-pixel ash, falling grit and thin ground haze remain sparse.
++Creature tint, contact shadows and landing dust share the cave palette. Collapsing
++floors retain clearly visible fissures and open-hole stages, and secrets keep the
++same appearance as ordinary terrain.
++
++A quiet 58-second loop combines recorded dungeon air and low rumbles with sparse,
++slowed crack recordings for distant stone creaks. Both sources are credited CC0
++recordings already used by the port. It follows Sound/Volume, pause, menus, focus
++and cave transitions through the existing audio system. [Credits and processing](Yipe.Desktop/Content/Audio/Ambience/final-cave-sources.json).
++Original routes, doors, water, platforms, encounters and rescues remain intact.
++[Gameplay preview](evidence/2026-10-11-final-cave/gameplay-92.png),
++[atmosphere clip](evidence/2026-10-11-final-cave/atmosphere.mp4), and
++[verification](evidence/2026-10-11-final-cave/review.json).
++
+ The **Water Cave** now has a dedicated flooded-limestone treatment across thirteen
+ upper/deep rooms. Connected eroded rock and dark wet faces surround quiet worn
+ paths, mineral deposits and silt. Dark turquoise pools have irregular banks,
+--- before/monogame/PORTING_PLAN.md
++++ monogame/PORTING_PLAN.md
+@@ -17,16 +17,16 @@
+ 
+ | Field | Current state |
+ | --- | --- |
+-| Local gameplay launch | The latest local Release includes the Water Cave raft fix. The last requested launch used an isolated copy of the selected adventure in Water Cave D4; its source adventure is retained as `main_adventure_save` in the [launch record](../build/local-game-launch.json). For a requested launch, inspect running processes and read that record; do not substitute a demo or overwrite the main adventure. Rebuild `build/cloud-rework/launcher` to refresh its copied Desktop assembly before reuse; its process-only refresh-sync workaround avoids the known macOS display-link stall. |
++| Local gameplay launch | The latest local Release includes the Final Cave remaster and the approved Water Cave raft fix. The last requested launch used an isolated copy of the selected adventure in Water Cave D4; its source adventure is retained as `main_adventure_save` in the [launch record](../build/local-game-launch.json). For a requested launch, inspect running processes and read that record; do not substitute a demo or overwrite the main adventure. Rebuild `build/cloud-rework/launcher` to refresh its copied Desktop assembly before reuse; its process-only refresh-sync workaround avoids the known macOS display-link stall. |
+ | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
+-| Next task | The user approved the corrected Water Cave raft presentation on 2026-10-11. Recommend Final Cave next (15 rooms: 43/48/49/54/55/61/83/84/85/86/89/91/92/97/98); implementation remains a separate task awaiting direction. Prior aesthetic review and physical-controller verification remain separate. |
+-| Last completed work | Fixed Water Cave rafting: the hero stands on the visible log deck, shares its eased glide and one-pixel buoyancy, and stays planted during passive travel. Boarding follows the moving deck; disembarking and original raft rules remain intact. [Raft evidence](evidence/2026-10-11-water-raft/review.json). |
+-| Latest verification | Raft correction: 632 core/input checks, 257 focused Water Cave checks and 3,606 full graphics checks passed, including the raft rescue/save/reload/return route and 360 tour frames. Local Release: zero warnings/errors. Only the eight raft rooms differ among 115 native maps; 32 other-room reference captures remain identical. All 33 personal files and 27 Core/original-map files are unchanged. [Verification](evidence/2026-10-11-water-raft/review.json). |
++| Next task | Review the completed fifteen-room Final Cave remaster. All cave families now have dedicated remaster treatments. User visual approval is pending for Final Cave; prior aesthetic review and physical-controller verification remain separate. The Water Cave raft presentation was approved on 2026-10-11. |
++| Last completed work | Remastered Final Cave: connected dark rock, broad worn bedrock floors, crimson crystals with contour lighting, sparse ash/grit/haze, recorded cavern ambience and cohesive creatures. Original hazards, routes, secrets, encounters, platforms and rescues are preserved. [Preview](evidence/2026-10-11-final-cave/gameplay-92.png) and [evidence](evidence/2026-10-11-final-cave/review.json). |
++| Latest verification | Final Cave: 632 core/input checks, 265 focused checks and 3,862 full graphics checks passed, including 360 tour frames. Local Release: zero warnings/errors. Exactly the fifteen Final Cave rooms differ among 115 native maps; 32 other-region reference captures are identical. All 33 personal files and 27 Core/original-map files are unchanged. [Verification](evidence/2026-10-11-final-cave/review.json). |
+ | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
+ | Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+-| Work left running or half implemented | No raft task or test process remains running. Raft implementation and verification are complete; user visual approval was received on 2026-10-11. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
++| Work left running or half implemented | Final Cave implementation and verification are complete; user visual approval is pending. No test process remains running. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
+ | Blocking dependencies | Physical-controller/other-OS verification needs the actual environments; official console work needs approved access. |
+-| Save preservation | Raft and graphics checks use isolated saves/profiles and compare full gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files remain unchanged; no save-format changes. [Latest file checks](evidence/2026-10-11-water-raft/preservation.json). |
++| Save preservation | Final Cave checks use isolated saves/profiles and compare complete gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files remain unchanged, with no new personal files or save-format changes. [Latest file checks](evidence/2026-10-11-final-cave/preservation.json). |
+ | Repository checkpoint | The first MonoGame checkpoint on main is titled `Add complete MonoGame desktop port with retro presentation`, based on C++ commit 349fffe71e052dd4e011f1fe09c0e3080f5bb723. It includes the port, artwork, fixtures, evidence and resume documentation. Use `git log -- monogame/PORTING_PLAN.md` to locate it. Evidence hashes describe files at capture time; later documentation updates may differ. |
+ 
+ At the start of a resumed session:
+@@ -48,6 +48,38 @@
+ Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
+ with the working tree, and continue from the next unfinished task.”**
+ 
++
++## Final Cave remaster — 2026-10-11
++
++Authorized scope: fifteen rooms, upper C1/B2/C2/B3/C3/C4
++(43/48/49/54/55/61) and deep C1/D1/E1/F1/C2/E2/F2/E3/F3
++(83/84/85/86/89/91/92/97/98). The cave skill's approved contour and
++material-specific floor techniques guide an ancient endgame cavern, distinct
++from the volcanic Fire Cave.
++
++- [x] Connected dark rock with chipped contours, small facets, stratification
++  and shaded front faces, anchored across matching room overlaps.
++- [x] Broad worn bedrock slabs, selective shallow fissures, abrasion and sparse
++  wall-foot chips. Keep original collapsing-floor warnings and open holes clear.
++- [x] Visible crimson crystal clusters on suitable front/side walls supply
++  contour-clipped light; secret rock aliases cast identical shadows.
++- [x] Sparse native-pixel ash, falling grit and thin broken ground haze, clipped
++  to discovered terrain and driven solely by presentation time.
++- [x] Dedicated quiet recorded ambience: dungeon air/rumble and distant stone
++  creaks, credited CC0 sources, existing volume/pause/focus/transition lifecycle.
++- [x] Cohesive monster tint, contact shadows and landing dust; unchanged poses,
++  scale, hover and battle artwork.
++- [x] Verify 632 core/input, 265 focused and 3,862 full graphics checks,
++  including 360 tour frames. Preserve before/after and motion evidence. No repackaging.
++
++Implementation and verification are complete; user visual approval is pending.
++Original maps, mechanics, routes, secrets, platforms, rescues and encounters are
++unchanged. Visual checks use isolated adventures. Matching rock/crystal/floor
++overlaps are verified against their actual neighboring-room context, preserving
++authored differences where rooms meet other caves. The scoped simplicity review
++found no remaining issues. [Preview](evidence/2026-10-11-final-cave/gameplay-92.png),
++[atmosphere clip](evidence/2026-10-11-final-cave/atmosphere.mp4), and
++[verification](evidence/2026-10-11-final-cave/review.json).
+ 
+ ## Water Cave raft presentation — 2026-10-11
+ 
+--- before/monogame/Yipe.GraphicsChecks/FireCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/FireCaveChecks.cs
+@@ -215,7 +215,7 @@
+             Scene(59); Call("UpdateCaveAmbience", .1d); var breedingVoice = Voice();
+             check(voice.IsDisposed && breedingVoice is not null && !ReferenceEquals(voice, breedingVoice), "Entering the breeding grounds switches to its original cave loop");
+             Scene(54); Call("UpdateCaveAmbience", .1d);
+-            check(Voice() is null && breedingVoice!.IsDisposed, "Leaving both cave biomes releases the ambient voice");
++            check(Voice() is { State: SoundState.Playing } && breedingVoice!.IsDisposed, "Entering Final Cave replaces the old ambient voice");
+             check(beforeAudio.SequenceEqual(GameSaveCodec.Encode(room.Session, catalog)), "Volcanic audio updates preserve gameplay and RNG");
+             foreach (var id in new[] { 17, 53, 57, 59, 60, 105, 117, 121 })
+             {
+--- before/monogame/Yipe.GraphicsChecks/IceCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/IceCaveChecks.cs
+@@ -272,7 +272,7 @@
+                 check(voice.IsDisposed && Voice() is { State: SoundState.Playing }, "Leaving Ice for Earth replaces the ambient voice");
+                 Scene(53); Call("UpdateCaveAmbience", .1d); var returning = Voice()!;
+                 check(ReferenceEquals(at.GetField("ambienceTrack", flags)!.GetValue(audio), at.GetField("iceAmbience", flags)!.GetValue(audio)), "Returning to Ice selects the recorded ice loop");
+-                Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is null, "Leaving for an untreated cave releases the ice loop");
++                Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is { State: SoundState.Playing }, "Entering Final Cave replaces the ice loop");
+                 check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), "Ice audio preserves gameplay and RNG");
+             }
+             finally
+--- before/monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs
+@@ -197,7 +197,7 @@
+             Scene(58); Call("UpdateCaveAmbience", .8d); var returning = Voice()!;
+             check(ReferenceEquals(breeding, returning) && returning.State == SoundState.Playing && Math.Abs(returning.Volume - .075f) < .001f,
+                 "Stone reuses the licensed air recording without stacking voices and applies its quieter level");
+-            Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is null, "Leaving caves releases the ambient voice");
++            Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is { State: SoundState.Playing }, "Entering Final Cave replaces the old ambient voice");
+             check(beforeAudio.SequenceEqual(GameSaveCodec.Encode(room.Session, catalog)), "Stone audio never changes gameplay or RNG");
+             room = Scene(58);
+             for (var frame = 0; frame < 40; frame++)
+--- before/monogame/Yipe.GraphicsChecks/README.md
++++ monogame/Yipe.GraphicsChecks/README.md
+@@ -1,7 +1,7 @@
+ # MonoGame graphics checks
+ 
+-The latest full run passed **3,606 checks**, including all 41 animated monsters,
+-the eleven remastered Ice Cave rooms and thirteen Water Cave rooms. It includes the original 139 visual checks, eight diagonal
++The latest full run passed **3,862 checks**, including all 41 animated monsters,
++the eleven remastered Ice Cave rooms, thirteen Water Cave rooms and fifteen Final Cave rooms. It includes the original 139 visual checks, eight diagonal
+ dispatch/animation checks, and six session checks for logical position/storage,
+ world transitions, shop handoff and RNG isolation, plus eight full-save checks
+ for complete state/renderer replacement and non-destructive failure handling,
+@@ -85,6 +85,18 @@
+ 
+ ```sh
+ dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --stone-only --output build/stone-checks
++```
++
++For Final Cave work, use `--final-only`. The focused run passes **265 checks** across all fifteen
++upper/deep rooms and retains native, gameplay, unlit and isolated-light captures.
++Checks cover palette/readability, visible crystal sources, secret aliases,
++cache invalidation, matching overlap continuity, door/corner/fog occlusion,
++collapsing-floor warnings, creature integration, recorded ambience lifecycle,
++and complete session/RNG preservation. Reference captures include eight other
++regions. All fixtures use isolated adventures.
++
++```sh
++dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --final-only --output build/final-cave-checks
+ ```
+ 
+ For local Water Cave work, use `--water-only`. The focused run passes **257 checks**
+--- before/monogame/Yipe.GraphicsChecks/PixelLightingChecks.cs
++++ monogame/Yipe.GraphicsChecks/PixelLightingChecks.cs
+@@ -50,10 +50,12 @@
+                 Set("miniatureMode", 0); Set("vignette", false); Set("scanlines", false);
+             }
+ 
+-            // Generic cave lighting remains covered separately from Earth contour tests.
++            // Every authored cave now has dedicated contours. Retain fallback
++            // torch coverage on an isolated, otherwise unused map ID (78).
+             var fixture = Scene(43, new(4, 4));
+-            for (var x = 0; x < Map.Width; x++)
+-                for (var y = 0; y < Map.Height; y++) fixture.Map.RestoreTile(new(x, y), 0x27);
++            typeof(GameSession).GetProperty(nameof(GameSession.CurrentMap))!.SetValue(fixture.Session,
++                new Map(78, 6, Enumerable.Repeat((ushort)0x27, Map.TileCount).ToArray()));
++            Reveal(fixture);
+             fixture.Map.RestoreTile(new(4, 3), 0x22);
+             var open = LightFrame(fixture, 1);
+             check(open.Any(p => p.R > 0), "A wall-mounted cave torch emits a local light field");
+--- before/monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs
++++ monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs
+@@ -216,7 +216,7 @@
+             check(voice.State == SoundState.Paused, "Master volume zero suppresses cave ambience");
+             at.GetProperty("Volume")!.SetValue(audio, .5f); Call("UpdateCaveAmbience", .1d);
+             Scene(54); Call("UpdateCaveAmbience", .1d);
+-            check(Voice() is null && voice.IsDisposed, "Leaving the breeding grounds releases its loop");
++            check(Voice() is { State: SoundState.Playing } && voice.IsDisposed, "Entering Final Cave replaces the breeding loop");
+             check(beforeAudio.SequenceEqual(GameSaveCodec.Encode(room.Session, catalog)), "Ambient playback and UI gates preserve the complete session and RNG");
+             room = Scene(60);
+             for (var frame = 0; frame < 48; frame++) Save(World(room, frame / 8d), $"frame-{frame:D2}.png");
+--- before/monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs
+@@ -163,7 +163,7 @@
+             room.Visibility.Initialize(new Map(62, 5, Enumerable.Repeat((ushort)0x25, Map.TileCount).ToArray()), new(0, 0));
+             check(Air(1).All(c => c.A == 0), "Water atmosphere cannot draw through fog");
+             room = Scene(54);
+-            check(Air(1).All(c => c.A == 0), "Water atmosphere never leaks into the unfinished Final Cave");
++            check(Air(1).All(c => c.A == 0), "Water atmosphere never leaks into the Final Cave");
+             foreach (var (monster, scale) in new[] { (25, 1), (27, 1), (28, 2) })
+             {
+                 Scene(54); var outside = Actor(); var portrait = Portrait(); Scene(62); var inside = Actor();
+@@ -219,7 +219,7 @@
+                 check(voice.State == SoundState.Paused, "Zero master volume silences Water ambience");
+                 at.GetProperty("Volume")!.SetValue(audio, .5f); Scene(53); Call("UpdateCaveAmbience", .1d);
+                 check(voice.IsDisposed && Voice() is { State: SoundState.Playing }, "Leaving Water for Ice replaces the old ambient voice");
+-                Scene(54); Call("UpdateCaveAmbience", .1d); check(Voice() is null, "Entering an untreated cave releases Water ambience");
++                Scene(54); Call("UpdateCaveAmbience", .1d); check(Voice() is { State: SoundState.Playing } && ReferenceEquals(at.GetField("ambienceTrack", flags)!.GetValue(audio), at.GetField("finalAmbience", flags)!.GetValue(audio)), "Entering Final Cave selects its own ambient track");
+                 check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), "Water audio lifecycle preserves the complete adventure and RNG");
+             }
+             finally
+--- before/monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs
++++ monogame/Yipe.GraphicsChecks/EarthEnvironmentChecks.cs
+@@ -138,7 +138,7 @@
+             check(fire.IsDisposed && breeding.State == SoundState.Playing, "Fire to breeding grounds preserves the original ambience route");
+             Scene(57); Call("UpdateCaveAmbience", .1d); var returning = Voice()!;
+             check(breeding.IsDisposed && returning.State == SoundState.Playing, "Returning to Earth selects its own ambience");
+-            Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is null, "Leaving caves releases the ambient voice");
++            Scene(54); Call("UpdateCaveAmbience", .1d); check(returning.IsDisposed && Voice() is { State: SoundState.Playing }, "Entering Final Cave replaces the old ambient voice");
+             check(beforeAudio.SequenceEqual(GameSaveCodec.Encode(room.Session, catalog)), "Earth audio never changes gameplay or RNG");
+             room = Scene(109);
+             for (var frame = 0; frame < 40; frame++)
+--- before/monogame/Yipe.GraphicsChecks/Program.cs
++++ monogame/Yipe.GraphicsChecks/Program.cs
+@@ -32,6 +32,7 @@
+         var cloudsOnly = false;
+         var iceOnly = false;
+         var waterOnly = false;
++        var finalOnly = false;
+         var menusOnly = false;
+         for (var i = 0; i < args.Length; i++)
+         {
+@@ -43,6 +44,7 @@
+                 Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
+                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
+                 Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
++                Console.WriteLine("--final-only runs focused Final Cave checks and captures.");
+                 Console.WriteLine("--water-only runs focused Water Cave checks and captures.");
+                 Console.WriteLine("--ice-only runs focused Ice/Zephyr Cave checks and captures.");
+                 Console.WriteLine("--clouds-only runs focused cloud, sunlight, actor, weather and day/night checks.");
+@@ -62,6 +64,7 @@
+             else if (args[i] == "--snow-only") snowOnly = true;
+             else if (args[i] == "--outdoors-only") outdoorsOnly = true;
+             else if (args[i] == "--ice-only") iceOnly = true;
++            else if (args[i] == "--final-only") finalOnly = true;
+             else if (args[i] == "--water-only") waterOnly = true;
+             else if (args[i] == "--clouds-only") cloudsOnly = true;
+             else if (args[i] == "--maynard-only") maynardOnly = true;
+@@ -92,6 +95,8 @@
+                 return 2;
+             }
+         }
++        if (finalOnly && (waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
++        { Console.Error.WriteLine("--final-only cannot be combined with other capture or route modes."); return 2; }
+         if (waterOnly && (iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+         { Console.Error.WriteLine("--water-only cannot be combined with other capture or route modes."); return 2; }
+         if (iceOnly && (cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+@@ -152,7 +157,7 @@
+                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
+                     }
+                 }
+-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly);
++                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly);
+                 return 0;
+             }
+             catch (Exception error)
+@@ -194,7 +199,7 @@
+         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
+     }
+ 
+-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly)
++    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly)
+     {
+         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
+         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
+@@ -245,6 +250,12 @@
+         Check(!(bool)Get("screenShake"), "Screen shake defaults to Off");
+         Check((int)Get("timeOfDayMode") == 0 && (double)Get("dayNightSeconds") is >= 300 and < 330,
+             "Automatic day/night cycle is enabled by default, starting near midday as startup time elapses");
++        if (finalOnly)
++        {
++            FinalCaveChecks.Run(game, outputDirectory, Check);
++            Log($"Passed {checks} visual integration checks. Focused Final Cave run.");
++            return;
++        }
+         if (waterOnly)
+         {
+             WaterCaveChecks.Run(game, outputDirectory, Check);
+@@ -1063,6 +1074,7 @@
+         HellPresentationChecks.RunEnvironment(game, outputDirectory, Check);
+         EarthPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+         EarthEnvironmentChecks.Run(game, outputDirectory, Check);
++        FinalCaveChecks.Run(game, outputDirectory, Check);
+         StoneCaveChecks.Run(game, outputDirectory, Check);
+         IceCaveChecks.Run(game, outputDirectory, Check);
+         IceMovementChecks.Run(game, outputDirectory, Check);
+--- before/monogame/Yipe.Desktop/GameAudio.cs
++++ monogame/Yipe.Desktop/GameAudio.cs
+@@ -19,7 +19,7 @@
+     private SoundEffect? earthAmbience, deepEarthAmbience;
+     private SoundEffect? hellAmbience;
+     private SoundEffect? iceAmbience;
+-    private SoundEffect? waterCaveAmbience;
++    private SoundEffect? waterCaveAmbience, finalAmbience;
+     private SoundEffect? townAmbience, townNightAmbience, riverSound;
+     private SoundEffectInstance? river;
+     private float riverGain;
+@@ -71,6 +71,8 @@
+             iceAmbience = SoundEffect.FromStream(iceStream);
+             using var waterCaveStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "water-cave.wav"));
+             waterCaveAmbience = SoundEffect.FromStream(waterCaveStream);
++            using var finalStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "final-cave.wav"));
++            finalAmbience = SoundEffect.FromStream(finalStream);
+             using var townStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "maynard-day.wav"));
+             townAmbience = SoundEffect.FromStream(townStream);
+             using var nightStream = File.OpenRead(Path.Combine(content, "Audio", "Ambience", "maynard-night.wav"));
+@@ -149,6 +151,9 @@
+     public void UpdateWaterCaveAmbience(float wetness, bool playing, double elapsed)
+         => UpdateAmbientTrack(waterCaveAmbience, playing, elapsed, .13f + .07f * Math.Clamp(wetness, 0, 1));
+ 
++    public void UpdateFinalAmbience(bool playing, double elapsed)
++        => UpdateAmbientTrack(finalAmbience, playing, elapsed, .19f);
++
+     public void UpdateTownAmbience(float daylight, bool playing, double elapsed)
+         => UpdateAmbientTrack(daylight < .15f ? townNightAmbience : townAmbience, playing, elapsed,
+             daylight < .15f ? .13f : .18f * (.3f + .7f * daylight));
+@@ -231,6 +236,7 @@
+         hellAmbience?.Dispose(); hellAmbience = null;
+         iceAmbience?.Dispose(); iceAmbience = null;
+         waterCaveAmbience?.Dispose(); waterCaveAmbience = null;
++        finalAmbience?.Dispose(); finalAmbience = null;
+         StopRiver();
+         townAmbience?.Dispose(); townAmbience = null;
+         townNightAmbience?.Dispose(); townNightAmbience = null;
+--- before/monogame/Yipe.Desktop/WorldTerrain.cs
++++ monogame/Yipe.Desktop/WorldTerrain.cs
+@@ -25,6 +25,26 @@
+         {
+             batch.Draw(waterCaveGround, bounds, bounds, Color.White);
+             DrawWater(batch, bounds, time);
++            return;
++        }
++        if (IsFinal(map))
++        {
++            batch.Draw(finalGround, bounds, bounds, Color.White);
++            DrawWater(batch, bounds, time);
++            // Authored instability remains legible above decorative floor wear.
++            if (tile is 0x29 or 0x2a)
++                for (var y = 4; y < 29; y++)
++                {
++                    var x = bounds.X + 15 + y / 4 % 3 - 1;
++                    batch.Draw(pixel, new Rectangle(x, bounds.Y + y, 2, 1), FinalPalette[0]);
++                    batch.Draw(pixel, new Rectangle(x + 2, bounds.Y + y, 1, 1), FinalPalette[8]);
++                }
++            if (tile == 0x2b)
++            {
++                batch.Draw(pixel, new Rectangle(bounds.X + 6, bounds.Y + 8, 22, 20), FinalPalette[6]);
++                batch.Draw(pixel, new Rectangle(bounds.X + 8, bounds.Y + 9, 19, 17), FinalPalette[0]);
++            }
++            if (tile == 0x71) DrawProp(batch, 12, cell);
+             return;
+         }
+         if (IsStone(map))
+--- before/monogame/Yipe.Desktop/WorldMonsterAnimation.cs
++++ monogame/Yipe.Desktop/WorldMonsterAnimation.cs
+@@ -213,6 +213,7 @@
+         var earthy = monsterMap is { } earth && IsEarth(earth);
+         var mineral = monsterMap is { } stone && IsStone(stone);
+         var frozen = monsterMap is { } ice && IsIce(ice);
++        var ancient = monsterMap is { } final && IsFinal(final);
+         var damp = monsterMap is { } waterCave && IsWaterCave(waterCave);
+         var frame = motion is { IsMoving: true } ? 4 + Math.Min(3, (int)(progress * 4)) : MonsterIdleFrame(type, phase);
+         // A tile move is one footstep; hold its plant while the landing settles.
+@@ -234,12 +235,12 @@
+             batch.Draw(pixel, new Rectangle(feet.X - radius * scale, feet.Y - (4 - row) * scale,
+                 (radius * 2 + 1) * scale, scale), RetroArt.Palette[0] *
+                     (MonsterHovers(type) ? type is 5 or 14 ? .13f : .09f : row is 1 or 2 ? .22f : .12f)
+-                    * (breeding ? 1.8f : volcanic ? 1.65f : earthy || mineral || frozen || damp ? 1.6f : 1f));
++                    * (breeding ? 1.8f : volcanic ? 1.65f : earthy || mineral || frozen || damp || ancient ? 1.6f : 1f));
+         }
+         DrawAnimatedMonster(batch, type, new(feet.X - 24 * scale,
+             feet.Y - (monsterBottoms[type - 1] + airborne) * scale, 48 * scale, 48 * scale), frame, facingLeft,
+             breeding ? new Color(210, 222, 236) : volcanic ? new Color(255, 226, 203) : earthy ? new Color(235, 225, 205)
+-                : mineral ? new Color(219, 231, 232) : frozen ? new Color(211, 232, 246) : damp ? new Color(206, 231, 223) : Color.White);
++                : mineral ? new Color(219, 231, 232) : frozen ? new Color(211, 232, 246) : damp ? new Color(206, 231, 223) : ancient ? new Color(238, 211, 225) : Color.White);
+         if (motion is not null) DrawMonsterContact(batch, type, feet, scale, motion);
+     }
+ 
+@@ -275,6 +276,7 @@
+                 : IsStone(monsterMap) ? StonePalette[5]
+                 : IsIce(monsterMap) ? IcePalette[7]
+                 : IsWaterCave(monsterMap) ? WaterCavePalette[4]
++                : IsFinal(monsterMap) ? FinalPalette[5]
+                 : RetroArt.Palette[type is 8 or 10 or 11 or 36 or 40 || monsterMap.Id > 40 ? 3 : 18])
+                 * (float)((heavy ? .5 : .4) * (1 - motion.LandingAge / .12));
+             var width = heavy ? 2 : 1;
+--- before/monogame/Yipe.Desktop/TownGame.cs
++++ monogame/Yipe.Desktop/TownGame.cs
+@@ -335,6 +335,8 @@
+             audio.UpdateIceAmbience(session.CurrentMap.Id > 80, playing, elapsed);
+         else if (WorldRenderer.IsWaterCave(session.CurrentMap))
+             audio.UpdateWaterCaveAmbience(world.WaterCaveWetness(session.CurrentMap, player.VisualPosition), playing, elapsed);
++        else if (WorldRenderer.IsFinal(session.CurrentMap))
++            audio.UpdateFinalAmbience(playing, elapsed);
+         else audio.UpdateAmbience(WorldRenderer.IsBreeding(session.CurrentMap), playing, elapsed);
+     }
+ 
+--- before/monogame/Yipe.Desktop/PixelLighting.cs
++++ monogame/Yipe.Desktop/PixelLighting.cs
+@@ -135,7 +135,9 @@
+         var stone = WorldRenderer.IsStone(map);
+         var ice = WorldRenderer.IsIce(map);
+         var flooded = WorldRenderer.IsWaterCave(map);
+-        var contour = breeding || volcanic || earth || stone || ice || flooded;
++        var final = WorldRenderer.IsFinal(map);
++        var contour = breeding || volcanic || earth || stone || ice || flooded || final;
++        var garnets = final ? world.FinalLights(map) : [];
+         var algae = flooded ? world.WaterCaveLights(map) : [];
+         var crystals = ice ? world.IceLights(map) : [];
+         var magma = volcanic ? world.FireLights(map) : [];
+@@ -150,14 +152,16 @@
+                 var fire = tile == 0x24 || molten;
+                 var fungus = (breeding || earth) && tile == (earth ? 0x22 : 0x23) && fungi.Any(p => p.X / 32 == x && p.Y / 32 == y);
+                 var crystal = ice && tile is 0x22 or 0x23 && crystals.Any(p => p.X / 32 == x && p.Y / 32 == y);
++                var garnet = final && tile == 0x22 && garnets.Any(p => p.X / 32 == x && p.Y / 32 == y);
+                 var luminous = flooded && tile == 0x25 && algae.Any(p => p.X / 32 == x && p.Y / 32 == y);
+                 var torch = breeding || earth || stone ? tile == (earth ? 0x22 : 0x23) && lamps.Any(p => p.X / 32 == x && p.Y / 32 == y)
+-                    : !volcanic && !ice && !flooded && map.Id is >= 41 and < 117 && tile is 0x22 or 0x23 or 0x25
++                    : !volcanic && !ice && !flooded && !final && map.Id is >= 41 and < 117 && tile is 0x22 or 0x23 or 0x25
+                     && y + 1 < Map.Height && Terrain(map.Tile(new(x, y + 1))) is 0x27 or 0x28 or 0x29 or 0x2a
+                     && (x * 3 + y * 5 + map.Id) % 7 == 0;
+-                if (!window && !fire && !torch && !fungus && !crystal && !luminous) continue;
++                if (!window && !fire && !torch && !fungus && !crystal && !luminous && !garnet) continue;
+                 var position = new Point(x * 32 + (window ? 27 : 16), y * 32 + (window ? 19 : 20));
+-                if (molten) position = magma.First(p => p.X / 32 == x && p.Y / 32 == y);
++                if (garnet) position = garnets.First(p => p.X / 32 == x && p.Y / 32 == y);
++                else if (molten) position = magma.First(p => p.X / 32 == x && p.Y / 32 == y);
+                 else if (crystal) position = crystals.First(p => p.X / 32 == x && p.Y / 32 == y);
+                 else if (luminous) position = algae.First(p => p.X / 32 == x && p.Y / 32 == y);
+                 else if (fungus) position = fungi.First(p => p.X / 32 == x && p.Y / 32 == y);
+@@ -167,7 +171,7 @@
+                     var feet = WorldRenderer.HellFlameFeet(map, cell);
+                     position = new((int)feet.X, (int)feet.Y - 3);
+                 }
+-                var color = luminous ? new Color(20, 62, 53) : crystal ? new Color(24, 48, 67) : molten ? new Color(140, 82, 26) : fungus ? earth ? new Color(32, 48, 22) : new Color(17, 43, 39) : window ? new Color(60, 43, 20)
++                var color = garnet ? new Color(106, 16, 30) : luminous ? new Color(20, 62, 53) : crystal ? new Color(24, 48, 67) : molten ? new Color(140, 82, 26) : fungus ? earth ? new Color(32, 48, 22) : new Color(17, 43, 39) : window ? new Color(60, 43, 20)
+                     : torch ? new Color(83, 51, 22) : new Color(86, 36, 10);
+                 var index = lights.Count;
+                 lights.Add(new(cell, position, color, torch, fire || torch || tile == 6, window));
+@@ -203,8 +207,9 @@
+         var earth = WorldRenderer.IsEarth(map);
+         var ice = WorldRenderer.IsIce(map);
+         var flooded = WorldRenderer.IsWaterCave(map);
+-        var rockTile = volcanic || flooded ? 0x25 : earth ? 0x22 : 0x23;
+-        var stone = flooded ? world.WaterCaveRock(map) : ice ? world.IceStone(map) : volcanic ? world.FireStone(map) : earth ? world.EarthStone(map)
++        var final = WorldRenderer.IsFinal(map);
++        var rockTile = volcanic || flooded ? 0x25 : earth || final ? 0x22 : 0x23;
++        var stone = final ? world.FinalRock(map) : flooded ? world.WaterCaveRock(map) : ice ? world.IceStone(map) : volcanic ? world.FireStone(map) : earth ? world.EarthStone(map)
+             : WorldRenderer.IsStone(map) ? world.StoneRock(map) : world.BreedingStone(map);
+         var data = new Color[MaskSize * MaskSize * lights.Count];
+         for (var index = 0; index < lights.Count; index++)
+--- before/monogame/Yipe.Desktop/WorldRenderer.cs
++++ monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -67,6 +67,7 @@
+         hellGlow = new Texture2D(device, HellWidth, HellHeight);
+         earthGround = new Texture2D(device, EarthWidth, EarthHeight);
+         stoneGround = new Texture2D(device, StoneWidth, StoneHeight);
++        finalGround = new Texture2D(device, FinalWidth, FinalHeight);
+         iceGround = new Texture2D(device, IceWidth, IceHeight);
+         waterCaveGround = new Texture2D(device, WaterWidth, WaterHeight);
+         breedingGround = new Texture2D(device, Map.Width * 32, Map.Height * 32);
+@@ -141,6 +142,7 @@
+         PrepareHell(map);
+         PrepareEarth(map);
+         PrepareStone(map);
++        PrepareFinal(map);
+         PrepareIce(map);
+         PrepareWaterCave(map);
+         PrepareBreeding(map);
+@@ -170,6 +172,7 @@
+         DrawHellAtmosphere(batch, game, time);
+         DrawEarthAtmosphere(batch, game, time);
+         DrawStoneAtmosphere(batch, game, time);
++        DrawFinalAtmosphere(batch, game, time);
+         DrawIceAtmosphere(batch, game, time);
+         DrawWaterCaveAtmosphere(batch, game, time);
+         DrawBreedingAtmosphere(batch, game, time);
+@@ -246,6 +249,7 @@
+         PrepareHell(map);
+         PrepareEarth(map);
+         PrepareStone(map);
++        PrepareFinal(map);
+         PrepareIce(map);
+         PrepareWaterCave(map);
+         PrepareBreeding(map);
+@@ -337,6 +341,7 @@
+         hellProps.Dispose(); hellGround.Dispose(); hellLava.Dispose(); hellGlow.Dispose();
+         earthGround.Dispose();
+         stoneGround.Dispose();
++        finalGround.Dispose();
+         iceGround.Dispose();
+         waterCaveGround.Dispose();
+         breedingGround.Dispose(); fireGround.Dispose(); fireLava.Dispose();
+--- /dev/null
++++ monogame/Yipe.Desktop/WorldFinal.cs
+@@ -0,0 +1,236 @@
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++
++namespace Yipe.Desktop;
++
++internal sealed partial class WorldRenderer
++{
++    private const int FinalWidth = Map.Width * 32, FinalHeight = Map.Height * 32;
++    internal static readonly Color[] FinalPalette =
++    [
++        new(19, 18, 26), new(32, 28, 36), new(43, 37, 44), new(47, 40, 47),
++        new(57, 49, 53), new(68, 57, 61), new(42, 38, 50), new(58, 50, 64),
++        new(76, 64, 79), new(90, 77, 92), new(105, 91, 103), new(125, 108, 114),
++        new(73, 31, 43), new(112, 35, 52), new(173, 49, 67), new(223, 89, 99),
++        new(251, 161, 148),
++    ];
++    private readonly Texture2D finalGround;
++    private readonly ushort[] finalTiles = new ushort[Map.TileCount];
++    private Map? finalMap;
++    private bool[] finalRock = [];
++    private readonly List<Point> finalCrystals = new(), finalGrit = new();
++
++    internal static bool IsFinal(Map map) => map.Id is 43 or 48 or 49 or 54 or 55 or 61 or 83 or 84 or 85 or 86 or 89 or 91 or 92 or 97 or 98;
++    private static bool FinalWall(ushort tile) => tile is 0x22 or 0x43;
++    internal bool[] FinalRock(Map map) { PrepareFinal(map); return finalRock; }
++    internal Point[] FinalLights(Map map) { PrepareFinal(map); return finalCrystals.ToArray(); }
++
++    private void PrepareFinal(Map map)
++    {
++        if (!IsFinal(map)) return;
++        var changed = !ReferenceEquals(finalMap, map);
++        for (var x = 0; x < Map.Width; x++) for (var y = 0; y < Map.Height; y++)
++        {
++            var i = x * Map.Height + y; var tile = map.Tile(new(x, y));
++            changed |= finalTiles[i] != tile; finalTiles[i] = tile;
++        }
++        if (!changed) return;
++        finalMap = map; finalCrystals.Clear(); finalGrit.Clear(); PrepareWater(map);
++        var layer = (map.Id - 1) / 40; var region = map.Id - layer * 40 - 1;
++        var column = region % 6; var row = region / 6;
++        var ox = column * 352; var oy = row * 320;
++        var neighbors = new Map?[3, 3]; neighbors[1, 1] = map;
++        for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++)
++        {
++            if (dx == 0 && dy == 0) continue;
++            var next = catalog.CreateMap(layer * 40 + (row + dy + 6) % 6 * 6 + (column + dx + 6) % 6 + 1);
++            if (next is not null && IsFinal(next)) neighbors[dx + 1, dy + 1] = next;
++        }
++        bool Wall(int x, int y)
++        {
++            if (Map.Contains(new(x, y))) return FinalWall(map.Tile(new(x, y)));
++            var dx = x < 0 ? -1 : x >= Map.Width ? 1 : 0; var dy = y < 0 ? -1 : y >= Map.Height ? 1 : 0;
++            return neighbors[dx + 1, dy + 1] is { } next
++                ? FinalWall(next.Tile(new(x - dx * 11, y - dy * 10)))
++                : FinalWall(map.Tile(new(Math.Clamp(x, 0, 12), Math.Clamp(y, 0, 11))));
++        }
++        int[] ledge = [0, 1, 3, 2, 1, 0, 2, 1, 3, 1, 0, 1, 2, 3, 1, 0];
++        var rock = finalRock = new bool[FinalWidth * (FinalHeight + 16)];
++        for (var y = 0; y < FinalHeight + 16; y++) for (var x = 0; x < FinalWidth; x++) rock[y * FinalWidth + x] = RockAt(x, y);
++        bool RockAt(int x, int y)
++        {
++            var tx = x >> 5; var ty = y >> 5;
++            if (!Wall(tx, ty)) return false;
++            var edge = 32f;
++            for (var cy = ty - 1; cy <= ty + 1; cy++) for (var cx = tx - 1; cx <= tx + 1; cx++)
++            {
++                if (Wall(cx, cy)) continue;
++                var dx = Math.Max(0, Math.Abs(x + .5f - (cx * 32 + 16)) - 16);
++                var dy = Math.Max(0, Math.Abs(y + .5f - (cy * 32 + 16)) - 16);
++                edge = Math.Min(edge, MathF.Sqrt(dx * dx + dy * dy));
++            }
++            for (var sy = -1; sy <= 1; sy += 2) for (var sx = -1; sx <= 1; sx += 2)
++            {
++                if (Wall(tx + sx, ty) || Wall(tx, ty + sy)) continue;
++                var dx = Math.Max(0, 8 - (sx < 0 ? (x & 31) + .5f : 31.5f - (x & 31)));
++                var dy = Math.Max(0, 8 - (sy < 0 ? (y & 31) + .5f : 31.5f - (y & 31)));
++                edge = Math.Min(edge, 8 - dx - dy);
++            }
++            return edge > 1 + ledge[((x + ox) / 7 + (y + oy) / 9 * 3) & 15];
++        }
++        bool Rock(int x, int y) => x >= 0 && x < FinalWidth && y >= 0 && y < FinalHeight + 16
++            ? rock[y * FinalWidth + x] : RockAt(x, y);
++        var data = new Color[FinalWidth * FinalHeight];
++        for (var y = 0; y < FinalHeight; y++) for (var x = 0; x < FinalWidth; x++)
++        {
++            var i = y * FinalWidth + x; var wx = x + ox; var wy = y + oy;
++            var grain = EarthSeed(wx, wy, 401 + layer); var shade = 2;
++            if (!rock[i])
++            {
++                // Ancient bedrock worn almost level. Broad slabs and occasional
++                // shallow scars read as floor, beneath the wall's small facets.
++                var closest = float.MaxValue; var second = float.MaxValue; var plate = 0; var plateY = 0;
++                for (var sy = wy / 39 - 1; sy <= wy / 39 + 1; sy++) for (var sx = wx / 55 - 1; sx <= wx / 55 + 1; sx++)
++                {
++                    var seed = EarthSeed(sx, sy, 409 + layer);
++                    var dx = wx - (sx * 55 + 9 + seed % 37); var dy = wy - (sy * 39 + 7 + seed / 17 % 25);
++                    var distance = dx * dx + dy * dy;
++                    if (distance < closest) { second = closest; closest = distance; plate = seed; plateY = dy; }
++                    else if (distance < second) second = distance;
++                }
++                var seam = MathF.Sqrt(second) - MathF.Sqrt(closest);
++                var wear = EarthNoise(wx / 67f, wy / 43f, 419 + layer);
++                shade = plate % 3 == 0 ? 3 : 2;
++                if (wear > .65f) shade = 3;
++                if (seam < .55f && plate % 3 == 0 && plateY > -5) shade = 1;
++                else if (seam < 1.25f && plate % 3 == 0 && plateY is > 0 and < 12) shade = 4;
++                // Sparse abrasion parallel to the bedding, broken by old wear.
++                var scar = (wy + (int)(Math.Sin(wx * .08) * 2)) % 23;
++                if (plate % 5 == 0 && seam > 5 && wear is > .46f and < .6f)
++                {
++                    if (scar == 0) shade = 1;
++                    else if (scar == 1) shade = 3;
++                }
++                if (grain % 233 == 0) shade = 4;
++                else if (grain % 317 == 0) shade = 1;
++                var nearest = 9;
++                for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++)
++                    if (dx * dx + dy * dy < nearest && Rock(x + dx, y + dy)) nearest = dx * dx + dy * dy;
++                if (nearest <= 2) shade = 0;
++                else if (nearest <= 8) shade = 1;
++            }
++            else
++            {
++                var closest = float.MaxValue; var second = float.MaxValue; var facetY = 0; var facet = 0;
++                for (var sy = wy / 11 - 1; sy <= wy / 11 + 1; sy++) for (var sx = wx / 13 - 1; sx <= wx / 13 + 1; sx++)
++                {
++                    var seed = EarthSeed(sx, sy, 421 + layer);
++                    var dx = wx - (sx * 13 + 3 + seed % 8); var dy = wy - (sy * 11 + 2 + seed / 7 % 7);
++                    var distance = dx * dx + dy * dy;
++                    if (distance < closest) { second = closest; closest = distance; facetY = dy; facet = seed; }
++                    else if (distance < second) second = distance;
++                }
++                var seam = MathF.Sqrt(second) - MathF.Sqrt(closest);
++                shade = facetY < 2 ? 9 : 8;
++                if (seam < .85f) shade = 6;
++                else if (seam < 1.7f && facetY < -1) shade = 10;
++                var front = !Rock(x, y + 12 + ledge[(wx / 9) & 15]);
++                if (front) shade = seam < .85f ? 1 : facetY < 2 ? 7 : 6;
++                // Short sedimentary laminations, never a continuous bright rim.
++                if (!front && facet % 4 == 0 && facetY == 3 && seam > 2) shade = 7;
++                if (!Rock(x - 1, y) || !Rock(x + 1, y) || !Rock(x, y + 1)) shade = 0;
++                else if (!Rock(x, y - 1)) shade = 7;
++                if (!front && grain % 181 == 0) shade = 10;
++            }
++            data[i] = FinalPalette[shade];
++        }
++        for (var y = 0; y < Map.Height; y++) for (var x = 0; x < Map.Width; x++)
++        {
++            if (!Wall(x, y)) continue;
++            var front = !Wall(x, y + 1);
++            var left = !Wall(x - 1, y); var right = !Wall(x + 1, y);
++            if (!front && !left && !right) continue;
++            var seed = EarthSeed(x + column * 11, y + row * 10, 431 + layer);
++            if (seed % 4 == 0)
++            {
++                var point = new Point(x * 32 + (front ? 16 : left ? 8 : 24), y * 32 + 20); finalCrystals.Add(point);
++                // Small angular garnet clusters embedded in the rock. Their
++                // visible cores occupy precisely the contour-light source.
++                for (var shard = 0; shard < 3; shard++)
++                {
++                    var cx = point.X + (shard - 1) * 5; var top = point.Y - (shard == 1 ? 9 : 5);
++                    for (var py = top; py <= point.Y + 3; py++)
++                    {
++                        var half = Math.Min(2, Math.Min(py - top, point.Y + 4 - py));
++                        for (var px = -half; px <= half; px++)
++                            Put(cx + px, py, px < 0 ? 15 : px == 0 ? 14 : 13, true);
++                    }
++                    Put(cx, top + 1, 16, true);
++                }
++            }
++            if (!front || y + 1 >= Map.Height) continue;
++            var floor = new MapPosition(x, y + 1);
++            if (map.Tile(floor) is not (0x28 or 0x48)) continue;
++            if (map.Events.Chests.Contains(floor) || map.Events.Depth.Any(d => d.HasPosition && d.Position == floor)
++                || map.Events.Princess.HasPosition && map.Events.Princess.Position == floor) continue;
++            finalGrit.Add(new(x * 32 + 16, (y + 1) * 32 + 8));
++            for (var chip = 0; chip < 3; chip++)
++            {
++                var px = x * 32 + 4 + (seed + chip * 7) % 23; var py = (y + 1) * 32 + 3 + chip % 2 * 3;
++                var width = 1 + (seed + chip) % 3;
++                for (var dx = -1; dx <= width; dx++) Put(px + dx, py + 1, 0);
++                for (var dx = 0; dx < width; dx++) Put(px + dx, py, chip == 1 ? 5 : 4);
++                if (width > 1) Put(px + 1, py - 1, 8);
++            }
++        }
++        finalGround.SetData(data);
++        void Put(int x, int y, int shade, bool wall = false)
++        {
++            if (x < 0 || x >= FinalWidth || y < 0 || y >= FinalHeight || rock[y * FinalWidth + x] != wall) return;
++            data[y * FinalWidth + x] = FinalPalette[shade];
++        }
++    }
++
++    private void DrawFinalAtmosphere(SpriteBatch batch, Adventure game, double time)
++    {
++        if (!IsFinal(game.Map)) return;
++        var t = Math.Floor(time * 8) / 8;
++        // A handful of pale ash flecks across the whole room, with irregular drift.
++        for (var i = 0; i < 42; i++)
++        {
++            var seed = EarthSeed(i, game.Map.Id, 439);
++            var x = (int)((seed % FinalWidth + t * (1 + i % 3)) % FinalWidth);
++            var y = (int)((seed / 17 % FinalHeight + t * (2 + i % 4)) % FinalHeight);
++            Pixel(x + (int)(Math.Sin(t * .7 + i) * 3), y, FinalPalette[11] * (.2f + i % 3 * .055f));
++        }
++        for (var i = 0; i < finalGrit.Count; i++)
++        {
++            var point = finalGrit[i]; var phase = (t + i * 2.73) % 17;
++            if (phase < 1.2)
++                for (var chip = 0; chip < 3; chip++)
++                    Pixel(point.X - 6 + chip * 4, point.Y - 22 + (int)(phase * phase / 1.44 * 22) - chip,
++                        FinalPalette[8] * (float)((1 - phase / 1.2) * .5));
++        }
++        // Thin, broken ground haze: native pixels, kept clear of hazards/events.
++        for (var band = 0; band < 5; band++)
++        {
++            var seed = EarthSeed(band, game.Map.Id, 443);
++            var cx = (int)((seed % FinalWidth + t * 2) % (FinalWidth + 60)) - 30;
++            var cy = 22 + seed / 13 % (FinalHeight - 44);
++            for (var dx = -20; dx <= 20; dx++)
++            {
++                var y = cy + (int)(Math.Sin(dx * .08 + t * .17 + band) * 2);
++                if ((dx + band + 24) % 3 == 0) continue;
++                Pixel(cx + dx, y, FinalPalette[10] * ((1 - Math.Abs(dx) / 21f) * .11f));
++            }
++        }
++        void Pixel(int x, int y, Color color)
++        {
++            if (x < 0 || x >= FinalWidth || y < 0 || y >= FinalHeight || finalRock[y * FinalWidth + x]) return;
++            var cell = new MapPosition(x / 32, y / 32);
++            if (game.Visibility.Contains(cell) && game.Map.Tile(cell) is 0x28 or 0x48 or 2 or 0x1f or 0x20)
++                batch.Draw(pixel, new Rectangle(x, y, 1, 1), color);
++        }
++    }
++}
+--- /dev/null
++++ monogame/Yipe.GraphicsChecks/FinalCaveChecks.cs
+@@ -0,0 +1,271 @@
++using System.Reflection;
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Microsoft.Xna.Framework.Audio;
++using Yipe.Core;
++using Yipe.Desktop;
++
++namespace Yipe.GraphicsChecks;
++
++internal static class FinalCaveChecks
++{
++    internal static void Run(Game host, string output, Action<bool, string> check)
++    {
++        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
++        var type = host.GetType();
++        object? Get(string name) => type.GetField(name, flags)!.GetValue(host);
++        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(host, value);
++        void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(host, args);
++        var saved = new[] { "session", "adventure", "renderedMap", "journal", "cameraPosition", "sceneTime", "paused", "pauseAmount",
++            "overlay", "mapOpen", "worldMapOpen", "saving", "loading", "studioSplashRemaining", "walkingStep", "pendingDirection",
++            "miniatureMode", "scanlines", "vignette", "pixelLighting", "messageRemaining", "timeOfDayMode", "iceDirection" }.ToDictionary(n => n, Get);
++        var world = Get("world")!; var wt = world.GetType();
++        object? Invoke(string name, params object[] args) => wt.GetMethod(name, flags | BindingFlags.Public)!.Invoke(world, args);
++        var player = (PlayerMotion)Get("player")!; var position = player.Position; var facing = player.FacingRow;
++        var catalog = (MapCatalog)Get("catalog")!;
++        var directory = Path.Combine(output, "final-cave"); Directory.CreateDirectory(directory);
++        using var target = new RenderTarget2D(host.GraphicsDevice, 416, 384);
++        using var batch = new SpriteBatch(host.GraphicsDevice);
++        using var presented = new Texture2D(host.GraphicsDevice, 1280, 720);
++        var lightType = type.Assembly.GetType("Yipe.Desktop.PixelLighting")!;
++        using var light = (IDisposable)Activator.CreateInstance(lightType, [host.GraphicsDevice, Get("pixel")!, 416, 384, world])!;
++        var lightTarget = (RenderTarget2D)lightType.GetField("lightMap", flags)!.GetValue(light)!;
++        int[] rooms = [43, 48, 49, 54, 55, 61, 83, 84, 85, 86, 89, 91, 92, 97, 98];
++        var terrains = new Dictionary<int, Color[]>();
++        try
++        {
++            Set("paused", false); Set("pauseAmount", 0f); Set("overlay", null); Set("mapOpen", false); Set("worldMapOpen", false);
++            Set("saving", null); Set("loading", null); Set("studioSplashRemaining", 0d); Set("walkingStep", false);
++            Set("pendingDirection", Point.Zero); Set("messageRemaining", 0d); Set("journal", new MapJournal()); Set("timeOfDayMode", 1);
++            foreach (var id in rooms.Concat(new[] { 17, 51, 53, 57, 59, 62, 67, 117 }))
++            {
++                var game = Scene(id); var snapshot = GameSaveCodec.Encode(game.Session, catalog);
++                Save(World(game, 1), $"map-{id}.png"); Save(Light(game), $"light-{id}.png");
++                Set("miniatureMode", 2); Set("scanlines", true); Set("vignette", false); Set("sceneTime", 1d);
++                Gameplay(true, $"gameplay-{id}.png"); Gameplay(false, $"gameplay-{id}-unlit.png");
++                check(snapshot.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), $"Final review {id}: rendering preserves full gameplay and RNG");
++                if (rooms.Contains(id)) CheckRoom(game);
++            }
++            CheckBoundaries(); CheckAudio();
++            var moving = Scene(54); Set("miniatureMode", 2); Set("scanlines", true);
++            var frozen = GameSaveCodec.Encode(moving.Session, catalog);
++            for (var frame = 0; frame < 48; frame++) { Set("sceneTime", frame / 8d); Gameplay(true, $"motion-{frame:D2}.png"); }
++            check(frozen.SequenceEqual(GameSaveCodec.Encode(moving.Session, catalog)), "Final atmosphere captures preserve the complete adventure and RNG");
++        }
++        finally
++        {
++            foreach (var entry in saved) Set(entry.Key, entry.Value);
++            player.SnapTo(position); player.Face(facing switch { 1 => new(-1, 0), 2 => new(1, 0), 3 => new(0, -1), _ => new(0, 1) });
++            Call("Draw", new GameTime());
++        }
++        void CheckRoom(Adventure game)
++        {
++            var id = game.Map.Id; var before = GameSaveCodec.Encode(game.Session, catalog);
++            var image = World(game, 1); var originalLight = Light(game);
++            check(image.SequenceEqual(World(game, 1)), $"Final {id}: frozen presentation is deterministic");
++            var texture = (Texture2D)wt.GetField("finalGround", flags)!.GetValue(world)!;
++            Color[] Ground() { Invoke("PrepareFinal", game.Map); var pixels = new Color[416 * 384]; texture.GetData(pixels); return pixels; }
++            var ground = Ground(); terrains[id] = ground;
++            var palette = (Color[])wt.GetField("FinalPalette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
++            var rock = (bool[])Invoke("FinalRock", game.Map)!;
++            check(ground.All(c => c.A == 255 && palette.Contains(c)), $"Final {id}: terrain uses only its native rock/crimson palette");
++            check(ReferenceEquals(rock, Invoke("FinalRock", game.Map)), $"Final {id}: unchanged terrain reuses the cached contour");
++            var walls = new List<float>(); var floor = new List<float>();
++            for (var y = 0; y < 384; y++) for (var x = 0; x < 416; x++)
++            {
++                if (x % 32 is < 8 or > 23 || y % 32 is < 6 or > 18) continue;
++                var c = ground[y * 416 + x]; (rock[y * 416 + x] ? walls : floor).Add(c.R * .2126f + c.G * .7152f + c.B * .0722f);
++            }
++            check(walls.Average() > floor.Average() * 1.35f, $"Final {id}: broad quiet floor slabs sit below detailed raised walls");
++            check(originalLight.Any(c => c.R > c.G * 3 && c.R > c.B * 2), $"Final {id}: embedded crimson crystals supply the local light");
++            var sources = (Point[])Invoke("FinalLights", game.Map)!;
++            check(sources.Length > 0 && sources.All(p => rock[p.Y * 416 + p.X] && ground[p.Y * 416 + p.X].R > ground[p.Y * 416 + p.X].G * 2),
++                $"Final {id}: every light has a visible crystal embedded at its source");
++            var originals = new List<(MapPosition Cell, ushort Tile)>();
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++)
++            {
++                var p = new MapPosition(x, y); var tile = game.Map.Tile(p); originals.Add((p, tile));
++                if (tile is 0x22 or 0x43) game.Map.RestoreTile(p, tile == 0x22 ? (ushort)0x43 : (ushort)0x22);
++                else if (tile is 0x28 or 0x48) game.Map.RestoreTile(p, tile == 0x28 ? (ushort)0x48 : (ushort)0x28);
++            }
++            check(image.SequenceEqual(World(game, 1)) && originalLight.SequenceEqual(Light(game)),
++                $"Final {id}: secret wall/floor aliases have identical art, atmosphere and contour lighting");
++            foreach (var (cell, tile) in originals) game.Map.RestoreTile(cell, tile);
++            var changedCell = originals.First(t => t.Tile == 0x22).Cell;
++            game.Map.RestoreTile(changedCell, 0x28);
++            check(!ground.SequenceEqual(Ground()) && !ReferenceEquals(rock, Invoke("FinalRock", game.Map)),
++                $"Final {id}: opening rock invalidates terrain and silhouette together");
++            game.Map.RestoreTile(changedCell, 0x22);
++            check(ground.SequenceEqual(Ground()) && originalLight.SequenceEqual(Light(game)), $"Final {id}: restoring terrain restores its exact art and lighting");
++            check(Invoke("FootstepAt", game.Map, game.Location.Position)!.ToString() == "Stone", $"Final {id}: worn rock retains stone footsteps");
++            var air = Air(game, 1);
++            check(air.Count(c => c.A > 0) is > 0 and < 250 && air.SequenceEqual(Air(game, 1)) && !air.SequenceEqual(Air(game, 2)),
++                $"Final {id}: sparse pixel ash/grit/haze advances only with presentation time");
++            game.Visibility.Initialize(game.Map, new(1, 1)); var partial = Air(game, 1);
++            check(Enumerable.Range(0, partial.Length).All(i => partial[i].A == 0 || game.Visibility.Contains(new(i % 416 / 32, i / 416 / 32))),
++                $"Final {id}: atmosphere never reveals undiscovered terrain");
++            Reveal(game);
++            check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), $"Final {id}: routes, secrets, encounters, rescues and full saved state/RNG remain intact");
++        }
++        void CheckBoundaries()
++        {
++            foreach (var id in rooms)
++                foreach (var (next, dx, dy) in new[] { (id + 1, 11, 0), (id + 6, 0, 10) })
++                {
++                    if (!rooms.Contains(next) || (id - 1) / 40 != (next - 1) / 40) continue;
++                    var a = catalog.CreateMap(id)!; var b = catalog.CreateMap(next)!; var count = 0; var different = 0;
++                    for (var y = 0; y < (dy == 0 ? 12 : 2); y++) for (var x = 0; x < (dx == 0 ? 13 : 2); x++)
++                    {
++                        var material = Normalize(a.Tile(new(x + dx, y + dy)));
++                        if (material is not (0x22 or 0x28) || material != Normalize(b.Tile(new(x, y)))) continue;
++                        // Preserve authored overlap differences; compare material where neighborhoods match.
++                        var matching = true;
++                        for (var sy = -1; sy <= 1; sy++) for (var sx = -1; sx <= 1; sx++)
++                        {
++                            var ap = new MapPosition(x + dx + sx, y + dy + sy); var bp = new MapPosition(x + sx, y + sy);
++                            if (Normalize(NeighborTile(a, ap)) != Normalize(NeighborTile(b, bp))) matching = false;
++                        }
++                        if (!matching) continue;
++                        for (var py = 12; py < 24; py++) for (var px = 8; px < 24; px++)
++                        {
++                            count++;
++                            if (terrains[id][((y + dy) * 32 + py) * 416 + (x + dx) * 32 + px] != terrains[next][(y * 32 + py) * 416 + x * 32 + px]) different++;
++                        }
++                    }
++                    if (count > 0) check(different == 0, $"Final {id}/{next}: matching overlaps retain identical rock, crystals and floor ({different}/{count})");
++                }
++            static ushort Normalize(ushort tile) => tile switch { 0x48 => 0x28, 0x43 => 0x22, _ => tile };
++            ushort NeighborTile(Map map, MapPosition p)
++            {
++                if (Map.Contains(p)) return map.Tile(p);
++                var dx = p.X < 0 ? -1 : p.X >= 13 ? 1 : 0;
++                var dy = p.Y < 0 ? -1 : p.Y >= 12 ? 1 : 0;
++                var layer = (map.Id - 1) / 40; var region = (map.Id - 1) % 40;
++                var id = layer * 40 + (region / 6 + dy + 6) % 6 * 6 + (region % 6 + dx + 6) % 6 + 1;
++                // Bottom wall faces also depend on the following room. Some
++                // authored overlaps meet different caves; they are not identical neighborhoods.
++                return rooms.Contains(id) ? catalog.CreateMap(id)!.Tile(new(p.X - dx * 11, p.Y - dy * 10))
++                    : map.Tile(new(Math.Clamp(p.X, 0, 12), Math.Clamp(p.Y, 0, 11)));
++            }
++            var room = Scene(54);
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) room.Map.RestoreTile(new(x, y), 0x28);
++            for (var x = 2; x < 10; x++) room.Map.RestoreTile(new(x, 2), 0x22);
++            var lamp = ((Point[])Invoke("FinalLights", room.Map)!).First(); var cell = new MapPosition(lamp.X / 32, lamp.Y / 32);
++            for (var x = 2; x < 10; x++) if (x != cell.X) room.Map.RestoreTile(new(x, 2), 0x28);
++            Reveal(room); var clear = Light(room); room.Map.RestoreTile(new(cell.X, cell.Y + 1), 0x3e); var blocked = Light(room);
++            check(clear[(lamp.Y + 43) * 416 + lamp.X].R > 0 && blocked[(lamp.Y + 43) * 416 + lamp.X].R == 0,
++                "Final crystal light stops at a closed door");
++            room.Map.RestoreTile(new(cell.X, cell.Y + 1), 0x28);
++            check(clear.SequenceEqual(Light(room)), "Opening a Final Cave door restores the exact contour light");
++            for (var y = cell.Y + 1; y < 12; y++) room.Map.RestoreTile(new(cell.X + 1, y), 0x22);
++            var corner = Light(room); Save(corner, "corner-mask.png");
++            var values = (from y in Enumerable.Range((cell.Y + 1) * 32, 32) from x in Enumerable.Range((cell.X + 1) * 32, 32)
++                select corner[y * 416 + x].R).ToArray();
++            check(values.Any(c => c > 0) && values.Any(c => c == 0), "Final light follows carved rock corners without a square cutoff");
++            room.Visibility.Initialize(new Map(54, 6, Enumerable.Repeat((ushort)0x22, Map.TileCount).ToArray()), new(0, 0));
++            check(Light(room).All(c => c.R == 0), "Undiscovered Final Cave crystals cannot reveal hidden terrain");
++            room = Scene(54); var p = new MapPosition(6, 5);
++            Color[] Tile(ushort tile)
++            {
++                room.Map.RestoreTile(p, tile); Invoke("PrepareFinal", room.Map);
++                return Render(() => Invoke("DrawGround", batch, room.Map, p, 1d));
++            }
++            var stable = Tile(0x28); var cracked = Tile(0x29); var crumbling = Tile(0x2a); var pit = Tile(0x2b);
++            check(!stable.SequenceEqual(cracked) && cracked.SequenceEqual(crumbling) && !cracked.SequenceEqual(pit),
++                "Final unstable floors and opened holes retain their original visible warning stages");
++            check(stable.SequenceEqual(Tile(0x52)), "Untriggered linked floor remains visually hidden");
++            foreach (var (monster, scale) in new[] { (18, 1), (19, 1), (20, 2) })
++            {
++                Scene(17); var outside = Actor(); var portrait = Portrait(); Scene(54); var inside = Actor();
++                check(Enumerable.Range(0, inside.Length).All(i => (inside[i].A > 0) == (outside[i].A > 0))
++                    && Enumerable.Range(0, inside.Length).Any(i => inside[i].A == 255 && inside[i] != outside[i]),
++                    $"Final creature {monster}: ambient tint/contact shadow preserve silhouette, hover and scale");
++                check(portrait.SequenceEqual(Portrait()), $"Final creature {monster}: battle artwork is unchanged");
++                Scene(17); check(outside.SequenceEqual(Actor()), $"Final creature {monster}: its outdoor appearance returns on leaving");
++                Color[] Actor() => Render(() => Invoke("DrawMonsterActor", batch, monster, new Vector2(4, 4), scale, 1d, false, null!, null!));
++                Color[] Portrait() => Render(() => Invoke("DrawAnimatedMonster", batch, monster, new Rectangle(32, 32, 48, 48), 0, false, null!));
++            }
++            room = Scene(62);
++            check(Air(room, 1).All(c => c.A == 0), "Final Cave atmosphere stays out of Water Cave");
++        }
++        void CheckAudio()
++        {
++            var audio = Get("audio")!; var at = audio.GetType();
++            var enabled = (bool)at.GetProperty("Enabled")!.GetValue(audio)!; var volume = (float)at.GetProperty("Volume")!.GetValue(audio)!;
++            SoundEffectInstance? Voice() => at.GetField("ambience", flags)!.GetValue(audio) as SoundEffectInstance;
++            try
++            {
++                var game = Scene(54); var before = GameSaveCodec.Encode(game.Session, catalog);
++                at.GetProperty("Enabled")!.SetValue(audio, true); at.GetProperty("Volume")!.SetValue(audio, .5f);
++                at.GetMethod("UpdateAmbience")!.Invoke(audio, [false, false, 0d]); Call("UpdateCaveAmbience", 1d); var voice = Voice()!;
++                check(voice.State == SoundState.Playing && ReferenceEquals(at.GetField("ambienceTrack", flags)!.GetValue(audio), at.GetField("finalAmbience", flags)!.GetValue(audio)),
++                    "Final Cave selects its dedicated recorded ambience on the real audio device");
++                check(voice.Volume is > 0 and <= .095f && voice.IsLooped, "Final audio stays quiet, looped and under master volume");
++                Scene(98); Call("UpdateCaveAmbience", .1d);
++                check(ReferenceEquals(voice, Voice()), "Upper/deep Final Cave transitions retain the same continuous loop");
++                foreach (var field in new[] { "paused", "mapOpen", "worldMapOpen" })
++                {
++                    Set(field, true); if (field == "worldMapOpen") Set("mapOpen", true);
++                    Call("UpdateCaveAmbience", .1d); check(voice.State == SoundState.Paused, $"Final ambience pauses for {field}");
++                    Set(field, false); Set("mapOpen", false); Call("UpdateCaveAmbience", .1d);
++                    check(voice.State == SoundState.Playing && ReferenceEquals(voice, Voice()), "Final ambience resumes the same voice");
++                }
++                Call("ShowActions"); Call("UpdateCaveAmbience", .1d); check(voice.State == SoundState.Paused, "Action panels pause Final ambience");
++                Set("overlay", null); Call("UpdateCaveAmbience", .1d);
++                at.GetMethod("Update")!.Invoke(audio, [false]); check(voice.State == SoundState.Paused, "Focus loss pauses Final ambience");
++                Call("UpdateCaveAmbience", .1d); at.GetProperty("Enabled")!.SetValue(audio, false); Call("UpdateCaveAmbience", .1d);
++                check(voice.State == SoundState.Paused, "Sound Off silences Final ambience");
++                at.GetProperty("Enabled")!.SetValue(audio, true); at.GetProperty("Volume")!.SetValue(audio, 0f); Call("UpdateCaveAmbience", .1d);
++                check(voice.State == SoundState.Paused, "Zero master volume silences Final ambience");
++                at.GetProperty("Volume")!.SetValue(audio, .5f); Scene(62); Call("UpdateCaveAmbience", .1d);
++                check(voice.IsDisposed && Voice() is { State: SoundState.Playing }, "Leaving Final for Water replaces the old ambient voice");
++                var water = Voice()!; at.GetMethod("UpdateAmbience")!.Invoke(audio, [false, false, 0d]);
++                check(water.IsDisposed && Voice() is null, "No ambient track releases the active voice");
++                check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), "Final audio lifecycle preserves the complete adventure and RNG");
++            }
++            finally
++            {
++                at.GetMethod("UpdateAmbience")!.Invoke(audio, [false, false, 0d]);
++                at.GetProperty("Enabled")!.SetValue(audio, enabled); at.GetProperty("Volume")!.SetValue(audio, volume);
++            }
++        }
++        Adventure Scene(int id)
++        {
++            var layer = id == 117 ? 0 : (id - 1) / 40; var cell = id == 117 ? 18 : id - layer * 40 - 1;
++            var map = catalog.CreateMap(id)!; var placements = MonsterPlacements.ForMap(id);
++            var at = (from y in Enumerable.Range(1, 10) from x in Enumerable.Range(1, 11)
++                let p = new MapPosition(x, y) where map.Tile(p) is 2 or 0x53 or 0x49 or 0x27 or 0x28 or 0x47 or 0x48
++                    && !placements.Any(m => m.Contains(p)) && !map.Events.Chests.Contains(p)
++                    && !map.Events.Depth.Any(d => d.HasPosition && d.Position == p)
++                orderby Math.Abs(x - 6) + Math.Abs(y - 5) select p).FirstOrDefault(new MapPosition(6, 5));
++            var game = new Adventure(new GameSession(catalog, location: new() { MapId = id, MapLayer = layer,
++                AlternateMapSet = id == 117, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = at }));
++            Set("session", game.Session); Set("adventure", game); Reveal(game); Call("SynchronizeWorld", false); return game;
++        }
++        static void Reveal(Adventure game) { for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Visibility.RevealFrom(game.Map, new(x, y)); }
++        Color[] Light(Adventure game)
++        {
++            lightType.GetMethod("Prepare")!.Invoke(light, [batch, game, Matrix.Identity, 1d]); host.GraphicsDevice.SetRenderTarget(null);
++            var data = new Color[416 * 384]; lightTarget.GetData(data); return data;
++        }
++        Color[] Air(Adventure game, double time) => Render(() => Invoke("DrawFinalAtmosphere", batch, game, time));
++        Color[] World(Adventure game, double time) => Render(() => Invoke("Draw", batch, game, player, Get("town")!, time, false, 0f));
++        Color[] Render(Action draw)
++        {
++            host.GraphicsDevice.SetRenderTarget(target); host.GraphicsDevice.Clear(Color.Transparent);
++            batch.Begin(samplerState: SamplerState.PointClamp); draw(); batch.End(); host.GraphicsDevice.SetRenderTarget(null);
++            var data = new Color[416 * 384]; target.GetData(data); return data;
++        }
++        void Save(Color[] data, string name)
++        {
++            using var texture = new Texture2D(host.GraphicsDevice, 416, 384); texture.SetData(data);
++            using var file = File.Create(Path.Combine(directory, name)); texture.SaveAsPng(file, 416, 384);
++        }
++        void Gameplay(bool lit, string name)
++        {
++            Set("pixelLighting", lit); Call("Draw", new GameTime());
++            var pixels = new Color[1280 * 720]; host.GraphicsDevice.GetBackBufferData(pixels); presented.SetData(pixels);
++            using var file = File.Create(Path.Combine(directory, name)); presented.SaveAsPng(file, 1280, 720);
++        }
++    }
++}

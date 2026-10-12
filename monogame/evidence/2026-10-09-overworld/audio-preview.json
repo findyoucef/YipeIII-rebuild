@@ -1,0 +1,25 @@
+{
+  "description": "Offline preview using the actual production clips and steady-state mix gains at 65% master volume; not a microphone capture of gameplay.",
+  "sections": [
+    {
+      "start_seconds": 0,
+      "duration_seconds": 6,
+      "habitat": "meadow-day"
+    },
+    {
+      "start_seconds": 6,
+      "duration_seconds": 6,
+      "habitat": "meadow-night"
+    },
+    {
+      "start_seconds": 12,
+      "duration_seconds": 6,
+      "habitat": "desert-day"
+    },
+    {
+      "start_seconds": 18,
+      "duration_seconds": 6,
+      "habitat": "river-day"
+    }
+  ]
+}

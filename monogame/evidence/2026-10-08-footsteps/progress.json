@@ -1,0 +1,9 @@
+{
+  "goal_status": "complete",
+  "phase": "Complete; verified and latest full adventure open",
+  "core_checks": 608,
+  "graphics_checks": 2240,
+  "earned_opening": "passed",
+  "earned_late_and_restart": "passed",
+  "local_launch": "verified"
+}

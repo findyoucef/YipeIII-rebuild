@@ -1,0 +1,22 @@
+{
+  "town-preview.json": {
+    "before": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3",
+    "after": "1b7f8e0bd2f2c7f20ae9a4272f56ff891e8a28420edc6d26c804e1c2342540b3",
+    "unchanged": true
+  },
+  "game.y3m": {
+    "before": "dbe84e5b424c2d3e356ce6d01cf4fc871683d7dfc980b8ea1d7e3e2c4b8c904b",
+    "after": "dbe84e5b424c2d3e356ce6d01cf4fc871683d7dfc980b8ea1d7e3e2c4b8c904b",
+    "unchanged": true
+  },
+  "game.map.json": {
+    "before": "df84707c4efb4cf1c23b8285960702be65b0e37b003adf20ef7e8ea7b0857708",
+    "after": "df84707c4efb4cf1c23b8285960702be65b0e37b003adf20ef7e8ea7b0857708",
+    "unchanged": true
+  },
+  "profile.json": {
+    "before": "8eb41ccbb602bea3a45131753e31350dcf4db6cd87d50044f6094362dfdb1df4",
+    "after": "8eb41ccbb602bea3a45131753e31350dcf4db6cd87d50044f6094362dfdb1df4",
+    "unchanged": true
+  }
+}

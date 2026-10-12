@@ -1,0 +1,462 @@
+[
+  {
+    "map": 1,
+    "identical": true
+  },
+  {
+    "map": 2,
+    "identical": true
+  },
+  {
+    "map": 3,
+    "identical": true
+  },
+  {
+    "map": 4,
+    "identical": true
+  },
+  {
+    "map": 5,
+    "identical": true
+  },
+  {
+    "map": 6,
+    "identical": true
+  },
+  {
+    "map": 7,
+    "identical": true
+  },
+  {
+    "map": 8,
+    "identical": true
+  },
+  {
+    "map": 9,
+    "identical": true
+  },
+  {
+    "map": 10,
+    "identical": true
+  },
+  {
+    "map": 11,
+    "identical": true
+  },
+  {
+    "map": 12,
+    "identical": true
+  },
+  {
+    "map": 13,
+    "identical": true
+  },
+  {
+    "map": 14,
+    "identical": true
+  },
+  {
+    "map": 15,
+    "identical": true
+  },
+  {
+    "map": 16,
+    "identical": true
+  },
+  {
+    "map": 17,
+    "identical": true
+  },
+  {
+    "map": 18,
+    "identical": true
+  },
+  {
+    "map": 19,
+    "identical": true
+  },
+  {
+    "map": 20,
+    "identical": true
+  },
+  {
+    "map": 21,
+    "identical": true
+  },
+  {
+    "map": 22,
+    "identical": true
+  },
+  {
+    "map": 23,
+    "identical": true
+  },
+  {
+    "map": 24,
+    "identical": true
+  },
+  {
+    "map": 25,
+    "identical": true
+  },
+  {
+    "map": 26,
+    "identical": true
+  },
+  {
+    "map": 27,
+    "identical": true
+  },
+  {
+    "map": 28,
+    "identical": true
+  },
+  {
+    "map": 29,
+    "identical": true
+  },
+  {
+    "map": 30,
+    "identical": true
+  },
+  {
+    "map": 31,
+    "identical": true
+  },
+  {
+    "map": 32,
+    "identical": true
+  },
+  {
+    "map": 33,
+    "identical": true
+  },
+  {
+    "map": 34,
+    "identical": true
+  },
+  {
+    "map": 35,
+    "identical": true
+  },
+  {
+    "map": 36,
+    "identical": true
+  },
+  {
+    "map": 41,
+    "identical": true
+  },
+  {
+    "map": 42,
+    "identical": true
+  },
+  {
+    "map": 43,
+    "identical": false
+  },
+  {
+    "map": 44,
+    "identical": true
+  },
+  {
+    "map": 45,
+    "identical": true
+  },
+  {
+    "map": 46,
+    "identical": true
+  },
+  {
+    "map": 47,
+    "identical": true
+  },
+  {
+    "map": 48,
+    "identical": false
+  },
+  {
+    "map": 49,
+    "identical": false
+  },
+  {
+    "map": 50,
+    "identical": true
+  },
+  {
+    "map": 51,
+    "identical": true
+  },
+  {
+    "map": 52,
+    "identical": true
+  },
+  {
+    "map": 53,
+    "identical": true
+  },
+  {
+    "map": 54,
+    "identical": false
+  },
+  {
+    "map": 55,
+    "identical": false
+  },
+  {
+    "map": 56,
+    "identical": true
+  },
+  {
+    "map": 57,
+    "identical": true
+  },
+  {
+    "map": 58,
+    "identical": true
+  },
+  {
+    "map": 59,
+    "identical": true
+  },
+  {
+    "map": 60,
+    "identical": true
+  },
+  {
+    "map": 61,
+    "identical": false
+  },
+  {
+    "map": 62,
+    "identical": true
+  },
+  {
+    "map": 63,
+    "identical": true
+  },
+  {
+    "map": 64,
+    "identical": true
+  },
+  {
+    "map": 65,
+    "identical": true
+  },
+  {
+    "map": 66,
+    "identical": true
+  },
+  {
+    "map": 67,
+    "identical": true
+  },
+  {
+    "map": 68,
+    "identical": true
+  },
+  {
+    "map": 69,
+    "identical": true
+  },
+  {
+    "map": 70,
+    "identical": true
+  },
+  {
+    "map": 71,
+    "identical": true
+  },
+  {
+    "map": 72,
+    "identical": true
+  },
+  {
+    "map": 73,
+    "identical": true
+  },
+  {
+    "map": 74,
+    "identical": true
+  },
+  {
+    "map": 75,
+    "identical": true
+  },
+  {
+    "map": 76,
+    "identical": true
+  },
+  {
+    "map": 81,
+    "identical": true
+  },
+  {
+    "map": 82,
+    "identical": true
+  },
+  {
+    "map": 83,
+    "identical": false
+  },
+  {
+    "map": 84,
+    "identical": false
+  },
+  {
+    "map": 85,
+    "identical": false
+  },
+  {
+    "map": 86,
+    "identical": false
+  },
+  {
+    "map": 87,
+    "identical": true
+  },
+  {
+    "map": 88,
+    "identical": true
+  },
+  {
+    "map": 89,
+    "identical": false
+  },
+  {
+    "map": 90,
+    "identical": true
+  },
+  {
+    "map": 91,
+    "identical": false
+  },
+  {
+    "map": 92,
+    "identical": false
+  },
+  {
+    "map": 93,
+    "identical": true
+  },
+  {
+    "map": 94,
+    "identical": true
+  },
+  {
+    "map": 95,
+    "identical": true
+  },
+  {
+    "map": 96,
+    "identical": true
+  },
+  {
+    "map": 97,
+    "identical": false
+  },
+  {
+    "map": 98,
+    "identical": false
+  },
+  {
+    "map": 99,
+    "identical": true
+  },
+  {
+    "map": 100,
+    "identical": true
+  },
+  {
+    "map": 101,
+    "identical": true
+  },
+  {
+    "map": 102,
+    "identical": true
+  },
+  {
+    "map": 103,
+    "identical": true
+  },
+  {
+    "map": 104,
+    "identical": true
+  },
+  {
+    "map": 105,
+    "identical": true
+  },
+  {
+    "map": 106,
+    "identical": true
+  },
+  {
+    "map": 107,
+    "identical": true
+  },
+  {
+    "map": 108,
+    "identical": true
+  },
+  {
+    "map": 109,
+    "identical": true
+  },
+  {
+    "map": 110,
+    "identical": true
+  },
+  {
+    "map": 111,
+    "identical": true
+  },
+  {
+    "map": 112,
+    "identical": true
+  },
+  {
+    "map": 113,
+    "identical": true
+  },
+  {
+    "map": 114,
+    "identical": true
+  },
+  {
+    "map": 115,
+    "identical": true
+  },
+  {
+    "map": 116,
+    "identical": true
+  },
+  {
+    "map": 117,
+    "identical": true
+  },
+  {
+    "map": 118,
+    "identical": true
+  },
+  {
+    "map": 119,
+    "identical": true
+  },
+  {
+    "map": 120,
+    "identical": true
+  },
+  {
+    "map": 121,
+    "identical": true
+  },
+  {
+    "map": 127,
+    "identical": true
+  },
+  {
+    "map": 133,
+    "identical": true
+  }
+]

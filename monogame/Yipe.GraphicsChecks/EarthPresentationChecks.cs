@@ -22,6 +22,7 @@ internal static class EarthPresentationChecks
         var atmosphere = type.GetMethod("DrawEarthAtmosphere", flags)!;
         var texture = (Texture2D)type.GetField("earthGround", flags)!.GetValue(world)!;
         var palette = (Color[])type.Assembly.GetType("Yipe.Desktop.RetroArt")!.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        palette = palette.Concat((Color[])type.GetField("EarthSoilPalette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!).ToArray();
         var directory = Path.Combine(output, "earth-cave"); Directory.CreateDirectory(directory);
         using var target = new RenderTarget2D(device, 416, 384);
         using var batch = new SpriteBatch(device);
@@ -36,7 +37,7 @@ internal static class EarthPresentationChecks
             Console.WriteLine($"Earth {id} terrain preparation: {clock.Elapsed.TotalMilliseconds:F1} ms");
             var original = Ground();
             check(original.All(p => p.A == 255), $"Earth {id} terrain fills every native pixel without gaps");
-            check(original.All(p => palette.Contains(p)), $"Earth {id} terrain and landmarks use only the shared retro palette");
+            check(original.All(p => palette.Contains(p)), $"Earth {id} terrain and landmarks use only the retro and Earth soil palettes");
             var wallLight = new List<double>(); var floorLight = new List<double>();
             for (var y = 0; y < 384; y++)
                 for (var x = 0; x < 416; x++)
@@ -56,7 +57,7 @@ internal static class EarthPresentationChecks
                 || game.Visibility.Contains(new(i % 416 / 32, i / 416 / 32))),
                 $"Earth {id} ambient effects never reveal unexplored tiles");
             var seen = Enumerable.Range(0, Map.TileCount).Select(i => game.Visibility.Contains(new(i / Map.Height, i % Map.Height))).ToArray();
-            Layer(() => drawMap.Invoke(world, [batch, game.Map, seen, 1d])); Save($"map-{id}-partial.png");
+            Layer(() => drawMap.Invoke(world, [batch, game.Map, seen, 1d, town])); Save($"map-{id}-partial.png");
             for (var y = 0; y < Map.Height; y++)
                 for (var x = 0; x < Map.Width; x++) game.Visibility.RevealFrom(game.Map, new(x, y));
             var first = Frame(1); var repeatFrame = Frame(1); var later = Frame(1.75);
@@ -100,7 +101,7 @@ internal static class EarthPresentationChecks
                 check(reflected.SequenceEqual(Reflection(actor, 1)) && !reflected.SequenceEqual(Reflection(actor, 2)),
                     $"Earth {id} puddle {center.X},{center.Y} reflection freezes and ripples with scene time");
             }
-            Layer(() => draw.Invoke(world, [batch, game, new PlayerMotion(poolCenters[0]), town, 1d, false]));
+            Layer(() => draw.Invoke(world, [batch, game, new PlayerMotion(poolCenters[0]), town, 1d, false, 0]));
             Save($"puddle-{id}.png");
             var hidden = new Adventure(new GameSession(catalog, location: new()
             { MapId = id, MapLayer = layer, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6, Position = new(1, 1) }));
@@ -161,7 +162,7 @@ internal static class EarthPresentationChecks
                 for (var frame = 0; frame < 40; frame++) { Frame(frame / 8d); Save($"damp-frame-{frame:D2}.png"); }
 
             Color[] Frame(double time) => Layer(() => draw.Invoke(world,
-                [batch, game, new PlayerMotion(new MapPosition(1, 1)), town, time, false]));
+                [batch, game, new PlayerMotion(new MapPosition(1, 1)), town, time, false, 0]));
             Color[] Reflection(PlayerMotion actor, double time) => Layer(() => reflection.Invoke(town, [batch, actor, time, game, world]));
             Color[] WaterFrame(double time) => Layer(() =>
             {

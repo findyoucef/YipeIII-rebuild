@@ -1,0 +1,68 @@
+{
+  "status": "implemented and locally verified; user visual review pending",
+  "request": "Match the detail level of Hell walls; previous angular slate walls were better but read as too low resolution.",
+  "reference": {
+    "region": "Hell A4/map117",
+    "capture_run": "build/breeding-grounds/full/yipe-graphics-20261009-035027-f855d71f",
+    "native_resolution": [
+      416,
+      384
+    ],
+    "stone_spacing": [
+      13,
+      11
+    ]
+  },
+  "scope": "Existing wall cells in breeding maps 59,60,65,66,105,106",
+  "changes": [
+    "Reduced stone seed spacing from 34x24 to Hell\u2019s 13x11 native pixels",
+    "Matched narrow Hell-style joints and upper-face rim highlights in the existing slate palette",
+    "Kept angular silhouettes and shaded wall fronts",
+    "Removed redundant broad-slab cleavages and speckle rules"
+  ],
+  "verification": {
+    "checked_release": "zero warnings/errors",
+    "focused_gpu_checks": 115,
+    "output": "build/breeding-wall-detail/pass2/yipe-graphics-20261009-041739-154407b5",
+    "pixel_scope": {
+      "59": {
+        "changed_pixels": 26606,
+        "changed_pixels_outside_wall_cells": 0
+      },
+      "60": {
+        "changed_pixels": 20537,
+        "changed_pixels_outside_wall_cells": 0
+      },
+      "65": {
+        "changed_pixels": 31172,
+        "changed_pixels_outside_wall_cells": 0
+      },
+      "66": {
+        "changed_pixels": 22014,
+        "changed_pixels_outside_wall_cells": 0
+      },
+      "105": {
+        "changed_pixels": 29784,
+        "changed_pixels_outside_wall_cells": 0
+      },
+      "106": {
+        "changed_pixels": 29518,
+        "changed_pixels_outside_wall_cells": 0
+      }
+    },
+    "personal_hashes_unchanged": {
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m": false,
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json": false,
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json": false
+    },
+    "broad_suite": "not repeated for the local wall-texture correction",
+    "personal_files_note": "No personal files were written or restored by this task. The existing game remained open during work; individual hash results are recorded without asserting that its presentation profile stayed unchanged."
+  },
+  "source_sha256": {
+    "monogame/Yipe.Desktop/WorldBreeding.cs": "3f5484f887b8a044a2c7e114701d28575fe1cd6edfd74c6df568d49838a7582b",
+    "monogame/Yipe.Desktop/WorldHell.cs": "5549e9fb39d81a931407eb70577747bc19a409899742e4f63dc48b954e4f343b"
+  },
+  "review": "Inspected latest verified Hell map117 and gameplay references at the same scale as breeding B4/map60. Inspected all six revised native captures and default entrance gameplay. Changes confined to existing wall shading; no new types, state, assets or helpers. Existing contrast guard caught a dark initial treatment; expanded the slate top face rather than weakening the check. Final 115 checks pass without test changes.",
+  "personal_game_relaunched": false,
+  "package_created": false
+}

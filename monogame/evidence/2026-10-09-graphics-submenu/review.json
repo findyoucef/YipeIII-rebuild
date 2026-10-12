@@ -1,0 +1,49 @@
+{
+  "task": "Move every existing graphics option into Pause > Graphics",
+  "production_changes": [
+    "TownGame.cs: graphics submenu state, input, option activation and drawing",
+    "TownHelp.cs: navigation help and return-to-pause state",
+    "TownOverlays.cs: action-menu entry resets pause cursor"
+  ],
+  "behavior": {
+    "root_rows": 10,
+    "graphics_rows": 10,
+    "back": "Escape/East or Start returns from Graphics to root, highlighting Graphics and staying paused",
+    "settings": "Existing defaults and persistence behavior retained; Battle pacing stays at root"
+  },
+  "verification": {
+    "checked_release": "0 warnings, 0 errors",
+    "focused_menu_checks": 66,
+    "full_gpu_checks": 2629,
+    "tour_frames": 360,
+    "focused_output": "build/graphics-submenu/focused/yipe-graphics-20261009-060737-fe682d82",
+    "full_output": "build/graphics-submenu/full/yipe-graphics-20261009-060754-7b33b7e6",
+    "visual_review": "Inspected root and Graphics at 1280x720, and Graphics at 640x360 and letterboxed 1024x768; all rows and navigation hints are readable. 1920x1080 captures also retained.",
+    "physical_controllers_connected": 0,
+    "git_diff_check": "passed",
+    "tested_desktop_assembly_matches_local_build": true
+  },
+  "simplicity_review": "Reviewed the task-scoped production and check changes against starting snapshots. One submenu flag and the existing menu drawing/settings paths suffice; no new production types, files, settings schema or menu framework. No actionable findings.",
+  "personal_files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "before": "583d353f6e91212cff5a1567f76c4231b11d975a8135473b8f2b3685a2b7f78b",
+      "after": "583d353f6e91212cff5a1567f76c4231b11d975a8135473b8f2b3685a2b7f78b",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "before": "e8ac89555e59d33a86e2aa4b2f546e0a9bf1f3b79352080b8e0e5519686c3268",
+      "after": "e8ac89555e59d33a86e2aa4b2f546e0a9bf1f3b79352080b8e0e5519686c3268",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "before": "642f58df871eef65f08f5b055fda5afbc54fcf795968c53cc9e6444e8b570227",
+      "after": "b9e2a30c64b11fdf9d0ced7f1e56c93b6d5ab19afd7de7c5b8324581d22f6823",
+      "unchanged": false
+    }
+  ],
+  "personal_file_note": "Game save and map journal hashes are unchanged. The personal presentation profile changed during the session and was left intact; checks use isolated profiles. No personal files were restored or edited for this task.",
+  "delivery": "Local Release build only; no package, commit or relaunch."
+}

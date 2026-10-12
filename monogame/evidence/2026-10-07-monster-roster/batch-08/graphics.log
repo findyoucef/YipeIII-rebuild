@@ -1,0 +1,515 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/monster-roster-batch-08/yipe-graphics-20261008-063245-31a82d73
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Monster 1: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 1: every pose uses the original ground anchor without foot drift
+PASS: Monster 1: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 2: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 2: every pose uses the original ground anchor without foot drift
+PASS: Monster 2: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 3: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 3: every pose uses the original ground anchor without foot drift
+PASS: Monster 3: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 4: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 4: every pose uses the original ground anchor without foot drift
+PASS: Monster 4: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 5: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 5: every pose uses the original ground anchor without foot drift
+PASS: Monster 5: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 6: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 6: every pose uses the original ground anchor without foot drift
+PASS: Monster 6: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 7: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 7: every pose uses the original ground anchor without foot drift
+PASS: Monster 7: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 8: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 8: every pose uses the original ground anchor without foot drift
+PASS: Monster 8: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 9: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 9: every pose uses the original ground anchor without foot drift
+PASS: Monster 9: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 10: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 10: every pose uses the original ground anchor without foot drift
+PASS: Monster 10: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 10: long appendages retain a clear native-cell border
+PASS: Monster 11: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 11: every pose uses the original ground anchor without foot drift
+PASS: Monster 11: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 11: long appendages retain a clear native-cell border
+PASS: Monster 12: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 12: every pose uses the original ground anchor without foot drift
+PASS: Monster 12: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 12: long appendages retain a clear native-cell border
+PASS: Monster 13: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 13: every pose uses the original ground anchor without foot drift
+PASS: Monster 13: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 13: long appendages retain a clear native-cell border
+PASS: Monster 14: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 14: every pose uses the original ground anchor without foot drift
+PASS: Monster 14: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 14: long appendages retain a clear native-cell border
+PASS: Monster 15: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 15: every pose uses the original ground anchor without foot drift
+PASS: Monster 15: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 15: long appendages retain a clear native-cell border
+PASS: Monster 16: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 16: every pose uses the original ground anchor without foot drift
+PASS: Monster 16: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 16: long appendages retain a clear native-cell border
+PASS: Monster 17: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 17: every pose uses the original ground anchor without foot drift
+PASS: Monster 17: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 17: long appendages retain a clear native-cell border
+PASS: Monster 18: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 18: every pose uses the original ground anchor without foot drift
+PASS: Monster 18: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 18: long appendages retain a clear native-cell border
+PASS: Monster 19: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 19: every pose uses the original ground anchor without foot drift
+PASS: Monster 19: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 19: long appendages retain a clear native-cell border
+PASS: Monster 20: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 20: every pose uses the original ground anchor without foot drift
+PASS: Monster 20: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 20: long appendages retain a clear native-cell border
+PASS: Monster 21: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 21: every pose uses the original ground anchor without foot drift
+PASS: Monster 21: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 21: long appendages retain a clear native-cell border
+PASS: Monster 22: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 22: every pose uses the original ground anchor without foot drift
+PASS: Monster 22: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 22: long appendages retain a clear native-cell border
+PASS: Monster 23: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 23: every pose uses the original ground anchor without foot drift
+PASS: Monster 23: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 23: long appendages retain a clear native-cell border
+PASS: Monster 24: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 24: every pose uses the original ground anchor without foot drift
+PASS: Monster 24: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 24: long appendages retain a clear native-cell border
+PASS: Monster 25: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 25: every pose uses the original ground anchor without foot drift
+PASS: Monster 25: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 25: long appendages retain a clear native-cell border
+PASS: Monster 26: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 26: every pose uses the original ground anchor without foot drift
+PASS: Monster 26: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 26: long appendages retain a clear native-cell border
+PASS: Monster 28: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 28: every pose uses the original ground anchor without foot drift
+PASS: Monster 28: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 28: long appendages retain a clear native-cell border
+PASS: Monster 29: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 29: every pose uses the original ground anchor without foot drift
+PASS: Monster 29: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 29: long appendages retain a clear native-cell border
+PASS: Monster 31: all 16 poses are complete, opaque native pixel art in the shared palette
+PASS: Monster 31: every pose uses the original ground anchor without foot drift
+PASS: Monster 31: idle, movement, action and defeat each have distinct authored poses
+PASS: Monster 31: long appendages retain a clear native-cell border
+PASS: Monster facing mirrors the pose exactly without scaling or moving its ground anchor
+PASS: NPC atlas cells retain their complete original artwork through the static fallback
+PASS: A roaming monster visibly crosses the accepted tile with a half-step position
+PASS: Landing finishes at the authoritative tile without touching gameplay or RNG
+PASS: Diagonal travel interpolates both axes and uses its horizontal facing
+PASS: Relocations snap safely instead of animating across unrelated terrain
+PASS: A newly spawned creature starts at its own tile without inheriting the prior actor's motion
+PASS: Roaming and pursuing actors animate independently in the same scene
+PASS: Production pause freezes monster travel and the creature-animation clock
+PASS: An exploration action panel freezes monster travel
+PASS: Removing one actor clears its motion without interrupting the other
+PASS: Changing maps resets travel and clears departed actors
+PASS: Monster 4: weighted travel eases into its step and settles without overshooting
+PASS: Monster 4: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 8: weighted travel eases into its step and settles without overshooting
+PASS: Monster 8: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 9: weighted travel eases into its step and settles without overshooting
+PASS: Monster 9: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 11: weighted travel eases into its step and settles without overshooting
+PASS: Monster 11: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 19: weighted travel eases into its step and settles without overshooting
+PASS: Monster 19: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 20: weighted travel eases into its step and settles without overshooting
+PASS: Monster 20: weighted travel still finishes at the accepted tile within 250 ms
+PASS: Monster 10: resting claws remain grounded before a wing-assisted hop
+PASS: Monster 10: wing-assisted travel lifts above its ground shadow and lands within 250 ms
+PASS: Monster 11: resting claws remain grounded before a wing-assisted hop
+PASS: Monster 11: wing-assisted travel lifts above its ground shadow and lands within 250 ms
+PASS: Monster 18: resting claws remain grounded before a wing-assisted hop
+PASS: Monster 18: wing-assisted travel lifts above its ground shadow and lands within 250 ms
+PASS: Monster 23: resting claws remain grounded before a wing-assisted hop
+PASS: Monster 23: wing-assisted travel lifts above its ground shadow and lands within 250 ms
+PASS: Monster 24: resting claws remain grounded before a wing-assisted hop
+PASS: Monster 24: wing-assisted travel lifts above its ground shadow and lands within 250 ms
+PASS: Monster 14: restrained flight stays above the fixed ground shadow even when idle
+PASS: Monster 14: hovering travel never emits planted-foot dust or water contact
+PASS: Monster 21: restrained flight stays above the fixed ground shadow even when idle
+PASS: Monster 21: hovering travel never emits planted-foot dust or water contact
+PASS: Monster 22: restrained flight stays above the fixed ground shadow even when idle
+PASS: Monster 22: hovering travel never emits planted-foot dust or water contact
+PASS: Monster 25: restrained flight stays above the fixed ground shadow even when idle
+PASS: Monster 25: hovering travel never emits planted-foot dust or water contact
+PASS: Monster 26: restrained flight stays above the fixed ground shadow even when idle
+PASS: Monster 26: hovering travel never emits planted-foot dust or water contact
+PASS: Monster 28: mid-step wet contact follows the interpolated feet and clips each ripple pixel to water
+PASS: Monster 28: arrival on water produces a restrained ripple
+PASS: Monster 28: water-to-land travel stops its wake at the shoreline, settles with dry contact and preserves gameplay/RNG
+PASS: Monster 29: mid-step wet contact follows the interpolated feet and clips each ripple pixel to water
+PASS: Monster 29: arrival on water produces a restrained ripple
+PASS: Monster 29: water-to-land travel stops its wake at the shoreline, settles with dry contact and preserves gameplay/RNG
+PASS: Unexplored shoreline travel emits no visible creature, shadow, contact or pursuit alert
+PASS: Monster 7: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 7: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 7: independent actors keep their own leading feet
+PASS: Monster 7: replacement resets the stride
+PASS: Monster 8: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 8: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 8: independent actors keep their own leading feet
+PASS: Monster 8: replacement resets the stride
+PASS: Monster 9: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 9: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 9: independent actors keep their own leading feet
+PASS: Monster 9: replacement resets the stride
+PASS: Monster 12: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 12: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 12: independent actors keep their own leading feet
+PASS: Monster 12: replacement resets the stride
+PASS: Monster 15: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 15: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 15: independent actors keep their own leading feet
+PASS: Monster 15: replacement resets the stride
+PASS: Monster 16: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 16: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 16: independent actors keep their own leading feet
+PASS: Monster 16: replacement resets the stride
+PASS: Monster 19: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 19: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 19: independent actors keep their own leading feet
+PASS: Monster 19: replacement resets the stride
+PASS: Monster 20: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 20: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 20: independent actors keep their own leading feet
+PASS: Monster 20: replacement resets the stride
+PASS: Monster 31: unchanged-tile synchronization preserves the leading foot
+PASS: Monster 31: successive and diagonal steps render opposite lifted and planted feet
+PASS: Monster 31: independent actors keep their own leading feet
+PASS: Monster 31: replacement resets the stride
+PASS: Spawning and movement away from the hero do not imply pursuit
+PASS: A first visible accepted approach triggers the pursuit cue
+PASS: The pursuit cue retains exact native pixels alongside the moving creature
+PASS: Repeated cue rendering is stable and preserves encounter state and RNG
+PASS: Pause, exploration panels and maps freeze the pursuit cue clock
+PASS: A continuing chase does not restart the cue, including after its fade finishes
+PASS: An offscreen approach stays quiet until the creature is in view
+PASS: The first in-view approach rearms the cue after an offscreen chase
+PASS: Changing maps clears an old pursuit cue even for a retained actor
+PASS: Unexplored creatures never announce a hidden approach
+PASS: Roaming creatures also announce their first revealed approach
+PASS: Removal and replacement clear the pulse instead of transferring it to a new creature
+PASS: The amber glyph has a readable outline, fades gently and leaves no pixels behind
+PASS: Every cue pixel is clipped to discovered terrain when its outline crosses a fog boundary
+PASS: A monster-triggered battle waits for its visible approach to finish
+PASS: The completed approach opens combat once, preserving the already resolved encounter and RNG
+PASS: Creature idles animate on the battle command menu without taking a turn
+PASS: Pausing also freezes battle idle poses
+PASS: Monster 1: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 2: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 3: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 4: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 5: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 6: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 7: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 8: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 9: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 10: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 11: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 12: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 13: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 14: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 15: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 16: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 17: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 18: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 19: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 20: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 21: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 22: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 23: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 24: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 25: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 26: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 28: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 29: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 31: four-second movement capture leaves the full session and RNG unchanged
+PASS: Monster 1: continuous strides and turning preserve the full session and RNG
+PASS: Monster 2: continuous strides and turning preserve the full session and RNG
+PASS: Monster 3: continuous strides and turning preserve the full session and RNG
+PASS: Monster 4: continuous strides and turning preserve the full session and RNG
+PASS: Monster 5: continuous strides and turning preserve the full session and RNG
+PASS: Monster 6: continuous strides and turning preserve the full session and RNG
+PASS: Monster 7: continuous strides and turning preserve the full session and RNG
+PASS: Monster 8: continuous strides and turning preserve the full session and RNG
+PASS: Monster 9: continuous strides and turning preserve the full session and RNG
+PASS: Monster 10: continuous strides and turning preserve the full session and RNG
+PASS: Monster 11: continuous strides and turning preserve the full session and RNG
+PASS: Monster 12: continuous strides and turning preserve the full session and RNG
+PASS: Monster 13: continuous strides and turning preserve the full session and RNG
+PASS: Monster 14: continuous strides and turning preserve the full session and RNG
+PASS: Monster 15: continuous strides and turning preserve the full session and RNG
+PASS: Monster 16: continuous strides and turning preserve the full session and RNG
+PASS: Monster 17: continuous strides and turning preserve the full session and RNG
+PASS: Monster 18: continuous strides and turning preserve the full session and RNG
+PASS: Monster 19: continuous strides and turning preserve the full session and RNG
+PASS: Monster 20: continuous strides and turning preserve the full session and RNG
+PASS: Monster 21: continuous strides and turning preserve the full session and RNG
+PASS: Monster 22: continuous strides and turning preserve the full session and RNG
+PASS: Monster 23: continuous strides and turning preserve the full session and RNG
+PASS: Monster 24: continuous strides and turning preserve the full session and RNG
+PASS: Monster 25: continuous strides and turning preserve the full session and RNG
+PASS: Monster 26: continuous strides and turning preserve the full session and RNG
+PASS: Monster 28: continuous strides and turning preserve the full session and RNG
+PASS: Monster 29: continuous strides and turning preserve the full session and RNG
+PASS: Monster 31: continuous strides and turning preserve the full session and RNG
+PASS: Monster 25: rendered land/water crossings preserve terrain, the full session and RNG
+PASS: Monster 26: rendered land/water crossings preserve terrain, the full session and RNG
+PASS: Monster 28: rendered land/water crossings preserve terrain, the full session and RNG
+PASS: Monster 29: rendered land/water crossings preserve terrain, the full session and RNG
+PASS: Monster 1: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 1: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 1: a real killing blow plays its defeat poses before settling
+PASS: Monster 2: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 2: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 2: a real killing blow plays its defeat poses before settling
+PASS: Monster 3: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 3: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 3: a real killing blow plays its defeat poses before settling
+PASS: Monster 4: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 4: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 4: a real killing blow plays its defeat poses before settling
+PASS: Monster 5: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 5: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 5: a real killing blow plays its defeat poses before settling
+PASS: Monster 6: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 6: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 6: a real killing blow plays its defeat poses before settling
+PASS: Monster 7: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 7: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 7: a real killing blow plays its defeat poses before settling
+PASS: Monster 8: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 8: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 8: a real killing blow plays its defeat poses before settling
+PASS: Monster 9: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 9: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 9: a real killing blow plays its defeat poses before settling
+PASS: Monster 10: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 10: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 10: a real killing blow plays its defeat poses before settling
+PASS: Monster 11: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 11: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 11: a real killing blow plays its defeat poses before settling
+PASS: Monster 12: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 12: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 12: a real killing blow plays its defeat poses before settling
+PASS: Monster 13: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 13: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 13: a real killing blow plays its defeat poses before settling
+PASS: Monster 14: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 14: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 14: a real killing blow plays its defeat poses before settling
+PASS: Monster 15: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 15: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 15: a real killing blow plays its defeat poses before settling
+PASS: Monster 16: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 16: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 16: a real killing blow plays its defeat poses before settling
+PASS: Monster 17: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 17: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 17: a real killing blow plays its defeat poses before settling
+PASS: Monster 18: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 18: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 18: a real killing blow plays its defeat poses before settling
+PASS: Monster 19: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 19: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 19: a real killing blow plays its defeat poses before settling
+PASS: Monster 20: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 20: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 20: a real killing blow plays its defeat poses before settling
+PASS: Monster 21: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 21: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 21: a real killing blow plays its defeat poses before settling
+PASS: Monster 22: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 22: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 22: a real killing blow plays its defeat poses before settling
+PASS: Monster 23: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 23: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 23: a real killing blow plays its defeat poses before settling
+PASS: Monster 24: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 24: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 24: a real killing blow plays its defeat poses before settling
+PASS: Monster 25: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 25: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 25: a real killing blow plays its defeat poses before settling
+PASS: Monster 26: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 26: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 26: a real killing blow plays its defeat poses before settling
+PASS: Monster 28: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 28: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 28: a real killing blow plays its defeat poses before settling
+PASS: Monster 29: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 29: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 29: a real killing blow plays its defeat poses before settling
+PASS: Monster 31: the real combat counterattack renders wind-up, strike and recovery
+PASS: Monster 31: rendering the combat animation preserves the resolved turn and RNG
+PASS: Monster 31: a real killing blow plays its defeat poses before settling
+PASS: Attack: feedback uses the actual per-target combat results
+PASS: Attack: UI actions exactly match core gameplay and RNG
+PASS: Combat fixture exercises both outgoing and incoming hits
+PASS: Counterattacks retain each enemy's actual damage and original slot order
+PASS: Health bars retain the pre-action values until impact and settle on the recorded result
+PASS: Hero HP responds separately to counterattack 1
+PASS: Hero HP responds separately to counterattack 2
+PASS: Hero HP responds separately to counterattack 3
+PASS: Enemy and hero hit feedback appear before settling
+PASS: Combat effects keep result text and Continue clear and stationary with shake Off
+PASS: Combat flashes, sparks and damage numbers retain exact native pixels
+PASS: Drawing combat feedback preserves full gameplay, battle state and RNG
+PASS: Combat effects expire without leaving particles or floating numbers behind
+PASS: Combat feedback animates while exploration and gameplay stay frozen
+PASS: Pausing also freezes the combat feedback clock
+PASS: Screen shake Off gives an exact zero offset during a hit
+PASS: Optional combat shake is bounded to one native pixel per axis
+PASS: Screen shake settles with the hit
+PASS: Continuing to the next combat choice clears all transient hit data
+PASS: Zero-damage attack: feedback uses the actual per-target combat results
+PASS: Zero-damage attack: UI actions exactly match core gameplay and RNG
+PASS: A zero-damage attack shows its neutral outcome without a false hit, HP loss or screen shake
+PASS: Attack sound waits for the animated impact
+PASS: Attack impact starts the original hit sound
+PASS: The enemy hit sound starts at its own counterattack instead of interrupting the player's impact immediately
+PASS: Left selects the previous living enemy without replacing the menu or selected command
+PASS: Direct targeting wraps, skips dead enemies and consumes no turn, resource or RNG
+PASS: Low-power damage spells highlight only the selected target
+PASS: High-power damage spells highlight all living targets before casting
+PASS: Left/right targeting preserves the chosen spell power
+PASS: Healing previews the hero, not an enemy
+PASS: Rabbit preview matches the core's last-companion replacement rule
+PASS: Enemy info opens on the selected enemy's focused stats view without an action animation
+PASS: Enemy info excludes hero resources and other opponents from the focused card
+PASS: The spaced HP, rank, attack and defense rows render live encounter values independently of the portrait
+PASS: Details replaces the stats with secondary information while keeping the same enemy portrait
+PASS: Details reflects spell resistance, incomplete-history labeling and the recorded defeat count
+PASS: Stats returns to the same uncluttered overview
+PASS: Browsing changes the inspected enemy, retains the Details view, and leaves the attack target unchanged
+PASS: Enemy inspection wraps between living opponents
+PASS: Inspection consumes no turn, resource, gameplay/RNG state or battle selection, even with Auto pacing
+PASS: Back restores the same command and original attack target
+PASS: Inspection skips defeated and empty slots and stays on the sole survivor
+PASS: Escape/controller Back also restores the battle command menu
+PASS: Transformed-rabbit inspection uses the current encounter rating instead of catalog or pre-transformation stats
+PASS: The empowered trait appears in Details instead of crowding the primary stats
+PASS: Enemy information retains exact native pixel scaling
+PASS: Defeated target: feedback uses the actual per-target combat results
+PASS: Defeated target: UI actions exactly match core gameplay and RNG
+PASS: A killing blow stays attached to the struck slot after combat selects another target
+PASS: Spell 2/Low: feedback uses the actual per-target combat results
+PASS: Spell 2/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 2/Low: animated health and resources settle on actual gameplay values
+PASS: Spell 3/Low: feedback uses the actual per-target combat results
+PASS: Spell 3/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 3/Low: animated health and resources settle on actual gameplay values
+PASS: Spell 3/High: feedback uses the actual per-target combat results
+PASS: Spell 3/High: UI actions exactly match core gameplay and RNG
+PASS: Spell 3/High: animated health and resources settle on actual gameplay values
+PASS: Area spells show individual damage for all three struck monsters
+PASS: Spell 1/Low: feedback uses the actual per-target combat results
+PASS: Spell 1/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 1/Low: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 1 creates no false enemy hits from healing, shuffle or transformation
+PASS: Spell 5/High: feedback uses the actual per-target combat results
+PASS: Spell 5/High: UI actions exactly match core gameplay and RNG
+PASS: Spell 5/High: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 5 creates no false enemy hits from healing, shuffle or transformation
+PASS: Spell 6/High: feedback uses the actual per-target combat results
+PASS: Spell 6/High: UI actions exactly match core gameplay and RNG
+PASS: Spell 6/High: animated health and resources settle on actual gameplay values
+PASS: Spell 7/High: feedback uses the actual per-target combat results
+PASS: Spell 7/High: UI actions exactly match core gameplay and RNG
+PASS: Spell 7/High: animated health and resources settle on actual gameplay values
+PASS: Spell 9/Low: feedback uses the actual per-target combat results
+PASS: Spell 9/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 9/Low: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 9 creates no false enemy hits from healing, shuffle or transformation
+PASS: Spell 9/High: feedback uses the actual per-target combat results
+PASS: Spell 9/High: UI actions exactly match core gameplay and RNG
+PASS: Spell 9/High: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 9 creates no false enemy hits from healing, shuffle or transformation
+PASS: Spell 10/Low: feedback uses the actual per-target combat results
+PASS: Spell 10/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 10/Low: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 10 creates no false enemy hits from healing, shuffle or transformation
+PASS: Spell 11/Low: feedback uses the actual per-target combat results
+PASS: Spell 11/Low: UI actions exactly match core gameplay and RNG
+PASS: Spell 11/Low: animated health and resources settle on actual gameplay values
+PASS: Non-damaging spell 11 creates no false enemy hits from healing, shuffle or transformation
+PASS: Ability Backstab: feedback uses the actual per-target combat results
+PASS: Ability Backstab: UI actions exactly match core gameplay and RNG
+PASS: Ability Backstab preserves the original no-counterattack rule
+PASS: Ability Frighten: feedback uses the actual per-target combat results
+PASS: Ability Frighten: UI actions exactly match core gameplay and RNG
+PASS: Ability Frighten preserves the original no-counterattack rule
+PASS: Ability Invisibility: feedback uses the actual per-target combat results
+PASS: Ability Invisibility: UI actions exactly match core gameplay and RNG
+PASS: Ability Invisibility preserves the original no-counterattack rule
+PASS: Ability Enrage: feedback uses the actual per-target combat results
+PASS: Ability Enrage: UI actions exactly match core gameplay and RNG
+PASS: Ability Enrage preserves the original no-counterattack rule
+PASS: Item counterattack: feedback uses the actual per-target combat results
+PASS: Item counterattack: UI actions exactly match core gameplay and RNG
+PASS: Item healing is displayed before the enemies retaliate
+PASS: Maximum-resource item 9: feedback uses the actual per-target combat results
+PASS: Maximum-resource item 9: UI actions exactly match core gameplay and RNG
+PASS: Maximum-resource item 9 updates the HUD at use, before counterattacks
+PASS: Maximum-resource item 10: feedback uses the actual per-target combat results
+PASS: Maximum-resource item 10: UI actions exactly match core gameplay and RNG
+PASS: Maximum-resource item 10 updates the HUD at use, before counterattacks
+PASS: Flee escaped=True: feedback uses the actual per-target combat results
+PASS: Flee escaped=True: UI actions exactly match core gameplay and RNG
+PASS: Auto pacing returns from failed escape but awaits confirmation after a successful escape
+PASS: Flee escaped=False: feedback uses the actual per-target combat results
+PASS: Flee escaped=False: UI actions exactly match core gameplay and RNG
+PASS: Auto pacing returns from failed escape but awaits confirmation after a successful escape
+PASS: Defeat: feedback uses the actual per-target combat results
+PASS: Defeat: UI actions exactly match core gameplay and RNG
+PASS: A defeated hero retains the combat stage for its final hit response
+PASS: Defeat always waits for confirmation under Auto pacing
+PASS: Victory: feedback uses the actual per-target combat results
+PASS: Victory: UI actions exactly match core gameplay and RNG
+PASS: Victory keeps its final hit and reward text together
+PASS: Dismissing the final result removes the combat presentation
+PASS: No hit animation leaks into unrelated overlays
+PASS: Level-up victory: feedback uses the actual per-target combat results
+PASS: Level-up victory: UI actions exactly match core gameplay and RNG
+PASS: Level-up celebration uses the real level-up and final HP
+PASS: Level-up resource gains appear with the reward celebration, after the final impact
+PASS: Victory and paged rewards always wait for confirmation under Auto pacing
+PASS: Acknowledging rewards never grants them twice
+PASS: Manual pacing keeps ordinary results until confirmed
+PASS: Auto pacing waits for counterattacks and readable results
+PASS: Pausing suspends Auto progression and all combat animation
+PASS: Auto returns once to commands without taking an action or advancing gameplay/RNG
+PASS: The command menu never auto-selects its next action
+PASS: Auto pacing never discards a multi-page ongoing result
+PASS: Failed casts retain the battle HUD and await confirmation without spending resources
+PASS: Screen shake menu persists On independently
+PASS: Screen shake menu persists Off independently
+PASS: Battle pacing independently persists Auto
+PASS: Battle pacing independently persists Manual
+Passed 512 visual integration checks. Focused monster and combat run.

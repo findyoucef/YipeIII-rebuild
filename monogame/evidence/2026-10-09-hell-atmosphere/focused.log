@@ -1,0 +1,123 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/hell-atmosphere/focused/yipe-graphics-20261009-081807-2ef04f76
+Content startup and five initial frames: 2.88 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Hell sprites compile to the shared palette and binary alpha
+PASS: Hell sprite 1 is complete with a clear frame border
+PASS: Hell sprite 2 is complete with a clear frame border
+PASS: Hell sprite 3 is complete with a clear frame border
+PASS: Hell sprite 4 is complete with a clear frame border
+PASS: Hell sprite 5 is complete with a clear frame border
+PASS: Hell sprite 6 is complete with a clear frame border
+PASS: Hell sprite 7 is complete with a clear frame border
+PASS: Hell sprite 8 is complete with a clear frame border
+PASS: East Hell door fixture keeps the corridor behind the visible door unexplored
+PASS: The visible east Hell door keeps its complete crown beside an unexplored corridor
+PASS: The area map also preserves the complete known Hell door
+PASS: Restoring the known door crown reveals no terrain or objects in the unexplored corridor
+PASS: Hell door 3e crown matches the full sprite's lighting
+PASS: Hell door 3f crown matches the full sprite's lighting
+PASS: Hell door 40 crown matches the full sprite's lighting
+PASS: Rendering the door crown preserves gameplay, RNG and exploration visibility
+PASS: Opening the Hell door leaves no orphaned crown over unexplored cells
+PASS: Hell 117 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 117 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 117 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 117 seed 1: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 117 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell A4 monster at 4,7 keeps its complete silhouette beside the low ruins
+PASS: Hell A4 ruin at 4,8 stays below the neighboring monster's feet
+PASS: Hell A4 monster at 8,7 keeps its complete silhouette beside the low ruins
+PASS: Hell A4 ruin at 8,8 stays below the neighboring monster's feet
+PASS: Hell flames freeze, animate and have independent local phases
+PASS: Small vent flames and larger flame clusters have visibly different silhouettes
+PASS: Hell firelight softly reaches nearby walkable floor without an opaque veil
+PASS: Hell embers, ash, smoke and bubbles animate with sparse coverage
+PASS: Hell atmosphere is absent from the village
+PASS: Hell firelight fluctuates on the nearby floor independently of lava movement
+PASS: Opening a Hell door immediately removes its iron door artwork
+PASS: Changed fire-wall terrain clears molten pixels from every cached animation frame
+PASS: The waiting Gatekeeper remains visible beside the ruined entrance
+PASS: Hell 118 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 1: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 118 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 118 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 7: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 118 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 118 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 118 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 118 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 118 seed 99: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 118 seed 99: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 1: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 119 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 7: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 119 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 119 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 119 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 119 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 119 seed 99: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 119 seed 99: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 1: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 1: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 1: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 1: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 120 seed 1: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 7: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 7: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 7: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 7: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 120 seed 7: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 120 seed 99: architecture and smoke cannot expose unrevealed cells
+PASS: Hell 120 seed 99: all animation follows scene time and freezes exactly
+PASS: Hell 120 seed 99: art preserves the full gameplay snapshot, map and RNG
+PASS: Hell 120 seed 99: richer terrain retains a small opaque pixel-art palette
+PASS: Hell 120 seed 99: every lava frame stays strictly within original fire-wall cells
+PASS: Hell 117: complete presentation preserves gameplay and RNG
+PASS: Hell 118: complete presentation preserves gameplay and RNG
+PASS: Hell 119: complete presentation preserves gameplay and RNG
+PASS: Hell 120: complete presentation preserves gameplay and RNG
+PASS: Hell starts its dedicated recording with one quietly fading loop
+PASS: Hell uses its dedicated rumble, lava, crackle and air recording
+PASS: Hell fade respects master volume
+PASS: Hell 118: room transitions continue the same ambient voice
+PASS: Hell 119: room transitions continue the same ambient voice
+PASS: Hell 120: room transitions continue the same ambient voice
+PASS: Pause silences Hell ambience
+PASS: Resume continues the Hell loop
+PASS: Map view silences Hell ambience
+PASS: Action/combat overlays silence Hell ambience
+PASS: Focus loss pauses Hell ambience
+PASS: Sound Off mutes Hell ambience
+PASS: Zero master volume mutes Hell ambience
+PASS: Action sounds duck Hell ambience to stay audible
+PASS: Hell ambience recovers after the action sound stops
+PASS: Hell to cave 72 replaces the ambient voice
+PASS: Cave 72 to Hell restores its dedicated loop
+PASS: Hell to cave 57 replaces the ambient voice
+PASS: Cave 57 to Hell restores its dedicated loop
+PASS: Hell to cave 58 replaces the ambient voice
+PASS: Cave 58 to Hell restores its dedicated loop
+PASS: Hell to cave 59 replaces the ambient voice
+PASS: Cave 59 to Hell restores its dedicated loop
+PASS: The neighboring alternate region outside Hell stays silent
+PASS: Hell audio preserves full gameplay and RNG
+Passed 119 visual integration checks. Focused Hell run.

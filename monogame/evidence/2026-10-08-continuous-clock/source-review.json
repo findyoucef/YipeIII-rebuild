@@ -1,0 +1,15 @@
+{
+  "scope": "Continuous day/night clock only; all unrelated dirty-tree work retained.",
+  "production": [
+    "monogame/Yipe.Desktop/TownGame.cs",
+    "monogame/Yipe.Desktop/TownHelp.cs"
+  ],
+  "review": "One timestamp and early phase advancement reuse existing cycle evaluation; simulation gates, movement, combat, RNG and save format unchanged. No unnecessary clock abstraction.",
+  "build": "zero warnings/errors, checked Release",
+  "core_checks": 608,
+  "graphics_checks": 2247,
+  "source_hashes": {
+    "monogame/Yipe.Desktop/TownGame.cs": "2a73b12cf0d0205374c2e158d71f68f293fbacb9d2eb991880401dc83b7f5b34",
+    "monogame/Yipe.Desktop/TownHelp.cs": "3fe4b7cd126464d7a8c35209d25ad3c931f18cde1101cdfb224f89ea295cc19a"
+  }
+}

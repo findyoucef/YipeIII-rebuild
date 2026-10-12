@@ -249,9 +249,13 @@ internal static class OpeningFrontendChecks
         }
         void Drain()
         {
-            for (var count = 0; Get("overlay") is not null; count++)
+            var world = Get("world")!;
+            var motion = (PlayerMotion)Get("player")!;
+            for (var count = 0; Get("overlay") is not null || Get("pendingEvent") is not null || motion.IsMoving
+                || Property<bool>(world, "MonstersMoving"); count++)
             {
                 if (count > 200) throw new InvalidOperationException("Opening interaction did not finish.");
+                if (Get("overlay") is null) { Update(PlayerMotion.StepDuration); Draw(); continue; }
                 if (Property<bool>(Overlay(), "Combat")) { Fight(); continue; }
                 if (Labels().SequenceEqual(new[] { "Continue" }))
                 {

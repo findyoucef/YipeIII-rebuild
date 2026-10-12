@@ -1,0 +1,14 @@
+{
+  "before": "build/breeding-cohesion/full/yipe-graphics-20261009-042553-87416cab",
+  "after": "build/breeding-light-contours/full/yipe-graphics-20261009-044502-0e532b16",
+  "compared": 115,
+  "changed": [
+    "map-060.png",
+    "map-106.png",
+    "map-066.png",
+    "map-105.png",
+    "map-065.png",
+    "map-059.png"
+  ],
+  "unchanged": 109
+}

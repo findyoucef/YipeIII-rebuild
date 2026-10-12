@@ -1,0 +1,13 @@
+{
+  "alpha_threshold": 32,
+  "separate_clouds": 20,
+  "width_range": [
+    46,
+    65
+  ],
+  "height_range": [
+    27,
+    37
+  ],
+  "footprint_fraction": 0.099
+}

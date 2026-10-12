@@ -10,6 +10,10 @@ The executable checks core rules, animation/input state and isolated save files
 without opening a game window. Failures terminate with a nonzero exit code.
 Graphics verification is documented in [Yipe.GraphicsChecks](../Yipe.GraphicsChecks/README.md).
 
+Footstep asset checks verify the fifteen recorded WAVs copied into the build:
+16-bit mono compatibility, contact duration, clean boundaries, mixing headroom,
+distinct variants and matching CC0 source credits/hashes. [Sources and credits](../Yipe.Desktop/Content/Audio/Footsteps/README.md).
+
 ## Original random generator
 
 `Yipe.Core.MsvcRandom` implements the Visual C++ generator used by the supplied
@@ -418,7 +422,7 @@ is a separate acceptance requirement.
 
 ## Complete earned campaign
 
-The current ordinary suite passes **502 checks**. Its independent rule oracles
+The current ordinary suite passes **613 checks**. Its independent rule oracles
 remain separate from the input-driven earned completion proof:
 
 ```sh
@@ -440,3 +444,7 @@ driver, then checks a fresh run's full input consumption, observations, complete
 save bytes and successful finale exit. Its output directory must not exist.
 The retained commands need no authoring helper. See the [completion evidence](../evidence/2026-10-04-p234-complete/README.md)
 for source hashes, logs, frontend restarts and remaining matrix/platform limits.
+
+Automatic rain checks sample a full day of outdoor time for bounded intensity,
+varied clear/shower durations and gradual transitions. Profile checks retain an
+explicit Rain Off choice while defaulting missing preferences to Auto Subtle.

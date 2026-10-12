@@ -1,0 +1,58 @@
+{
+  "status": "implemented and locally verified; user aesthetic review pending",
+  "goal": "Small recognizable puffy pixel-art cloud shadows with natural spacing, restrained density and feathered edges; preserve lighting integration and saves; open local build for review.",
+  "changes": [
+    "Four connected puff profiles with a shallow oval base",
+    "20 irregularly spaced, separated clouds with varied scale, handedness and density",
+    "One smooth density envelope per cloud avoids bubble-like internal patches",
+    "Startup feather radius reduced from 6 to 3 native pixels",
+    "Drift slowed from (3.2, 0.7) to (2.4, 0.55) native pixels per second"
+  ],
+  "validation": {
+    "release_build": "0 warnings, 0 errors",
+    "focused_checks": 211,
+    "command": "Yipe.GraphicsChecks --clouds-only --output build/cloud-rework/refined",
+    "run": "build/cloud-rework/refined/yipe-graphics-20261009-223559-791a812f",
+    "full_suite_rerun": false,
+    "scope": "Cloud rendering and controls, sunlight/hero/dust sampling, native pixels, weather, day/night and full gameplay/RNG snapshots. No core or unrelated effects changed."
+  },
+  "visual_review": {
+    "scenes": [
+      17,
+      1,
+      7,
+      8,
+      22,
+      27
+    ],
+    "iteration": "First rounded-base draft looked like bubbles; unified density and shallow base corrected before final verification.",
+    "motion": "288 captured frames spanning 24 seconds at 12 fps; inspected samples at 0, 8, 16 and 23.9 seconds. In-game motion remains at application frame rate.",
+    "art": "Code-native pixel shadow mask; no generated raster art or external assets."
+  },
+  "preservation": {
+    "personal_files_unchanged_before_launch": 33,
+    "package_rebuilt": false,
+    "preferences_changed": false
+  },
+  "simplicity": "Only production file changed is SunShafts.cs: startup mask construction and drift constants. Existing rendering, alpha blur, world sampling and saved controls reused; no remaining findings. Test runner adds a focused option and captures three additional outdoor contexts.",
+  "source_sha256": {
+    "monogame/Yipe.Desktop/SunShafts.cs": "c2c71e84ee8116dac6bd9c3f92ba6df1c6e2f8fc8195c607392b61f159dbc216",
+    "monogame/Yipe.GraphicsChecks/CloudShadowChecks.cs": "eb7ca2e4efa7c1984e5835b2874f73f4afcec2b30f68bc21ea323681f58b96d9",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "ec86e3235c581ff04fdf070ae77915a7890880f3b178df05a120ef7a87caf2ac"
+  },
+  "launch": {
+    "pid": 94241,
+    "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/cloud-rework/launcher/bin/Release/net10.0/CloudPreview",
+    "game_assembly": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll",
+    "save": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+    "session_id": 52211,
+    "process_verified": true,
+    "window_title": "Yipe! III | Enter / A: actions | Esc / Start: pause",
+    "window_id": 17298,
+    "verified_at": "2026-10-09T22:41:35.381932+00:00",
+    "purpose": "Latest local build with the existing full adventure; no save replacement. Screenshot confirms restored adventure paused in Maynard.",
+    "refresh_workaround": "The normal app stalled in Cocoa_GL_SwapWindow. This temporary launcher instantiates the identical Desktop game assembly with SynchronizeWithVerticalRetrace=false before Run; no saved preference or production code changed.",
+    "tested_assembly_matches": true,
+    "screenshot": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/evidence/2026-10-09-cloud-rework/local-launch.png"
+  }
+}

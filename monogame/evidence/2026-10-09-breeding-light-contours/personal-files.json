@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+    "sha256_before": "3f9a83291bbc90f655c0ff18a0b5331fd493184705e6dd8fa4b3712abbc4de03",
+    "sha256_after": "3f9a83291bbc90f655c0ff18a0b5331fd493184705e6dd8fa4b3712abbc4de03",
+    "unchanged": true
+  },
+  {
+    "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+    "sha256_before": "8c450c46a68f4c609a21de4547fad79911b3d0a9e02adc45fb64e0d6ea4ed049",
+    "sha256_after": "8c450c46a68f4c609a21de4547fad79911b3d0a9e02adc45fb64e0d6ea4ed049",
+    "unchanged": true
+  },
+  {
+    "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+    "sha256_before": "1b36994fa898b2aa7b62c8f504e75d138dbe258951b7e8ab39dc0c12d81bf900",
+    "sha256_after": "1b36994fa898b2aa7b62c8f504e75d138dbe258951b7e8ab39dc0c12d81bf900",
+    "unchanged": true
+  }
+]

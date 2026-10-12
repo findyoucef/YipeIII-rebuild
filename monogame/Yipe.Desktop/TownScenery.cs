@@ -144,6 +144,15 @@ internal sealed partial class TownRenderer
 
     private void DrawReflection(SpriteBatch batch, PlayerMotion player, double time, Adventure? world, WorldRenderer? renderer)
     {
+        if (world is not null && WorldRenderer.IsIce(world.Map))
+        {
+            var at = player.VisualPosition;
+            if (!world.Visibility.Contains(new((int)MathF.Floor(at.X), (int)MathF.Floor(at.Y)))) return;
+            var pose = HeroFrame(player, time); pose.Height = 28;
+            renderer!.DrawIceReflection(batch, world, HeroTexture, pose,
+                new((int)MathF.Round(at.X * 32) + 16, (int)MathF.Round(at.Y * 32) + 25));
+            return;
+        }
         bool Water(int x, int y)
         {
             if (world is null) return IsWater(new(x, y, 1, 1));
@@ -163,7 +172,8 @@ internal sealed partial class TownRenderer
                 strength = Math.Max(strength, across * along);
             }
         var feet = new Point((int)MathF.Round(position.X * 32) + 16, (int)MathF.Round(position.Y * 32) + 25);
-        if (renderer?.HasPuddles == true)
+        var caveWater = renderer?.HasPuddles == true || world is not null && WorldRenderer.IsWaterCave(world.Map);
+        if (caveWater)
         {
             // A small footprint around the animated boots fades the existing
             // reflection in and out at a puddle's irregular shoreline.
@@ -176,7 +186,7 @@ internal sealed partial class TownRenderer
         if (strength <= 0) return;
 
         var source = HeroFrame(player, time);
-        var tint = Palette[renderer?.HasPuddles == true ? 18 : 30];
+        var tint = world is not null && WorldRenderer.IsWaterCave(world.Map) ? new Color(125, 202, 187) : Palette[caveWater ? 18 : 30];
         var tick = (int)(time * 6);
         for (var row = 0; row < 20; row++)
         {
@@ -233,7 +243,7 @@ internal sealed partial class TownRenderer
             }
     }
 
-    private void DrawProp(SpriteBatch batch, int sprite, Vector2 feet, double time)
+    internal void DrawProp(SpriteBatch batch, int sprite, Vector2 feet, double time)
     {
         var source = Cell(sprite, 4, 32);
         var sway = (int)MathF.Round(MathF.Sin((float)time * 0.8f + feet.X * 0.1f));
@@ -302,14 +312,56 @@ internal sealed partial class TownRenderer
 
     private void DrawLeaves(SpriteBatch batch, double time)
     {
-        for (var i = 0; i < 4; i++)
+        var tick = Math.Floor(time * 12) / 12;
+        for (var i = 0; i < 48; i++)
         {
-            var phase = (float)((time + i * 5.3) % 22) / 22;
-            if (phase > 0.3f) continue;
-            var x = 135 + i * 47 + (int)(phase * 75);
-            var y = 52 + i * 68 + (int)(phase * 35);
-            if (!TownMap.Contains(new(x / 32, y / 32)) || map.Tile(new(x / 32, y / 32)) != 2) continue;
-            batch.Draw(pixel, new Rectangle(x, y, 2, 1), Palette[12] * 0.65f);
+            var seed = i * 97 + 31;
+            var age = (float)((tick + i * 3.71) % (14 + i % 7));
+            if (age >= 12) continue;
+            var fall = Math.Min(age / 7, 1);
+            var landX = 20 + seed * 37 % (WorldWidth - 40);
+            var landY = 48 + seed * 53 % (WorldHeight - 64);
+            var x = landX - (int)((1 - fall) * 28) + (int)(MathF.Sin(age * 2.1f + seed) * 5 * (1 - fall));
+            var y = landY - (int)((1 - fall) * 42);
+            var fade = Math.Min(1, age * 3) * Math.Clamp((12 - age) / 2, 0, 1);
+            // Leaves blow across open ground, then settle briefly. Draw before
+            // buildings and actors so they cannot cover a doorway or character.
+            var cell = new MapPosition(x / 32, y / 32);
+            if (x < 1 || y < 1 || x + 3 >= WorldWidth || y + 3 >= WorldHeight || !TownMap.Contains(cell)
+                || map.Tile(cell) is not (2 or 8 or 22 or 25 or 26 or 50)) continue;
+            var color = Palette[i % 4 == 0 ? 17 : i % 4 == 1 ? 35 : 12] * fade;
+            var edge = Palette[i % 4 < 2 ? 16 : 10] * fade;
+            var turn = age < 7 ? (int)(age * 5 + i) % 4 : i % 4;
+            if (turn == 2)
+            {
+                batch.Draw(pixel, new Rectangle(x + 1, y, 1, 3), edge);
+                batch.Draw(pixel, new Rectangle(x + 1, y + 1, 1, 1), color);
+            }
+            else
+            {
+                batch.Draw(pixel, new Rectangle(x + 1, y, 2, 1), color);
+                batch.Draw(pixel, new Rectangle(x, y + 1, turn == 0 ? 4 : 3, 1), color);
+                batch.Draw(pixel, new Rectangle(x + (turn == 3 ? 2 : 1), y + 2, 1, 1), edge);
+            }
         }
+    }
+
+    internal (float Gain, float Pan) RiverSoundAt(Vector2 position)
+    {
+        var feet = position * 32 + new Vector2(16, 25);
+        const int reach = 104;
+        var nearest = (float)(reach * reach); var riverX = feet.X;
+        // Sample the rendered water mask, including the bends and water under
+        // both bridges. A small nearby grid avoids scanning every river pixel.
+        for (var y = Math.Max(0, (int)(feet.Y - reach) / 4 * 4); y < Math.Min(WorldHeight, feet.Y + reach); y += 4)
+            for (var x = Math.Max(0, (int)(feet.X - reach) / 4 * 4); x < Math.Min(WorldWidth, feet.X + reach); x += 4)
+            {
+                if (!waterMask[y * WorldWidth + x]) continue;
+                var distance = Vector2.DistanceSquared(feet, new(x, y));
+                if (distance >= nearest) continue;
+                nearest = distance; riverX = x;
+            }
+        var amount = Math.Clamp((MathF.Sqrt(nearest) - 12) / (reach - 12), 0, 1);
+        return (1 - MathHelper.SmoothStep(0, 1, amount), Math.Clamp((riverX - feet.X) / 80, -.65f, .65f));
     }
 }

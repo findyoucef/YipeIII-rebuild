@@ -1,0 +1,15 @@
+Water Cave ambience
+
+Loopable Dungeon Ambience, by JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+Original provenance: sources.json
+
+Park ambiences — river, by Thimras
+https://opengameart.org/content/park-ambiences
+Original provenance: maynard-sources.json
+
+Both recordings: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Quiet filtered recording mix with short echoes and wrap crossfade.
+Processing and hashes: water-cave-sources.json

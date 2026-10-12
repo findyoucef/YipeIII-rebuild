@@ -1,0 +1,8 @@
+{
+  "scene": "Ervyn with normal presentation effects",
+  "fixture_setup_ms": 13.4777,
+  "synchronized_draw_average_ms": 1.3470133333333334,
+  "frames": 30,
+  "includes_gpu_readback": true,
+  "excludes_png_encoding": true
+}

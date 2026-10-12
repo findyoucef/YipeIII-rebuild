@@ -1,0 +1,466 @@
+{
+  "baseline": "build/ice-remaster/full-release/yipe-graphics-20261011-041718-a9efc7c5/maps",
+  "current": "build/ice-reflections/full/yipe-graphics-20261011-043053-a1faa0a4/maps",
+  "maps": [
+    {
+      "file": "map-001.png",
+      "identical": true
+    },
+    {
+      "file": "map-002.png",
+      "identical": true
+    },
+    {
+      "file": "map-003.png",
+      "identical": true
+    },
+    {
+      "file": "map-004.png",
+      "identical": true
+    },
+    {
+      "file": "map-005.png",
+      "identical": true
+    },
+    {
+      "file": "map-006.png",
+      "identical": true
+    },
+    {
+      "file": "map-007.png",
+      "identical": true
+    },
+    {
+      "file": "map-008.png",
+      "identical": true
+    },
+    {
+      "file": "map-009.png",
+      "identical": true
+    },
+    {
+      "file": "map-010.png",
+      "identical": true
+    },
+    {
+      "file": "map-011.png",
+      "identical": true
+    },
+    {
+      "file": "map-012.png",
+      "identical": true
+    },
+    {
+      "file": "map-013.png",
+      "identical": true
+    },
+    {
+      "file": "map-014.png",
+      "identical": true
+    },
+    {
+      "file": "map-015.png",
+      "identical": true
+    },
+    {
+      "file": "map-016.png",
+      "identical": true
+    },
+    {
+      "file": "map-017.png",
+      "identical": true
+    },
+    {
+      "file": "map-018.png",
+      "identical": true
+    },
+    {
+      "file": "map-019.png",
+      "identical": true
+    },
+    {
+      "file": "map-020.png",
+      "identical": true
+    },
+    {
+      "file": "map-021.png",
+      "identical": true
+    },
+    {
+      "file": "map-022.png",
+      "identical": true
+    },
+    {
+      "file": "map-023.png",
+      "identical": true
+    },
+    {
+      "file": "map-024.png",
+      "identical": true
+    },
+    {
+      "file": "map-025.png",
+      "identical": true
+    },
+    {
+      "file": "map-026.png",
+      "identical": true
+    },
+    {
+      "file": "map-027.png",
+      "identical": true
+    },
+    {
+      "file": "map-028.png",
+      "identical": true
+    },
+    {
+      "file": "map-029.png",
+      "identical": true
+    },
+    {
+      "file": "map-030.png",
+      "identical": true
+    },
+    {
+      "file": "map-031.png",
+      "identical": true
+    },
+    {
+      "file": "map-032.png",
+      "identical": true
+    },
+    {
+      "file": "map-033.png",
+      "identical": true
+    },
+    {
+      "file": "map-034.png",
+      "identical": true
+    },
+    {
+      "file": "map-035.png",
+      "identical": true
+    },
+    {
+      "file": "map-036.png",
+      "identical": true
+    },
+    {
+      "file": "map-041.png",
+      "identical": false
+    },
+    {
+      "file": "map-042.png",
+      "identical": false
+    },
+    {
+      "file": "map-043.png",
+      "identical": true
+    },
+    {
+      "file": "map-044.png",
+      "identical": true
+    },
+    {
+      "file": "map-045.png",
+      "identical": true
+    },
+    {
+      "file": "map-046.png",
+      "identical": true
+    },
+    {
+      "file": "map-047.png",
+      "identical": false
+    },
+    {
+      "file": "map-048.png",
+      "identical": true
+    },
+    {
+      "file": "map-049.png",
+      "identical": true
+    },
+    {
+      "file": "map-050.png",
+      "identical": true
+    },
+    {
+      "file": "map-051.png",
+      "identical": true
+    },
+    {
+      "file": "map-052.png",
+      "identical": true
+    },
+    {
+      "file": "map-053.png",
+      "identical": false
+    },
+    {
+      "file": "map-054.png",
+      "identical": true
+    },
+    {
+      "file": "map-055.png",
+      "identical": true
+    },
+    {
+      "file": "map-056.png",
+      "identical": true
+    },
+    {
+      "file": "map-057.png",
+      "identical": true
+    },
+    {
+      "file": "map-058.png",
+      "identical": true
+    },
+    {
+      "file": "map-059.png",
+      "identical": true
+    },
+    {
+      "file": "map-060.png",
+      "identical": true
+    },
+    {
+      "file": "map-061.png",
+      "identical": true
+    },
+    {
+      "file": "map-062.png",
+      "identical": true
+    },
+    {
+      "file": "map-063.png",
+      "identical": true
+    },
+    {
+      "file": "map-064.png",
+      "identical": true
+    },
+    {
+      "file": "map-065.png",
+      "identical": true
+    },
+    {
+      "file": "map-066.png",
+      "identical": true
+    },
+    {
+      "file": "map-067.png",
+      "identical": true
+    },
+    {
+      "file": "map-068.png",
+      "identical": true
+    },
+    {
+      "file": "map-069.png",
+      "identical": true
+    },
+    {
+      "file": "map-070.png",
+      "identical": true
+    },
+    {
+      "file": "map-071.png",
+      "identical": true
+    },
+    {
+      "file": "map-072.png",
+      "identical": true
+    },
+    {
+      "file": "map-073.png",
+      "identical": true
+    },
+    {
+      "file": "map-074.png",
+      "identical": true
+    },
+    {
+      "file": "map-075.png",
+      "identical": true
+    },
+    {
+      "file": "map-076.png",
+      "identical": true
+    },
+    {
+      "file": "map-081.png",
+      "identical": false
+    },
+    {
+      "file": "map-082.png",
+      "identical": false
+    },
+    {
+      "file": "map-083.png",
+      "identical": true
+    },
+    {
+      "file": "map-084.png",
+      "identical": true
+    },
+    {
+      "file": "map-085.png",
+      "identical": true
+    },
+    {
+      "file": "map-086.png",
+      "identical": true
+    },
+    {
+      "file": "map-087.png",
+      "identical": false
+    },
+    {
+      "file": "map-088.png",
+      "identical": false
+    },
+    {
+      "file": "map-089.png",
+      "identical": true
+    },
+    {
+      "file": "map-090.png",
+      "identical": true
+    },
+    {
+      "file": "map-091.png",
+      "identical": true
+    },
+    {
+      "file": "map-092.png",
+      "identical": true
+    },
+    {
+      "file": "map-093.png",
+      "identical": false
+    },
+    {
+      "file": "map-094.png",
+      "identical": false
+    },
+    {
+      "file": "map-095.png",
+      "identical": true
+    },
+    {
+      "file": "map-096.png",
+      "identical": true
+    },
+    {
+      "file": "map-097.png",
+      "identical": true
+    },
+    {
+      "file": "map-098.png",
+      "identical": true
+    },
+    {
+      "file": "map-099.png",
+      "identical": false
+    },
+    {
+      "file": "map-100.png",
+      "identical": true
+    },
+    {
+      "file": "map-101.png",
+      "identical": true
+    },
+    {
+      "file": "map-102.png",
+      "identical": true
+    },
+    {
+      "file": "map-103.png",
+      "identical": true
+    },
+    {
+      "file": "map-104.png",
+      "identical": true
+    },
+    {
+      "file": "map-105.png",
+      "identical": true
+    },
+    {
+      "file": "map-106.png",
+      "identical": true
+    },
+    {
+      "file": "map-107.png",
+      "identical": true
+    },
+    {
+      "file": "map-108.png",
+      "identical": true
+    },
+    {
+      "file": "map-109.png",
+      "identical": true
+    },
+    {
+      "file": "map-110.png",
+      "identical": true
+    },
+    {
+      "file": "map-111.png",
+      "identical": true
+    },
+    {
+      "file": "map-112.png",
+      "identical": true
+    },
+    {
+      "file": "map-113.png",
+      "identical": true
+    },
+    {
+      "file": "map-114.png",
+      "identical": true
+    },
+    {
+      "file": "map-115.png",
+      "identical": true
+    },
+    {
+      "file": "map-116.png",
+      "identical": true
+    },
+    {
+      "file": "map-117.png",
+      "identical": true
+    },
+    {
+      "file": "map-118.png",
+      "identical": true
+    },
+    {
+      "file": "map-119.png",
+      "identical": true
+    },
+    {
+      "file": "map-120.png",
+      "identical": true
+    },
+    {
+      "file": "map-121.png",
+      "identical": true
+    },
+    {
+      "file": "map-127.png",
+      "identical": true
+    },
+    {
+      "file": "map-133.png",
+      "identical": true
+    }
+  ]
+}

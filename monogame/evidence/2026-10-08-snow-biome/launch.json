@@ -1,0 +1,16 @@
+{
+  "pid": 4216,
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+  "save": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+  "log": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/snow-biome-20261008-194633.log",
+  "source": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Recovered adventure 20261008-162806",
+  "backup": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Backups/before-snow-biome-20261008-194633",
+  "mapped_regions": 44,
+  "existing_game_pids_preserved": [],
+  "purpose": "Latest full recovered adventure. Use this save for ordinary local-build launches; never substitute the level-1 town demo.",
+  "process_verified": false,
+  "live_walkthrough": "Launch was attempted but not verified. Do not infer that the game is open from this record.",
+  "audio": "CC0 recorded footsteps by Nox_Sound, Kenney and Fantozzi",
+  "clock": "Auto day/night follows elapsed UTC time through pauses and suspension",
+  "presentation": "Verified six-step Zephyr snow biome; existing full adventure and current profile"
+}

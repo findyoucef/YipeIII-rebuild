@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-09",
+  "scope": {
+    "upper_E2": [
+      51
+    ],
+    "upper_F2_F6": [
+      52,
+      58,
+      64,
+      70,
+      76
+    ],
+    "deep_F4_F6": [
+      104,
+      110,
+      116
+    ]
+  },
+  "status": "Implementation and verification complete; user visual/audio approval pending",
+  "skill": "/Users/baouchiy/.codex/skills/remaster-yipe-caves/SKILL.md",
+  "changes": [
+    "Connected cool limestone/granite walls, 13x11 native-pixel facet spacing, chipped outlines and 11\u201314 pixel shaded front faces",
+    "Broad worn 43x31-pixel stone shelves, sparse interrupted hairline joints/scours, mineral grit, restrained non-emissive seams and damp sediment by existing water",
+    "Source-matched torchlight using the same stone contour as ground contact shading; entrance torch at F3 and deep F4 gallery lamp",
+    "Sparse native-pixel lamp dust, drips, small impact ripples and settling grains driven by presentation time and fog visibility",
+    "Restrained cool monster tint, stronger contact shadows, mineral-coloured landing dust; animations, silhouettes, hover, scale and battle art retained",
+    "Reuse existing CC0 cave-air ambience at a quieter .15 gain; flooded E2 uses the existing wetter Earth mix. Shared single-voice lifecycle, no new audio assets"
+  ],
+  "validation": {
+    "focused_graphics_checks": 183,
+    "full_graphics_checks": 2874,
+    "tour_frames": 360,
+    "core_checks": 613,
+    "local_build": "Checked Release, zero warnings/errors; no repackaging",
+    "save_journal_profile_unchanged": true,
+    "core_and_map_tables_unchanged": true,
+    "gameplay_rng": "Full encoded snapshots equal before/after rendering in every room",
+    "overlaps": "51/52 horizontal and 52/58,58/64,64/70,70/76,104/110,110/116 vertical walkable overlap interiors match exactly",
+    "unaffected": {
+      "maps": {
+        "same_count": 111,
+        "different": [
+          "map-051.png",
+          "map-052.png",
+          "map-058.png",
+          "map-064.png",
+          "map-070.png",
+          "map-076.png",
+          "map-104.png",
+          "map-110.png",
+          "map-116.png"
+        ],
+        "not_yet_captured": []
+      },
+      "earth-cave": {
+        "same_count": 116,
+        "different": [],
+        "not_yet_captured": []
+      },
+      "breeding-grounds": {
+        "baseline": "build/earth-remaster/final-breeding/yipe-graphics-20261009-073303-5f2dc711",
+        "same_count": 73,
+        "different": [],
+        "not_yet_captured": [],
+        "note": "Uses the final corrected audio-exit fixture baseline, avoiding the older full-run disposed-town-renderer capture artifact."
+      },
+      "fire-cave": {
+        "same_count": 129,
+        "different": [],
+        "not_yet_captured": []
+      },
+      "pixel-lighting": {
+        "same_count": 22,
+        "different": [],
+        "not_yet_captured": []
+      }
+    }
+  },
+  "runs": {
+    "focused": "build/stone-remaster/verified/yipe-graphics-20261009-075118-834efcd9",
+    "full": "build/stone-remaster/full/yipe-graphics-20261009-075149-a24a714a"
+  },
+  "visual_review": "Inspected all nine native renders and entrance/deep gameplay captures against the old repeated tile art and approved remaster references. Kept floors quiet with shallow sparse seams; added a source at the entrance. Before/after native captures use different isolated player positions; map layouts are identical.",
+  "audio_credits": [
+    "monogame/Yipe.Desktop/Content/Audio/Ambience/CREDITS.txt",
+    "monogame/Yipe.Desktop/Content/Audio/Ambience/EARTH-CAVE-CREDITS.txt"
+  ],
+  "simplicity_review": "Localized cave partial and existing render/audio/lighting hooks; reused source selection, silhouette occlusion, recorded ambience and monster contact paths. No gameplay refactor or new general biome framework.",
+  "production_and_check_sha256": {
+    "monogame/Yipe.Desktop/WorldStone.cs": "6cab0d13d6164990c1264e0b0cdd6bbc4e11fa429b4d3d59d696a286d8cb2fa3",
+    "monogame/Yipe.Desktop/WorldRenderer.cs": "6e03e7eb8892a39b090789f480605eab018774444c692cb563f2a60c9d0c4129",
+    "monogame/Yipe.Desktop/WorldTerrain.cs": "92e4ae26d81500b172936c77d11058f8c6ca4f2c32812427a6b7f32f50bd5db8",
+    "monogame/Yipe.Desktop/PixelLighting.cs": "60346536a3ae7473704ae248d6db4dfdd591b9b193e0c5065842d54f27b5d309",
+    "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "08045ef35211d5df3a17e8aa3d32dd315d9c27c86759d0dc51639041582e7807",
+    "monogame/Yipe.Desktop/TownGame.cs": "b156cf4773bef33f04db0cae4ed55633578c1f37a172178720e45f46167b9470",
+    "monogame/Yipe.Desktop/GameAudio.cs": "b11f6b1d5f5c1e9f13a7d12c3d82d51a536b69d4578830cd0901a975903239ff",
+    "monogame/Yipe.GraphicsChecks/StoneCaveChecks.cs": "18ce5785b2d295fb76d3075dc79b8562a6854755f1e9fe8bb5f551643eb1332a",
+    "monogame/Yipe.GraphicsChecks/PixelLightingChecks.cs": "c077444f744936bc17a9d330f88b1d1c2cab6d27751a1ad973a95fc1ffbf9cb5",
+    "monogame/Yipe.GraphicsChecks/Program.cs": "c7fb758eb4798d83411b316a8f293b93f5edd020d34eeb3db46b679fb396bd98"
+  },
+  "preserved_files_sha256": {
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/WorldLocation.cs": "43f9b67f1adbbd5772ec3388f84e3a1a9c7c23a29ecc3e229406de5c3fbcee80",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Exploration.cs": "d2d299dc8fa0c615207d7a8b8883997bad72d4608144ca1458913ca9e262dc6a",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Combat.cs": "3043fa8c78368bf8e67651e995cb485b3af96bf26bac5ff0ee7c57ebe429374a",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Quests.cs": "07e5d10363e3f624910d1efe3e8a707c401e1c7ea6b88c747eda913cc04109d2",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Adventure.cs": "6559b61ba91d251c9cd2dd36ecf38a739a32e1b3d0e226160c33573dbd906446",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/MapCatalog.cs": "655e610516be97b0a16ed6ebb558db3c89f3b774c873888c6d2f8d712747ced0",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Casino.cs": "1e8f63290ae1a5c2b2d2b9fad52411bed748e02d72ff6285aa9a31e8e0749c46",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/ItemNames.cs": "3ea8cb24eaa55b23bec44274b975417616c72e76bb8e877f63de3399ce328d24",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Spells.cs": "8674e3674fa3a0157192611fdf4416be9975b1a2384756e358318219c7b6ebe6",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/WorldActions.cs": "ea0a8541cf8964092578a7cc288e83dd12066ab03035f0ea64e20a1135f0ffa0",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/GameSession.cs": "35f9c21bf5dcdc3f6ef092e085646736233b3106661751f4d4aae2fdfaa90d4b",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/CombatModels.cs": "7f8b1009b4d8d57cbbeaf72859c232f2604e459815e4b7b11a07cfa9a89217b8",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/CombatCatalog.cs": "dfe546df6da24b1e0ad63a344a024741a414c93d8f74e48a0fdfda7c462e06aa",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/GeneratedMap.cs": "7a5944b9511bf5f37d706e18de3e1a2ca62fd522b5fdae8b02edc093ad8d257b",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/HighScores.cs": "c7fb2f6b74ede8628675eabef6cac02ce0cbe7274fbc2114a67e9f4548b4a2ec",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Shops.cs": "0165f2185bcc6889a1c7ac34ca6b4554d6a2c86bac8b73f2134a5ea85a0c47dc",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/AudioCatalog.cs": "8fecc84bd5cc090248c1d28f2cfceeb72067b91012b7e6f334bf32393549bacc",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/MonsterPlacements.cs": "0e4950ea18bb1d40294833f65649da4c9a69b38b2db13dc96f8a00e79dba8620",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Encounters.cs": "9475fc4059b46da0d6506fee26a235d8903f3a72a333a79bf6c693cedd71d0ff",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Map.cs": "321fa622b7301aed964773fea5c8a87633eac60aca43271691955a489335bd41",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/SaveImporter.cs": "77fe8c3c264d1c76aa86e63db2857ff9bbcc64c91a400b3702b3f5e16a7520eb",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/GameSaveCodec.cs": "83639493103ca2d75d1a88c99bb27964b860df5b92b50eabb589090b126445d6",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/MsvcRandom.cs": "67e0b651cb2716741df6484b5cb34763d66440cba9923f583b983b009329c839",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Player.cs": "7fda56b6df8d6897acd8c3a751c590d52b23aac4cff2ee194f47b640d87b5f60",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/TownMap.cs": "3e9454161e578bb327319c95613b82cc7972c1a7d60b7bac56c645fe3571d9b7",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/MapVisibility.cs": "3495d81eee5ecbfbe8fcc69476e885b6087f2743ad06d259e1aa08650f20d5b5",
+    "/Users/baouchiy/source/repos/YipeIII-rebuild/assets/maps/original-map-tables.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m": "cd5fa8f2c21e6f8a8935a67936c5b54f1c389bc07016cd87a656f319367aefca",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json": "de9ddf1f2817d5e98a338a8b14338af05aeae5289f4e1d58aac2b35b471018d3",
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json": "d4b138bd58ea1e3d258b9022e866ebfcfd15be3680bf07d229268d151bf5efb1"
+  }
+}

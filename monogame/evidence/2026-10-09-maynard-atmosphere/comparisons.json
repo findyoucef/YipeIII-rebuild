@@ -1,0 +1,46 @@
+{
+  "baseline": "build/hell-atmosphere/full/yipe-graphics-20261009-081831-d87efb9d",
+  "current": "build/maynard-atmosphere/full/yipe-graphics-20261009-084039-3a26b855",
+  "results": {
+    "maps": {
+      "identical": 120,
+      "changed": [],
+      "missing": []
+    },
+    "earth-cave": {
+      "identical": 116,
+      "changed": [],
+      "missing": []
+    },
+    "stone-cave": {
+      "identical": 68,
+      "changed": [],
+      "missing": []
+    },
+    "breeding-grounds": {
+      "identical": 73,
+      "changed": [],
+      "missing": []
+    },
+    "fire-cave": {
+      "identical": 129,
+      "changed": [],
+      "missing": []
+    },
+    "hell-biome": {
+      "identical": 15,
+      "changed": [],
+      "missing": []
+    },
+    "hell-environment": {
+      "identical": 56,
+      "changed": [],
+      "missing": []
+    },
+    "villages": {
+      "identical": 64,
+      "changed": [],
+      "missing": []
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "output": "fire-cave.wav",
+  "sources": [
+    {
+      "title": "Lava loop",
+      "author": "Blender Foundation",
+      "source": "https://opengameart.org/content/lava-loop",
+      "download": "https://opengameart.org/sites/default/files/lavaloop.zip",
+      "license": "CC-BY-3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "original": "LavaLoop.wav",
+      "sha256": "62d3a3fb1d42bbd5e5fc0cf35bb0a956fb08b27b19c0e2a861a1adfb7da90aff"
+    },
+    {
+      "title": "Fireplace Sound loop",
+      "author": "PagDev",
+      "source": "https://opengameart.org/content/fireplace-sound-loop",
+      "download": "https://opengameart.org/sites/default/files/fire.wav",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "original": "fire.wav",
+      "sha256": "85ca0cc60d0c037fff8b185e31ad1fcdbda6ce45eee17c3ee1318d1b8f59e330"
+    }
+  ],
+  "processing": "58-second stereo PCM loop at 22050 Hz. Original lava loop supplies bubbling and flow; a resampled/low-passed copy adds a low rumble. Fireplace recording adds crackle and hiss. Sources repeated and mixed, high/low-pass filtering, 0.85 peak limiter, two-second wrap crossfade. No generated oscillator/noise or steam-generator sample used.",
+  "downloaded_utc": "2026-10-09",
+  "output_sha256": "e70ca7d82adc5a8963c444b1bc283f3c3061406cac97c6bc9c7e653fe0d48ff8"
+}

@@ -13,7 +13,16 @@ internal sealed class ProfileData
     public int Miniature { get; set; } = 2;
     public bool Vignette { get; set; }
     public bool PixelLighting { get; set; } = true;
+    public int SunShaftStrength { get; set; } = 1;
+    public int CloudShadowStrength { get; set; } = 1;
+    public int RainStrength { get; set; } = 1;
+    public bool ScreenShake { get; set; }
+    public bool AutoBattle { get; set; }
+    public int TimeOfDayMode { get; set; }
+    public double DayNightSeconds { get; set; } = DayNightCycle.OpeningTime;
     public HighScoreEntry[] Scores { get; set; } = HighScores.Create();
+
+    public ControlBindings Controls { get; set; } = new();
 }
 
 [JsonSerializable(typeof(ProfileData))]
@@ -35,8 +44,13 @@ internal sealed class DesktopProfile
             if (file.Length > 128 * 1024) throw new InvalidDataException("The profile is too large.");
             var data = JsonSerializer.Deserialize(file, ProfileJsonContext.Default.ProfileData);
             if (data is null || data.Version != 1 || !float.IsFinite(data.Volume) || data.Volume is < 0 or > 1
-                || data.Miniature is < 0 or > 2 || data.Scores is null || data.Scores.Length != 45
-                || data.Scores.Any(score => score is null || score.Name is null || score.Name.Length > 1024))
+                || data.Miniature is < 0 or > 2 || data.SunShaftStrength is < 0 or > 2
+                || data.CloudShadowStrength is < 0 or > 2 || data.RainStrength is < 0 or > 2
+                || data.TimeOfDayMode is < 0 or > 3 || !double.IsFinite(data.DayNightSeconds)
+                || data.DayNightSeconds is < 0 or >= DayNightCycle.Duration
+                || data.Scores is null || data.Scores.Length != 45
+                || data.Scores.Any(score => score is null || score.Name is null || score.Name.Length > 1024)
+                || data.Controls is null || data.Controls.ValidationError().Length != 0)
                 throw new InvalidDataException("The profile is invalid or from another version.");
             Data = data;
         }

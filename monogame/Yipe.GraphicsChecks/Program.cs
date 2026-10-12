@@ -19,17 +19,72 @@ internal static class Program
         string? openingResume = null;
         string? lateInput = null;
         var lateResume = false;
+        int[]? monsterCaptures = null;
+        var monstersOnly = false;
+        var snowOnly = false;
+        var breedingOnly = false;
+        var fireOnly = false;
+        var earthOnly = false;
+        var stoneOnly = false;
+        var hellOnly = false;
+        var maynardOnly = false;
+        var outdoorsOnly = false;
+        var cloudsOnly = false;
+        var iceOnly = false;
+        var waterOnly = false;
+        var finalOnly = false;
+        var menusOnly = false;
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--help")
             {
                 Console.WriteLine("Usage: Yipe.GraphicsChecks [--output DIRECTORY] [--record | --opening-route | --late-route CAMPAIGN_SAVES]");
                 Console.WriteLine("Requires an active graphical desktop. --record additionally requires ffmpeg on PATH.");
+                Console.WriteLine("--capture-monsters 7,9 selects monster clips; all registered monsters are still checked.");
+                Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
+                Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
+                Console.WriteLine("--outdoors-only runs focused surface-region, habitat and ambience checks.");
+                Console.WriteLine("--final-only runs focused Final Cave checks and captures.");
+                Console.WriteLine("--water-only runs focused Water Cave checks and captures.");
+                Console.WriteLine("--ice-only runs focused Ice/Zephyr Cave checks and captures.");
+                Console.WriteLine("--clouds-only runs focused cloud, sunlight, actor, weather and day/night checks.");
+                Console.WriteLine("--maynard-only runs focused Maynard leaves and positional-audio checks.");
+                Console.WriteLine("--hell-only runs focused Hell presentation and ambient-audio checks.");
+                Console.WriteLine("--stone-only runs focused Stone Cave terrain, light and ambience checks.");
+                Console.WriteLine("--earth-only runs focused Earth Cave material, lighting and ambience checks.");
+                Console.WriteLine("--fire-only runs focused volcanic cave checks and captures.");
+                Console.WriteLine("--menus-only runs focused pause/graphics/help/control checks and captures.");
+                Console.WriteLine("--breeding-only runs focused breeding-ground terrain, light and ambience checks.");
                 return 0;
             }
             if (args[i] == "--output" && i + 1 < args.Length && !args[i + 1].StartsWith("--"))
                 outputRoot = args[++i];
             else if (args[i] == "--record") record = true;
+            else if (args[i] == "--monsters-only") monstersOnly = true;
+            else if (args[i] == "--snow-only") snowOnly = true;
+            else if (args[i] == "--outdoors-only") outdoorsOnly = true;
+            else if (args[i] == "--ice-only") iceOnly = true;
+            else if (args[i] == "--final-only") finalOnly = true;
+            else if (args[i] == "--water-only") waterOnly = true;
+            else if (args[i] == "--clouds-only") cloudsOnly = true;
+            else if (args[i] == "--maynard-only") maynardOnly = true;
+            else if (args[i] == "--hell-only") hellOnly = true;
+            else if (args[i] == "--stone-only") stoneOnly = true;
+            else if (args[i] == "--earth-only") earthOnly = true;
+            else if (args[i] == "--fire-only") fireOnly = true;
+            else if (args[i] == "--menus-only") menusOnly = true;
+            else if (args[i] == "--breeding-only") breedingOnly = true;
+            else if (args[i] == "--capture-monsters" && i + 1 < args.Length)
+            {
+                var selected = new List<int>();
+                foreach (var value in args[++i].Split(',', StringSplitOptions.TrimEntries))
+                {
+                    if (!int.TryParse(value, out var monster) || monster is < 1 or > 41)
+                    { Console.Error.WriteLine("--capture-monsters requires comma-separated monster IDs from 1 to 41."); return 2; }
+                    selected.Add(monster);
+                }
+                monsterCaptures = selected.Distinct().Order().ToArray();
+            }
             else if (args[i] == "--opening-route") opening = true;
             else if (args[i] == "--opening-resume" && i + 1 < args.Length) { opening = true; openingResume = Path.GetFullPath(args[++i]); }
             else if (args[i] is "--late-route" or "--late-resume" && i + 1 < args.Length)
@@ -40,8 +95,38 @@ internal static class Program
                 return 2;
             }
         }
+        if (finalOnly && (waterOnly || iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--final-only cannot be combined with other capture or route modes."); return 2; }
+        if (waterOnly && (iceOnly || cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--water-only cannot be combined with other capture or route modes."); return 2; }
+        if (iceOnly && (cloudsOnly || outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--ice-only cannot be combined with other capture or route modes."); return 2; }
+        if (cloudsOnly && (outdoorsOnly || maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--clouds-only cannot be combined with other capture or route modes."); return 2; }
+        if (outdoorsOnly && (maynardOnly || hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--outdoors-only cannot be combined with other capture or route modes."); return 2; }
         if (opening && record) { Console.Error.WriteLine("Use --record for the visual tour or --opening-route for the earned replay."); return 2; }
         if (lateInput is not null && (opening || record)) { Console.Error.WriteLine("Run late-route checks separately from the opening or tour."); return 2; }
+        if (monsterCaptures is not null && (opening || lateInput is not null))
+        { Console.Error.WriteLine("--capture-monsters applies to the ordinary graphics checks."); return 2; }
+        if (monstersOnly && (opening || lateInput is not null || record))
+        { Console.Error.WriteLine("--monsters-only cannot be combined with route or tour modes."); return 2; }
+        if (snowOnly && (monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--snow-only cannot be combined with other capture or route modes."); return 2; }
+        if (breedingOnly && (snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--breeding-only cannot be combined with other capture or route modes."); return 2; }
+        if (fireOnly && (breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--fire-only cannot be combined with other capture or route modes."); return 2; }
+        if (menusOnly && (fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--menus-only cannot be combined with other capture or route modes."); return 2; }
+        if (earthOnly && (menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--earth-only cannot be combined with other capture or route modes."); return 2; }
+        if (stoneOnly && (earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--stone-only cannot be combined with other capture or route modes."); return 2; }
+        if (hellOnly && (stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--hell-only cannot be combined with other capture or route modes."); return 2; }
+        if (maynardOnly && (hellOnly || stoneOnly || earthOnly || menusOnly || fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+        { Console.Error.WriteLine("--maynard-only cannot be combined with other capture or route modes."); return 2; }
         try
         {
             var outputDirectory = Path.Combine(Path.GetFullPath(outputRoot ?? Path.GetTempPath()),
@@ -72,7 +157,7 @@ internal static class Program
                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
                     }
                 }
-                else RunChecks(outputDirectory, record, log);
+                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly, earthOnly, stoneOnly, hellOnly, maynardOnly, outdoorsOnly, cloudsOnly, iceOnly, waterOnly, finalOnly);
                 return 0;
             }
             catch (Exception error)
@@ -114,7 +199,7 @@ internal static class Program
         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
     }
 
-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log)
+    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly, bool earthOnly, bool stoneOnly, bool hellOnly, bool maynardOnly, bool outdoorsOnly, bool cloudsOnly, bool iceOnly, bool waterOnly, bool finalOnly)
     {
         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
@@ -124,11 +209,13 @@ internal static class Program
         var importedPath = Path.Combine(saveDirectory, "startup-import.y3m");
         using (var maps = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "Content", "maps.json")))
             new GameSaveStore(importedPath, MapCatalog.Load(maps)).ImportAsync(previewPath).GetAwaiter().GetResult();
+        var startupTimer = Stopwatch.StartNew();
         using var game = (Game)Activator.CreateInstance(type, [false, null, importedPath])!;
         var startupGraphics = (GraphicsDeviceManager)type.GetField("graphics", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game)!;
         startupGraphics.SynchronizeWithVerticalRetrace = false;
         // The explicit selected-file path starts paused and loads only the isolated import.
         for (var i = 0; i < 5; i++) game.RunOneFrame();
+        Log($"Content startup and five initial frames: {startupTimer.Elapsed.TotalSeconds:F2} s.");
         Log($"Graphics session active: {game.IsActive}");
         if (!game.IsActive) throw new Exception("Game must be active for the animation integration check.");
         var pendingStartup = type.GetField("loading", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(game) as Task;
@@ -157,18 +244,132 @@ internal static class Program
         Check((int)Get("miniatureMode") == 2, "Miniature effect defaults to Strong");
         Check((bool)Get("scanlines"), "Scanlines default to on");
         Check((bool)Get("pixelLighting"), "Localized pixel lighting defaults to on");
+        Check((int)Get("sunShaftStrength") == 1, "Sun shafts default to Subtle");
+        Check((int)Get("cloudShadowStrength") == 1, "Cloud shadows default to Subtle");
+        Check((int)Get("rainStrength") == 1, "Rain defaults to automatic Subtle showers");
+        Check(!(bool)Get("screenShake"), "Screen shake defaults to Off");
+        Check((int)Get("timeOfDayMode") == 0 && (double)Get("dayNightSeconds") is >= 300 and < 330,
+            "Automatic day/night cycle is enabled by default, starting near midday as startup time elapses");
+        if (finalOnly)
+        {
+            FinalCaveChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Final Cave run.");
+            return;
+        }
+        if (waterOnly)
+        {
+            WaterCaveChecks.Run(game, outputDirectory, Check);
+            RaftMotionChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Water Cave run.");
+            return;
+        }
+        if (iceOnly)
+        {
+            IceCaveChecks.Run(game, outputDirectory, Check);
+            IceMovementChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Ice Cave run.");
+            return;
+        }
+        if (menusOnly)
+        {
+            HelpControlChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused menu/help/control run.");
+            return;
+        }
+        if (snowOnly)
+        {
+            Set("timeOfDayMode", 1); SnowBiomeChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused snow-biome run.");
+            return;
+        }
+        if (outdoorsOnly)
+        {
+            OutdoorPresentationChecks.Run(game, outputDirectory, Check);
+            VillagePresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused overworld run.");
+            return;
+        }
+        if (maynardOnly)
+        {
+            MaynardAtmosphereChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Maynard run.");
+            return;
+        }
+        if (hellOnly)
+        {
+            HellPresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+            HellPresentationChecks.RunEnvironment(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Hell run.");
+            return;
+        }
+        if (stoneOnly)
+        {
+            StoneCaveChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Stone Cave run.");
+            return;
+        }
+        if (earthOnly)
+        {
+            EarthPresentationChecks.Run(game.GraphicsDevice, Get("world"), Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+            EarthEnvironmentChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Earth Cave run.");
+            return;
+        }
+        if (fireOnly)
+        {
+            FireCaveChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused Fire Cave run.");
+            return;
+        }
+        if (breedingOnly)
+        {
+            BreedingGroundChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused breeding-ground run.");
+            return;
+        }
+        DayNightChecks.Run(game, outputDirectory, Check);
+        // Auto is exercised above; hold Day for deterministic comparisons of other effects.
+        Set("timeOfDayMode", 1);
+        if (cloudsOnly)
+        {
+            RainChecks.Run(game, outputDirectory, Check);
+            Set("rainStrength", 0);
+            CloudShadowChecks.Run(game, outputDirectory, Check);
+            Set("cloudShadowStrength", 0);
+            SunShaftChecks.Run(game, outputDirectory, Check);
+            SunActorChecks.Run(game, outputDirectory, Check);
+            Log($"Passed {checks} visual integration checks. Focused cloud and sunlight run.");
+            return;
+        }
+        FootstepChecks.Run(game, outputDirectory, Check);
+        if (!monstersOnly) SnowBiomeChecks.Run(game, outputDirectory, Check);
+        MonsterAnimationChecks.Run(game, outputDirectory, Check, monsterCaptures);
+        CombatFeedbackChecks.Run(game, outputDirectory, Check);
+        if (monstersOnly)
+        {
+            Log($"Passed {checks} visual integration checks. Focused monster and combat run.");
+            return;
+        }
+        RainChecks.Run(game, outputDirectory, Check);
+        Set("rainStrength", 0);
+        CloudShadowChecks.Run(game, outputDirectory, Check);
+        Set("cloudShadowStrength", 0);
+        SunShaftChecks.Run(game, outputDirectory, Check);
+        SunActorChecks.Run(game, outputDirectory, Check);
+        Set("sunShaftStrength", 0);
         PixelLightingChecks.Run(game, outputDirectory, Check);
         Set("pixelLighting", false);
         Capture("yipe-defaults-play.png");
-        Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 50f);
+        Set("paused", true); Set("pauseAmount", 1f); Set("selected", 4); Set("selectionY", 40f);
         Capture("yipe-defaults-menu.png");
         Set("paused", false); Set("pauseAmount", 0f);
         Check(!(bool)Get("vignette"), "Vignette defaults to off");
         CheckVignette();
+        HelpControlChecks.Run(game, outputDirectory, Check);
         // Isolate existing blur measurements from scanlines, then exercise the full mode cycle.
         Set("scanlines", false);
         Set("miniatureMode", 1);
-        Set("selected", 6);
+        Set("graphicsMenuOpen", true); Set("selected", 2);
         menu.Invoke(game, null);
         Check((int)Get("miniatureMode") == 2, "Miniature menu advances to Strong");
         menu.Invoke(game, null);
@@ -247,17 +448,18 @@ internal static class Program
         restore.Invoke(game, [new MapPosition(5, 5)]);
         Set("paused", true);
         Set("pauseAmount", 1f);
-        Set("selectionY", 60f);
+        Set("selectionY", 20f);
         Set("miniatureMode", 0);
         var menuOff = DrawPixels();
         Set("miniatureMode", 2);
         var menuStrong = DrawPixels();
         Check((from y in Enumerable.Range(6 * 4, 168 * 4)
-               where y < 104 * 4 || y >= 111 * 4
+               where y < 64 * 4 || y >= 71 * 4
                from x in Enumerable.Range(34 * 4, 252 * 4)
                select y * 1280 + x).All(i => menuOff[i] == menuStrong[i]),
             "Opaque pause panel and typography remain untouched by the blur");
         Capture("yipe-village-menu.png");
+        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
         Set("paused", false);
         Set("pauseAmount", 0f);
         Set("message", "Beyond Maynard\nThis area is not available in the town preview.");
@@ -428,10 +630,10 @@ internal static class Program
                 $"Bridge {bridge.X},{bridge.Y} reflection freezes at a fixed scene time");
             Check(!stillReflection.SequenceEqual(Layer("DrawHeroReflection", reflectionActor, 2d)),
                 $"Bridge {bridge.X},{bridge.Y} reflection has gentle animated ripples");
-            var withReflection = Layer("Draw", reflectionActor, 1d, false);
+            var withReflection = Layer("Draw", reflectionActor, 1d, false, 0);
             var originalMask = (bool[])waterMask.Clone();
             Color[] withoutReflection;
-            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false); }
+            try { Array.Fill(waterMask, false); withoutReflection = Layer("Draw", reflectionActor, 1d, false, 0); }
             finally { originalMask.CopyTo(waterMask, 0); }
             var townAtlas = (Texture2D)townType.GetField("town", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(townRenderer)!;
             var townPixels = new Color[townAtlas.Width * townAtlas.Height]; townAtlas.GetData(townPixels);
@@ -536,10 +738,10 @@ internal static class Program
         try
         {
             detailsAtlas.SetData(new Color[originalDetails.Length]);
-            bareFacades = Layer("Draw", stillPlayer, 1d, false);
+            bareFacades = Layer("Draw", stillPlayer, 1d, false, 0);
         }
         finally { detailsAtlas.SetData(originalDetails); }
-        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false);
+        var decoratedFacades = Layer("Draw", stillPlayer, 1d, false, 0);
         for (var y = 0; y < TownMap.Height; y++) for (var x = 0; x < TownMap.Width; x++)
         {
             var sprite = map.Tile(new(x, y)) switch { 1 => 0, 5 => 1, 6 => 2, 7 => 3, 10 => 4, _ => -1 };
@@ -568,7 +770,7 @@ internal static class Program
         try
         {
             buildingAtlas.SetData(withoutCavePixels);
-            withoutCave = Layer("Draw", stillPlayer, 1d, false);
+            withoutCave = Layer("Draw", stillPlayer, 1d, false, 0);
         }
         finally { buildingAtlas.SetData(buildingPixels); }
         var caveChanged = Enumerable.Range(0, withoutCave.Length).Where(i => withoutCave[i] != decoratedFacades[i]).ToArray();
@@ -803,7 +1005,7 @@ internal static class Program
         restore.Invoke(game, [new MapPosition(11, 5)]);
         Check(((Vector2)Get("cameraPosition")).X == 96, "Camera clamps at the east edge");
         Capture("yipe-village-east.png");
-        Set("selected", 4);
+        Set("graphicsMenuOpen", true); Set("selected", 0);
         menu.Invoke(game, null);
         var graphics = (GraphicsDeviceManager)Get("graphics");
         Check(graphics.IsFullScreen, "Fullscreen activates");
@@ -811,7 +1013,7 @@ internal static class Program
         menu.Invoke(game, null);
         Check(!graphics.IsFullScreen && game.GraphicsDevice.PresentationParameters.BackBufferWidth == 1280
             && game.GraphicsDevice.PresentationParameters.BackBufferHeight == 720, "Windowed 16:9 resolution restores");
-        Set("selected", 5);
+        Set("selected", 1);
         menu.Invoke(game, null);
         Check((bool)Get("scanlines"), "Scanlines toggle on through the menu");
         draw.Invoke(game, [new GameTime()]);
@@ -829,6 +1031,7 @@ internal static class Program
             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-scanlines.png"));
             capture.SaveAsPng(file, capture.Width, capture.Height);
         }
+        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
         var renderer = Get("town");
         var rendererType = renderer.GetType();
         var palette = (Color[])rendererType.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
@@ -862,15 +1065,28 @@ internal static class Program
                     atlasIndex < 3 ? $"Monster/NPC sprite {atlasIndex * 16 + cell + 1} is nonempty with a clear atlas border" : $"Map atlas {atlasIndex + 1} prop {cell + 1} has a clear atlas border");
             }
         }
+        OutdoorPresentationChecks.Run(game, outputDirectory, Check);
+        MaynardAtmosphereChecks.Run(game, outputDirectory, Check);
         WorldPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+        VillagePresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
         MountainPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
         HellPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+        HellPresentationChecks.RunEnvironment(game, outputDirectory, Check);
         EarthPresentationChecks.Run(game.GraphicsDevice, worldRenderer, Get("town"), (MapCatalog)Get("catalog"), outputDirectory, Check);
+        EarthEnvironmentChecks.Run(game, outputDirectory, Check);
+        FinalCaveChecks.Run(game, outputDirectory, Check);
+        StoneCaveChecks.Run(game, outputDirectory, Check);
+        IceCaveChecks.Run(game, outputDirectory, Check);
+        IceMovementChecks.Run(game, outputDirectory, Check);
+        WaterCaveChecks.Run(game, outputDirectory, Check);
+        RaftMotionChecks.Run(game, outputDirectory, Check);
+        BreedingGroundChecks.Run(game, outputDirectory, Check);
+        FireCaveChecks.Run(game, outputDirectory, Check);
         HeatPresentationChecks.Run(game, outputDirectory, Check);
         restore.Invoke(game, [new MapPosition(5, 5)]);
         Set("paused", true);
         Set("pauseAmount", 1f);
-        Set("selectionY", 50f);
+        Set("selected", 4); Set("selectionY", 40f);
         Set("menuMessage", "Your place in town is saved.");
         Capture("yipe-village-pause.png");
         Set("paused", false);
@@ -884,7 +1100,7 @@ internal static class Program
             game.GraphicsDevice.SetRenderTarget(fullMap);
             game.GraphicsDevice.Clear(Color.Black);
             referenceBatch.Begin(samplerState: SamplerState.PointClamp);
-            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false]);
+            townType.GetMethod("Draw")!.Invoke(townRenderer, [referenceBatch, player, 1.2d, false, 0]);
             referenceBatch.End();
             game.GraphicsDevice.SetRenderTarget(null);
             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-entire-town.png"));
@@ -1291,7 +1507,7 @@ internal static class Program
         void CheckVignette()
         {
             var snapshot = GameSaveCodec.Encode(session, (MapCatalog)Get("catalog"));
-            Set("selected", 7); menu.Invoke(game, null);
+            Set("graphicsMenuOpen", true); Set("selected", 3); menu.Invoke(game, null);
             Check((bool)Get("vignette"), "Vignette toggles on through the pause menu");
             var profileType = Get("profile").GetType();
             var reopened = Activator.CreateInstance(profileType, [Path.ChangeExtension(importedPath, ".profile.json")])!;
@@ -1312,10 +1528,10 @@ internal static class Program
                 }
             Capture("yipe-vignette-on.png");
             Set("vignette", false); Capture("yipe-vignette-off.png");
-            Set("miniatureMode", 0); Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 70f);
+            Set("miniatureMode", 0); Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 30f);
             Set("menuMessage", "Preferences could not be saved.\nChanges apply for this session.");
             var pauseOff = DrawPixels(); Set("vignette", true); var pauseOn = DrawPixels();
-            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 114 * 4 || y >= 121 * 4
+            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 74 * 4 || y >= 81 * 4
                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => pauseOff[i] == pauseOn[i]),
                 "Vignette leaves pause text and panels unchanged apart from its own On/Off label");
             Capture("yipe-vignette-menu.png");
@@ -1329,11 +1545,11 @@ internal static class Program
             type.GetMethod("OpenMap", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, null);
             var mapOff = DrawPixels(); Set("vignette", true);
             Check(mapOff.SequenceEqual(DrawPixels()), "Vignette does not darken the full-screen map or its labels");
-            Set("mapOpen", false); Set("miniatureMode", 2); Set("scanlines", true); Set("selected", 7);
+            Set("mapOpen", false); Set("miniatureMode", 2); Set("scanlines", true); Set("selected", 3);
             menu.Invoke(game, null);
             Check(!(bool)Get("vignette") && GameSaveCodec.Encode(session, (MapCatalog)Get("catalog")).SequenceEqual(snapshot),
                 "Vignette toggles off again without changing gameplay or RNG");
-            Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
+            Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
         }
 
         void Check(bool condition, string label)

@@ -1,0 +1,51 @@
+{
+  "sources": [
+    {
+      "title": "Loopable Dungeon Ambience",
+      "author": "JaggedStone",
+      "source": "https://opengameart.org/content/loopable-dungeon-ambience",
+      "input": "breeding-ground.wav",
+      "sha256": "739ecb8902dc2ee65d3cc40bf72d911128a6fea63e1a66ea6970575385f4c34e",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "title": "Dripping water loop",
+      "author": "Independent.nu (submitted by qubodup)",
+      "source": "https://opengameart.org/content/dripping-water-loop",
+      "download": "https://opengameart.org/sites/default/files/atmosbasement.mp3_.flac",
+      "sha256": "247c0ef181c8ba8d190a6194f6ea02d9defb23b70194c52c7f9187b5b7b1cc61",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "title": "Fantozzi\u2019s footsteps: grass/sand, stone",
+      "author": "Fantozzi (sliced by qubodup)",
+      "source": "https://opengameart.org/content/fantozzis-footsteps-grasssand-stone",
+      "input": "../Footsteps/sand-0.wav",
+      "sha256": "fb46e1fc2fc7a2503b9917fbf25ef2c6e0edf558f9bd89b24b0ae1f310e0cfba",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "processing": "58-second stereo 22050 Hz PCM16 loops. Existing cave air low-passed to 1100 Hz at half gain; dripping-water recording filtered 100\u20133800 Hz, gain 0.48 upper / 0.90 deep; quiet granular sample at three irregular offsets, no generated oscillators/noise. Final gain 2.0 with a 0.85 peak ceiling; two-second wrap crossfade. Mixed via build/earth-remaster/mix_audio.py; no peak normalization.",
+  "outputs": [
+    {
+      "file": "earth-cave.wav",
+      "sha256": "977198394e3e9cad858cf513bab149dc89627f32b6fc005aa7f092d2345b97a2",
+      "duration": 58.0,
+      "rms": 0.0321459647726715,
+      "peak": 0.7381591796875,
+      "seam_delta": 0.001739501953125
+    },
+    {
+      "file": "earth-cave-deep.wav",
+      "sha256": "8905cce14811dd895149ad9e977c80705b4cd0365b947ffdbc04ffc787966d59",
+      "duration": 58.0,
+      "rms": 0.03481569563593642,
+      "peak": 0.7415771484375,
+      "seam_delta": 0.00341796875
+    }
+  ],
+  "downloaded_utc": "2026-10-09"
+}

@@ -1,0 +1,9 @@
+{
+  "FootstepSounds.cs": "d64403bcc26cc4f702950ccc60febd0e34482af55d184924df8892cdf5acd6f7",
+  "GameAudio.cs": "21f4f1bf0ece7d3a2e05cefbefd474ea20052ad2455d26906d424ca33fe1880b",
+  "TownGame.cs": "790f604c6d6d42d94bd0020f0612330be2b0b4a8b9e0e8be096f1eaa9543c0be",
+  "TownOverlays.cs": "e132809a41fffaca1be44d42987df6c2075a487902f750d2e5f7a46481b1635a",
+  "TownRenderer.cs": "51ff64a561fb1d2764146246ac833059548ecf3c4a2b7dc664905b0f7d71523c",
+  "WorldRenderer.cs": "c4082c5eb072aedce8d833c5cdc197fdfffd3a874652089c5e19dbcf2bbdc0c4",
+  "review": "Scoped production diff reviewed: original PCM synthesis is cached at load, one dedicated short-lived quiet voice follows existing audio ownership, the accepted-player-walk flag distinguishes passive movement and clears on snaps, renderer masks determine surfaces. No audio framework, new preference fields, PlayerMotion changes or Core edits. Hardware and timing checks pass; earned opening and late/finale restart boundaries pass. A normal-input walk was inspected in the launched full-adventure copy; no required checks remain."
+}

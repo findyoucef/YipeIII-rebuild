@@ -1,0 +1,81 @@
+{
+  "status": "implemented and verified locally; user visual approval pending",
+  "request": "Bring the brown floor and conspicuous monsters into the finer slate-wall environment. User clarified that creatures stand out as if they do not belong in the environment.",
+  "reference": {
+    "region": "upper caves A4/map59",
+    "saved_position": [
+      8,
+      3
+    ],
+    "gameplay_comparison_position": [
+      8,
+      8
+    ]
+  },
+  "changes": [
+    "Four muted mineral-dirt shades with fine grey gravel, less contrast between broad floor patches and cooler wall-foot shadows",
+    "Nest hollows and scattered debris shadows match the ground; straw retains warm accents",
+    "World creatures receive a subtle cool ambient tint in the six breeding rooms",
+    "Existing foot/contact shadows are stronger without changing their footprint or hover height",
+    "Movement dust and drifting grit use the same mineral-ground colour"
+  ],
+  "scope": {
+    "map_ids": [
+      59,
+      60,
+      65,
+      66,
+      105,
+      106
+    ],
+    "production_files": [
+      "monogame/Yipe.Desktop/WorldBreeding.cs",
+      "monogame/Yipe.Desktop/WorldMonsterAnimation.cs"
+    ],
+    "gameplay": "No terrain layout, encounter, movement, asset or save-format changes"
+  },
+  "verification": {
+    "checked_release": "zero warnings/errors",
+    "focused_gpu_checks": 124,
+    "full_gpu_checks": 2407,
+    "tour_frames": 360,
+    "new_checks": 9,
+    "map_comparison": {
+      "baseline": "build/breeding-grounds/full/yipe-graphics-20261009-035027-f855d71f/maps",
+      "current": "build/breeding-cohesion/full/yipe-graphics-20261009-042553-87416cab/maps",
+      "baseline_maps": 115,
+      "current_maps": 115,
+      "missing": [],
+      "changed": [
+        "map-059.png",
+        "map-060.png",
+        "map-065.png",
+        "map-066.png",
+        "map-105.png",
+        "map-106.png"
+      ],
+      "unchanged": 109
+    },
+    "personal_hashes_unchanged": {
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m": true,
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json": true,
+      "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json": true
+    },
+    "personal_files_note": "The task did not write or restore any personal files. Live-game files were compared read-only.",
+    "core_source_and_map_tables": "No tracked diff",
+    "full_output": "build/breeding-cohesion/full/yipe-graphics-20261009-042553-87416cab",
+    "focused_output": "build/breeding-cohesion/final/yipe-graphics-20261009-042527-1eff0162"
+  },
+  "review": {
+    "visual": "All six native rooms inspected; default gameplay reviewed in the communal nest room and large-monster den. Existing wall facets and silhouettes retained.",
+    "simplicity": "Two localized production edits: a four-colour ground ramp in the existing cached renderer and biome-scoped parameters in the existing creature draw/contact passes. No new textures, helpers, renderer modes or mutable scene state.",
+    "regressions": "Focused tests cover a grounded creature, a hovering creature and a two-tile boss: same outline/position, cave ambient colour and stronger contact, unchanged battle drawing, and exact original appearance after leaving. Existing fog, seams, secrets, palette/contrast, audio and full-gameplay/RNG checks remain enabled."
+  },
+  "source_sha256": {
+    "monogame/Yipe.Desktop/WorldBreeding.cs": "a7b0b0ca6a7f98a02b323d2f8d246ddf26cfa75a2c9cf28c455e461224b2c7b6",
+    "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "e73766c44f86620dc5f14165f74e3c85e34ffb1bbfe32a2f33fdd31481dfe428",
+    "monogame/Yipe.GraphicsChecks/BreedingGroundChecks.cs": "be1fa5d7f103a79e7035cc431e52c1717035c175aee980bf337f71c288cd1df1"
+  },
+  "package_created": false,
+  "personal_game_relaunched": false
+}

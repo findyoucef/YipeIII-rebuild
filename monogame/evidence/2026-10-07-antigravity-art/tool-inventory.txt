@@ -1,0 +1,18 @@
+### Exposed Tool Names
+
+* `ask_question`
+* `define_subagent`
+* `invoke_subagent`
+* `manage_subagents`
+* `manage_task`
+* `read_url_content`
+* `replace_file_content`
+* `run_command`
+* `schedule`
+* `search_web`
+* `send_message`
+* `view_file`
+* `write_to_file`
+
+### `generate_image` Status
+* **`generate_image` is not in the inventory.** (There is only an `image-generator` subagent type available for `invoke_subagent`, but no direct tool named `generate_image`).

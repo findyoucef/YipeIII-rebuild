@@ -1,0 +1,92 @@
+{
+  "task": "Make the breeding-ground floor change visible after the user found the previous pass too subtle",
+  "scope": [
+    59,
+    60,
+    65,
+    66,
+    105,
+    106
+  ],
+  "changes": [
+    "Fractured slate beds cover most open floor, with broader faces and dark joints",
+    "Worn-earth deposits interrupt the stone and fill seams",
+    "Sparse cleavage marks, scuffs and grit retain native pixel detail"
+  ],
+  "visual_review": "Reviewed native upper A4 plus default gameplay A4/B4 with Strong miniature and scanlines. Clearly larger visible material change than the prior sparse embedded fragments. Floor faces remain flatter and darker than walls, with readable nests and actors. User review pending.",
+  "verification": {
+    "checked_release": "zero warnings/errors",
+    "focused_gpu_checks": 131,
+    "comparison": [
+      {
+        "map": 59,
+        "wall_core_pixels_checked": 10560,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 61580
+      },
+      {
+        "map": 60,
+        "wall_core_pixels_checked": 7872,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 71828
+      },
+      {
+        "map": 65,
+        "wall_core_pixels_checked": 11520,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 62957
+      },
+      {
+        "map": 66,
+        "wall_core_pixels_checked": 7680,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 70595
+      },
+      {
+        "map": 105,
+        "wall_core_pixels_checked": 11328,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 57456
+      },
+      {
+        "map": 106,
+        "wall_core_pixels_checked": 11328,
+        "wall_core_changes": 0,
+        "light_mask_identical": true,
+        "changed_map_pixels": 57088
+      }
+    ],
+    "unchanged_other_desktop_core_and_map_sources": true,
+    "full_suite": "Not rerun for this isolated floor change; prior full menu build passed 2629 checks."
+  },
+  "simplicity_review": "Task diff is one existing floor branch, replacing the prior fragment pattern. Reuses the palette, world coordinates, cache and deterministic noise. No new production types, resources, settings or shared rendering changes; no actionable findings.",
+  "personal_files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "before": "6bbbef4a3cf618147c41c994f90481238f97ad8cca87b836f1af3fda53fbb2ee",
+      "after": "6bbbef4a3cf618147c41c994f90481238f97ad8cca87b836f1af3fda53fbb2ee",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "before": "b5d415d836035c133d912530cb843960ee6bbbd328ddde45149596a610556151",
+      "after": "b5d415d836035c133d912530cb843960ee6bbbd328ddde45149596a610556151",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "before": "96d4d1fae7c3cdf7881a14a4228685e9ac422ded6dd4cbc42d521711ab376c87",
+      "after": "96d4d1fae7c3cdf7881a14a4228685e9ac422ded6dd4cbc42d521711ab376c87",
+      "unchanged": true
+    }
+  ],
+  "personal_file_note": "Isolated test sessions; live game not navigated, replaced or restarted. Any observed personal-file changes left intact.",
+  "source_sha256": "28682f50a29a2af6e90db6cc585d40dbdcb49d5ef71e7f3d86f93987719df508",
+  "focused_output": "build/breeding-floor-contrast/first/yipe-graphics-20261009-064138-a8c94162",
+  "delivery": "Local build only; current running game still needs a relaunch."
+}

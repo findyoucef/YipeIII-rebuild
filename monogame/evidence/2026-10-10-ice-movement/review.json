@@ -1,0 +1,64 @@
+{
+  "request": "Slippery character movement and reduced traction in the remastered Ice Cave",
+  "scope": {
+    "rooms": [
+      41,
+      42,
+      47,
+      53,
+      81,
+      82,
+      87,
+      88,
+      93,
+      94,
+      99
+    ],
+    "floor_tiles": [
+      "0x53",
+      "0x49"
+    ],
+    "default_enabled": true
+  },
+  "behavior": {
+    "push_off_seconds": 0.34,
+    "held_glide_seconds": 0.22,
+    "braking_seconds": 0.42,
+    "extra_coast_tiles": 1,
+    "release_and_turn": "Decelerate in the old direction for one tile, then regain traction.",
+    "stops": "Automatic drift stops before walls, doors, depth exits, room edges and other floor materials. Encounters, menus, pause/focus, restore and load cancel momentum.",
+    "controls": "Uses actual held intent for keyboard, custom bindings, D-pad and eight-way stick, preserving input suppression after focus/reconnection.",
+    "sprite": "Existing pixel-art foot pose remains planted while gliding; push-offs retain recorded stone contact.",
+    "gameplay": "Each accepted step uses Adventure.Move. Core collision, encounter and event logic is unchanged."
+  },
+  "verification": {
+    "local_release_build": "0 warnings, 0 errors",
+    "core_input_checks": 627,
+    "focused_ice_checks": 254,
+    "full_graphics_checks": 3358,
+    "tour_frames": 360,
+    "full_output": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/ice-movement/full/yipe-graphics-20261011-044054-88b2c0b4",
+    "personal_files_unchanged": 33,
+    "original_core_map_files_unchanged": 27,
+    "simplicity_review": "Reviewed the complete task-relative diff. Two frontend fields carry direction and the stride dispatched to existing synchronization; one explicit stride enum controls timing and planted-foot animation. No new physics framework, save fields, options, shaders or assets. No remaining findings."
+  },
+  "artifacts": {
+    "motion": "ice-slide.mp4",
+    "frames": [
+      "push-off.png",
+      "glide.png",
+      "braking.png",
+      "stopped.png"
+    ],
+    "logs": [
+      "build.log",
+      "core-tests.log",
+      "focused.log",
+      "full.log"
+    ],
+    "diff": "task.patch",
+    "source_hashes": "source-sha256.json"
+  },
+  "preview_notes": "Two-second 60 Hz isolated authored entrance-room capture. Personal adventures were not loaded or staged. User feel/traction approval is pending.",
+  "packaging": "Not performed; local development build only."
+}

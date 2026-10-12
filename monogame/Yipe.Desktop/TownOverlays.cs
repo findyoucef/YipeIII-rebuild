@@ -32,7 +32,7 @@ internal sealed partial class TownGame
         }
         if (pendingEvent is null) { command.Dispose(); command = null; }
         SynchronizeWorld(animate: true);
-        if (!player.IsMoving && pendingEvent is not null)
+        if (!player.IsMoving && !world.MonstersMoving && pendingEvent is not null)
         {
             var next = pendingEvent; pendingEvent = null;
             ShowInteraction(next);
@@ -44,6 +44,8 @@ internal sealed partial class TownGame
         var changed = !ReferenceEquals(renderedMap, session.CurrentMap);
         if (changed)
         {
+            audio.StopFootsteps();
+            world.ClearSnowTracks();
             renderedMap = session.CurrentMap;
             if (renderedMap.Id == TownMap.Id)
             {
@@ -53,15 +55,23 @@ internal sealed partial class TownGame
             }
         }
         var position = session.Location.Position;
+        if (world.SynchronizeRaft(adventure, player.Position, animate && !changed))
+            player.CarryTo(position);
         if (!changed && animate && position != player.Position
             && Math.Abs(position.X - player.Position.X) <= 1 && Math.Abs(position.Y - player.Position.Y) <= 1 && !player.IsMoving)
-            player.MoveTo(position);
+            player.MoveTo(position, nextStride);
         else if (changed || position != player.Position || !animate)
         {
             player.SnapTo(position);
+            walkingStep = false;
+            iceDirection = Point.Zero;
+            world.ClearSnowTracks();
             cameraPosition = CameraTarget(player.VisualPosition);
         }
+        player.Update(0, world.RaftSupport(adventure, sceneTime));
         if (changed) pendingDirection = Point.Zero;
+        world.SynchronizeMonsters(adventure, animate && !changed,
+            new((int)MathF.Round(cameraPosition.X), (int)MathF.Round(cameraPosition.Y), CanvasWidth, CanvasHeight));
         town.AlternateHero = Hero.Inventory[28] is >= 2 and <= 12 ? world.Character(Hero.Inventory[28]) : null;
     }
 
@@ -69,6 +79,19 @@ internal sealed partial class TownGame
     {
         var current = overlay!;
         if (actions.Back) { current.Back?.Invoke(); return; }
+        if (current.Targeting && actions.Direction.X != 0)
+        {
+            var battle = adventure.Battle!;
+            for (var distance = 1; distance <= 3; distance++)
+            {
+                var target = ((current.InspectedEnemy ?? battle.SelectedTarget) + actions.Direction.X * distance + 3) % 3;
+                if (battle.Monsters[target].Health <= 0) continue;
+                if (current.InspectedEnemy.HasValue) current.InspectedEnemy = target;
+                else battle.SelectedTarget = target;
+                break;
+            }
+            return;
+        }
         if (actions.Direction.X != 0 && current.PageCount > 1)
         {
             current.Page = Math.Clamp(current.Page + actions.Direction.X, 0, current.PageCount - 1);
@@ -82,13 +105,13 @@ internal sealed partial class TownGame
             current.Selected = (current.Selected + actions.Direction.Y + current.Options.Length) % current.Options.Length;
         if (actions.Confirm && current.Options.Length != 0) current.Options[current.Selected].Choose();
     }
-    private void Notice(string title, string text, Action? done = null)
+    private void Notice(string title, string text, Action? done = null, bool combat = false)
     {
         done ??= () => overlay = null;
-        overlay = new(title, text, [new("Continue", done)], done);
+        overlay = new(title, text, [new("Continue", done)], done) { Combat = combat };
     }
-    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null) =>
-        overlay = new(title, text, options, back);
+    private void Choices(string title, string text, IEnumerable<OverlayOption> options, Action? back = null, bool combat = false) =>
+        overlay = new(title, text, options, back) { Combat = combat };
 
     private void ShowInteraction(AdventureEvent interaction)
     {
@@ -136,7 +159,7 @@ internal sealed partial class TownGame
             var result = adventure.Other(); audio.Play(result.SoundId); SynchronizeWorld(false);
             Notice("Other", result.Message, () => overlay = null);
         }),
-        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; paused = true; selected = 0; })], () => overlay = null);
+        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; paused = true; graphicsMenuOpen = false; selected = 0; selectionY = 0; })], () => overlay = null);
 
     private void ShowEquipmentShop(EquipmentKind kind)
     {
@@ -211,9 +234,17 @@ internal sealed partial class TownGame
                 {
                     if (combat)
                     {
-                        var result = adventure.UseCombatItem(slot); audio.Play(result.Item.SoundId);
-                        if (result.Turn is { } turn) ShowTurn(turn, result.Item.Message);
-                        else Notice("Item", result.Item.Message, () => ShowInventory(true));
+                        var presentation = new CombatPresentation(Hero, adventure.Battle!, CombatAction.Item);
+                        var item = Hero.Inventory[slot];
+                        var result = adventure.UseCombatItem(slot);
+                        if (result.Turn is { } turn)
+                        {
+                            var healing = item is 1 or 2 ? Math.Min(result.Item.Amount,
+                                presentation.Before[0].MaximumHealth - presentation.Before[0].Health) : item == 9 ? result.Item.Amount : 0;
+                            presentation.Complete(Hero, adventure.Battle!, turn, healing: healing, sound: result.Item.SoundId);
+                            ShowTurn(turn, presentation, result.Item.Message);
+                        }
+                        else Notice("Item", result.Item.Message, () => ShowInventory(true), true);
                     }
                     else
                     {
@@ -229,9 +260,9 @@ internal sealed partial class TownGame
                     }
                 }),
                 new("Discard", () => { Hero.Inventory[slot] = 0; ShowInventory(combat); }),
-                new("Back", () => ShowInventory(combat))], () => ShowInventory(combat)))).ToList();
+                new("Back", () => ShowInventory(combat))], () => ShowInventory(combat), combat))).ToList();
         options.Add(new("Back", Back));
-        Choices("Inventory", StatusLine, options, Back);
+        Choices("Inventory", combat ? "" : StatusLine, options, Back, combat);
     }
     private void ShowSpells(bool combat)
     {
@@ -242,11 +273,14 @@ internal sealed partial class TownGame
             {
                 if (combat)
                 {
-                    var previousHealth = adventure.Battle!.Monsters.Select(monster => monster.Health).ToArray();
+                    var presentation = new CombatPresentation(Hero, adventure.Battle!, CombatAction.Spell, index, power);
                     var result = adventure.CastCombat(index, power);
-                    if (result.Status == SpellCastStatus.Cast) { audio.Play(AudioCatalog.Spell(index)); PlayDefeatedMonsters(previousHealth); }
-                    if (result.Status == SpellCastStatus.Cast) ShowTurn(result.Turn, Spells.Definitions[index].Name + (result.Healing > 0 ? $": restored {result.Healing} HP." : "."));
-                    else Notice("Spell", SpellFailure(result.Status), () => ShowSpells(true));
+                    if (result.Status == SpellCastStatus.Cast)
+                    {
+                        presentation.Complete(Hero, adventure.Battle!, result.Turn, result.DamageBySlot, result.Healing, AudioCatalog.Spell(index));
+                        ShowTurn(result.Turn, presentation, Spells.Definitions[index].Name + (result.Healing > 0 ? $": restored {result.Healing} HP." : "."));
+                    }
+                    else Notice("Spell", SpellFailure(result.Status), () => ShowSpells(true), true);
                 }
                 else
                 {
@@ -256,13 +290,14 @@ internal sealed partial class TownGame
                     Notice("Spell", result.Status == SpellCastStatus.Cast ? result.LocationChanged ? "You arrive safely." : result.Healing > 0 ? $"Restored {result.Healing} HP." : "You are surrounded by a terrible smell." : SpellFailure(result.Status), () => overlay = null);
                 }
             }
-            Choices(Spells.Definitions[index].Name, Spells.Definitions[index].Description, [
+            Choices(Spells.Definitions[index].Name, combat ? CombatSpellHint(index) : Spells.Definitions[index].Description, [
                 new($"Low power - {Spells.PointCost(Hero, index, SpellPower.Low)} SP", () => Cast(SpellPower.Low)),
                 new($"High power - {Spells.PointCost(Hero, index, SpellPower.High)} SP", () => Cast(SpellPower.High)),
-                new("Back", () => ShowSpells(combat))], () => ShowSpells(combat));
+                new("Back", () => ShowSpells(combat))], () => ShowSpells(combat), combat);
+            if (combat) { overlay!.PreviewSpell = index; overlay.Targeting = index is 2 or 3 or 6 or 7; }
         })).ToList();
         options.Add(new("Back", Back));
-        Choices("Spells", StatusLine, options, Back);
+        Choices("Spells", combat ? "" : StatusLine, options, Back, combat);
     }
     private static string SpellFailure(SpellCastStatus status) => status switch
     {
@@ -272,56 +307,74 @@ internal sealed partial class TownGame
     };
     private void ShowBattle()
     {
-        overlay = new("Combat", StatusLine, [new("Attack", () =>
+        overlay = new("Combat", "", [new("Attack", () =>
             {
-                var previousHealth = adventure.Battle!.Monsters.Select(monster => monster.Health).ToArray();
+                var presentation = new CombatPresentation(Hero, adventure.Battle!, CombatAction.Attack);
                 var turn = adventure.Attack();
-                if (turn.PlayerDamage > 0) audio.Play(130);
-                PlayDefeatedMonsters(previousHealth); ShowTurn(turn);
+                presentation.Complete(Hero, adventure.Battle!, turn, sound: turn.PlayerDamage > 0 ? 130 : 0);
+                ShowTurn(turn, presentation);
             }),
             new($"Ability: {Hero.SpecialAbility}", () =>
             {
-                if (Hero.SpecialAbility == SpecialAbility.None) Notice("Ability", "You have not learned a special ability.", ShowBattle);
-                else if (Hero.AbilityPoints < 3) Notice("Ability", "You need three ability points.", ShowBattle);
+                if (Hero.SpecialAbility == SpecialAbility.None) Notice("Ability", "You have not learned a special ability.", ShowBattle, true);
+                else if (Hero.AbilityPoints < 3) Notice("Ability", "You need three ability points.", ShowBattle, true);
                 else
                 {
                     var before = Hero.AbilityPoints;
-                    var previousHealth = adventure.Battle!.Monsters.Select(monster => monster.Health).ToArray();
+                    var presentation = new CombatPresentation(Hero, adventure.Battle!, CombatAction.Ability);
                     var turn = adventure.UseAbility();
-                    if (Hero.AbilityPoints == before) Notice("Ability", "Your ability cannot take effect right now.", ShowBattle);
-                    else { audio.Play(AudioCatalog.Ability(Hero.SpecialAbility)); PlayDefeatedMonsters(previousHealth); ShowTurn(turn, $"You use {Hero.SpecialAbility}."); }
+                    if (Hero.AbilityPoints == before) Notice("Ability", "Your ability cannot take effect right now.", ShowBattle, true);
+                    else
+                    {
+                        presentation.Complete(Hero, adventure.Battle!, turn, sound: AudioCatalog.Ability(Hero.SpecialAbility));
+                        ShowTurn(turn, presentation, $"You use {Hero.SpecialAbility}.");
+                    }
                 }
             }),
             new("Spells", () => ShowSpells(true)), new("Inventory", () => ShowInventory(true)),
-            new("Change target", () => { adventure.NextTarget(); ShowBattle(); }), new("Flee", () =>
+            new("Enemy info", ShowEnemyInfo)], () =>
             {
+                var presentation = new CombatPresentation(Hero, adventure.Battle!, CombatAction.Flee);
                 var result = adventure.Flee();
-                if (result.MonsterDamage > 0) audio.Play(134);
-                if (result.PlayerDefeated) audio.Play(128);
-                Notice("Flee", result.Escaped ? "You escaped!" : $"You could not escape. You took {result.MonsterDamage} damage.",
-                    adventure.BattleResult == BattleResolution.Ongoing ? ShowBattle : AdvanceCommand);
-            })]) { Combat = true };
+                presentation.Complete(Hero, adventure.Battle!, new CombatTurn { MonsterDamage = result.MonsterDamage,
+                    MonsterDamageBySlot = result.MonsterDamageBySlot, Outcome = result.PlayerDefeated ? CombatOutcome.Defeat : CombatOutcome.Ongoing }, escaped: result.Escaped);
+                ShowCombatResult("Flee", result.Escaped ? "You escaped!" : $"You could not escape. You took {result.MonsterDamage} damage.",
+                    adventure.BattleResult == BattleResolution.Ongoing ? ShowBattle : AdvanceCommand, presentation,
+                    adventure.BattleResult == BattleResolution.Ongoing);
+            }) { Combat = true, Targeting = true };
     }
-    private void PlayDefeatedMonsters(int[] previousHealth)
+    private void ShowEnemyInfo()
     {
-        for (var i = 0; i < 3; i++)
-            if (previousHealth[i] > 0 && adventure.Battle!.Monsters[i].Health <= 0) audio.MonsterDeath(adventure.Battle.Monsters[i].TypeId);
+        var parent = overlay!;
+        var battle = adventure.Battle!;
+        var inspected = battle.SelectedTarget;
+        if (battle.Monsters[inspected].Health <= 0) inspected = Array.FindIndex(battle.Monsters, monster => monster.Health > 0);
+        if (inspected < 0) return;
+        void Back() => overlay = parent;
+        void ToggleDetails()
+        {
+            var current = overlay!;
+            current.EnemyDetails = !current.EnemyDetails;
+            current.Options[0] = new(current.EnemyDetails ? "Stats" : "Details", ToggleDetails);
+        }
+        overlay = new("Enemy info", "", [new("Details", ToggleDetails), new("Back", Back)], Back)
+        { Combat = true, Targeting = true, InspectedEnemy = inspected };
     }
-    private void ShowTurn(CombatTurn turn, string text = "")
+
+    private void ShowTurn(CombatTurn turn, CombatPresentation presentation, string text = "")
     {
-        if (turn.MonsterDamage > 0) audio.Play(134);
-        if (turn.Outcome == CombatOutcome.Defeat) audio.Play(128);
         text += $"\nYou dealt {turn.PlayerDamage} damage.\nYou took {turn.MonsterDamage} damage.";
         if (turn.Outcome == CombatOutcome.Victory)
         {
-            text += $"\nVictory! {turn.Reward.Gold} gold and {turn.Reward.Experience} experience.";
+            text += $"\nGold +{turn.Reward.Gold}   XP +{turn.Reward.Experience}";
             if (turn.Reward.EquipmentUpgrade != EquipmentUpgrade.None) text += $"\nYour {Combat.EquipmentUpgradeName(turn.Reward.EquipmentUpgrade)} was upgraded!";
             if (turn.Reward.UnderworldKey) text += "\nYou found the Underworld Key!";
             if (turn.LevelUp.LeveledUp) RecordScores();
             if (turn.LevelUp.LeveledUp) text += $"\nLevel {Hero.Level}! HP +{turn.LevelUp.HealthIncrease}, SP +{turn.LevelUp.SpellPointIncrease}.";
         }
-        Notice(turn.Outcome == CombatOutcome.Victory ? "Victory" : "Combat", text.Trim(),
-            adventure.BattleResult == BattleResolution.Ongoing ? ShowBattle : AdvanceCommand);
+        ShowCombatResult(turn.Outcome == CombatOutcome.Victory ? "Victory" : "Combat", text.Trim(),
+            adventure.BattleResult == BattleResolution.Ongoing ? ShowBattle : AdvanceCommand, presentation,
+            turn.Outcome == CombatOutcome.Ongoing);
     }
 
     private void ShowSoundSettings() => Choices("Sound", audio.Error.Length == 0 ? "Sound effects use the original game recordings.\n" + menuMessage : audio.Error, [
@@ -350,15 +403,21 @@ internal sealed partial class TownGame
         Notice("Monster History", text, ShowStatistics);
     }
 
-    private void SavePreferences()
+    private bool SavePreferences()
     {
         profile.Data.Sound = audio.Enabled; profile.Data.Volume = audio.Volume;
         profile.Data.Scanlines = scanlines; profile.Data.Miniature = miniatureMode;
         profile.Data.Vignette = vignette;
         profile.Data.PixelLighting = pixelLighting;
-        try { profile.Save(); menuMessage = "Preferences saved."; }
+        profile.Data.SunShaftStrength = sunShaftStrength;
+        profile.Data.CloudShadowStrength = cloudShadowStrength;
+        profile.Data.RainStrength = rainStrength;
+        profile.Data.ScreenShake = screenShake;
+        profile.Data.TimeOfDayMode = timeOfDayMode;
+        profile.Data.DayNightSeconds = dayNightSeconds;
+        try { profile.Save(); menuMessage = "Preferences saved."; return true; }
         catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException)
-        { Console.Error.WriteLine(error.Message); menuMessage = "Preferences could not be saved.\nChanges apply for this session."; }
+        { Console.Error.WriteLine(error.Message); menuMessage = "Preferences could not be saved.\nChanges apply for this session."; return false; }
     }
     private void RecordScores()
     {
@@ -389,19 +448,9 @@ internal sealed partial class TownGame
         var current = overlay!;
         Fill(new(0, 0, CanvasWidth, CanvasHeight), Color.Black * .45f);
         DrawPanel(new(12, 5, 296, 170));
+        if (current.Combat && adventure.Battle is { } battle) { DrawCombatOverlay(current, battle); return; }
         font.Draw(batch, current.Title, 24, 14, Accent, current.Title.Length <= 22 ? 2 : 1);
-        var textY = current.Combat ? 78 : 37;
-        if (current.Combat && adventure.Battle is { } activeBattle)
-            font.Draw(batch, activeBattle.Monsters[activeBattle.SelectedTarget].Name, 110, 18, Ink);
-        if (current.Combat && adventure.Battle is { } battle)
-            for (var i = 0; i < battle.Monsters.Length; i++)
-            {
-                var monster = battle.Monsters[i];
-                if (monster.MaximumHealth <= 0) continue;
-                world.DrawMonster(batch, monster.TypeId, new(33 + i * 91, 23, 48, 48), monster.Health > 0 ? Color.White : Color.White * .2f);
-                if (i == battle.SelectedTarget) Fill(new(43 + i * 91, 75, 28, 1), Accent);
-                font.Draw(batch, $"{Math.Max(0, monster.Health)}/{monster.MaximumHealth}", 42 + i * 91, 67, Ink);
-            }
+        const int textY = 37;
         for (var i = 0; i < current.LinesPerPage; i++)
         {
             var index = current.Page * current.LinesPerPage + i;
@@ -413,7 +462,7 @@ internal sealed partial class TownGame
         else
         {
             var remainingLines = Math.Min(current.LinesPerPage, current.Lines.Length - current.Page * current.LinesPerPage);
-            var startY = current.Combat ? 100 : current.Options.Length > 1 ? 47 + remainingLines * 10 : 150;
+            var startY = current.Options.Length > 1 ? 47 + remainingLines * 10 : 150;
             var visible = Math.Min(current.Options.Length, (159 - startY) / 11 + 1);
             var first = Math.Clamp(current.Selected - visible / 2, 0, Math.Max(0, current.Options.Length - visible));
             for (var row = 0; row < visible; row++)

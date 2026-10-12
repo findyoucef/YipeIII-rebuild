@@ -1,0 +1,466 @@
+{
+  "baseline": "build/overworld-remaster/full/yipe-graphics-20261009-143645-baca38c2/maps",
+  "current": "build/ice-remaster/full-release/yipe-graphics-20261011-041718-a9efc7c5/maps",
+  "maps": [
+    {
+      "map": "map-001.png",
+      "equal": true
+    },
+    {
+      "map": "map-002.png",
+      "equal": true
+    },
+    {
+      "map": "map-003.png",
+      "equal": true
+    },
+    {
+      "map": "map-004.png",
+      "equal": true
+    },
+    {
+      "map": "map-005.png",
+      "equal": true
+    },
+    {
+      "map": "map-006.png",
+      "equal": true
+    },
+    {
+      "map": "map-007.png",
+      "equal": true
+    },
+    {
+      "map": "map-008.png",
+      "equal": true
+    },
+    {
+      "map": "map-009.png",
+      "equal": true
+    },
+    {
+      "map": "map-010.png",
+      "equal": true
+    },
+    {
+      "map": "map-011.png",
+      "equal": true
+    },
+    {
+      "map": "map-012.png",
+      "equal": true
+    },
+    {
+      "map": "map-013.png",
+      "equal": true
+    },
+    {
+      "map": "map-014.png",
+      "equal": true
+    },
+    {
+      "map": "map-015.png",
+      "equal": true
+    },
+    {
+      "map": "map-016.png",
+      "equal": true
+    },
+    {
+      "map": "map-017.png",
+      "equal": true
+    },
+    {
+      "map": "map-018.png",
+      "equal": true
+    },
+    {
+      "map": "map-019.png",
+      "equal": true
+    },
+    {
+      "map": "map-020.png",
+      "equal": true
+    },
+    {
+      "map": "map-021.png",
+      "equal": true
+    },
+    {
+      "map": "map-022.png",
+      "equal": true
+    },
+    {
+      "map": "map-023.png",
+      "equal": true
+    },
+    {
+      "map": "map-024.png",
+      "equal": true
+    },
+    {
+      "map": "map-025.png",
+      "equal": true
+    },
+    {
+      "map": "map-026.png",
+      "equal": true
+    },
+    {
+      "map": "map-027.png",
+      "equal": true
+    },
+    {
+      "map": "map-028.png",
+      "equal": true
+    },
+    {
+      "map": "map-029.png",
+      "equal": true
+    },
+    {
+      "map": "map-030.png",
+      "equal": true
+    },
+    {
+      "map": "map-031.png",
+      "equal": true
+    },
+    {
+      "map": "map-032.png",
+      "equal": true
+    },
+    {
+      "map": "map-033.png",
+      "equal": true
+    },
+    {
+      "map": "map-034.png",
+      "equal": true
+    },
+    {
+      "map": "map-035.png",
+      "equal": true
+    },
+    {
+      "map": "map-036.png",
+      "equal": true
+    },
+    {
+      "map": "map-041.png",
+      "equal": false
+    },
+    {
+      "map": "map-042.png",
+      "equal": false
+    },
+    {
+      "map": "map-043.png",
+      "equal": true
+    },
+    {
+      "map": "map-044.png",
+      "equal": true
+    },
+    {
+      "map": "map-045.png",
+      "equal": true
+    },
+    {
+      "map": "map-046.png",
+      "equal": true
+    },
+    {
+      "map": "map-047.png",
+      "equal": false
+    },
+    {
+      "map": "map-048.png",
+      "equal": true
+    },
+    {
+      "map": "map-049.png",
+      "equal": true
+    },
+    {
+      "map": "map-050.png",
+      "equal": true
+    },
+    {
+      "map": "map-051.png",
+      "equal": true
+    },
+    {
+      "map": "map-052.png",
+      "equal": true
+    },
+    {
+      "map": "map-053.png",
+      "equal": false
+    },
+    {
+      "map": "map-054.png",
+      "equal": true
+    },
+    {
+      "map": "map-055.png",
+      "equal": true
+    },
+    {
+      "map": "map-056.png",
+      "equal": true
+    },
+    {
+      "map": "map-057.png",
+      "equal": true
+    },
+    {
+      "map": "map-058.png",
+      "equal": true
+    },
+    {
+      "map": "map-059.png",
+      "equal": true
+    },
+    {
+      "map": "map-060.png",
+      "equal": true
+    },
+    {
+      "map": "map-061.png",
+      "equal": true
+    },
+    {
+      "map": "map-062.png",
+      "equal": true
+    },
+    {
+      "map": "map-063.png",
+      "equal": true
+    },
+    {
+      "map": "map-064.png",
+      "equal": true
+    },
+    {
+      "map": "map-065.png",
+      "equal": true
+    },
+    {
+      "map": "map-066.png",
+      "equal": true
+    },
+    {
+      "map": "map-067.png",
+      "equal": true
+    },
+    {
+      "map": "map-068.png",
+      "equal": true
+    },
+    {
+      "map": "map-069.png",
+      "equal": true
+    },
+    {
+      "map": "map-070.png",
+      "equal": true
+    },
+    {
+      "map": "map-071.png",
+      "equal": true
+    },
+    {
+      "map": "map-072.png",
+      "equal": true
+    },
+    {
+      "map": "map-073.png",
+      "equal": true
+    },
+    {
+      "map": "map-074.png",
+      "equal": true
+    },
+    {
+      "map": "map-075.png",
+      "equal": true
+    },
+    {
+      "map": "map-076.png",
+      "equal": true
+    },
+    {
+      "map": "map-081.png",
+      "equal": false
+    },
+    {
+      "map": "map-082.png",
+      "equal": false
+    },
+    {
+      "map": "map-083.png",
+      "equal": true
+    },
+    {
+      "map": "map-084.png",
+      "equal": true
+    },
+    {
+      "map": "map-085.png",
+      "equal": true
+    },
+    {
+      "map": "map-086.png",
+      "equal": true
+    },
+    {
+      "map": "map-087.png",
+      "equal": false
+    },
+    {
+      "map": "map-088.png",
+      "equal": false
+    },
+    {
+      "map": "map-089.png",
+      "equal": true
+    },
+    {
+      "map": "map-090.png",
+      "equal": true
+    },
+    {
+      "map": "map-091.png",
+      "equal": true
+    },
+    {
+      "map": "map-092.png",
+      "equal": true
+    },
+    {
+      "map": "map-093.png",
+      "equal": false
+    },
+    {
+      "map": "map-094.png",
+      "equal": false
+    },
+    {
+      "map": "map-095.png",
+      "equal": true
+    },
+    {
+      "map": "map-096.png",
+      "equal": true
+    },
+    {
+      "map": "map-097.png",
+      "equal": true
+    },
+    {
+      "map": "map-098.png",
+      "equal": true
+    },
+    {
+      "map": "map-099.png",
+      "equal": false
+    },
+    {
+      "map": "map-100.png",
+      "equal": true
+    },
+    {
+      "map": "map-101.png",
+      "equal": true
+    },
+    {
+      "map": "map-102.png",
+      "equal": true
+    },
+    {
+      "map": "map-103.png",
+      "equal": true
+    },
+    {
+      "map": "map-104.png",
+      "equal": true
+    },
+    {
+      "map": "map-105.png",
+      "equal": true
+    },
+    {
+      "map": "map-106.png",
+      "equal": true
+    },
+    {
+      "map": "map-107.png",
+      "equal": true
+    },
+    {
+      "map": "map-108.png",
+      "equal": true
+    },
+    {
+      "map": "map-109.png",
+      "equal": true
+    },
+    {
+      "map": "map-110.png",
+      "equal": true
+    },
+    {
+      "map": "map-111.png",
+      "equal": true
+    },
+    {
+      "map": "map-112.png",
+      "equal": true
+    },
+    {
+      "map": "map-113.png",
+      "equal": true
+    },
+    {
+      "map": "map-114.png",
+      "equal": true
+    },
+    {
+      "map": "map-115.png",
+      "equal": true
+    },
+    {
+      "map": "map-116.png",
+      "equal": true
+    },
+    {
+      "map": "map-117.png",
+      "equal": true
+    },
+    {
+      "map": "map-118.png",
+      "equal": true
+    },
+    {
+      "map": "map-119.png",
+      "equal": true
+    },
+    {
+      "map": "map-120.png",
+      "equal": true
+    },
+    {
+      "map": "map-121.png",
+      "equal": true
+    },
+    {
+      "map": "map-127.png",
+      "equal": true
+    },
+    {
+      "map": "map-133.png",
+      "equal": true
+    }
+  ]
+}

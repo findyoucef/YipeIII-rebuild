@@ -34,7 +34,7 @@ internal sealed partial class TownGame
         GraphicsDevice.Clear(Background);
         batch.Begin(samplerState: Microsoft.Xna.Framework.Graphics.SamplerState.PointClamp);
         if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniature: false);
-        else world.DrawMap(batch, adventure.Map, journal.Find(adventure.Map.Id)!.Seen, sceneTime);
+        else world.DrawMap(batch, adventure.Map, journal.Find(adventure.Map.Id)!.Seen, sceneTime, town);
         batch.End();
     }
 

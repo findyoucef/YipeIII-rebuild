@@ -8,24 +8,28 @@ public readonly record struct InputFrame(Point Direction, bool Confirm, bool Bac
 /// <summary>Converts keyboard/controller state to actions; held movement repeats on elapsed time.</summary>
 public sealed class GameInput
 {
+    private static readonly ControlBindings Defaults = new();
     private KeyboardState previousKeyboard;
     private GamePadState previousPad;
     private Point previousDirection;
     private double repeatRemaining;
+    public Point HeldDirection { get; private set; }
 
     public InputFrame Update(KeyboardState keyboard, GamePadState pad, double elapsed, bool active = true,
-        double repeatInterval = PlayerMotion.StepDuration, bool textInput = false)
+        double repeatInterval = PlayerMotion.StepDuration, bool textInput = false, ControlBindings? controls = null)
     {
+        controls = textInput ? Defaults : controls ?? Defaults;
         if (!active || pad.IsConnected != previousPad.IsConnected)
         {
             previousKeyboard = keyboard;
             previousPad = pad;
-            previousDirection = Direction(keyboard, pad, textInput);
+            previousDirection = Direction(keyboard, pad, controls, textInput);
             repeatRemaining = 0.28;
+            HeldDirection = Point.Zero;
             return default;
         }
 
-        var direction = Direction(keyboard, pad, textInput);
+        var direction = Direction(keyboard, pad, controls, textInput);
         var step = Point.Zero;
         if (direction != Point.Zero)
         {
@@ -37,11 +41,13 @@ public sealed class GameInput
                 repeatRemaining = direction != previousDirection ? 0.28 : repeatInterval;
             }
         }
+        // Retain held intent between repeat pulses, while respecting focus/connection suppression.
+        if (direction == Point.Zero || step != Point.Zero || HeldDirection != Point.Zero) HeldDirection = direction;
         var result = new InputFrame(step,
-            Pressed(Keys.Enter) || !textInput && Pressed(Keys.Space) || PressedButton(Buttons.A),
-            Pressed(Keys.Escape) || PressedButton(Buttons.B),
-            Pressed(Keys.Escape) || PressedButton(Buttons.Start),
-            !textInput && (Pressed(Keys.M) || PressedButton(Buttons.Back)));
+            Pressed(controls.Keyboard[4]) || !textInput && Pressed(Keys.Space) || PressedButton(controls.Controller[0]),
+            Pressed(controls.Keyboard[6]) || PressedButton(controls.Controller[1]),
+            Pressed(controls.Keyboard[6]) || PressedButton(controls.Controller[3]),
+            !textInput && (Pressed(controls.Keyboard[5]) || PressedButton(controls.Controller[2])));
         previousDirection = direction;
         previousKeyboard = keyboard;
         previousPad = pad;
@@ -51,15 +57,15 @@ public sealed class GameInput
         bool PressedButton(Buttons button) => pad.IsButtonDown(button) && previousPad.IsButtonUp(button);
     }
 
-    private static Point Direction(KeyboardState keyboard, GamePadState pad, bool textInput)
+    private static Point Direction(KeyboardState keyboard, GamePadState pad, ControlBindings controls, bool textInput)
     {
-        var x = (keyboard.IsKeyDown(Keys.Right) || (!textInput && keyboard.IsKeyDown(Keys.D))
+        var x = (keyboard.IsKeyDown(controls.Keyboard[3]) || (!textInput && keyboard.IsKeyDown(Keys.D))
                  || pad.IsButtonDown(Buttons.DPadRight) ? 1 : 0)
-              - (keyboard.IsKeyDown(Keys.Left) || (!textInput && keyboard.IsKeyDown(Keys.A))
+              - (keyboard.IsKeyDown(controls.Keyboard[2]) || (!textInput && keyboard.IsKeyDown(Keys.A))
                  || pad.IsButtonDown(Buttons.DPadLeft) ? 1 : 0);
-        var y = (keyboard.IsKeyDown(Keys.Down) || (!textInput && keyboard.IsKeyDown(Keys.S))
+        var y = (keyboard.IsKeyDown(controls.Keyboard[1]) || (!textInput && keyboard.IsKeyDown(Keys.S))
                  || pad.IsButtonDown(Buttons.DPadDown) ? 1 : 0)
-              - (keyboard.IsKeyDown(Keys.Up) || (!textInput && keyboard.IsKeyDown(Keys.W))
+              - (keyboard.IsKeyDown(controls.Keyboard[0]) || (!textInput && keyboard.IsKeyDown(Keys.W))
                  || pad.IsButtonDown(Buttons.DPadUp) ? 1 : 0);
         if (x != 0 || y != 0) return new(x, y);
         var stick = pad.ThumbSticks.Left;

@@ -231,7 +231,7 @@ internal static class HeatPresentationChecks
         {
             var target = (Texture2D)apply.Invoke(heat, [batch, source, world, Get("cameraPosition")!,
                 player.VisualPosition * 32 + new Vector2(16, 12), time,
-                ((GameSession)Get("session")!).CurrentMap.Id is >= 117 and <= 120])!;
+                ((GameSession)Get("session")!).CurrentMap.Id is >= 117 and <= 120, 1f])!;
             game.GraphicsDevice.SetRenderTarget(null);
             var pixels = new Color[1280 * 720]; target.GetData(pixels); return pixels;
         }

@@ -1,0 +1,13 @@
+{
+  "title": "Loopable Dungeon Ambience",
+  "author": "JaggedStone",
+  "source": "https://opengameart.org/content/loopable-dungeon-ambience",
+  "download": "https://opengameart.org/sites/default/files/dungeon_ambient_1_0.ogg",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "downloaded_utc": "2026-10-09",
+  "description": "Low-frequency wind and water drips; supplied as a loop by the author.",
+  "conversion": "ffmpeg -i dungeon-ambient-source.ogg -ar 22050 -ac 2 -c:a pcm_s16le breeding-ground.wav; full duration retained, no synthesis or added effects.",
+  "source_sha256": "df491823e4877371c34dbda4e9321cd83a4a14fa7573cee0ebca1ae423b70e6e",
+  "output_sha256": "739ecb8902dc2ee65d3cc40bf72d911128a6fea63e1a66ea6970575385f4c34e"
+}

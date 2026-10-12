@@ -1,0 +1,11 @@
+{
+  "request": "User accepted Maynard presentation but found the river a little too loud.",
+  "river_gain_before": 0.32,
+  "river_gain_after": 0.24,
+  "reduction_percent": 25,
+  "other_audio_and_distance_behavior": "unchanged",
+  "checked_build": "0 warnings/errors",
+  "focused_checks": 37,
+  "source_sha256": "9a2527c60e3b086e75a1d14ab1a20acf517718c6959495b689d0cba64c3e53ad",
+  "prior_preview": "river-distance-preview.wav predates the quieter level; retained as historical evidence."
+}

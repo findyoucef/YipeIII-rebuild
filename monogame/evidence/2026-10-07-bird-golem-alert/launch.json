@@ -1,0 +1,7 @@
+{
+  "pid": 66471,
+  "mode": "isolated save copy; earlier game preserved",
+  "earlier_game_processes": [
+    "64672 /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop"
+  ]
+}

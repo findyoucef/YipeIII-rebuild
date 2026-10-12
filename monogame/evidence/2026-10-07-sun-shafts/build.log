@@ -1,0 +1,15 @@
+  Determining projects to restore...
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Yipe.Core.csproj (in 63 ms).
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/Yipe.Desktop.csproj (in 85 ms).
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/Yipe.GraphicsChecks.csproj (in 85 ms).
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/Yipe.Tests.csproj (in 85 ms).
+  Yipe.Core -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/bin/Release/net8.0/Yipe.Core.dll
+  Yipe.Desktop -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll
+  Yipe.Tests -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Tests/bin/Release/net10.0/Yipe.Tests.dll
+  Yipe.GraphicsChecks -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.20

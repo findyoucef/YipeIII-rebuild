@@ -1,0 +1,15 @@
+{
+  "batch": 6,
+  "id": 31,
+  "name": "Lump",
+  "motion": "Subtle squash/breathing; visible small-foot shuffle and body weight transfer",
+  "action": "Compress then bump forward; squash on hurt; flatten into a resting lump",
+  "slug": "lump",
+  "source": "/Users/baouchiy/.codex/generated_images/01a117b4-228b-7910-8dfa-e79d7b1b727f/exec-9930cf2b-bbf7-4e7e-b8d8-39d78eb375cc.png",
+  "original_source": null,
+  "destination": "monogame/Yipe.Desktop/Content/Art/Retro/World/monster-lump-animation.png",
+  "prompt": "Use case: stylized-concept. Production transparent PIXEL ART animation sheet for Lump. Use ONLY row 4, column 3 of reference atlas for exact identity, colors, anatomy and silhouette.\nExactly SIXTEEN full-body poses in a FOUR-COLUMN FOUR-ROW equal square grid. Same RIGHT-facing slight top-down three-quarter camera, palette, head/body scale and pixel size in all cells. Genuine coarse 16-bit RPG PIXEL ART: author at native48x48 logical pixels per cell and enlarge NEAREST NEIGHBOR. Hard chunky square clusters, dark stepped outlines and a small flat-color palette. No smooth digital painting, tiny brush texture, gradients, antialiasing, blur, bloom or subpixel shading.\nEvery entire horn, wing, tail, tongue, staff, axe and claw must fit wholly inside its ORIGINAL equal cell, with at least 15% EMPTY TRANSPARENT padding on EVERY edge. Common lowest foot/body ground baseline at 85% cell height. Airborne offsets are game-rendered: keep lowest body edge at that baseline even for tucked flight poses. Consistent body scale across sixteen poses; the final collapsed creature stays recognizable and substantial, not tiny particles.\nEvery row must contain at least THREE unmistakably different silhouettes at native48. True transparent alpha. No checkerboard, opaque background, labels, words, numbers, guides, borders, shadows, ground lines, detached particles/flame specks/electrical dots, speed streaks or extra monsters. All fire/electric accents must be small flat pixel clusters attached to the body. Return the complete transparent 4x4 pixel sheet.\nRow ONE four distinct subtle IDLE poses from Subtle squash/breathing.\nRow TWO four sequential travel poses based on visible small-foot shuffle and body weight transfer. Small-foot shuffle C1 image-RIGHT little foot visibly lifts, LEFT supports, body squashes toward LEFT; C2 RIGHT foot plants and body stretches upward; C3 image-LEFT foot visibly lifts behind body with RIGHT foot planted, body weight shifts RIGHT; C4 LEFT foot plants and body relaxes. Keep round burgundy lumpy body, tiny gold eyes and real little feet.\nRow THREE C1 WIND-UP, C2 STRIKE, C3 RECOVERY from Compress then bump forward, C4 HURT recoil from squash on hurt.\nRow FOUR four progressively lower DEFEAT poses ending in a complete substantial resting body based on flatten into a resting lump.",
+  "correction": null,
+  "status": "Native art and movement inspected; batch 6 verified",
+  "source_sha256": "7c16e28622b939c88d6efb96e5b0b3cea9f3020ee9f873f4c33984fbfed6d69c"
+}

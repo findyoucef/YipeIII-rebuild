@@ -1,0 +1,261 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/water-raft/focused/yipe-graphics-20261011-233846-96a6f24c
+Content startup and five initial frames: 3.06 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Water review 44: rendering preserves full gameplay and RNG
+PASS: Water 44: frozen presentation is deterministic
+PASS: Water 44: native limestone terrain stays in its coherent palette
+PASS: Water 44: unchanged terrain reuses the cached contour
+PASS: Water 44: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 44: visible algae motivates local turquoise light
+PASS: Water 44: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 44: opening rock invalidates terrain and its contour together
+PASS: Water 44: restoring terrain restores its exact pixels
+PASS: Water 44: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 44: limestone routes retain stone contacts and normal traction
+PASS: Water 44: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 45: rendering preserves full gameplay and RNG
+PASS: Water 45: frozen presentation is deterministic
+PASS: Water 45: native limestone terrain stays in its coherent palette
+PASS: Water 45: unchanged terrain reuses the cached contour
+PASS: Water 45: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 45: visible algae motivates local turquoise light
+PASS: Water 45: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 45: opening rock invalidates terrain and its contour together
+PASS: Water 45: restoring terrain restores its exact pixels
+PASS: Water 45: limestone routes retain stone contacts and normal traction
+PASS: Water 45: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 46: rendering preserves full gameplay and RNG
+PASS: Water 46: frozen presentation is deterministic
+PASS: Water 46: native limestone terrain stays in its coherent palette
+PASS: Water 46: unchanged terrain reuses the cached contour
+PASS: Water 46: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 46: visible algae motivates local turquoise light
+PASS: Water 46: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 46: opening rock invalidates terrain and its contour together
+PASS: Water 46: restoring terrain restores its exact pixels
+PASS: Water 46: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 46: limestone routes retain stone contacts and normal traction
+PASS: Water 46: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 50: rendering preserves full gameplay and RNG
+PASS: Water 50: frozen presentation is deterministic
+PASS: Water 50: native limestone terrain stays in its coherent palette
+PASS: Water 50: unchanged terrain reuses the cached contour
+PASS: Water 50: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 50: visible algae motivates local turquoise light
+PASS: Water 50: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 50: opening rock invalidates terrain and its contour together
+PASS: Water 50: restoring terrain restores its exact pixels
+PASS: Water 50: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 50: limestone routes retain stone contacts and normal traction
+PASS: Water 50: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 56: rendering preserves full gameplay and RNG
+PASS: Water 56: frozen presentation is deterministic
+PASS: Water 56: native limestone terrain stays in its coherent palette
+PASS: Water 56: unchanged terrain reuses the cached contour
+PASS: Water 56: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 56: visible algae motivates local turquoise light
+PASS: Water 56: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 56: opening rock invalidates terrain and its contour together
+PASS: Water 56: restoring terrain restores its exact pixels
+PASS: Water 56: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 56: limestone routes retain stone contacts and normal traction
+PASS: Water 56: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 62: rendering preserves full gameplay and RNG
+PASS: Water 62: frozen presentation is deterministic
+PASS: Water 62: native limestone terrain stays in its coherent palette
+PASS: Water 62: unchanged terrain reuses the cached contour
+PASS: Water 62: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 62: visible algae motivates local turquoise light
+PASS: Water 62: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 62: opening rock invalidates terrain and its contour together
+PASS: Water 62: restoring terrain restores its exact pixels
+PASS: Water 62: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 62: limestone routes retain stone contacts and normal traction
+PASS: Water 62: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 68: rendering preserves full gameplay and RNG
+PASS: Water 68: frozen presentation is deterministic
+PASS: Water 68: native limestone terrain stays in its coherent palette
+PASS: Water 68: unchanged terrain reuses the cached contour
+PASS: Water 68: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 68: visible algae motivates local turquoise light
+PASS: Water 68: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 68: opening rock invalidates terrain and its contour together
+PASS: Water 68: restoring terrain restores its exact pixels
+PASS: Water 68: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 68: limestone routes retain stone contacts and normal traction
+PASS: Water 68: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 74: rendering preserves full gameplay and RNG
+PASS: Water 74: frozen presentation is deterministic
+PASS: Water 74: native limestone terrain stays in its coherent palette
+PASS: Water 74: unchanged terrain reuses the cached contour
+PASS: Water 74: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 74: visible algae motivates local turquoise light
+PASS: Water 74: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 74: opening rock invalidates terrain and its contour together
+PASS: Water 74: restoring terrain restores its exact pixels
+PASS: Water 74: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 74: limestone routes retain stone contacts and normal traction
+PASS: Water 74: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 90: rendering preserves full gameplay and RNG
+PASS: Water 90: frozen presentation is deterministic
+PASS: Water 90: native limestone terrain stays in its coherent palette
+PASS: Water 90: unchanged terrain reuses the cached contour
+PASS: Water 90: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 90: visible algae motivates local turquoise light
+PASS: Water 90: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 90: opening rock invalidates terrain and its contour together
+PASS: Water 90: restoring terrain restores its exact pixels
+PASS: Water 90: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 90: limestone routes retain stone contacts and normal traction
+PASS: Water 90: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 96: rendering preserves full gameplay and RNG
+PASS: Water 96: frozen presentation is deterministic
+PASS: Water 96: native limestone terrain stays in its coherent palette
+PASS: Water 96: unchanged terrain reuses the cached contour
+PASS: Water 96: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 96: visible algae motivates local turquoise light
+PASS: Water 96: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 96: opening rock invalidates terrain and its contour together
+PASS: Water 96: restoring terrain restores its exact pixels
+PASS: Water 96: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 96: limestone routes retain stone contacts and normal traction
+PASS: Water 96: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 102: rendering preserves full gameplay and RNG
+PASS: Water 102: frozen presentation is deterministic
+PASS: Water 102: native limestone terrain stays in its coherent palette
+PASS: Water 102: unchanged terrain reuses the cached contour
+PASS: Water 102: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 102: visible algae motivates local turquoise light
+PASS: Water 102: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 102: opening rock invalidates terrain and its contour together
+PASS: Water 102: restoring terrain restores its exact pixels
+PASS: Water 102: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 102: limestone routes retain stone contacts and normal traction
+PASS: Water 102: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 108: rendering preserves full gameplay and RNG
+PASS: Water 108: frozen presentation is deterministic
+PASS: Water 108: native limestone terrain stays in its coherent palette
+PASS: Water 108: unchanged terrain reuses the cached contour
+PASS: Water 108: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 108: visible algae motivates local turquoise light
+PASS: Water 108: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 108: opening rock invalidates terrain and its contour together
+PASS: Water 108: restoring terrain restores its exact pixels
+PASS: Water 108: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 108: limestone routes retain stone contacts and normal traction
+PASS: Water 108: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 114: rendering preserves full gameplay and RNG
+PASS: Water 114: frozen presentation is deterministic
+PASS: Water 114: native limestone terrain stays in its coherent palette
+PASS: Water 114: unchanged terrain reuses the cached contour
+PASS: Water 114: the quiet eroded floor sits below the raised limestone walls
+PASS: Water 114: visible algae motivates local turquoise light
+PASS: Water 114: hidden wall/floor aliases have identical art and contour lighting
+PASS: Water 114: opening rock invalidates terrain and its contour together
+PASS: Water 114: restoring terrain restores its exact pixels
+PASS: Water 114: actual pools retain splash contacts and rafts use wood contacts
+PASS: Water 114: limestone routes retain stone contacts and normal traction
+PASS: Water 114: topology, secrets, encounters and full saved state remain intact
+PASS: Water review 17: rendering preserves full gameplay and RNG
+PASS: Water review 51: rendering preserves full gameplay and RNG
+PASS: Water review 53: rendering preserves full gameplay and RNG
+PASS: Water review 54: rendering preserves full gameplay and RNG
+PASS: Water review 57: rendering preserves full gameplay and RNG
+PASS: Water review 59: rendering preserves full gameplay and RNG
+PASS: Water review 67: rendering preserves full gameplay and RNG
+PASS: Water review 117: rendering preserves full gameplay and RNG
+PASS: Water 44/50: matching authored overlap neighborhoods retain identical limestone and sediment (0/384)
+PASS: Water 56/62: matching authored overlap neighborhoods retain identical limestone and sediment (0/384)
+PASS: Water 102/108: matching authored overlap neighborhoods retain identical limestone and sediment (0/384)
+PASS: Water algae light stops at a closed door
+PASS: Opening a Water Cave door restores the exact contour light
+PASS: Water light follows the carved corner instead of a square tile cutoff
+PASS: Undiscovered Water Cave algae cannot reveal hidden terrain
+PASS: Water drips, submerged caustics and thin mist animate only with presentation time
+PASS: Water atmosphere cannot draw through fog
+PASS: Water atmosphere never leaks into the unfinished Final Cave
+PASS: Water creature 25: damp tint and contact shadow preserve silhouette and hover
+PASS: Water creature 25: battle artwork remains unchanged
+PASS: Water creature 25: its original palette returns outside the cave
+PASS: Water creature 27: damp tint and contact shadow preserve silhouette and hover
+PASS: Water creature 27: battle artwork remains unchanged
+PASS: Water creature 27: its original palette returns outside the cave
+PASS: Water creature 28: damp tint and contact shadow preserve silhouette and hover
+PASS: Water creature 28: battle artwork remains unchanged
+PASS: Water creature 28: its original palette returns outside the cave
+PASS: Water pools reflect the actual hero pose with subtle pixel ripples
+PASS: Pool reflections are clipped to actual water at banks and walls
+PASS: Water ambience grows gently near the actual pools
+PASS: Water proximity and reflection calculations preserve gameplay/RNG
+PASS: Water Cave selects its dedicated recorded ambience on the real audio device
+PASS: Water Cave audio stays quiet, looped and under master volume
+PASS: Water ambience pauses for paused
+PASS: Water ambience resumes the same voice without restarting
+PASS: Water ambience pauses for mapOpen
+PASS: Water ambience resumes the same voice without restarting
+PASS: Water ambience pauses for worldMapOpen
+PASS: Water ambience resumes the same voice without restarting
+PASS: Action panels pause Water ambience
+PASS: Focus loss pauses Water ambience
+PASS: Sound Off silences Water ambience
+PASS: Zero master volume silences Water ambience
+PASS: Leaving Water for Ice replaces the old ambient voice
+PASS: Entering an untreated cave releases Water ambience
+PASS: Water audio lifecycle preserves the complete adventure and RNG
+PASS: Water atmosphere capture preserves raft positions, monsters and gameplay RNG
+PASS: Raft 44: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 44: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 44: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 44: interpolation finishes without changing gameplay or RNG
+PASS: Raft 50: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 50: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 50: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 50: interpolation finishes without changing gameplay or RNG
+PASS: Raft 56: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 56: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 56: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 56: interpolation finishes without changing gameplay or RNG
+PASS: Raft 62: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 62: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 62: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 62: interpolation finishes without changing gameplay or RNG
+PASS: Raft 68: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 68: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 68: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 68: interpolation finishes without changing gameplay or RNG
+PASS: Raft 74: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 74: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 74: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 74: interpolation finishes without changing gameplay or RNG
+PASS: Raft 96: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 96: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 96: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 96: interpolation finishes without changing gameplay or RNG
+PASS: Raft 108: an accepted carry starts from the previous visible position without a walking step
+PASS: Raft 108: rider and logs glide together between authored tiles without changing facing
+PASS: Raft 108: opaque log deck supports the complete boot/contact-shadow width
+PASS: Raft 108: interpolation finishes without changing gameplay or RNG
+PASS: Boarding walks from the bank toward the actual visible deck
+PASS: A raft move during boarding keeps the landing attached to the logs
+PASS: Boarding produces a wood contact rather than a water splash
+PASS: Passive rafting creates no footsteps or walking animation
+PASS: paused freezes raft, rider and buoyancy together
+PASS: mapOpen freezes raft, rider and buoyancy together
+PASS: Action panels freeze an in-progress raft glide
+PASS: Resuming keeps the rider attached without replaying paused travel
+PASS: Loading aboard resets old interpolation and puts the boots directly on the restored raft
+PASS: Disembarking starts at the deck and uses the original adjacent-bank movement rule
+PASS: Once on shore, the character no longer follows the moving raft
+PASS: An undiscovered raft and its ripples stay hidden
+PASS: Raft presentation does not leak into Ice Cave
+PASS: Three-second authored Water Cave clip keeps rider and deck aligned throughout travel
+Passed 257 visual integration checks. Focused Water Cave run.

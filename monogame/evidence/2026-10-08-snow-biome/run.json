@@ -1,0 +1,10 @@
+{
+  "verified_run": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/snow-biome/verified/yipe-graphics-20261008-192723-6935faec",
+  "build": "checked Release; zero warnings/errors",
+  "core_checks": 613,
+  "graphics_checks": 2278,
+  "frames": 48,
+  "animation_fps": 12,
+  "animation_scope": "native snow/walking visual fixture; no user save or game changed",
+  "repackaged": false
+}

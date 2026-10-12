@@ -1,0 +1,29 @@
+{
+  "note": "Personal files changed after the initial task snapshot; they were not restored or replaced. Tests use isolated save stores. Latest observed personal modifications precede the final full run.",
+  "observations": {
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m": {
+      "before": "3f9a83291bbc90f655c0ff18a0b5331fd493184705e6dd8fa4b3712abbc4de03",
+      "after": "ff1ea05176bf52ce2d346d3e8eaeb6b5c498ee16c9e13adcac3cae6325e40cf2",
+      "unchanged": false,
+      "at_completion": "ff1ea05176bf52ce2d346d3e8eaeb6b5c498ee16c9e13adcac3cae6325e40cf2",
+      "unchanged_since_later_observation": true,
+      "modified_utc": "2026-10-09T05:25:41.867538+00:00"
+    },
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json": {
+      "before": "8c450c46a68f4c609a21de4547fad79911b3d0a9e02adc45fb64e0d6ea4ed049",
+      "after": "5459c6cd64a8e0b4d126f861d8745f8a1437bc4e6ed75adc4069e1d6ea512656",
+      "unchanged": false,
+      "at_completion": "5459c6cd64a8e0b4d126f861d8745f8a1437bc4e6ed75adc4069e1d6ea512656",
+      "unchanged_since_later_observation": true,
+      "modified_utc": "2026-10-09T05:25:41.883491+00:00"
+    },
+    "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json": {
+      "before": "f1a230a2d8b7c5f0f0b7a3267b484bc61ea258ba0a289b0f3179474a16e7d408",
+      "after": "aeb3a76afc436f7eb4771e4df10269cc1660c384d1602f8eb867a481ba2e98fe",
+      "unchanged": false,
+      "at_completion": "aeb3a76afc436f7eb4771e4df10269cc1660c384d1602f8eb867a481ba2e98fe",
+      "unchanged_since_later_observation": true,
+      "modified_utc": "2026-10-09T05:25:49.930353+00:00"
+    }
+  }
+}

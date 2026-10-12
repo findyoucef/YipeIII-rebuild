@@ -1,0 +1,626 @@
+--- build/graphics-submenu/Yipe.Desktop-TownGame.cs
++++ monogame/Yipe.Desktop/TownGame.cs
+@@ -14,7 +14,8 @@
+     private static readonly Color Ink = new(241, 220, 158);
+     private static readonly Color Muted = new(164, 173, 176);
+     private static readonly Color Accent = new(217, 172, 79);
+-    private static readonly string[] Menu = ["Continue", "Save game", "Load game", "New adventure", "Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Pixel lighting", "Sun shafts", "Cloud shadows", "Rain", "Screen shake", "Battle pacing", "Time of day", "Help & controls", "About Quest of Yipe!", "Edit controls", "Quit"];
++    private static readonly string[] Menu = ["Continue", "Save game", "Load game", "New adventure", "Graphics", "Battle pacing", "Help & controls", "About Quest of Yipe!", "Edit controls", "Quit"];
++    private static readonly string[] GraphicsMenu = ["Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Pixel lighting", "Sun shafts", "Cloud shadows", "Rain", "Screen shake", "Time of day"];
+     private static readonly string[] EffectStrengths = ["Off", "Subtle", "Strong"];
+     private static readonly string[] TimesOfDay = ["Auto", "Day", "Dusk", "Night"];
+     private readonly GraphicsDeviceManager graphics;
+@@ -66,6 +67,7 @@
+     private double messageRemaining;
+     private string menuMessage = "";
+     private bool paused;
++    private bool graphicsMenuOpen;
+     private bool scanlines = true;
+     private int miniatureMode = 2;
+     private bool vignette;
+@@ -230,18 +232,13 @@
+         }
+         previousKeyboardState = keyboard;
+ 
+-        if (paused)
+-        {
+-            if (actions.Back || actions.Pause) { paused = false; return; }
+-            if (actions.Direction.Y != 0)
+-                selected = (selected + actions.Direction.Y + Menu.Length) % Menu.Length;
+-            if (actions.Confirm) ActivateMenu();
+-        }
++        if (paused) UpdatePauseMenu(actions);
+         else if (mapOpen) UpdateMap(actions);
+         else if (actions.Map && overlay is null && command is null) OpenMap();
+         else if (actions.Pause && !actions.Back || overlay is null && (actions.Pause || actions.Back))
+         {
+             paused = true;
++            graphicsMenuOpen = false;
+             pendingDirection = Point.Zero;
+             selected = 0;
+             selectionY = 0;
+@@ -323,8 +320,49 @@
+         messageRemaining = 0;
+     }
+ 
++    private void UpdatePauseMenu(InputFrame actions)
++    {
++        if (actions.Back || actions.Pause)
++        {
++            if (graphicsMenuOpen)
++            {
++                graphicsMenuOpen = false;
++                selected = 4; selectionY = 40; menuMessage = "";
++            }
++            else paused = false;
++            return;
++        }
++        var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
++        if (actions.Direction.Y != 0) selected = (selected + actions.Direction.Y + menu.Length) % menu.Length;
++        if (actions.Confirm) ActivateMenu();
++    }
++
+     private void ActivateMenu()
+     {
++        if (graphicsMenuOpen)
++        {
++            switch (selected)
++            {
++                case 0:
++                    graphics.IsFullScreen = !graphics.IsFullScreen;
++                    graphics.PreferredBackBufferWidth = graphics.IsFullScreen
++                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
++                    graphics.PreferredBackBufferHeight = graphics.IsFullScreen
++                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : CanvasHeight * 4;
++                    graphics.ApplyChanges();
++                    break;
++                case 1: scanlines = !scanlines; SavePreferences(); break;
++                case 2: miniatureMode = (miniatureMode + 1) % EffectStrengths.Length; SavePreferences(); break;
++                case 3: vignette = !vignette; SavePreferences(); break;
++                case 4: pixelLighting = !pixelLighting; SavePreferences(); break;
++                case 5: sunShaftStrength = (sunShaftStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
++                case 6: cloudShadowStrength = (cloudShadowStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
++                case 7: rainStrength = (rainStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
++                case 8: screenShake = !screenShake; SavePreferences(); break;
++                case 9: timeOfDayMode = (timeOfDayMode + 1) % TimesOfDay.Length; SavePreferences(); break;
++            }
++            return;
++        }
+         switch (selected)
+         {
+             case 0: paused = false; break;
+@@ -333,28 +371,12 @@
+                 menuMessage = "Saving..."; saving = saves.SaveAsync(session, journal); break;
+             case 2: menuMessage = "Loading..."; loading = saves.LoadAsync(); break;
+             case 3: paused = false; mapOpen = false; ShowNewGameConfirmation(); break;
+-            case 4:
+-                graphics.IsFullScreen = !graphics.IsFullScreen;
+-                graphics.PreferredBackBufferWidth = graphics.IsFullScreen
+-                    ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
+-                graphics.PreferredBackBufferHeight = graphics.IsFullScreen
+-                    ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : CanvasHeight * 4;
+-                graphics.ApplyChanges();
+-                break;
+-            case 5: scanlines = !scanlines; SavePreferences(); break;
+-            case 6: miniatureMode = (miniatureMode + 1) % EffectStrengths.Length; SavePreferences(); break;
+-            case 7: vignette = !vignette; SavePreferences(); break;
+-            case 8: pixelLighting = !pixelLighting; SavePreferences(); break;
+-            case 9: sunShaftStrength = (sunShaftStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+-            case 10: cloudShadowStrength = (cloudShadowStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+-            case 11: rainStrength = (rainStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+-            case 12: screenShake = !screenShake; SavePreferences(); break;
+-            case 13: profile.Data.AutoBattle = !profile.Data.AutoBattle; SavePreferences(); break;
+-            case 14: timeOfDayMode = (timeOfDayMode + 1) % TimesOfDay.Length; SavePreferences(); break;
+-            case 15: paused = false; ShowHelp(); break;
+-            case 16: paused = false; ShowAbout(); break;
+-            case 17: paused = false; EditControls(); break;
+-            case 18: Exit(); break;
++            case 4: graphicsMenuOpen = true; selected = 0; selectionY = 0; menuMessage = ""; break;
++            case 5: profile.Data.AutoBattle = !profile.Data.AutoBattle; SavePreferences(); break;
++            case 6: paused = false; ShowHelp(); break;
++            case 7: paused = false; ShowAbout(); break;
++            case 8: paused = false; EditControls(); break;
++            case 9: Exit(); break;
+         }
+     }
+ 
+@@ -486,38 +508,38 @@
+             var offset = (int)MathF.Round((1 - pauseAmount) * 4);
+             Fill(new(0, 0, CanvasWidth, CanvasHeight), Color.Black * 0.5f);
+             DrawPanel(new(32, 4 + offset, 256, 172));
+-            font.Draw(batch, "Paused", 46, 14 + offset, Accent, 2);
++            font.Draw(batch, graphicsMenuOpen ? "Graphics" : "Paused", 46, 14 + offset, Accent, 2);
+             font.Draw(batch, controllerConnected ? "EAST: BACK" : "ESC: BACK", 210, 19 + offset, Muted);
+             font.Draw(batch, $"{LocationName()} / {player.Position.X}, {player.Position.Y}", 46, 34 + offset, Muted);
+-            var firstMenuRow = Math.Clamp(selected - 9, 0, Menu.Length - 10);
++            var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
++            var firstMenuRow = Math.Clamp(selected - 9, 0, Math.Max(0, menu.Length - 10));
+             var rowY = 42 + Math.Clamp((int)MathF.Round(selectionY) - firstMenuRow * 10, 0, 90) + offset;
+             Fill(new(44, rowY, 232, 9), new Color(64, 73, 87));
+             Fill(new(49, rowY + 3, 1, 5), Accent);
+             Fill(new(50, rowY + 4, 1, 3), Accent);
+             Fill(new(51, rowY + 5, 1, 1), Accent);
+-            for (var i = firstMenuRow; i < firstMenuRow + 10; i++)
+-            {
+-                var label = i switch
++            for (var i = firstMenuRow; i < Math.Min(firstMenuRow + 10, menu.Length); i++)
++            {
++                var label = graphicsMenuOpen ? i switch
+                 {
+-                    4 => $"Fullscreen: {(graphics.IsFullScreen ? "on" : "off")}",
+-                    5 => $"Scanlines: {(scanlines ? "on" : "off")}",
+-                    6 => $"Miniature effect: {EffectStrengths[miniatureMode]}",
+-                    7 => $"Vignette: {(vignette ? "on" : "off")}",
+-                    8 => $"Pixel lighting: {(pixelLighting ? "on" : "off")}",
+-                    9 => $"Sun shafts: {EffectStrengths[sunShaftStrength]}",
+-                    10 => $"Cloud shadows: {EffectStrengths[cloudShadowStrength]}",
+-                    11 => rainStrength == 0 ? "Rain: Off" : $"Rain: Auto {EffectStrengths[rainStrength]}",
+-                    12 => $"Screen shake: {(screenShake ? "on" : "off")}",
+-                    13 => $"Battle pacing: {(profile.Data.AutoBattle ? "Auto" : "Manual")}",
+-                    14 => $"Time of day: {TimesOfDay[timeOfDayMode]}",
+-                    _ => Menu[i],
+-                };
++                    0 => $"Fullscreen: {(graphics.IsFullScreen ? "on" : "off")}",
++                    1 => $"Scanlines: {(scanlines ? "on" : "off")}",
++                    2 => $"Miniature effect: {EffectStrengths[miniatureMode]}",
++                    3 => $"Vignette: {(vignette ? "on" : "off")}",
++                    4 => $"Pixel lighting: {(pixelLighting ? "on" : "off")}",
++                    5 => $"Sun shafts: {EffectStrengths[sunShaftStrength]}",
++                    6 => $"Cloud shadows: {EffectStrengths[cloudShadowStrength]}",
++                    7 => rainStrength == 0 ? "Rain: Off" : $"Rain: Auto {EffectStrengths[rainStrength]}",
++                    8 => $"Screen shake: {(screenShake ? "on" : "off")}",
++                    9 => $"Time of day: {TimesOfDay[timeOfDayMode]}",
++                    _ => menu[i],
++                } : i == 5 ? $"Battle pacing: {(profile.Data.AutoBattle ? "Auto" : "Manual")}" : menu[i];
+                 font.Draw(batch, label, 60, 44 + (i - firstMenuRow) * 10 + offset, i == selected ? Accent : Ink);
+             }
+             for (var step = 0; step < 3; step++)
+             {
+                 if (firstMenuRow > 0) Fill(new(280 - step, 44 + step + offset, step * 2 + 1, 1), Muted);
+-                if (firstMenuRow + 10 < Menu.Length) Fill(new(280 - step, 139 - step + offset, step * 2 + 1, 1), Muted);
++                if (firstMenuRow + 10 < menu.Length) Fill(new(280 - step, 139 - step + offset, step * 2 + 1, 1), Muted);
+             }
+             font.Draw(batch, menuMessage, 46, 145 + offset, Ink);
+             font.Draw(batch, controllerConnected ? "D-PAD/STICK MOVE  SOUTH SELECT" : "ARROWS/WASD MOVE  ENTER SELECT", 46, 166 + offset, Muted);
+--- build/graphics-submenu/Yipe.Desktop-TownHelp.cs
++++ monogame/Yipe.Desktop/TownHelp.cs
+@@ -7,7 +7,7 @@
+ {
+     private int bindingAction = -1;
+ 
+-    private void ReturnToPause() { overlay = null; paused = true; }
++    private void ReturnToPause() { overlay = null; paused = true; graphicsMenuOpen = false; }
+ 
+     private void ShowHelp() => Choices("Help & controls", "Choose current controls or the gameplay guide.", [
+         new("Current controls", ShowCurrentControls), new("Gameplay guide", () =>
+@@ -21,7 +21,7 @@
+         var controls = profile.Data.Controls;
+         var keyboard = string.Join("\n", ControlBindings.KeyboardActions.Select((action, index) => $"{action}: {controls.Keyboard[index]}"));
+         var controller = string.Join("\n", ControlBindings.ControllerActions.Select((action, index) => $"{action}: {ControlBindings.ButtonName(controls.Controller[index])}"));
+-        Notice("Current controls", $"GAMEPLAY KEYBOARD\n{keyboard}\nWASD also moves; Space opens Actions. Combine directions for diagonals.\nGAMEPLAY CONTROLLER\nD-pad / left stick: eight-way movement\n{controller}\nActions includes items, spells, Character, Read sign and Other.\nMENUS AND MAP\nAlways use arrows/WASD or D-pad/stick to select. Enter/Space or South confirms. Escape or East goes back; Start pauses. M or View closes the map; confirm switches area/world. Left/Right changes pages or map layers.\nBATTLE\nEscape or East attempts to flee from the main battle menu. In spell, inventory and enemy-info screens, it goes back. Left/Right selects living enemies in the battle menu and attack-spell power choices. High power highlights all affected enemies. HP/SP/AP remain visible while choosing actions. Enemy info shows current ratings, spell resistance and recorded defeats. Left/Right browses living enemies there; Back preserves your attack target. Inspecting uses no turn. Battle pacing in the pause menu offers Manual or Auto return after ordinary results; victories and defeats wait for confirmation.\nTIME OF DAY\nAuto cycles through day, dusk, night and dawn over twenty minutes of elapsed time. Time continues through pause, menus, combat, maps and focus loss, and catches up after suspension. Movement and combat still pause normally. Day, Dusk and Night hold a fixed look. Rain and Pixel lighting have separate settings.\nTEXT ENTRY\nType your name or code. Enter confirms, Escape cancels, Backspace deletes.\nSAVE AND LOAD\nUse the pause menu. Finish an interaction before saving. Saving during a step records its accepted destination. Focus loss or controller disconnect pauses play.\nEdit controls changes gameplay shortcuts; menus keep these standard controls.", ShowHelp);
++        Notice("Current controls", $"GAMEPLAY KEYBOARD\n{keyboard}\nWASD also moves; Space opens Actions. Combine directions for diagonals.\nGAMEPLAY CONTROLLER\nD-pad / left stick: eight-way movement\n{controller}\nActions includes items, spells, Character, Read sign and Other.\nMENUS AND MAP\nAlways use arrows/WASD or D-pad/stick to select. Enter/Space or South confirms. Escape or East goes back; Start pauses. M or View closes the map; confirm switches area/world. Left/Right changes pages or map layers.\nBATTLE\nEscape or East attempts to flee from the main battle menu. In spell, inventory and enemy-info screens, it goes back. Left/Right selects living enemies in the battle menu and attack-spell power choices. High power highlights all affected enemies. HP/SP/AP remain visible while choosing actions. Enemy info shows current ratings, spell resistance and recorded defeats. Left/Right browses living enemies there; Back preserves your attack target. Inspecting uses no turn. Battle pacing in the pause menu offers Manual or Auto return after ordinary results; victories and defeats wait for confirmation.\nGRAPHICS\nVisual settings are in Pause > Graphics. Escape/East or Start returns to the pause menu; play stays paused while editing.\nTIME OF DAY\nAuto cycles through day, dusk, night and dawn over twenty minutes of elapsed time. Time continues through pause, menus, combat, maps and focus loss, and catches up after suspension. Movement and combat still pause normally. Day, Dusk and Night hold a fixed look. Rain and Pixel lighting have separate settings.\nTEXT ENTRY\nType your name or code. Enter confirms, Escape cancels, Backspace deletes.\nSAVE AND LOAD\nUse the pause menu. Finish an interaction before saving. Saving during a step records its accepted destination. Focus loss or controller disconnect pauses play.\nEdit controls changes gameplay shortcuts; menus keep these standard controls.", ShowHelp);
+     }
+ 
+     private void ShowAbout() => Notice("About Quest of Yipe!", "Yipe! III, original version 1.16\nCopyright (C) 2002-03, Kevin Kinell\nProgramming and concept: Kevin Kinell\nGraphics: Pat Kelley\nLead beta tester: Eric Johnson\nOriginally written for Macintosh in 1996.\n\nicosium labs\nMonoGame reconstruction, 2026.\nClean-room gameplay port with adapted retro artwork and desktop controls.\nBuilt with MonoGame and .NET.\nHistorical contact: YipeSFT@aol.com\nHistorical website: www.yipesoftware.com", ReturnToPause);
+--- build/graphics-submenu/Yipe.Desktop-TownOverlays.cs
++++ monogame/Yipe.Desktop/TownOverlays.cs
+@@ -155,7 +155,7 @@
+             var result = adventure.Other(); audio.Play(result.SoundId); SynchronizeWorld(false);
+             Notice("Other", result.Message, () => overlay = null);
+         }),
+-        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; paused = true; selected = 0; })], () => overlay = null);
++        new("Continue exploring", () => overlay = null), new("Pause menu", () => { overlay = null; paused = true; graphicsMenuOpen = false; selected = 0; selectionY = 0; })], () => overlay = null);
+ 
+     private void ShowEquipmentShop(EquipmentKind kind)
+     {
+--- build/graphics-submenu/Yipe.GraphicsChecks-CloudShadowChecks.cs
++++ monogame/Yipe.GraphicsChecks/CloudShadowChecks.cs
+@@ -17,7 +17,7 @@
+         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
+-            "sunShaftStrength", "cloudShadowStrength", "selected", "selectionY", "menuMessage", "messageRemaining" }
++            "sunShaftStrength", "cloudShadowStrength", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+             .ToDictionary(name => name, Get);
+         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
+         var catalog = (MapCatalog)Get("catalog")!;
+@@ -111,7 +111,7 @@
+             check(Enumerable.Range(0, native.Length).All(i => native[i] == native[i / 1280 / 4 * 4 * 1280 + i % 1280 / 4 * 4]),
+                 "Cloud shade retains exact native pixels at window scale");
+ 
+-            Set("paused", true); Set("pauseAmount", 1f); Set("selected", 10); Set("selectionY", 100f);
++            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 6); Set("selectionY", 60f);
+             var paused = Frame(2, 1);
+             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
+             check((double)Get("sceneTime")! == 1 && paused.SequenceEqual(Frame(2, 1)), "Production pause freezes cloud movement and its framebuffer");
+@@ -126,7 +126,7 @@
+                     $"Cloud menu cycles to {expected} and saves independently of the sun-shaft preference");
+             }
+             Set("menuMessage", ""); var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
+-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 134 * 4 || y >= 141 * 4
++            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 104 * 4 || y >= 111 * 4
+                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
+                 "Cloud shadows leave the pause panel and every other label unchanged");
+             Set("paused", false); Set("pauseAmount", 0f); Call("ShowActions");
+--- build/graphics-submenu/Yipe.GraphicsChecks-CombatFeedbackChecks.cs
++++ monogame/Yipe.GraphicsChecks/CombatFeedbackChecks.cs
+@@ -20,7 +20,7 @@
+         T Property<T>(object value, string name) => (T)value.GetType().GetProperty(name)!.GetValue(value)!;
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+             "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "sunShaftStrength",
+-            "cloudShadowStrength", "rainStrength", "screenShake", "selected", "selectionY", "menuMessage", "messageRemaining" }
++            "cloudShadowStrength", "rainStrength", "screenShake", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+             .ToDictionary(name => name, Get);
+         var catalog = (MapCatalog)Get("catalog")!;
+         var audio = Get("audio")!; var wasAudible = Property<bool>(audio, "Enabled");
+@@ -392,7 +392,7 @@
+                 && snapshot.SequenceEqual(GameSaveCodec.Encode(actual.Session, catalog)), "Failed casts retain the battle HUD and await confirmation without spending resources");
+             Auto(false);
+ 
+-            Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f); Set("selected", 12); Set("selectionY", 120f);
++            Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 8); Set("selectionY", 80f);
+             for (var i = 0; i < 2; i++)
+             {
+                 Call("ActivateMenu");
+@@ -404,7 +404,7 @@
+                     $"Screen shake menu persists {(i == 0 ? "On" : "Off")} independently");
+             }
+             Save(Frame(0), "screen-shake-menu.png");
+-            Set("selected", 13); Set("selectionY", 130f);
++            Set("graphicsMenuOpen", false); Set("selected", 5); Set("selectionY", 50f);
+             for (var i = 0; i < 2; i++)
+             {
+                 Call("ActivateMenu");
+--- build/graphics-submenu/Yipe.GraphicsChecks-DayNightChecks.cs
++++ monogame/Yipe.GraphicsChecks/DayNightChecks.cs
+@@ -18,7 +18,7 @@
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
+             "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining",
+-            "selected", "selectionY", "menuMessage", "messageRemaining", "timeOfDayMode", "dayNightSeconds", "dayNightUpdatedAt",
++            "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining", "timeOfDayMode", "dayNightSeconds", "dayNightUpdatedAt",
+             "saving", "loading", "studioSplashRemaining" }
+             .ToDictionary(name => name, Get);
+         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
+@@ -117,7 +117,7 @@
+                 select y * 320 + x).All(i => actionsDay[i] == actionsNight[i]),
+                 "Night color never dims action panels or their text");
+             Set("overlay", null); Set("paused", true); Set("pauseAmount", 1f);
+-            Set("selected", 14); Set("selectionY", 140f); Set("timeOfDayMode", 0);
++            Set("graphicsMenuOpen", true); Set("selected", 9); Set("selectionY", 90f); Set("timeOfDayMode", 0);
+             var phase = (double)Get("dayNightSeconds")!;
+             for (var mode = 1; mode <= 4; mode++)
+             {
+--- build/graphics-submenu/Yipe.GraphicsChecks-HelpControlChecks.cs
++++ monogame/Yipe.GraphicsChecks/HelpControlChecks.cs
+@@ -37,12 +37,45 @@
+         var width = graphics.PreferredBackBufferWidth;
+         var height = graphics.PreferredBackBufferHeight;
+         var paused = (bool)Get("paused");
++        var graphicsOpen = (bool)Get("graphicsMenuOpen");
+         var selected = (int)Get("selected");
+         var message = (string)Get("menuMessage");
+         var directory = Path.Combine(output, "help-controls");
+         Directory.CreateDirectory(directory);
+         try
+         {
++            var mainMenu = (string[])type.GetField("Menu", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
++            var graphicsMenu = (string[])type.GetField("GraphicsMenu", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
++            check(mainMenu.Length == 10 && graphicsMenu.Length == 10 && mainMenu.Contains("Graphics")
++                && !mainMenu.Intersect(graphicsMenu).Any(), "The pause menu fits one page and keeps all ten visual settings in Graphics");
++            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", false);
++            Set("selected", 4); Set("selectionY", 40f); Set("menuMessage", "");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
++            check((bool)Get("graphicsMenuOpen") && (bool)Get("paused") && (int)Get("selected") == 0 && (float)Get("selectionY") == 0,
++                "Confirm opens Graphics at its first setting while play stays paused");
++            Capture("graphics-menu.png");
++            Call("UpdatePauseMenu", new InputFrame(new(0, -1), false, false, false));
++            check((int)Get("selected") == 9, "Up wraps to the last graphics setting");
++            Call("UpdatePauseMenu", new InputFrame(new(0, 1), false, false, false));
++            check((int)Get("selected") == 0, "Down wraps back to the first graphics setting");
++            Call("UpdatePauseMenu", new InputFrame(new(0, 1), false, false, false));
++            var scanlines = (bool)Get("scanlines");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
++            check((bool)Get("scanlines") != scanlines && (bool)Get("graphicsMenuOpen") && (bool)Get("paused"),
++                "Changing a graphics option stays in the paused submenu");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, true, true));
++            check(!(bool)Get("graphicsMenuOpen") && (bool)Get("paused") && (int)Get("selected") == 4 && (float)Get("selectionY") == 40,
++                "Escape returns to the highlighted Graphics entry without also resuming play");
++            Capture("pause-menu.png");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, true, false, false));
++            check((bool)Get("graphicsMenuOpen") && (int)Get("selected") == 0, "Reopening Graphics resets its cursor cleanly");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, false, true));
++            check(!(bool)Get("graphicsMenuOpen") && (bool)Get("paused"), "Controller Start also returns from Graphics to the pause menu");
++            Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, false, true));
++            check(!(bool)Get("paused") && before.SequenceEqual(GameSaveCodec.Encode(session, catalog)) && (double)Get("sceneTime") == scene,
++                "Backing out of the root resumes without consuming gameplay, scene time or RNG");
++            Set("pauseAmount", 0f); Set("selected", 0); Set("selectionY", 0f);
+             Set("paused", false);
+             Set("overlay", null); Set("studioSplashRemaining", 3.2);
+             Call("UpdateStudioSplash", new InputFrame(), .6);
+@@ -131,8 +164,11 @@
+                 Call("EditControls", 12);
+                 Capture($"controls-{size.X}x{size.Y}.png");
+                 Back();
+-                Set("pauseAmount", 1f); Set("selected", 18); Set("selectionY", 180f);
++                Set("pauseAmount", 1f); Set("selected", 9); Set("selectionY", 90f);
+                 Capture($"pause-{size.X}x{size.Y}.png");
++                Set("selected", 4); Call("ActivateMenu"); Set("selected", 9); Set("selectionY", 90f);
++                Capture($"graphics-{size.X}x{size.Y}.png");
++                Call("UpdatePauseMenu", new InputFrame(Point.Zero, false, true, false));
+                 Set("paused", false);
+                 Call("EditControls", 12);
+                 check(!(bool)Get("paused") && Property<string>(Overlay(), "Title") == "Edit controls",
+@@ -157,7 +193,7 @@
+         {
+             Set("profile", profile); data.GetType().GetProperty("Controls")!.SetValue(data, new ControlBindings());
+             Call("SavePreferences");
+-            Set("bindingAction", -1); Set("overlay", null); Set("paused", paused); Set("selected", selected);
++            Set("bindingAction", -1); Set("overlay", null); Set("paused", paused); Set("selected", selected); Set("graphicsMenuOpen", graphicsOpen);
+             Set("studioSplashRemaining", 0.0);
+             Set("menuMessage", message); Set("pauseAmount", 0f); Set("selectionY", 0f);
+             graphics.PreferredBackBufferWidth = width; graphics.PreferredBackBufferHeight = height; graphics.ApplyChanges();
+--- build/graphics-submenu/Yipe.GraphicsChecks-PixelLightingChecks.cs
++++ monogame/Yipe.GraphicsChecks/PixelLightingChecks.cs
+@@ -15,7 +15,7 @@
+         object? Get(string name) => type.GetField(name, flags)!.GetValue(game);
+         void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(game, value);
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+-            "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "selected", "selectionY", "menuMessage", "messageRemaining" }
++            "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+             .ToDictionary(name => name, Get);
+         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
+         var catalog = (MapCatalog)Get("catalog")!;
+@@ -107,7 +107,7 @@
+                 "The light pass brightens existing colors gently without flattening terrain contrast");
+ 
+             var town = Scene(17, new(8, 5));
+-            Set("paused", true); Set("pauseAmount", 1f); Set("selected", 8); Set("selectionY", 80f);
++            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 4); Set("selectionY", 40f);
+             var on = Frame(1); menu.Invoke(game, null); var off = Frame(1);
+             check(!(bool)Get("pixelLighting")!, "Pixel lighting switches off through the pause menu");
+             var profile = Get("profile")!; var profileType = profile.GetType();
+@@ -116,7 +116,7 @@
+             var data = profileType.GetProperty("Data")!.GetValue(reloaded)!;
+             check(!(bool)data.GetType().GetProperty("PixelLighting")!.GetValue(data)!, "The lighting menu preference survives reopening its profile");
+             Set("menuMessage", ""); off = Frame(1); Set("pixelLighting", true); on = Frame(1);
+-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 124 * 4 || y >= 131 * 4
++            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 84 * 4 || y >= 91 * 4
+                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => on[i] == off[i]),
+                 "Pixel lighting leaves the pause panel and every other label unchanged");
+             Save(on, "menu.png");
+--- build/graphics-submenu/Yipe.GraphicsChecks-Program.cs
++++ monogame/Yipe.GraphicsChecks/Program.cs
+@@ -24,6 +24,7 @@
+         var snowOnly = false;
+         var breedingOnly = false;
+         var fireOnly = false;
++        var menusOnly = false;
+         for (var i = 0; i < args.Length; i++)
+         {
+             if (args[i] == "--help")
+@@ -34,6 +35,7 @@
+                 Console.WriteLine("--monsters-only runs focused monster and combat checks for local art iterations.");
+                 Console.WriteLine("--snow-only runs focused Zephyr snow-biome checks and captures.");
+                 Console.WriteLine("--fire-only runs focused volcanic cave checks and captures.");
++                Console.WriteLine("--menus-only runs focused pause/graphics/help/control checks and captures.");
+                 Console.WriteLine("--breeding-only runs focused breeding-ground terrain, light and ambience checks.");
+                 return 0;
+             }
+@@ -43,6 +45,7 @@
+             else if (args[i] == "--monsters-only") monstersOnly = true;
+             else if (args[i] == "--snow-only") snowOnly = true;
+             else if (args[i] == "--fire-only") fireOnly = true;
++            else if (args[i] == "--menus-only") menusOnly = true;
+             else if (args[i] == "--breeding-only") breedingOnly = true;
+             else if (args[i] == "--capture-monsters" && i + 1 < args.Length)
+             {
+@@ -77,6 +80,8 @@
+         { Console.Error.WriteLine("--breeding-only cannot be combined with other capture or route modes."); return 2; }
+         if (fireOnly && (breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
+         { Console.Error.WriteLine("--fire-only cannot be combined with other capture or route modes."); return 2; }
++        if (menusOnly && (fireOnly || breedingOnly || snowOnly || monstersOnly || opening || lateInput is not null || record || monsterCaptures is not null))
++        { Console.Error.WriteLine("--menus-only cannot be combined with other capture or route modes."); return 2; }
+         try
+         {
+             var outputDirectory = Path.Combine(Path.GetFullPath(outputRoot ?? Path.GetTempPath()),
+@@ -107,7 +112,7 @@
+                         log.WriteLine("PASS fresh-process frontend save/reload and earned completion.");
+                     }
+                 }
+-                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly);
++                else RunChecks(outputDirectory, record, log, monsterCaptures, monstersOnly, snowOnly, breedingOnly, fireOnly, menusOnly);
+                 return 0;
+             }
+             catch (Exception error)
+@@ -149,7 +154,7 @@
+         return Process.Start(info) ?? throw new InvalidOperationException("Could not start FFmpeg.");
+     }
+ 
+-    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly)
++    private static void RunChecks(string outputDirectory, bool record, StreamWriter log, int[]? monsterCaptures, bool monstersOnly, bool snowOnly, bool breedingOnly, bool fireOnly, bool menusOnly)
+     {
+         var type = typeof(GameInput).Assembly.GetType("Yipe.Desktop.TownGame", true)!;
+         var saveDirectory = Path.Combine(outputDirectory, "test-saves");
+@@ -200,6 +205,12 @@
+         Check(!(bool)Get("screenShake"), "Screen shake defaults to Off");
+         Check((int)Get("timeOfDayMode") == 0 && (double)Get("dayNightSeconds") is >= 300 and < 330,
+             "Automatic day/night cycle is enabled by default, starting near midday as startup time elapses");
++        if (menusOnly)
++        {
++            HelpControlChecks.Run(game, outputDirectory, Check);
++            Log($"Passed {checks} visual integration checks. Focused menu/help/control run.");
++            return;
++        }
+         if (snowOnly)
+         {
+             Set("timeOfDayMode", 1); SnowBiomeChecks.Run(game, outputDirectory, Check);
+@@ -240,7 +251,7 @@
+         PixelLightingChecks.Run(game, outputDirectory, Check);
+         Set("pixelLighting", false);
+         Capture("yipe-defaults-play.png");
+-        Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 50f);
++        Set("paused", true); Set("pauseAmount", 1f); Set("selected", 4); Set("selectionY", 40f);
+         Capture("yipe-defaults-menu.png");
+         Set("paused", false); Set("pauseAmount", 0f);
+         Check(!(bool)Get("vignette"), "Vignette defaults to off");
+@@ -249,7 +260,7 @@
+         // Isolate existing blur measurements from scanlines, then exercise the full mode cycle.
+         Set("scanlines", false);
+         Set("miniatureMode", 1);
+-        Set("selected", 6);
++        Set("graphicsMenuOpen", true); Set("selected", 2);
+         menu.Invoke(game, null);
+         Check((int)Get("miniatureMode") == 2, "Miniature menu advances to Strong");
+         menu.Invoke(game, null);
+@@ -328,17 +339,18 @@
+         restore.Invoke(game, [new MapPosition(5, 5)]);
+         Set("paused", true);
+         Set("pauseAmount", 1f);
+-        Set("selectionY", 60f);
++        Set("selectionY", 20f);
+         Set("miniatureMode", 0);
+         var menuOff = DrawPixels();
+         Set("miniatureMode", 2);
+         var menuStrong = DrawPixels();
+         Check((from y in Enumerable.Range(6 * 4, 168 * 4)
+-               where y < 104 * 4 || y >= 111 * 4
++               where y < 64 * 4 || y >= 71 * 4
+                from x in Enumerable.Range(34 * 4, 252 * 4)
+                select y * 1280 + x).All(i => menuOff[i] == menuStrong[i]),
+             "Opaque pause panel and typography remain untouched by the blur");
+         Capture("yipe-village-menu.png");
++        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
+         Set("paused", false);
+         Set("pauseAmount", 0f);
+         Set("message", "Beyond Maynard\nThis area is not available in the town preview.");
+@@ -884,7 +896,7 @@
+         restore.Invoke(game, [new MapPosition(11, 5)]);
+         Check(((Vector2)Get("cameraPosition")).X == 96, "Camera clamps at the east edge");
+         Capture("yipe-village-east.png");
+-        Set("selected", 4);
++        Set("graphicsMenuOpen", true); Set("selected", 0);
+         menu.Invoke(game, null);
+         var graphics = (GraphicsDeviceManager)Get("graphics");
+         Check(graphics.IsFullScreen, "Fullscreen activates");
+@@ -892,7 +904,7 @@
+         menu.Invoke(game, null);
+         Check(!graphics.IsFullScreen && game.GraphicsDevice.PresentationParameters.BackBufferWidth == 1280
+             && game.GraphicsDevice.PresentationParameters.BackBufferHeight == 720, "Windowed 16:9 resolution restores");
+-        Set("selected", 5);
++        Set("selected", 1);
+         menu.Invoke(game, null);
+         Check((bool)Get("scanlines"), "Scanlines toggle on through the menu");
+         draw.Invoke(game, [new GameTime()]);
+@@ -910,6 +922,7 @@
+             using var file = File.Create(Path.Combine(outputDirectory, "yipe-village-scanlines.png"));
+             capture.SaveAsPng(file, capture.Width, capture.Height);
+         }
++        Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f);
+         var renderer = Get("town");
+         var rendererType = renderer.GetType();
+         var palette = (Color[])rendererType.GetField("Palette", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+@@ -954,7 +967,7 @@
+         restore.Invoke(game, [new MapPosition(5, 5)]);
+         Set("paused", true);
+         Set("pauseAmount", 1f);
+-        Set("selectionY", 50f);
++        Set("selected", 4); Set("selectionY", 40f);
+         Set("menuMessage", "Your place in town is saved.");
+         Capture("yipe-village-pause.png");
+         Set("paused", false);
+@@ -1375,7 +1388,7 @@
+         void CheckVignette()
+         {
+             var snapshot = GameSaveCodec.Encode(session, (MapCatalog)Get("catalog"));
+-            Set("selected", 7); menu.Invoke(game, null);
++            Set("graphicsMenuOpen", true); Set("selected", 3); menu.Invoke(game, null);
+             Check((bool)Get("vignette"), "Vignette toggles on through the pause menu");
+             var profileType = Get("profile").GetType();
+             var reopened = Activator.CreateInstance(profileType, [Path.ChangeExtension(importedPath, ".profile.json")])!;
+@@ -1396,10 +1409,10 @@
+                 }
+             Capture("yipe-vignette-on.png");
+             Set("vignette", false); Capture("yipe-vignette-off.png");
+-            Set("miniatureMode", 0); Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 70f);
++            Set("miniatureMode", 0); Set("paused", true); Set("pauseAmount", 1f); Set("selectionY", 30f);
+             Set("menuMessage", "Preferences could not be saved.\nChanges apply for this session.");
+             var pauseOff = DrawPixels(); Set("vignette", true); var pauseOn = DrawPixels();
+-            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 114 * 4 || y >= 121 * 4
++            Check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 74 * 4 || y >= 81 * 4
+                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => pauseOff[i] == pauseOn[i]),
+                 "Vignette leaves pause text and panels unchanged apart from its own On/Off label");
+             Capture("yipe-vignette-menu.png");
+@@ -1413,11 +1426,11 @@
+             type.GetMethod("OpenMap", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, null);
+             var mapOff = DrawPixels(); Set("vignette", true);
+             Check(mapOff.SequenceEqual(DrawPixels()), "Vignette does not darken the full-screen map or its labels");
+-            Set("mapOpen", false); Set("miniatureMode", 2); Set("scanlines", true); Set("selected", 7);
++            Set("mapOpen", false); Set("miniatureMode", 2); Set("scanlines", true); Set("selected", 3);
+             menu.Invoke(game, null);
+             Check(!(bool)Get("vignette") && GameSaveCodec.Encode(session, (MapCatalog)Get("catalog")).SequenceEqual(snapshot),
+                 "Vignette toggles off again without changing gameplay or RNG");
+-            Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
++            Set("graphicsMenuOpen", false); Set("selected", 0); Set("selectionY", 0f); Set("menuMessage", "");
+         }
+ 
+         void Check(bool condition, string label)
+--- build/graphics-submenu/Yipe.GraphicsChecks-RainChecks.cs
++++ monogame/Yipe.GraphicsChecks/RainChecks.cs
+@@ -17,7 +17,7 @@
+         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
+-            "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining", "selected", "selectionY", "menuMessage", "messageRemaining" }
++            "sunShaftStrength", "cloudShadowStrength", "rainStrength", "outdoorWeatherTime", "tickRemaining", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }
+             .ToDictionary(name => name, Get);
+         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
+         var catalog = (MapCatalog)Get("catalog")!;
+@@ -87,7 +87,7 @@
+             check(Field(2, Vector2.Zero, water: Rectangle.Empty, tile: 1).All(p => p == Color.Black), "Ground impacts exclude solid building tiles");
+             check(Field(2, Vector2.Zero, water: Rectangle.Empty, tile: 2).Any(p => p != Color.Black), "Open ground receives small splash pixels");
+ 
+-            Set("paused", true); Set("pauseAmount", 1f); Set("selected", 11); Set("selectionY", 110f);
++            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 7); Set("selectionY", 70f);
+             var paused = Frame(2, 1);
+             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
+             check((double)Get("sceneTime")! == 1 && (double)Get("outdoorWeatherTime")! == wetTime && paused.SequenceEqual(Frame(2, 1)), "Production pause freezes rainfall, splashes and the automatic weather timer");
+@@ -102,7 +102,7 @@
+                     $"Rain menu cycles to {expected} and saves independently of cloud shadows");
+             }
+             Set("menuMessage", ""); var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
+-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 134 * 4 || y >= 141 * 4
++            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 114 * 4 || y >= 121 * 4
+                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
+                 "Rain leaves the pause panel and other settings unchanged");
+             Set("paused", false); Set("pauseAmount", 0f); Call("ShowActions");
+--- build/graphics-submenu/Yipe.GraphicsChecks-SunShaftChecks.cs
++++ monogame/Yipe.GraphicsChecks/SunShaftChecks.cs
+@@ -17,7 +17,7 @@
+         void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(game, args);
+         var saved = new[] { "session", "adventure", "cameraPosition", "paused", "pauseAmount", "overlay", "mapOpen",
+             "worldMapOpen", "journal", "sceneTime", "miniatureMode", "scanlines", "vignette", "pixelLighting",
+-            "sunShaftStrength", "selected", "selectionY", "menuMessage", "messageRemaining" }.ToDictionary(name => name, Get);
++            "sunShaftStrength", "graphicsMenuOpen", "selected", "selectionY", "menuMessage", "messageRemaining" }.ToDictionary(name => name, Get);
+         var player = (PlayerMotion)Get("player")!; var oldPosition = player.Position;
+         var catalog = (MapCatalog)Get("catalog")!;
+         var shafts = Get("sunShafts")!;
+@@ -74,7 +74,7 @@
+             var native = Frame(2, 1);
+             check(Enumerable.Range(0, native.Length).All(i => native[i] == native[i / 1280 / 4 * 4 * 1280 + i % 1280 / 4 * 4]),
+                 "Sunlight retains exact native pixels when scaled to the window");
+-            Set("paused", true); Set("pauseAmount", 1f); Set("selected", 9); Set("selectionY", 90f);
++            Set("paused", true); Set("pauseAmount", 1f); Set("graphicsMenuOpen", true); Set("selected", 5); Set("selectionY", 50f);
+             Call("Update", new GameTime(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.2)));
+             check((double)Get("sceneTime")! == 1, "The pause menu freezes the sunlight clock");
+             for (var expected = 0; expected < 3; expected++)
+@@ -89,7 +89,7 @@
+             }
+             Set("menuMessage", "");
+             var menuOff = Frame(0, 1); var menuOn = Frame(1, 1); Save(menuOn, "menu.png");
+-            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 134 * 4 || y >= 141 * 4
++            check((from y in Enumerable.Range(6 * 4, 168 * 4) where y < 94 * 4 || y >= 101 * 4
+                 from x in Enumerable.Range(34 * 4, 252 * 4) select y * 1280 + x).All(i => menuOff[i] == menuOn[i]),
+                 "Sun shafts leave the pause panel and every other label unchanged");
+             Set("paused", false); Set("pauseAmount", 0f);

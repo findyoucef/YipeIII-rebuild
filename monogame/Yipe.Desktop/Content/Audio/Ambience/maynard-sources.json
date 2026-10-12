@@ -1,0 +1,68 @@
+{
+  "downloaded_utc": "2026-10-09",
+  "sources": [
+    {
+      "title": "Ambient Bird Sounds",
+      "author": "isaiah658",
+      "source": "https://opengameart.org/content/ambient-bird-sounds",
+      "download": "https://opengameart.org/sites/default/files/birds-isaiah658_0.ogg",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "359e4e3f9da9d75aac64cede511c7e3ef8b461f9d9f8c230f8f80e44c4b3e35f"
+    },
+    {
+      "title": "Park ambiences \u2014 wind",
+      "author": "Thimras",
+      "source": "https://opengameart.org/content/park-ambiences",
+      "download": "https://opengameart.org/sites/default/files/park_ambience_wind.wav",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "5c381856745b4706e7eba55eb9271a61a530e90c05df8126adb2db89ecfa6c5a"
+    },
+    {
+      "title": "Park ambiences \u2014 river",
+      "author": "Thimras",
+      "source": "https://opengameart.org/content/park-ambiences",
+      "download": "https://opengameart.org/sites/default/files/park_ambience_river.wav",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "da0c0c9b1249a83a1611cc116d5737b0864a8db9f45f1ae8dcc079d0f7c0bbbf"
+    }
+  ],
+  "processing": "Recorded sources only. Bird recording filtered 280\u20137500 Hz and looped to 28s with a 2s wrap crossfade; wind seconds20\u201380 filtered 220\u20134200 Hz and looped to58s. Bird and wind intermediates level-matched to0.09/0.08 RMS with0.8 peak cap. Day mixes birds with wind at0.45 gain and wraps to58s; night uses wind alone. River seconds30\u201390 filtered85\u20135200 Hz, converted to mono for positional panning and wrapped to58s. Final day/night/river RMS targets0.10/0.08/0.14, all peak-capped at0.8. All outputs PCM16 22050Hz; no synthesized audio. Reproducible recipe in evidence mix_audio.py.",
+  "outputs": [
+    {
+      "file": "maynard-day.wav",
+      "duration_seconds": 58.0,
+      "channels": 2,
+      "sample_rate": 22050,
+      "rms": 0.05808744481904132,
+      "peak": 0.79998779296875,
+      "seam_delta": 0.05255126953125,
+      "normalization_gain": 0.9103486595360467,
+      "sha256": "89f745578738c188a3496737dd9e59b805a52551818f5f43c7cf976af2003248"
+    },
+    {
+      "file": "maynard-night.wav",
+      "duration_seconds": 58.0,
+      "channels": 2,
+      "sample_rate": 22050,
+      "rms": 0.08000019337768594,
+      "peak": 0.746429443359375,
+      "seam_delta": 0.010498046875,
+      "normalization_gain": 0.9999975827847688,
+      "sha256": "f0299d8bb2b1e54f9faa39cc0eb5488aa92132b31036286fe40c1631a08a9c79"
+    },
+    {
+      "file": "maynard-river.wav",
+      "duration_seconds": 58.0,
+      "channels": 1,
+      "sample_rate": 22050,
+      "rms": 0.12929623844317414,
+      "peak": 0.79998779296875,
+      "seam_delta": 0.0177001953125,
+      "normalization_gain": 20.706477093206953,
+      "sha256": "9ae3912a7e688669b06c5110d0267bcd004aa02dc1ae30cabe631bc3dee97583"
+    }
+  ]
+}

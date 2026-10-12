@@ -1,0 +1,258 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/ice-movement/focused/yipe-graphics-20261011-044016-808e8714
+Content startup and five initial frames: 2.83 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Ice review 41: a frozen scene renders deterministically
+PASS: Ice review 41: captures preserve full gameplay and RNG
+PASS: Ice 41: terrain uses the native frozen-material palette
+PASS: Ice 41: the quiet floor remains clearly below the raised walls
+PASS: Ice 41: unchanged terrain reuses its cached silhouette
+PASS: Ice 41: sparse frost/glints move with presentation time
+PASS: Ice 41: atmosphere stays inside discovered terrain
+PASS: Ice 41: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 41: tile changes invalidate the terrain cache
+PASS: Ice 41: restoring tiles restores the exact terrain
+PASS: Ice 41: visible crystals cast cold contour light
+PASS: Ice 41: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 41: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 42: a frozen scene renders deterministically
+PASS: Ice review 42: captures preserve full gameplay and RNG
+PASS: Ice 42: terrain uses the native frozen-material palette
+PASS: Ice 42: the quiet floor remains clearly below the raised walls
+PASS: Ice 42: unchanged terrain reuses its cached silhouette
+PASS: Ice 42: sparse frost/glints move with presentation time
+PASS: Ice 42: atmosphere stays inside discovered terrain
+PASS: Ice 42: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 42: tile changes invalidate the terrain cache
+PASS: Ice 42: restoring tiles restores the exact terrain
+PASS: Ice 42: visible crystals cast cold contour light
+PASS: Ice 42: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 42: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 47: a frozen scene renders deterministically
+PASS: Ice review 47: captures preserve full gameplay and RNG
+PASS: Ice 47: terrain uses the native frozen-material palette
+PASS: Ice 47: the quiet floor remains clearly below the raised walls
+PASS: Ice 47: unchanged terrain reuses its cached silhouette
+PASS: Ice 47: sparse frost/glints move with presentation time
+PASS: Ice 47: atmosphere stays inside discovered terrain
+PASS: Ice 47: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 47: tile changes invalidate the terrain cache
+PASS: Ice 47: restoring tiles restores the exact terrain
+PASS: Ice 47: visible crystals cast cold contour light
+PASS: Ice 47: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 47: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 53: a frozen scene renders deterministically
+PASS: Ice review 53: captures preserve full gameplay and RNG
+PASS: Ice 53: terrain uses the native frozen-material palette
+PASS: Ice 53: the quiet floor remains clearly below the raised walls
+PASS: Ice 53: unchanged terrain reuses its cached silhouette
+PASS: Ice 53: sparse frost/glints move with presentation time
+PASS: Ice 53: atmosphere stays inside discovered terrain
+PASS: Ice 53: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 53: tile changes invalidate the terrain cache
+PASS: Ice 53: restoring tiles restores the exact terrain
+PASS: Ice 53: visible crystals cast cold contour light
+PASS: Ice 53: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 53: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 81: a frozen scene renders deterministically
+PASS: Ice review 81: captures preserve full gameplay and RNG
+PASS: Ice 81: terrain uses the native frozen-material palette
+PASS: Ice 81: the quiet floor remains clearly below the raised walls
+PASS: Ice 81: unchanged terrain reuses its cached silhouette
+PASS: Ice 81: sparse frost/glints move with presentation time
+PASS: Ice 81: atmosphere stays inside discovered terrain
+PASS: Ice 81: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 81: tile changes invalidate the terrain cache
+PASS: Ice 81: restoring tiles restores the exact terrain
+PASS: Ice 81: visible crystals cast cold contour light
+PASS: Ice 81: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 81: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 82: a frozen scene renders deterministically
+PASS: Ice review 82: captures preserve full gameplay and RNG
+PASS: Ice 82: terrain uses the native frozen-material palette
+PASS: Ice 82: the quiet floor remains clearly below the raised walls
+PASS: Ice 82: unchanged terrain reuses its cached silhouette
+PASS: Ice 82: sparse frost/glints move with presentation time
+PASS: Ice 82: atmosphere stays inside discovered terrain
+PASS: Ice 82: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 82: tile changes invalidate the terrain cache
+PASS: Ice 82: restoring tiles restores the exact terrain
+PASS: Ice 82: visible crystals cast cold contour light
+PASS: Ice 82: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 82: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 87: a frozen scene renders deterministically
+PASS: Ice review 87: captures preserve full gameplay and RNG
+PASS: Ice 87: terrain uses the native frozen-material palette
+PASS: Ice 87: the quiet floor remains clearly below the raised walls
+PASS: Ice 87: unchanged terrain reuses its cached silhouette
+PASS: Ice 87: sparse frost/glints move with presentation time
+PASS: Ice 87: atmosphere stays inside discovered terrain
+PASS: Ice 87: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 87: tile changes invalidate the terrain cache
+PASS: Ice 87: restoring tiles restores the exact terrain
+PASS: Ice 87: visible crystals cast cold contour light
+PASS: Ice 87: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 87: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 88: a frozen scene renders deterministically
+PASS: Ice review 88: captures preserve full gameplay and RNG
+PASS: Ice 88: terrain uses the native frozen-material palette
+PASS: Ice 88: the quiet floor remains clearly below the raised walls
+PASS: Ice 88: unchanged terrain reuses its cached silhouette
+PASS: Ice 88: sparse frost/glints move with presentation time
+PASS: Ice 88: atmosphere stays inside discovered terrain
+PASS: Ice 88: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 88: tile changes invalidate the terrain cache
+PASS: Ice 88: restoring tiles restores the exact terrain
+PASS: Ice 88: visible crystals cast cold contour light
+PASS: Ice 88: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 88: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 93: a frozen scene renders deterministically
+PASS: Ice review 93: captures preserve full gameplay and RNG
+PASS: Ice 93: terrain uses the native frozen-material palette
+PASS: Ice 93: the quiet floor remains clearly below the raised walls
+PASS: Ice 93: unchanged terrain reuses its cached silhouette
+PASS: Ice 93: sparse frost/glints move with presentation time
+PASS: Ice 93: atmosphere stays inside discovered terrain
+PASS: Ice 93: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 93: tile changes invalidate the terrain cache
+PASS: Ice 93: restoring tiles restores the exact terrain
+PASS: Ice 93: visible crystals cast cold contour light
+PASS: Ice 93: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 93: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 94: a frozen scene renders deterministically
+PASS: Ice review 94: captures preserve full gameplay and RNG
+PASS: Ice 94: terrain uses the native frozen-material palette
+PASS: Ice 94: the quiet floor remains clearly below the raised walls
+PASS: Ice 94: unchanged terrain reuses its cached silhouette
+PASS: Ice 94: sparse frost/glints move with presentation time
+PASS: Ice 94: atmosphere stays inside discovered terrain
+PASS: Ice 94: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 94: tile changes invalidate the terrain cache
+PASS: Ice 94: restoring tiles restores the exact terrain
+PASS: Ice 94: visible crystals cast cold contour light
+PASS: Ice 94: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 94: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 99: a frozen scene renders deterministically
+PASS: Ice review 99: captures preserve full gameplay and RNG
+PASS: Ice 99: terrain uses the native frozen-material palette
+PASS: Ice 99: the quiet floor remains clearly below the raised walls
+PASS: Ice 99: unchanged terrain reuses its cached silhouette
+PASS: Ice 99: sparse frost/glints move with presentation time
+PASS: Ice 99: atmosphere stays inside discovered terrain
+PASS: Ice 99: secret rock and hidden floor have identical terrain, atmosphere and light
+PASS: Ice 99: tile changes invalidate the terrain cache
+PASS: Ice 99: restoring tiles restores the exact terrain
+PASS: Ice 99: visible crystals cast cold contour light
+PASS: Ice 99: hard frozen ground retains solid footfalls rather than water splashes
+PASS: Ice 99: terrain, light and atmosphere never change gameplay or RNG
+PASS: Ice review 17: a frozen scene renders deterministically
+PASS: Ice review 17: captures preserve full gameplay and RNG
+PASS: Ice review 51: a frozen scene renders deterministically
+PASS: Ice review 51: captures preserve full gameplay and RNG
+PASS: Ice review 57: a frozen scene renders deterministically
+PASS: Ice review 57: captures preserve full gameplay and RNG
+PASS: Ice review 59: a frozen scene renders deterministically
+PASS: Ice review 59: captures preserve full gameplay and RNG
+PASS: Ice review 67: a frozen scene renders deterministically
+PASS: Ice review 67: captures preserve full gameplay and RNG
+PASS: Ice review 117: a frozen scene renders deterministically
+PASS: Ice review 117: captures preserve full gameplay and RNG
+PASS: Ice 41/42: matching walkable region overlaps align (0/384)
+PASS: Ice 41/47: matching walkable region overlaps align (0/768)
+PASS: Ice 47/53: matching walkable region overlaps align (0/384)
+PASS: Ice 81/82: matching walkable region overlaps align (0/384)
+PASS: Ice 81/87: matching walkable region overlaps align (0/384)
+PASS: Ice 87/88: matching walkable region overlaps align (0/384)
+PASS: Ice 88/94: matching walkable region overlaps align (0/384)
+PASS: Ice 93/94: matching walkable region overlaps align (0/384)
+PASS: Ice 93/99: matching walkable region overlaps align (0/384)
+PASS: Ice crystal light is occluded by closed doors
+PASS: Opening the Ice door restores the exact light field
+PASS: Ice light grazes the carved corner without square tile clipping
+PASS: Ice secret rock cannot be identified by its contour shadow
+PASS: Undiscovered Ice crystals cast no visible light
+PASS: Ice creature 21: cool tint and contact shading preserve silhouette, hover and scale
+PASS: Ice creature 21: battle artwork remains unchanged
+PASS: Ice creature 21: leaving restores its original appearance
+PASS: Ice creature 23: cool tint and contact shading preserve silhouette, hover and scale
+PASS: Ice creature 23: battle artwork remains unchanged
+PASS: Ice creature 23: leaving restores its original appearance
+PASS: Ice creature 11: cool tint and contact shading preserve silhouette, hover and scale
+PASS: Ice creature 11: battle artwork remains unchanged
+PASS: Ice creature 11: leaving restores its original appearance
+PASS: Ice hero reflection begins below the boots and never draws over the character
+PASS: Solid ice holds a still reflection without water ripples
+PASS: Ice reflects the animated halfway position and freezes with the accepted step
+PASS: Hidden ice floor has exactly the same reflectivity as ordinary ice
+PASS: Ice reflection 21: grounded, hovering and large creatures stay below their ground anchor
+PASS: Ice reflection 23: grounded, hovering and large creatures stay below their ground anchor
+PASS: Ice reflection 11: grounded, hovering and large creatures stay below their ground anchor
+PASS: Ice reflection is restrained and fades through frost, cracks and distance
+PASS: Ice reflections stop at wall contours, closed doors and stairs
+PASS: Exposed ice at a carved rock corner reflects without a square tile cutoff
+PASS: A large ice reflection cannot reappear beyond the far side of a closed door
+PASS: Opening changed terrain restores the exact ice reflection mask
+PASS: Ice reflection pixels cannot reveal undiscovered destinations
+PASS: Hidden actors cannot reveal themselves through an ice reflection
+PASS: Ice reflection rendering preserves the full adventure and RNG
+PASS: Roaming and pursuing reflections follow accepted visual travel without advancing gameplay
+PASS: Ice reflectivity never leaks into another cave
+PASS: Ice ambience starts with one quietly fading recorded loop
+PASS: Ice ambience respects the restrained master-volume mix
+PASS: Upper Ice rooms retain the existing ambient voice
+PASS: Deep Ice rooms quietly reduce the same loop without restarting it
+PASS: Pause silences Ice ambience
+PASS: Resume continues Ice ambience
+PASS: Map view silences Ice ambience
+PASS: Action overlays silence Ice ambience
+PASS: Focus loss silences Ice ambience
+PASS: Sound Off silences Ice ambience
+PASS: Zero master volume silences Ice ambience
+PASS: Leaving Ice for Earth replaces the ambient voice
+PASS: Returning to Ice selects the recorded ice loop
+PASS: Leaving for an untreated cave releases the ice loop
+PASS: Ice audio preserves gameplay and RNG
+PASS: Ice 41: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 42: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 47: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 53: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 81: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 82: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 87: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 88: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 93: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 94: a tap makes one accepted push and exactly one coasting tile
+PASS: Ice 99: a tap makes one accepted push and exactly one coasting tile
+PASS: Holding direction glides continuously between keyboard/controller repeat pulses
+PASS: Turning sheds forward momentum for one tile before gaining traction in the new direction
+PASS: Reversing brakes once and then pushes back instead of instantly reversing velocity
+PASS: Automatic ice drift stops before tile 22, without buffered input opening doors or revealing secrets
+PASS: Automatic ice drift stops before tile 3e, without buffered input opening doors or revealing secrets
+PASS: Automatic ice drift stops before tile 3f, without buffered input opening doors or revealing secrets
+PASS: Automatic ice drift stops before tile 40, without buffered input opening doors or revealing secrets
+PASS: Automatic ice drift stops before tile 27, without buffered input opening doors or revealing secrets
+PASS: Automatic ice drift stops before tile 43, without buffered input opening doors or revealing secrets
+PASS: Ice drift never automatically takes a depth exit
+PASS: Ice drift stops before a room boundary
+PASS: A rejected ice push builds no momentum and respects normal collision
+PASS: The matching ice-floor alias retains the same traction
+PASS: Map 13: ordinary movement stays unchanged even with an ice-colored fixture tile
+PASS: Map 54: ordinary movement stays unchanged even with an ice-colored fixture tile
+PASS: Map 57: ordinary movement stays unchanged even with an ice-colored fixture tile
+PASS: Map 59: ordinary movement stays unchanged even with an ice-colored fixture tile
+PASS: Map 67: ordinary movement stays unchanged even with an ice-colored fixture tile
+PASS: paused cancels ice momentum immediately
+PASS: mapOpen cancels ice momentum immediately
+PASS: Action panels cancel ice momentum
+PASS: Restoring a position cancels both ice momentum and interpolation
+PASS: A coast into a monster uses the real encounter pipeline and clears momentum
+PASS: Authored Ice Cave demonstration ends after push, glide and one release skid
+Passed 254 visual integration checks. Focused Ice Cave run.

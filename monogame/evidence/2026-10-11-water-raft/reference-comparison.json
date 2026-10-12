@@ -1,0 +1,135 @@
+{
+  "baseline": "build/water-cave-remaster/focused/yipe-graphics-20261011-050804-69e9272e/water-cave",
+  "current": "build/water-raft/focused/yipe-graphics-20261011-233846-96a6f24c/water-cave",
+  "captures": [
+    {
+      "file": "map-17.png",
+      "identical": true
+    },
+    {
+      "file": "light-17.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-17.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-17-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-51.png",
+      "identical": true
+    },
+    {
+      "file": "light-51.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-51.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-51-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-53.png",
+      "identical": true
+    },
+    {
+      "file": "light-53.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-53.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-53-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-54.png",
+      "identical": true
+    },
+    {
+      "file": "light-54.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-54.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-54-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-57.png",
+      "identical": true
+    },
+    {
+      "file": "light-57.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-57.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-57-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-59.png",
+      "identical": true
+    },
+    {
+      "file": "light-59.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-59.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-59-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-67.png",
+      "identical": true
+    },
+    {
+      "file": "light-67.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-67.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-67-unlit.png",
+      "identical": true
+    },
+    {
+      "file": "map-117.png",
+      "identical": true
+    },
+    {
+      "file": "light-117.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-117.png",
+      "identical": true
+    },
+    {
+      "file": "gameplay-117-unlit.png",
+      "identical": true
+    }
+  ],
+  "identical": 32
+}

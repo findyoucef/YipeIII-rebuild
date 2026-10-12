@@ -1,0 +1,13 @@
+{
+  "pid": 84058,
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+  "save": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-preview-20261008-100546/game.y3m",
+  "profile": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-preview-20261008-100546/game.profile.json",
+  "log": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-preview-20261008-100546/launch.log",
+  "initial_preview_phase": 680,
+  "mode": "Auto",
+  "existing_game_pids_preserved": [],
+  "process_verified": true,
+  "startup_log": "",
+  "window_id": 13431
+}

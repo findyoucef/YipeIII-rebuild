@@ -1,0 +1,41 @@
+{
+  "task": "Red rock joints and room-wide red heat in Fire Cave",
+  "scope": [
+    67,
+    71,
+    72,
+    73,
+    95,
+    100,
+    101,
+    107,
+    111,
+    112,
+    113
+  ],
+  "feedback": "User rejected the initial cool-grey appearance and requested red joints plus a room-wide red glow.",
+  "changes": [
+    "Three ember-red/orange shades for existing fine wall joints, brighter near magma",
+    "Warmer floor/rock palette with dark wall feet",
+    "Room-wide red ambient brightness using existing blend states before heat/UI, stronger in deep rooms"
+  ],
+  "verification": {
+    "checked_release": "zero warnings/errors",
+    "focused_gpu_checks": 207,
+    "full_gpu_checks": 2615,
+    "tour_frames": 360,
+    "monster_types": 41,
+    "unchanged_other_maps": 104,
+    "unchanged_other_lighting_captures": 22,
+    "unchanged_breeding_captures": 73,
+    "personal_files_unchanged": true,
+    "diff_check": "pass",
+    "desktop_matches_tested_binary": true
+  },
+  "visual_review": "Compared native and default gameplay entrance72, deep113 and open67 before/after; inspected unstable-floor73 and linked101/112. Strong room-wide red cast and glowing joints, retained sharp edges and clear routes. User review pending.",
+  "simplicity_review": "Reviewed the three production files and focused check against task snapshots. Removed redundant overwritten dark-joint assignments. Existing cached terrain and blend states are reused; no new texture, shader, effect framework or gameplay state. No outstanding findings.",
+  "focused_output": "build/fire-red-glow/verified/yipe-graphics-20261009-054812-4b764a71",
+  "full_output": "build/fire-red-glow/full/yipe-graphics-20261009-054832-20dda7b2",
+  "comparison_baseline": "build/fire-cave/full/yipe-graphics-20261009-053623-10fa78ca",
+  "delivery": "Local build only. Save preserved. User visual approval pending."
+}

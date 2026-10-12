@@ -1,0 +1,17 @@
+{
+  "backup": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Backups/before-snow-biome-20261008-194633",
+  "protected_files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "sha256": "54721931ee07bdc45a06fc1427efd5731d5115f49504fcb5742f394b16a378a5"
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "sha256": "07eef2f6929ef4c8303ae19af95a5425aa3fda89b0decc8784c4a682ddbd37ce"
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "sha256": "8dbe3a6c92766e4c297efea26e2048f46f26ccc706de0a223c45cb8d4983a2bb"
+    }
+  ]
+}

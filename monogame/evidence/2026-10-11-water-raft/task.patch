@@ -1,0 +1,503 @@
+--- before/monogame/PORTING_PLAN.md
++++ monogame/PORTING_PLAN.md
+@@ -6,7 +6,7 @@
+ record for the port. Update it during implementation so a later session can
+ resume from repository evidence without needing the conversation history.
+ 
+-Last updated: **2026-10-10**. **P1, P2, P3 and P4 are complete.** The continuous
++Last updated: **2026-10-11**. **P1, P2, P3 and P4 are complete.** The continuous
+ P2–P4 goal delivered the connected opening, complete exploration and earned
+ campaign ending with the approved retro presentation. The [completion evidence](evidence/2026-10-04-p234-complete/README.md)
+ contains runnable inputs, full saves, independent comparisons, screenshots and
+@@ -17,16 +17,16 @@
+ 
+ | Field | Current state |
+ | --- | --- |
+-| Local gameplay launch | No personal game was launched, navigated or replaced during the Water Cave task. The latest local Release includes the remaster. For a requested launch, read the current full adventure from [launch record](../build/local-game-launch.json), never substitute the level-1 demo. The earlier `build/cloud-rework/launcher` avoids the known macOS display-link wait using process-only refresh-sync settings; rebuild it to refresh its copied Desktop assembly before reuse. |
++| Local gameplay launch | The latest local Release includes the Water Cave raft fix. The last requested launch used an isolated copy of the selected adventure in Water Cave D4; its source adventure is retained as `main_adventure_save` in the [launch record](../build/local-game-launch.json). For a requested launch, inspect running processes and read that record; do not substitute a demo or overwrite the main adventure. Rebuild `build/cloud-rework/launcher` to refresh its copied Desktop assembly before reuse; its process-only refresh-sync workaround avoids the known macOS display-link stall. |
+ | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
+-| Next task | Review the completed thirteen-room Water Cave remaster. Final Cave (15 rooms: 43/48/49/54/55/61/83/84/85/86/89/91/92/97/98) remains for a separate task. Prior aesthetic review and physical-controller verification remain separate. |
+-| Last completed work | Remastered all thirteen Water Cave rooms with eroded limestone, wet faces, quiet silt paths, dark turquoise pools, contour-lit algae, drips, ripples, caustics and thin mist. Added actual-pool hero reflections, cohesive creature tint/shadows and quiet recorded ambience. [Water Cave evidence](evidence/2026-10-10-water-cave/review.json). |
+-| Latest verification | Water Cave: 627 core/input checks, 211 focused checks and 3,560 full graphics checks passed, including 360 tour frames. Local Release build: zero warnings/errors. Only the thirteen Water maps differ among 115 native captures; 32 other-room reference captures remain pixel-identical. All 33 personal files and 27 Core/original-map files remain byte-identical. [Verification](evidence/2026-10-10-water-cave/review.json). |
++| Next task | Review the corrected raft motion and completed thirteen-room Water Cave remaster. Final Cave (15 rooms: 43/48/49/54/55/61/83/84/85/86/89/91/92/97/98) remains for a separate task. Prior aesthetic review and physical-controller verification remain separate. |
++| Last completed work | Fixed Water Cave rafting: the hero stands on the visible log deck, shares its eased glide and one-pixel buoyancy, and stays planted during passive travel. Boarding follows the moving deck; disembarking and original raft rules remain intact. [Raft evidence](evidence/2026-10-11-water-raft/review.json). |
++| Latest verification | Raft correction: 632 core/input checks, 257 focused Water Cave checks and 3,606 full graphics checks passed, including the raft rescue/save/reload/return route and 360 tour frames. Local Release: zero warnings/errors. Only the eight raft rooms differ among 115 native maps; 32 other-room reference captures remain identical. All 33 personal files and 27 Core/original-map files are unchanged. [Verification](evidence/2026-10-11-water-raft/review.json). |
+ | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
+ | Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+-| Work left running or half implemented | No Water Cave task or test process remains running. Implementation and verification are complete; user visual/audio approval is pending. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
++| Work left running or half implemented | No raft task or test process remains running. Implementation and verification are complete; user visual approval is pending. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
+ | Blocking dependencies | Physical-controller/other-OS verification needs the actual environments; official console work needs approved access. |
+-| Save preservation | Cave and graphics checks use isolated saves/profiles and compare full gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files are unchanged; no added personal files. Save and map-journal formats remain unchanged. [Latest file checks](evidence/2026-10-10-water-cave/preservation.json). |
++| Save preservation | Raft and graphics checks use isolated saves/profiles and compare full gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files remain unchanged; no save-format changes. [Latest file checks](evidence/2026-10-11-water-raft/preservation.json). |
+ | Repository checkpoint | The first MonoGame checkpoint on main is titled `Add complete MonoGame desktop port with retro presentation`, based on C++ commit 349fffe71e052dd4e011f1fe09c0e3080f5bb723. It includes the port, artwork, fixtures, evidence and resume documentation. Use `git log -- monogame/PORTING_PLAN.md` to locate it. Evidence hashes describe files at capture time; later documentation updates may differ. |
+ 
+ At the start of a resumed session:
+@@ -48,6 +48,29 @@
+ Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
+ with the working tree, and continue from the next unfinished task.”**
+ 
++
++## Water Cave raft presentation — 2026-10-11
++
++User reported standing beside the logs and abrupt tile jumps. The generic prop
++offset placed the deck 19 native pixels above the hero's boots, while raft and
++hero used separate movement presentations.
++
++- [x] Align the existing pixel-art deck beneath the boots; preserve the atlas.
++- [x] Interpolate each accepted raft move over 0.9 seconds, sharing position and
++  one-pixel buoyancy with the rider. Keep its original route/tick cadence.
++- [x] Preserve walking onto/off the raft, including a raft tick during boarding;
++  keep the carried hero planted and silent, with a wood contact on boarding.
++- [x] Verify 632 core/input checks and 257 focused Water Cave checks, including
++  all eight rafts, pause, map/actions, save/load aboard and other-cave isolation.
++- [x] Finish 3,606 full graphics checks and 360 tour frames, including the existing
++  raft rescue/save/reload/return route. All 33 personal files and 27 Core/map files
++  remain byte-identical; the local Release has zero warnings/errors.
++
++Only the eight raft rooms differ among 115 native map captures; 32 other-cave/town
++references are identical. The scoped simplicity review found no remaining issues.
++[Raft motion](evidence/2026-10-11-water-raft/raft-glide.mp4) and
++[verification](evidence/2026-10-11-water-raft/review.json). Local builds only;
++implementation is complete and user visual approval remains pending.
+ 
+ ## Water Cave remaster — 2026-10-10
+ 
+--- before/monogame/README.md
++++ monogame/README.md
+@@ -240,6 +240,15 @@
+ [motion clip](evidence/2026-10-10-water-cave/water-cave.mp4), and
+ [verification](evidence/2026-10-10-water-cave/review.json).
+ 
++Water Cave rafts now glide between their accepted tiles, with a shared one-pixel
++bob for the logs and rider. The hero's boots sit on the visible deck and stay
++planted during travel. Boarding follows the moving deck, disembarking uses normal
++movement, and landing on the logs uses a wood footstep. Small pixel ripples show
++buoyancy. Pausing freezes rider and raft together; loading aboard restores their
++alignment. Routes, exploration-tick timing and save data remain unchanged.
++[Raft preview](evidence/2026-10-11-water-raft/raft-glide.mp4) and
++[verification](evidence/2026-10-11-water-raft/review.json).
++
+ The **Ice / Zephyr Cave** has a dedicated frozen interior across all eleven
+ upper/deep rooms: connected faceted ice and mineral rock, shaded wall faces,
+ broad ice sheets with sparse submerged fractures, frost pockets and icicles.
+--- before/monogame/Yipe.Desktop/PlayerMotion.cs
++++ monogame/Yipe.Desktop/PlayerMotion.cs
+@@ -44,17 +44,25 @@
+         stepElapsed = 0;
+     }
+ 
+-    public void Update(double elapsed)
++    // A raft changes the accepted tile without starting a walk or changing facing.
++    // Keep an unfinished boarding step so its boots settle onto the moving deck.
++    public void CarryTo(MapPosition destination) => Position = destination;
++
++    public void Update(double elapsed, Vector2? support = null)
+     {
+         if (!double.IsFinite(elapsed) || elapsed < 0)
+             throw new ArgumentOutOfRangeException(nameof(elapsed));
+-        if (!IsMoving) return;
++        if (!IsMoving)
++        {
++            if (support is { } deck) VisualPosition = deck;
++            return;
++        }
+         if (!IsSliding) walkingTime += Math.Min(elapsed, Duration - stepElapsed);
+         stepElapsed = Math.Min(Duration, stepElapsed + elapsed);
+         var progress = (float)(stepElapsed / Duration);
+         if (stride == PlayerStride.IcePush) progress = .5f * progress + .5f * progress * progress;
+         else if (stride == PlayerStride.IceBrake) progress = 2 * progress - progress * progress;
+-        VisualPosition = Vector2.Lerp(origin, new(Position.X, Position.Y), progress);
++        VisualPosition = Vector2.Lerp(origin, support ?? new(Position.X, Position.Y), progress);
+     }
+ 
+     public void SnapTo(MapPosition position)
+--- before/monogame/Yipe.Desktop/TownGame.cs
++++ monogame/Yipe.Desktop/TownGame.cs
+@@ -257,7 +257,8 @@
+             if (rainStrength > 0 && session.CurrentMap.Id is >= 1 and <= 40)
+                 outdoorWeatherTime += elapsed;
+             var wasMoving = player.IsMoving;
+-            player.Update(elapsed);
++            world.UpdateRaft(elapsed);
++            player.Update(elapsed, world.RaftSupport(adventure, sceneTime));
+             if (walkingStep && wasMoving && !player.IsMoving)
+             {
+                 walkingStep = false;
+@@ -344,7 +345,9 @@
+     private void RestorePosition(MapPosition position)
+     {
+         session.Location.Position = position;
++        world.SynchronizeRaft(adventure, position, false);
+         player.SnapTo(position);
++        player.Update(0, world.RaftSupport(adventure, sceneTime));
+         walkingStep = false;
+         world.ClearSnowTracks();
+         cameraPosition = CameraTarget(player.VisualPosition);
+--- before/monogame/Yipe.Desktop/TownOverlays.cs
++++ monogame/Yipe.Desktop/TownOverlays.cs
+@@ -55,6 +55,8 @@
+             }
+         }
+         var position = session.Location.Position;
++        if (world.SynchronizeRaft(adventure, player.Position, animate && !changed))
++            player.CarryTo(position);
+         if (!changed && animate && position != player.Position
+             && Math.Abs(position.X - player.Position.X) <= 1 && Math.Abs(position.Y - player.Position.Y) <= 1 && !player.IsMoving)
+             player.MoveTo(position, nextStride);
+@@ -66,6 +68,7 @@
+             world.ClearSnowTracks();
+             cameraPosition = CameraTarget(player.VisualPosition);
+         }
++        player.Update(0, world.RaftSupport(adventure, sceneTime));
+         if (changed) pendingDirection = Point.Zero;
+         world.SynchronizeMonsters(adventure, animate && !changed,
+             new((int)MathF.Round(cameraPosition.X), (int)MathF.Round(cameraPosition.Y), CanvasWidth, CanvasHeight));
+--- before/monogame/Yipe.Desktop/WorldRenderer.cs
++++ monogame/Yipe.Desktop/WorldRenderer.cs
+@@ -91,6 +91,8 @@
+     internal FootstepSurface FootstepAt(Map map, MapPosition position)
+     {
+         var tile = map.Tile(position);
++        if (IsWaterCave(map) && map.Events.Overlay is { Value: > 0 } raft && raft.Position == position)
++            return FootstepSurface.Wood;
+         if (tile == 0x0b) return FootstepSurface.Wood;
+         PrepareWater(map);
+         var x = position.X * 32 + 16; var y = position.Y * 32 + 25;
+@@ -179,12 +181,11 @@
+         if (map.Id is >= 1 and <= 40)
+             Rain.DrawSplashes(batch, pixel, time, rainStrength, map.Tile, WaterAt, SnowColdAt);
+         // Water and reflections precede every deck, so they cannot cover its planks.
++        DrawRaft(batch, game, time);
+         for (var y = 0; y < Map.Height; y++)
+             for (var x = 0; x < Map.Width; x++)
+                 if (game.Visibility.Contains(new(x, y)))
+                 {
+-                    if (IsWaterCave(map) && map.Events.Overlay is { Value: > 0 } raft && raft.Position == new MapPosition(x, y))
+-                        DrawProp(batch, 12, new(x, y));
+                     if (map.Tile(new(x, y)) == 11)
+                         batch.Draw(buildings, new Vector2(x * 32 - 8, y * 32 - 8), Cell(7, 3, 48), Color.White);
+                 }
+--- before/monogame/Yipe.GraphicsChecks/Program.cs
++++ monogame/Yipe.GraphicsChecks/Program.cs
+@@ -248,6 +248,7 @@
+         if (waterOnly)
+         {
+             WaterCaveChecks.Run(game, outputDirectory, Check);
++            RaftMotionChecks.Run(game, outputDirectory, Check);
+             Log($"Passed {checks} visual integration checks. Focused Water Cave run.");
+             return;
+         }
+@@ -1066,6 +1067,7 @@
+         IceCaveChecks.Run(game, outputDirectory, Check);
+         IceMovementChecks.Run(game, outputDirectory, Check);
+         WaterCaveChecks.Run(game, outputDirectory, Check);
++        RaftMotionChecks.Run(game, outputDirectory, Check);
+         BreedingGroundChecks.Run(game, outputDirectory, Check);
+         FireCaveChecks.Run(game, outputDirectory, Check);
+         HeatPresentationChecks.Run(game, outputDirectory, Check);
+--- before/monogame/Yipe.GraphicsChecks/README.md
++++ monogame/Yipe.GraphicsChecks/README.md
+@@ -1,6 +1,6 @@
+ # MonoGame graphics checks
+ 
+-The latest full run passed **3,560 checks**, including all 41 animated monsters,
++The latest full run passed **3,606 checks**, including all 41 animated monsters,
+ the eleven remastered Ice Cave rooms and thirteen Water Cave rooms. It includes the original 139 visual checks, eight diagonal
+ dispatch/animation checks, and six session checks for logical position/storage,
+ world transitions, shop handoff and RNG isolation, plus eight full-save checks
+@@ -87,7 +87,7 @@
+ dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --stone-only --output build/stone-checks
+ ```
+ 
+-For local Water Cave work, use `--water-only`. The focused run passes **211 checks**
++For local Water Cave work, use `--water-only`. The focused run passes **257 checks**
+ covering all thirteen rooms (44/45/46/50/56/62/68/74/90/96/102/108/114) and eight
+ unaffected references. It checks wall/floor contrast, palette/cache invalidation,
+ secret aliases, matching authored overlap neighborhoods, contour light and door
+@@ -96,6 +96,11 @@
+ preservation. Captures are retained under `water-cave/`, including a six-second
+ atmosphere sequence. Some authored overlap neighborhoods have differing banks;
+ those original layouts are preserved and excluded from exact material comparisons.
++The `raft-motion/` captures additionally cover all eight authored Water Cave
++rafts, shared rider/deck interpolation, actual sprite support under the boots,
++boarding during a raft tick, wood contacts, silent passive travel, disembarking,
++pause/map/action panels, save/load aboard and isolation from Ice Cave. A three-second
++60 Hz clip retains the authored D4 terrain and original raft movement commands.
+ 
+ ```sh
+ dotnet monogame/Yipe.GraphicsChecks/bin/Release/net10.0/Yipe.GraphicsChecks.dll --water-only --output build/water-cave-checks
+--- before/monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/WaterCaveChecks.cs
+@@ -102,7 +102,9 @@
+             var wet = (from y in Enumerable.Range(0, 12) from x in Enumerable.Range(0, 13) let p = new MapPosition(x, y)
+                 where game.Map.Tile(p) is 0x0c or 0x0d select p).ToArray();
+             if (wet.Length > 0)
+-                check(wet.All(p => Invoke("FootstepAt", game.Map, p)!.ToString() == "Water"), $"Water {id}: actual pools retain recorded splash contacts");
++                check(wet.All(p => Invoke("FootstepAt", game.Map, p)!.ToString()
++                    == (game.Map.Events.Overlay is { Value: > 0 } raft && raft.Position == p ? "Wood" : "Water")),
++                    $"Water {id}: actual pools retain splash contacts and rafts use wood contacts");
+             check(Invoke("FootstepAt", game.Map, game.Location.Position)!.ToString() == "Stone", $"Water {id}: limestone routes retain stone contacts and normal traction");
+             check(before.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)), $"Water {id}: topology, secrets, encounters and full saved state remain intact");
+         }
+--- before/monogame/Yipe.Tests/Program.cs
++++ monogame/Yipe.Tests/Program.cs
+@@ -204,6 +204,22 @@
+ Check(boundedStep.Position == new MapPosition(5, 5) && !boundedStep.IsMoving, "Rejected animation leaves position unchanged");
+ 
+ var motion = new PlayerMotion(new(5, 5));
++var rider = new PlayerMotion(new(4, 5));
++rider.Face(new(1, 0));
++rider.CarryTo(new(4, 6)); rider.Update(.45, new Vector2(4, 5.5f));
++Check(rider.Position == new MapPosition(4, 6) && rider.VisualPosition == new Vector2(4, 5.5f)
++    && !rider.IsMoving && rider.FacingRow == 2 && rider.AnimationFrame == 0,
++    "Raft travel follows its deck without walking in place or changing facing");
++rider.Update(.45, new Vector2(4, 6)); rider.MoveTo(new(5, 6)); rider.Update(.125);
++Check(rider.VisualPosition == new Vector2(4.5f, 6) && rider.IsMoving,
++    "Disembarking starts an ordinary step from the visible deck");
++rider.SnapTo(new(3, 5)); rider.MoveTo(new(4, 5)); rider.Update(.125, new Vector2(4, 5.25f));
++Check(rider.VisualPosition == new Vector2(3.5f, 5.125f), "Boarding walks toward the moving deck rather than its logical tile");
++rider.CarryTo(new(4, 6)); rider.Update(.125, new Vector2(4, 5.5f));
++Check(!rider.IsMoving && rider.VisualPosition == new Vector2(4, 5.5f) && rider.Position == new MapPosition(4, 6),
++    "A raft tick during boarding preserves the step and lands the boots on its deck");
++rider.SnapTo(new(7, 7)); rider.Update(.2);
++Check(rider.VisualPosition == new Vector2(7, 7), "Restoring a land position removes all carrier offset");
+ var relaxedWalk = new PlayerMotion(new(5, 5));
+ relaxedWalk.MoveTo(new(6, 5));
+ relaxedWalk.Update(0.18);
+--- /dev/null
++++ monogame/Yipe.Desktop/WorldRaft.cs
+@@ -0,0 +1,81 @@
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++
++namespace Yipe.Desktop;
++
++internal sealed partial class WorldRenderer
++{
++    private const double RaftTravelSeconds = .9;
++    private Map? raftMap;
++    private MapPosition raftTile;
++    private Vector2 raftOrigin;
++    private double raftElapsed = RaftTravelSeconds;
++
++    // Core still moves the raft every third exploration tick. Interpolate only
++    // that accepted move, never predict a route or consume gameplay randomness.
++    internal bool SynchronizeRaft(Adventure game, MapPosition rider, bool animate)
++    {
++        var map = game.Map;
++        var raft = map.Events.Overlay;
++        if (!IsWaterCave(map) || raft.Value <= 0) { raftMap = null; return false; }
++        var same = ReferenceEquals(raftMap, map);
++        var adjacent = Math.Abs(raft.Position.X - raftTile.X) <= 1 && Math.Abs(raft.Position.Y - raftTile.Y) <= 1;
++        var carried = same && animate && adjacent && raft.Position != raftTile
++            && rider == raftTile && game.Location.Position == raft.Position;
++        if (!same || !animate || !adjacent)
++        {
++            raftOrigin = new(raft.Position.X, raft.Position.Y);
++            raftElapsed = RaftTravelSeconds;
++        }
++        else if (raft.Position != raftTile)
++        {
++            raftOrigin = RaftPosition(map, 0); // No bob at time zero.
++            raftElapsed = 0;
++        }
++        raftMap = map; raftTile = raft.Position;
++        return carried;
++    }
++
++    internal void UpdateRaft(double elapsed) => raftElapsed = Math.Min(RaftTravelSeconds, raftElapsed + elapsed);
++
++    private Vector2 RaftPosition(Map map, double time)
++    {
++        var tile = map.Events.Overlay.Position;
++        var position = new Vector2(tile.X, tile.Y);
++        if (ReferenceEquals(raftMap, map))
++        {
++            var progress = (float)(raftElapsed / RaftTravelSeconds);
++            position = Vector2.Lerp(raftOrigin, new(raftTile.X, raftTile.Y), MathHelper.SmoothStep(0, 1, progress));
++        }
++        // Both boots and deck use this single one-pixel buoyancy offset.
++        position.Y += (int)(Math.Sin(Math.Floor(time * 8) / 8 * 1.8) * 1.2) / 32f;
++        return position;
++    }
++
++    internal Vector2? RaftSupport(Adventure game, double time) => IsWaterCave(game.Map)
++        && game.Map.Events.Overlay is { Value: > 0 } raft && raft.Position == game.Location.Position
++        ? RaftPosition(game.Map, time) : null;
++
++    private void DrawRaft(SpriteBatch batch, Adventure game, double time)
++    {
++        if (!IsWaterCave(game.Map) || game.Map.Events.Overlay is not { Value: > 0 } raft
++            || !game.Visibility.Contains(raft.Position)) return;
++        var position = RaftPosition(game.Map, time);
++        var feet = new Point((int)MathF.Round(position.X * 32) + 16, (int)MathF.Round(position.Y * 32) + 25);
++        // Small broken ripples make its buoyancy readable without a smooth halo.
++        for (var side = -1; side <= 1; side += 2)
++            for (var step = 0; step < 7; step++)
++            {
++                var phase = (int)(time * 6) % 3;
++                var x = feet.X + side * (13 + phase) + step / 3;
++                var y = feet.Y - 3 + step;
++                if (x < 0 || y < 0 || x >= WaterWidth || y >= WaterHeight
++                    || !game.Visibility.Contains(new(x / 32, y / 32)) || !WaterAt(x, y) || (step + phase) % 3 == 0) continue;
++                batch.Draw(pixel, new Rectangle(x, y, 1, 1), WaterCavePalette[21] * .4f);
++            }
++        // The visible log deck is centered at (24,23) in its padded 48px cell.
++        // Generic prop bottom-alignment placed the rider 19 pixels below it.
++        batch.Draw(props, new Rectangle(feet.X - 24, feet.Y - 23, 48, 48), Cell(12, 4, 48), Color.White);
++    }
++}
+--- /dev/null
++++ monogame/Yipe.GraphicsChecks/RaftMotionChecks.cs
+@@ -0,0 +1,150 @@
++using System.Reflection;
++using Microsoft.Xna.Framework;
++using Microsoft.Xna.Framework.Graphics;
++using Yipe.Core;
++using Yipe.Desktop;
++
++namespace Yipe.GraphicsChecks;
++
++internal static class RaftMotionChecks
++{
++    internal static void Run(Game host, string output, Action<bool, string> check)
++    {
++        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
++        var type = host.GetType();
++        object? Get(string name) => type.GetField(name, flags)!.GetValue(host);
++        void Set(string name, object? value) => type.GetField(name, flags)!.SetValue(host, value);
++        void Call(string name, params object[] args) => type.GetMethod(name, flags)!.Invoke(host, args);
++        var saved = new[] { "session", "adventure", "renderedMap", "journal", "cameraPosition", "sceneTime", "paused", "pauseAmount",
++            "overlay", "mapOpen", "worldMapOpen", "saving", "loading", "studioSplashRemaining", "walkingStep", "pendingDirection",
++            "iceDirection", "nextStride", "command", "pendingEvent", "tickRemaining", "messageRemaining", "miniatureMode", "scanlines", "pixelLighting" }.ToDictionary(n => n, Get);
++        var player = (PlayerMotion)Get("player")!; var original = player.Position; var facing = player.FacingRow;
++        var catalog = (MapCatalog)Get("catalog")!; var world = Get("world")!; var wt = world.GetType();
++        object? World(string name, params object[] args) => wt.GetMethod(name, flags | BindingFlags.Public)!.Invoke(world, args);
++        var directory = Path.Combine(output, "raft-motion"); Directory.CreateDirectory(directory);
++        using var target = new RenderTarget2D(host.GraphicsDevice, 416, 384);
++        using var batch = new SpriteBatch(host.GraphicsDevice);
++        using var capture = new Texture2D(host.GraphicsDevice, 1280, 720);
++        Adventure Scene(int id = 62, MapPosition? at = null)
++        {
++            (Get("command") as IDisposable)?.Dispose(); Set("command", null); Set("pendingEvent", null); Set("overlay", null);
++            Set("paused", false); Set("pauseAmount", 0f); Set("mapOpen", false); Set("worldMapOpen", false);
++            Set("saving", null); Set("loading", null); Set("studioSplashRemaining", 0d); Set("tickRemaining", 100d);
++            Set("pendingDirection", Point.Zero); Set("iceDirection", Point.Zero); Set("sceneTime", 0d); Set("messageRemaining", 0d);
++            var map = catalog.CreateMap(id)!; var layer = (id - 1) / 40; var cell = (id - 1) % 40;
++            var session = new GameSession(catalog, new Player { Health = 100, MaximumHealth = 100, RandomEncounterThreshold = 32767 },
++                new() { MapId = id, MapLayer = layer, RegionX = cell % 6 - 4, RegionY = 2 - cell / 6,
++                    Position = at ?? map.Events.Overlay.Position });
++            // Keep authored terrain/routes. Isolate the movement demonstration from combat.
++            session.CurrentMap.Events.Pursuer = PursuingMonsterEvent.None;
++            var game = new Adventure(session);
++            var defeated = (List<ushort>)typeof(Adventure).GetField("temporaryDefeats", flags)!.GetValue(game)!;
++            foreach (var placement in game.ActivePlacements) defeated.Add(placement.PlacementIndex);
++            for (var x = 0; x < 13; x++) for (var y = 0; y < 12; y++) game.Visibility.RevealFrom(game.Map, new(x, y));
++            Set("session", session); Set("adventure", game); Set("journal", new MapJournal()); Call("SynchronizeWorld", false);
++            return game;
++        }
++        void Frame(double elapsed) => Call("Update", new GameTime(TimeSpan.Zero, TimeSpan.FromSeconds(elapsed)));
++        Vector2 Deck(Adventure game) => (Vector2)World("RaftPosition", game.Map, (double)Get("sceneTime")!)!;
++        void Move(Point direction) => Call("MovePlayer", direction, direction);
++        void TickMove(Adventure game)
++        {
++            var old = game.Map.Events.Overlay.Position;
++            for (var i = 0; i < 60 && old == game.Map.Events.Overlay.Position; i++) Call("StartCommand", game.Tick());
++            if (old == game.Map.Events.Overlay.Position) throw new InvalidOperationException("Authored raft did not advance.");
++        }
++        Color[] Raft(Adventure game)
++        {
++            host.GraphicsDevice.SetRenderTarget(target); host.GraphicsDevice.Clear(Color.Transparent);
++            batch.Begin(samplerState: SamplerState.PointClamp); World("DrawRaft", batch, game, (double)Get("sceneTime")!); batch.End();
++            host.GraphicsDevice.SetRenderTarget(null); var pixels = new Color[416 * 384]; target.GetData(pixels); return pixels;
++        }
++        void Capture(string name)
++        {
++            Call("Draw", new GameTime()); var pixels = new Color[1280 * 720]; host.GraphicsDevice.GetBackBufferData(pixels); capture.SetData(pixels);
++            using var file = File.Create(Path.Combine(directory, name)); capture.SaveAsPng(file, 1280, 720);
++        }
++        try
++        {
++            foreach (var id in new[] { 44, 45, 50, 56, 62, 68, 74, 96, 102, 108, 114 })
++            {
++                if (catalog.CreateMap(id)!.Events.Overlay.Value <= 0) continue;
++                var game = Scene(id); var old = Deck(game); var direction = player.FacingRow;
++                TickMove(game);
++                check(player.Position == game.Map.Events.Overlay.Position && player.VisualPosition == old && !player.IsMoving,
++                    $"Raft {id}: an accepted carry starts from the previous visible position without a walking step");
++                var snapshot = GameSaveCodec.Encode(game.Session, catalog); Frame(.45);
++                var delta = Deck(game) - old;
++                check(player.VisualPosition == Deck(game) && delta.Length() is > .2f and < .85f && player.FacingRow == direction,
++                    $"Raft {id}: rider and logs glide together between authored tiles without changing facing");
++                var image = Raft(game); var feet = new Point((int)MathF.Round(player.VisualPosition.X * 32) + 16,
++                    (int)MathF.Round(player.VisualPosition.Y * 32) + 25);
++                check(Enumerable.Range(-4, 9).All(dx => image[feet.Y * 416 + feet.X + dx].A == 255),
++                    $"Raft {id}: opaque log deck supports the complete boot/contact-shadow width");
++                Frame(.46);
++                check(player.VisualPosition == Deck(game) && snapshot.SequenceEqual(GameSaveCodec.Encode(game.Session, catalog)),
++                    $"Raft {id}: interpolation finishes without changing gameplay or RNG");
++            }
++            var boarding = Scene(at: new(4, 8));
++            while (boarding.Map.Events.Overlay.Position != new MapPosition(4, 7)) { TickMove(boarding); Frame(.91); }
++            Move(new(0, -1)); Frame(.125);
++            check(player.IsMoving && player.VisualPosition.Y > Deck(boarding).Y, "Boarding walks from the bank toward the actual visible deck");
++            TickMove(boarding); Frame(.125);
++            check(!player.IsMoving && player.VisualPosition == Deck(boarding), "A raft move during boarding keeps the landing attached to the logs");
++            check(World("FootstepAt", boarding.Map, player.Position)!.ToString() == "Wood", "Boarding produces a wood contact rather than a water splash");
++            var audio = Get("audio")!; var audioType = audio.GetType();
++            var contacts = audioType.GetField("footstepIndex", flags)!.GetValue(audio);
++            Frame(.3);
++            check(Equals(contacts, audioType.GetField("footstepIndex", flags)!.GetValue(audio)) && !(bool)Get("walkingStep")!,
++                "Passive rafting creates no footsteps or walking animation");
++            foreach (var gate in new[] { "paused", "mapOpen" })
++            {
++                var position = player.VisualPosition; var deck = Deck(boarding); Set(gate, true); Frame(.2);
++                check(player.VisualPosition == position && Deck(boarding) == deck, $"{gate} freezes raft, rider and buoyancy together");
++                Set(gate, false);
++            }
++            Call("ShowActions"); var still = Deck(boarding); Frame(.2);
++            check(Deck(boarding) == still && player.VisualPosition == still, "Action panels freeze an in-progress raft glide");
++            Set("overlay", null); Set("tickRemaining", 100d); Frame(.5);
++            check(player.VisualPosition == Deck(boarding), "Resuming keeps the rider attached without replaying paused travel");
++
++            // Reload through the actual codec and synchronization, with a fresh map identity.
++            var reopened = GameSaveCodec.Decode(GameSaveCodec.Encode(boarding.Session, catalog), catalog);
++            var restored = new Adventure(reopened); Set("session", reopened); Set("adventure", restored); Call("SynchronizeWorld", false);
++            check(reopened.CurrentMap.Events.Overlay.Position == player.Position && player.VisualPosition == Deck(restored) && !player.IsMoving,
++                "Loading aboard resets old interpolation and puts the boots directly on the restored raft");
++
++            var departing = Scene(at: new(4, 8));
++            while (departing.Map.Events.Overlay.Position != new MapPosition(4, 7)) { TickMove(departing); Frame(.91); }
++            Move(new(0, -1)); Frame(.25); var from = player.VisualPosition;
++            Move(new(0, 1)); Frame(.125);
++            check(player.IsMoving && player.Position == new MapPosition(4, 8) && player.VisualPosition.Y > from.Y,
++                "Disembarking starts at the deck and uses the original adjacent-bank movement rule");
++            Frame(.125); TickMove(departing); Frame(.3);
++            check(player.VisualPosition == new Vector2(4, 8) && World("RaftSupport", departing, (double)Get("sceneTime")!) is null,
++                "Once on shore, the character no longer follows the moving raft");
++            departing.Visibility.Initialize(new Map(62, 5, Enumerable.Repeat((ushort)0x25, Map.TileCount).ToArray()), new(0, 0));
++            check(Raft(departing).All(c => c.A == 0), "An undiscovered raft and its ripples stay hidden");
++            var elsewhere = Scene(53, new(5, 5));
++            check(World("RaftSupport", elsewhere, 0d) is null && Raft(elsewhere).All(c => c.A == 0), "Raft presentation does not leak into Ice Cave");
++
++            var demo = Scene(); Set("miniatureMode", 2); Set("scanlines", true); Set("pixelLighting", true);
++            Capture("aboard.png"); TickMove(demo);
++            for (var frame = 0; frame < 180; frame++)
++            {
++                if (frame == 92) TickMove(demo);
++                Frame(1d / 60);
++                Capture($"raft-{frame:D3}.png");
++                if (frame == 27) Capture("mid-glide.png");
++            }
++            check(player.VisualPosition == Deck(demo), "Three-second authored Water Cave clip keeps rider and deck aligned throughout travel");
++        }
++        finally
++        {
++            (Get("command") as IDisposable)?.Dispose();
++            foreach (var entry in saved) Set(entry.Key, entry.Value);
++            player.SnapTo(original); player.Face(facing switch { 1 => new(-1, 0), 2 => new(1, 0), 3 => new(0, -1), _ => new(0, 1) });
++            World("SynchronizeRaft", (Adventure)Get("adventure")!, original, false);
++        }
++    }
++}

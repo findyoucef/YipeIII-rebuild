@@ -1,0 +1,135 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/breeding-floor-contrast/first/yipe-graphics-20261009-064138-a8c94162
+Content startup and five initial frames: 2.94 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Breeding 59: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 59: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 59: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 59: cached terrain is stable
+PASS: Breeding 59: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 59: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 59: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 59: undiscovered light sources cast no visible light
+PASS: Breeding 59: area-map scenery stays behind the fog mask
+PASS: Breeding 59: secret aliases have identical terrain and atmosphere
+PASS: Breeding 59: changing terrain invalidates cached rock
+PASS: Breeding 59: restoring rock restores its exact appearance
+PASS: Breeding 59: local light and the default presentation remain opaque
+PASS: Breeding 59: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 60: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 60: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 60: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 60: cached terrain is stable
+PASS: Breeding 60: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 60: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 60: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 60: undiscovered light sources cast no visible light
+PASS: Breeding 60: area-map scenery stays behind the fog mask
+PASS: Breeding 60: secret aliases have identical terrain and atmosphere
+PASS: Breeding 60: changing terrain invalidates cached rock
+PASS: Breeding 60: restoring rock restores its exact appearance
+PASS: Breeding 60: local light and the default presentation remain opaque
+PASS: Breeding 60: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 65: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 65: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 65: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 65: cached terrain is stable
+PASS: Breeding 65: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 65: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 65: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 65: undiscovered light sources cast no visible light
+PASS: Breeding 65: area-map scenery stays behind the fog mask
+PASS: Breeding 65: secret aliases have identical terrain and atmosphere
+PASS: Breeding 65: changing terrain invalidates cached rock
+PASS: Breeding 65: restoring rock restores its exact appearance
+PASS: Breeding 65: local light and the default presentation remain opaque
+PASS: Breeding 65: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 66: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 66: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 66: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 66: cached terrain is stable
+PASS: Breeding 66: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 66: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 66: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 66: undiscovered light sources cast no visible light
+PASS: Breeding 66: area-map scenery stays behind the fog mask
+PASS: Breeding 66: secret aliases have identical terrain and atmosphere
+PASS: Breeding 66: changing terrain invalidates cached rock
+PASS: Breeding 66: restoring rock restores its exact appearance
+PASS: Breeding 66: local light and the default presentation remain opaque
+PASS: Breeding 66: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 105: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 105: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 105: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 105: cached terrain is stable
+PASS: Breeding 105: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 105: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 105: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 105: undiscovered light sources cast no visible light
+PASS: Breeding 105: area-map scenery stays behind the fog mask
+PASS: Breeding 105: secret aliases have identical terrain and atmosphere
+PASS: Breeding 105: changing terrain invalidates cached rock
+PASS: Breeding 105: restoring rock restores its exact appearance
+PASS: Breeding 105: local light and the default presentation remain opaque
+PASS: Breeding 105: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 106: authored fungi cast cool light and entrance/holding lamps cast warm light
+PASS: Breeding 106: terrain and props use opaque pixels from the shared palette and four mineral-dirt shades
+PASS: Breeding 106: wall tops stay clearly brighter than the walkable earth
+PASS: Breeding 106: cached terrain is stable
+PASS: Breeding 106: sparse drips, grit and spores freeze with scene time
+PASS: Breeding 106: ambient pixels cannot reveal unexplored cells
+PASS: Breeding 106: fungi and lamps cannot light undiscovered cells
+PASS: Breeding 106: undiscovered light sources cast no visible light
+PASS: Breeding 106: area-map scenery stays behind the fog mask
+PASS: Breeding 106: secret aliases have identical terrain and atmosphere
+PASS: Breeding 106: changing terrain invalidates cached rock
+PASS: Breeding 106: restoring rock restores its exact appearance
+PASS: Breeding 106: local light and the default presentation remain opaque
+PASS: Breeding 106: rendering preserves quests, encounters, the complete save and RNG
+PASS: Breeding 59/60: matching overlap terrain joins without a color seam (0/14336 differ)
+PASS: Breeding 105/106: matching overlap terrain joins without a color seam (0/2048 differ)
+PASS: Breeding effects stay out of unrelated map 17, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 57, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 53, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 117, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 121, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 127, including other environment-7 maps
+PASS: Breeding effects stay out of unrelated map 133, including other environment-7 maps
+PASS: Breeding lamp: round light reaches above the source without a horizontal cutoff
+PASS: Breeding corner: light grazes the carved corner but stops inside the same rock tile
+PASS: Breeding corner: shadow edges contain a native-pixel partial-light step
+PASS: Breeding corner: a secret rock casts the same contour shadow
+PASS: Breeding door: a closed door still blocks the floor behind it
+PASS: Breeding door: opening the path invalidates the light mask without stale shadows
+PASS: Breeding floor: cut stone corners retain bare earth instead of a square dark border
+PASS: Cave creature 2: ambient colour and stronger contact preserve its outline, scale and hover position
+PASS: Cave creature 2: environmental colour leaves battle artwork unchanged
+PASS: Cave creature 2: leaving restores its exact ordinary appearance
+PASS: Cave creature 21: ambient colour and stronger contact preserve its outline, scale and hover position
+PASS: Cave creature 21: environmental colour leaves battle artwork unchanged
+PASS: Cave creature 21: leaving restores its exact ordinary appearance
+PASS: Cave creature 40: ambient colour and stronger contact preserve its outline, scale and hover position
+PASS: Cave creature 40: environmental colour leaves battle artwork unchanged
+PASS: Cave creature 40: leaving restores its exact ordinary appearance
+PASS: Breeding packed earth uses recorded granular footsteps
+PASS: The licensed cave loop loads on the real audio device
+PASS: The complete supplied loop is retained without a short repeated excerpt
+PASS: Cave ambience fades in below effects volume and uses one looping voice
+PASS: The production pause gate pauses cave ambience
+PASS: Resume reuses the loop instead of restarting or stacking voices
+PASS: The area-map gate pauses cave ambience
+PASS: Action/combat overlays silence ambience through the production gate
+PASS: Focus loss pauses the ambient voice immediately
+PASS: Sound Off suppresses cave ambience
+PASS: Master volume zero suppresses cave ambience
+PASS: Leaving the breeding grounds releases its loop
+PASS: Ambient playback and UI gates preserve the complete session and RNG
+Passed 131 visual integration checks. Focused breeding-ground run.

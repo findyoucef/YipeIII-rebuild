@@ -1,6 +1,7 @@
 using System.Reflection;
 using Yipe.Core;
 using Yipe.Desktop;
+using Microsoft.Xna.Framework.Input;
 
 internal static class ProfileChecks
 {
@@ -17,30 +18,67 @@ internal static class ProfileChecks
         try
         {
             var fresh = Open(); var data = Data(fresh);
+            check((int)Get(data, "TimeOfDayMode") == 0 && (double)Get(data, "DayNightSeconds") == 300,
+                "New profiles enable the automatic day/night cycle at midday");
             check((bool)Get(data, "Scanlines") && (int)Get(data, "Miniature") == 2 && (bool)Get(data, "Sound")
-                && !(bool)Get(data, "Vignette") && (bool)Get(data, "PixelLighting") && !File.Exists(path), "Missing desktop profile uses the approved defaults without writing a file");
+                && !(bool)Get(data, "Vignette") && (bool)Get(data, "PixelLighting")
+                && (int)Get(data, "SunShaftStrength") == 1 && (int)Get(data, "CloudShadowStrength") == 1
+                && !(bool)Get(data, "AutoBattle") && !(bool)Get(data, "ScreenShake") && (int)Get(data, "RainStrength") == 1 && !File.Exists(path), "Missing desktop profile uses the approved defaults without writing a file");
             Set(data, "Scanlines", false); Set(data, "Miniature", 1); Set(data, "Sound", false); Set(data, "Volume", .4f);
             Set(data, "Vignette", true);
             Set(data, "PixelLighting", false);
+            Set(data, "SunShaftStrength", 2);
+            Set(data, "CloudShadowStrength", 2);
+            Set(data, "RainStrength", 2);
+            Set(data, "ScreenShake", true); Set(data, "AutoBattle", true);
+            Set(data, "TimeOfDayMode", 3); Set(data, "DayNightSeconds", 987.5d);
+            var controls = (ControlBindings)Get(data, "Controls");
+            controls.BindKey(4, Keys.E);
+            controls.BindButton(0, Buttons.X);
             HighScores.Update((HighScoreEntry[])Get(data, "Scores"), new Player { Name = "Profile Hero", Gold = 12345 }, true);
             Save(fresh);
             var reopened = Data(Open());
+            check((int)Get(reopened, "TimeOfDayMode") == 3 && (double)Get(reopened, "DayNightSeconds") == 987.5,
+                "Fixed time-of-day preference and suspended automatic phase survive profile reopen");
             check(!(bool)Get(reopened, "Scanlines") && (int)Get(reopened, "Miniature") == 1 && !(bool)Get(reopened, "Sound")
-                && (bool)Get(reopened, "Vignette") && !(bool)Get(reopened, "PixelLighting") && (float)Get(reopened, "Volume") == .4f && ((HighScoreEntry[])Get(reopened, "Scores"))[21] == new HighScoreEntry("Profile Hero", 12345)
+                && (bool)Get(reopened, "Vignette") && !(bool)Get(reopened, "PixelLighting")
+                && (int)Get(reopened, "SunShaftStrength") == 2 && (int)Get(reopened, "CloudShadowStrength") == 2
+                && (bool)Get(reopened, "AutoBattle") && (bool)Get(reopened, "ScreenShake") && (int)Get(reopened, "RainStrength") == 2 && (float)Get(reopened, "Volume") == .4f && ((HighScoreEntry[])Get(reopened, "Scores"))[21] == new HighScoreEntry("Profile Hero", 12345)
                 && ((HighScoreEntry[])Get(reopened, "Scores"))[27].Name == "Profile Hero",
                 "Desktop profile atomically reopens preferences and all score categories together");
             check(Directory.GetFiles(directory).Length == 1, "Successful profile writes leave no staging files");
+            var restoredControls = (ControlBindings)Get(reopened, "Controls");
+            check(restoredControls.Keyboard[4] == Keys.E && restoredControls.Controller[0] == Buttons.X,
+                "Gameplay keyboard and controller remaps survive an atomic profile reopen");
+            Set(data, "RainStrength", 0); Save(fresh);
+            check((int)Get(Data(Open()), "RainStrength") == 0, "An explicit Rain Off preference remains Off when automatic weather is available");
             var legacy = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsObject();
             legacy.Remove("Vignette");
             legacy.Remove("PixelLighting");
+            legacy.Remove("SunShaftStrength");
+            legacy.Remove("CloudShadowStrength");
+            legacy.Remove("RainStrength");
+            legacy.Remove("ScreenShake"); legacy.Remove("AutoBattle");
+            legacy.Remove("Controls");
+            legacy.Remove("TimeOfDayMode"); legacy.Remove("DayNightSeconds");
             File.WriteAllText(path, legacy.ToJsonString());
             var legacyBytes = File.ReadAllBytes(path);
             reopened = Data(Open());
+            check((int)Get(reopened, "TimeOfDayMode") == 0 && (double)Get(reopened, "DayNightSeconds") == 300,
+                "Legacy profiles enable the automatic cycle without modifying their file");
             check(!(bool)Get(reopened, "Vignette") && (bool)Get(reopened, "PixelLighting") && (int)Get(reopened, "Miniature") == 1
+                && (int)Get(reopened, "SunShaftStrength") == 1
+                && (int)Get(reopened, "CloudShadowStrength") == 1 && (int)Get(reopened, "RainStrength") == 1 && !(bool)Get(reopened, "AutoBattle") && !(bool)Get(reopened, "ScreenShake")
                 && ((HighScoreEntry[])Get(reopened, "Scores"))[21].Name == "Profile Hero"
                 && legacyBytes.SequenceEqual(File.ReadAllBytes(path)),
-                "Existing profiles retain preferences and scores, with vignette off and pixel lighting on");
-            foreach (var invalid in new[] { "{", "{\"Version\":99}", "{\"Version\":1,\"Volume\":9}", "{\"Version\":1,\"Scores\":[]}" })
+                "Existing profiles retain preferences and scores, with vignette off, pixel lighting on, automatic rain and subtle sunlight/cloud effects");
+            check(((ControlBindings)Get(reopened, "Controls")).Keyboard[4] == Keys.Enter
+                && ((ControlBindings)Get(reopened, "Controls")).Controller[0] == Buttons.A,
+                "Profiles without bindings migrate to standard controls without rewriting their file");
+            foreach (var invalid in new[] { "{", "{\"Version\":99}", "{\"Version\":1,\"Volume\":9}", "{\"Version\":1,\"Scores\":[]}",
+                "{\"Controls\":null}", "{\"Controls\":{\"Keyboard\":[]}}", "{\"Controls\":{\"Controller\":[1,1,1,1]}}",
+                "{\"SunShaftStrength\":-1}", "{\"SunShaftStrength\":3}", "{\"CloudShadowStrength\":-1}", "{\"CloudShadowStrength\":3}", "{\"RainStrength\":-1}", "{\"RainStrength\":3}",
+                "{\"TimeOfDayMode\":-1}", "{\"TimeOfDayMode\":4}", "{\"DayNightSeconds\":-1}", "{\"DayNightSeconds\":1200}", "{\"DayNightSeconds\":1e999}" })
             {
                 File.WriteAllText(path, invalid);
                 var broken = Open(); var rejected = false;

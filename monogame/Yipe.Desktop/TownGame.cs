@@ -14,8 +14,10 @@ internal sealed partial class TownGame : Game
     private static readonly Color Ink = new(241, 220, 158);
     private static readonly Color Muted = new(164, 173, 176);
     private static readonly Color Accent = new(217, 172, 79);
-    private static readonly string[] Menu = ["Continue", "Save game", "Load game", "New adventure", "Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Pixel lighting", "Quit"];
-    private static readonly string[] MiniatureModes = ["Off", "Subtle", "Strong"];
+    private static readonly string[] Menu = ["Continue", "Save game", "Load game", "New adventure", "Graphics", "Battle pacing", "Help & controls", "About Quest of Yipe!", "Edit controls", "Quit"];
+    private static readonly string[] GraphicsMenu = ["Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Pixel lighting", "Sun shafts", "Cloud shadows", "Rain", "Screen shake", "Time of day"];
+    private static readonly string[] EffectStrengths = ["Off", "Subtle", "Strong"];
+    private static readonly string[] TimesOfDay = ["Auto", "Day", "Dusk", "Night"];
     private readonly GraphicsDeviceManager graphics;
     private readonly GameInput input = new();
     private readonly PlayerMotion player = new(new(5, 5));
@@ -25,11 +27,15 @@ internal sealed partial class TownGame : Game
     private SpriteBatch batch = null!;
     private PixelFont font = null!;
     private Texture2D pixel = null!;
+    private Texture2D studioLogo = null!;
+    private const double StudioSplashDuration = 3.2;
+    private double studioSplashRemaining;
     private Texture2D vignetteMask = null!;
     private RenderTarget2D canvas = null!;
     private MiniatureEffect miniature = null!;
     private HeatEffect heat = null!;
     private PixelLighting lighting = null!;
+    private SunShafts sunShafts = null!;
     private TownMap map = null!;
     private GameSession session = null!;
     private MapCatalog catalog = null!;
@@ -52,19 +58,32 @@ internal sealed partial class TownGame : Game
     private Map renderedMap = null!;
     private double tickRemaining = .5;
     private Point pendingDirection;
+    private Point iceDirection;
+    private PlayerStride nextStride;
     private Vector2 cameraPosition;
     private double sceneTime;
+    private bool walkingStep;
     private float pauseAmount;
     private float selectionY;
     private string message = "";
     private double messageRemaining;
     private string menuMessage = "";
     private bool paused;
+    private bool graphicsMenuOpen;
     private bool scanlines = true;
     private int miniatureMode = 2;
     private bool vignette;
     private bool pixelLighting = true;
+    private int sunShaftStrength = 1;
+    private int cloudShadowStrength = 1;
+    private int rainStrength = 1;
+    private double outdoorWeatherTime;
+    private int timeOfDayMode;
+    private double dayNightSeconds = DayNightCycle.OpeningTime;
+    private DateTime dayNightUpdatedAt;
+    private bool screenShake;
     private bool controllerConnected;
+    private KeyboardState previousKeyboardState;
     private int selected;
     private int smokeFrames;
     private Task? saving;
@@ -88,7 +107,8 @@ internal sealed partial class TownGame : Game
         IsMouseVisible = true;
         IsFixedTimeStep = true;
         TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 60);
-        Deactivated += (_, _) => paused = true;
+        Deactivated += (_, _) => { if (studioSplashRemaining <= 0) paused = true; };
+        Exiting += (_, _) => { if (profile is not null) SavePreferences(); };
     }
 
     protected override void LoadContent()
@@ -111,9 +131,11 @@ internal sealed partial class TownGame : Game
         canvas = new RenderTarget2D(GraphicsDevice, CanvasWidth, CanvasHeight);
         miniature = new MiniatureEffect(GraphicsDevice, CanvasWidth, CanvasHeight);
         heat = new HeatEffect(GraphicsDevice, CanvasWidth, CanvasHeight);
-        lighting = new PixelLighting(GraphicsDevice, pixel, CanvasWidth, CanvasHeight);
+        sunShafts = new SunShafts(GraphicsDevice, CanvasWidth, CanvasHeight);
         mapView = new RenderTarget2D(GraphicsDevice, Map.Width * 32, Map.Height * 32);
         contentDirectory = Path.Combine(AppContext.BaseDirectory, "Content");
+        using (var stream = File.OpenRead(Path.Combine(contentDirectory, "Branding", "icosium-labs.png")))
+            studioLogo = Texture2D.FromStream(GraphicsDevice, stream);
         using (var stream = File.OpenRead(Path.Combine(contentDirectory, "maps.json")))
             catalog = MapCatalog.Load(stream);
         var itemPath = Path.Combine(contentDirectory, "Yipe3Items.txt");
@@ -131,15 +153,23 @@ internal sealed partial class TownGame : Game
 
         town = new TownRenderer(GraphicsDevice, map, contentDirectory, catalog);
         world = new WorldRenderer(GraphicsDevice, contentDirectory, catalog);
+        lighting = new PixelLighting(GraphicsDevice, pixel, CanvasWidth, CanvasHeight, world);
         audio = new GameAudio(contentDirectory);
         profile = new DesktopProfile(selectedSave is not null ? Path.ChangeExtension(selectedSave, ".profile.json")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YipeIII-MonoGame", "profile.json"));
         scanlines = profile.Data.Scanlines; miniatureMode = profile.Data.Miniature;
         vignette = profile.Data.Vignette;
         pixelLighting = profile.Data.PixelLighting;
+        sunShaftStrength = profile.Data.SunShaftStrength;
+        cloudShadowStrength = profile.Data.CloudShadowStrength;
+        rainStrength = profile.Data.RainStrength;
+        screenShake = profile.Data.ScreenShake;
+        timeOfDayMode = profile.Data.TimeOfDayMode;
+        dayNightSeconds = profile.Data.DayNightSeconds;
+        dayNightUpdatedAt = DateTime.UtcNow;
         audio.Enabled = profile.Data.Sound; audio.Volume = profile.Data.Volume;
         cameraPosition = CameraTarget(player.VisualPosition);
-        if (!smoke && selectedSave is null) ShowWelcome();
+        if (!smoke && selectedSave is null) studioSplashRemaining = StudioSplashDuration;
         if (selectedSave is not null)
         {
             paused = true;
@@ -150,6 +180,12 @@ internal sealed partial class TownGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        // Wall time keeps the cosmetic cycle running through menus, focus loss and suspension.
+        // Advance before simulation's pause gates; never catch up movement or combat.
+        var now = DateTime.UtcNow;
+        if (timeOfDayMode == 0)
+            dayNightSeconds = DayNightCycle.Advance(dayNightSeconds, Math.Max(0, (now - dayNightUpdatedAt).TotalSeconds));
+        dayNightUpdatedAt = now;
         var elapsed = gameTime.ElapsedGameTime.TotalSeconds;
         var pad = default(GamePadState);
         for (var index = 0; index < 4; index++)
@@ -159,34 +195,53 @@ internal sealed partial class TownGame : Game
             pad = candidate;
             break;
         }
-        if (controllerConnected && !pad.IsConnected)
+        if (controllerConnected && !pad.IsConnected && studioSplashRemaining <= 0)
         {
             paused = true;
             menuMessage = "Controller disconnected.\nReconnect or use the keyboard.";
         }
         controllerConnected = pad.IsConnected;
-        var actions = input.Update(Keyboard.GetState(), pad, elapsed, IsActive,
-            repeatInterval: paused || overlay is not null || mapOpen ? 0.12 : PlayerMotion.StepDuration, textInput: textReceiver is not null);
+
+        var keyboard = Keyboard.GetState();
+        var actions = input.Update(keyboard, pad, elapsed, IsActive,
+            repeatInterval: paused || overlay is not null || mapOpen ? 0.12 : PlayerMotion.StepDuration, textInput: textReceiver is not null,
+            controls: studioSplashRemaining > 0 || paused || overlay is not null || mapOpen ? null : profile.Data.Controls);
 
         audio.Update(IsActive);
+        UpdateCaveAmbience(elapsed);
+        if (paused || overlay is not null || mapOpen || saving is not null || loading is not null || studioSplashRemaining > 0)
+            audio.StopFootsteps();
         FinishStorage();
-        if (paused || overlay is not null || mapOpen || !IsActive) { pendingDirection = Point.Zero; tickRemaining = .512; }
+        if (paused || overlay is not null || mapOpen || !IsActive || saving is not null || loading is not null)
+        { pendingDirection = iceDirection = Point.Zero; tickRemaining = .512; }
         pauseAmount = MathHelper.Lerp(pauseAmount, paused ? 1 : 0, 1 - MathF.Exp(-(float)elapsed * 22));
         selectionY = MathHelper.Lerp(selectionY, selected * 10, 1 - MathF.Exp(-(float)elapsed * 25));
-        if (!IsActive || saving is not null || loading is not null) return;
-
-        if (paused)
+        if (!IsActive || saving is not null || loading is not null)
+        { previousKeyboardState = keyboard; return; }
+        if (studioSplashRemaining > 0)
         {
-            if (actions.Back || actions.Pause) { paused = false; return; }
-            if (actions.Direction.Y != 0)
-                selected = (selected + actions.Direction.Y + Menu.Length) % Menu.Length;
-            if (actions.Confirm) ActivateMenu();
+            previousKeyboardState = keyboard;
+            UpdateStudioSplash(actions, elapsed);
+            base.Update(gameTime);
+            return;
         }
+        if (bindingAction >= 0)
+        {
+            if (actions.Back || actions.Pause) overlay!.Back?.Invoke();
+            else UpdateBinding(keyboard);
+            previousKeyboardState = keyboard;
+            base.Update(gameTime);
+            return;
+        }
+        previousKeyboardState = keyboard;
+
+        if (paused) UpdatePauseMenu(actions);
         else if (mapOpen) UpdateMap(actions);
         else if (actions.Map && overlay is null && command is null) OpenMap();
         else if (actions.Pause && !actions.Back || overlay is null && (actions.Pause || actions.Back))
         {
             paused = true;
+            graphicsMenuOpen = false;
             pendingDirection = Point.Zero;
             selected = 0;
             selectionY = 0;
@@ -194,29 +249,40 @@ internal sealed partial class TownGame : Game
         }
         else if (overlay is not null)
         {
-            UpdateOverlay(actions);
+            if (!UpdateCombatPresentation(elapsed)) UpdateOverlay(actions);
         }
         else
         {
             sceneTime += elapsed;
-            player.Update(elapsed);
+            if (rainStrength > 0 && session.CurrentMap.Id is >= 1 and <= 40)
+                outdoorWeatherTime += elapsed;
+            var wasMoving = player.IsMoving;
+            world.UpdateRaft(elapsed);
+            player.Update(elapsed, world.RaftSupport(adventure, sceneTime));
+            if (walkingStep && wasMoving && !player.IsMoving)
+            {
+                walkingStep = false;
+                world.SnowStep(session.CurrentMap, player, sceneTime);
+                audio.Footstep(session.CurrentMap.Id == TownMap.Id ? town.FootstepAt(player.Position)
+                    : world.FootstepAt(session.CurrentMap, player.Position));
+            }
+            world.UpdateMonsters(elapsed);
             cameraPosition = Vector2.Lerp(cameraPosition, CameraTarget(player.VisualPosition), 1 - MathF.Exp(-(float)elapsed * 14));
             messageRemaining = Math.Max(0, messageRemaining - elapsed);
-            if (!player.IsMoving && pendingEvent is not null)
+            if (!player.IsMoving && !world.MonstersMoving && pendingEvent is not null)
             {
                 var next = pendingEvent; pendingEvent = null;
                 ShowInteraction(next);
             }
-            else if (actions.Confirm && !player.IsMoving) ShowActions();
+            else if (actions.Confirm && !player.IsMoving && !world.MonstersMoving) ShowActions();
             else
             {
                 if (actions.Direction != Point.Zero) pendingDirection = actions.Direction;
-                if (!player.IsMoving && pendingDirection != Point.Zero)
+                if (!player.IsMoving && !world.MonstersMoving && command is null && pendingEvent is null)
                 {
                     var direction = pendingDirection;
                     pendingDirection = Point.Zero;
-                    player.Face(direction);
-                    StartCommand(adventure.Move(direction.X, direction.Y, DateTime.Now.Hour));
+                    MovePlayer(direction, input.HeldDirection);
                 }
                 tickRemaining -= elapsed;
                 if (tickRemaining <= 0 && overlay is null && command is null)
@@ -226,7 +292,52 @@ internal sealed partial class TownGame : Game
                 }
             }
         }
+        sunShafts.Daylight = DayNightCycle.At(dayNightSeconds, timeOfDayMode).Daylight;
+        sunShafts.Update(session.CurrentMap, player, sceneTime, sunShaftStrength, cloudShadowStrength);
+        if (paused || overlay is not null || mapOpen || pendingEvent is not null)
+        { iceDirection = Point.Zero; audio.StopFootsteps(); }
+        UpdateCaveAmbience(0);
         base.Update(gameTime);
+    }
+
+    private void UpdateCaveAmbience(double elapsed)
+    {
+        var playing = IsActive && !paused && overlay is null && !mapOpen && saving is null && loading is null && studioSplashRemaining <= 0;
+        if (session.CurrentMap.Id == TownMap.Id)
+        {
+            audio.StopOutdoorNature();
+            var water = town.RiverSoundAt(player.VisualPosition);
+            audio.UpdateTownAmbience(DayNightCycle.At(dayNightSeconds, timeOfDayMode).Daylight, playing, elapsed);
+            audio.UpdateRiverAmbience(water.Gain, water.Pan, playing, elapsed);
+            return;
+        }
+        if (session.CurrentMap.Id is >= 1 and <= 36)
+        {
+            var habitat = world.OutdoorHabitatAt(session.CurrentMap, player.VisualPosition);
+            var water = world.OutdoorWaterSoundAt(session.CurrentMap, player.VisualPosition);
+            var daylight = DayNightCycle.At(dayNightSeconds, timeOfDayMode).Daylight;
+            var rain = rainStrength == 0 ? 0 : Rain.WeatherAmount(outdoorWeatherTime);
+            audio.UpdateOutdoorAmbience(habitat.Dry, habitat.Cold, habitat.Wood, daylight, rain, playing, elapsed);
+            audio.UpdateRiverAmbience(water.Gain, water.Pan, playing, elapsed);
+            return;
+        }
+        audio.StopOutdoorNature();
+        audio.StopRiver();
+        if (session.CurrentMap.Id is >= 117 and <= 120)
+            audio.UpdateHellAmbience(playing, elapsed);
+        else if (WorldRenderer.IsFire(session.CurrentMap))
+            audio.UpdateFireAmbience(world.FireAmbienceAt(adventure), playing, elapsed);
+        else if (WorldRenderer.IsEarth(session.CurrentMap))
+            audio.UpdateEarthAmbience(session.CurrentMap.Id > 80, playing, elapsed);
+        else if (WorldRenderer.IsStone(session.CurrentMap))
+            audio.UpdateStoneAmbience(session.CurrentMap.Id == 51, playing, elapsed);
+        else if (WorldRenderer.IsIce(session.CurrentMap))
+            audio.UpdateIceAmbience(session.CurrentMap.Id > 80, playing, elapsed);
+        else if (WorldRenderer.IsWaterCave(session.CurrentMap))
+            audio.UpdateWaterCaveAmbience(world.WaterCaveWetness(session.CurrentMap, player.VisualPosition), playing, elapsed);
+        else if (WorldRenderer.IsFinal(session.CurrentMap))
+            audio.UpdateFinalAmbience(playing, elapsed);
+        else audio.UpdateAmbience(WorldRenderer.IsBreeding(session.CurrentMap), playing, elapsed);
     }
 
     private static Vector2 CameraTarget(Vector2 position) => Vector2.Clamp(
@@ -236,14 +347,59 @@ internal sealed partial class TownGame : Game
     private void RestorePosition(MapPosition position)
     {
         session.Location.Position = position;
+        world.SynchronizeRaft(adventure, position, false);
         player.SnapTo(position);
+        player.Update(0, world.RaftSupport(adventure, sceneTime));
+        walkingStep = false;
+        world.ClearSnowTracks();
         cameraPosition = CameraTarget(player.VisualPosition);
-        pendingDirection = Point.Zero;
+        pendingDirection = iceDirection = Point.Zero;
         messageRemaining = 0;
+    }
+
+    private void UpdatePauseMenu(InputFrame actions)
+    {
+        if (actions.Back || actions.Pause)
+        {
+            if (graphicsMenuOpen)
+            {
+                graphicsMenuOpen = false;
+                selected = 4; selectionY = 40; menuMessage = "";
+            }
+            else paused = false;
+            return;
+        }
+        var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
+        if (actions.Direction.Y != 0) selected = (selected + actions.Direction.Y + menu.Length) % menu.Length;
+        if (actions.Confirm) ActivateMenu();
     }
 
     private void ActivateMenu()
     {
+        if (graphicsMenuOpen)
+        {
+            switch (selected)
+            {
+                case 0:
+                    graphics.IsFullScreen = !graphics.IsFullScreen;
+                    graphics.PreferredBackBufferWidth = graphics.IsFullScreen
+                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
+                    graphics.PreferredBackBufferHeight = graphics.IsFullScreen
+                        ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : CanvasHeight * 4;
+                    graphics.ApplyChanges();
+                    break;
+                case 1: scanlines = !scanlines; SavePreferences(); break;
+                case 2: miniatureMode = (miniatureMode + 1) % EffectStrengths.Length; SavePreferences(); break;
+                case 3: vignette = !vignette; SavePreferences(); break;
+                case 4: pixelLighting = !pixelLighting; SavePreferences(); break;
+                case 5: sunShaftStrength = (sunShaftStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+                case 6: cloudShadowStrength = (cloudShadowStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+                case 7: rainStrength = (rainStrength + 1) % EffectStrengths.Length; SavePreferences(); break;
+                case 8: screenShake = !screenShake; SavePreferences(); break;
+                case 9: timeOfDayMode = (timeOfDayMode + 1) % TimesOfDay.Length; SavePreferences(); break;
+            }
+            return;
+        }
         switch (selected)
         {
             case 0: paused = false; break;
@@ -252,18 +408,11 @@ internal sealed partial class TownGame : Game
                 menuMessage = "Saving..."; saving = saves.SaveAsync(session, journal); break;
             case 2: menuMessage = "Loading..."; loading = saves.LoadAsync(); break;
             case 3: paused = false; mapOpen = false; ShowNewGameConfirmation(); break;
-            case 4:
-                graphics.IsFullScreen = !graphics.IsFullScreen;
-                graphics.PreferredBackBufferWidth = graphics.IsFullScreen
-                    ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
-                graphics.PreferredBackBufferHeight = graphics.IsFullScreen
-                    ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : CanvasHeight * 4;
-                graphics.ApplyChanges();
-                break;
-            case 5: scanlines = !scanlines; SavePreferences(); break;
-            case 6: miniatureMode = (miniatureMode + 1) % MiniatureModes.Length; SavePreferences(); break;
-            case 7: vignette = !vignette; SavePreferences(); break;
-            case 8: pixelLighting = !pixelLighting; SavePreferences(); break;
+            case 4: graphicsMenuOpen = true; selected = 0; selectionY = 0; menuMessage = ""; break;
+            case 5: profile.Data.AutoBattle = !profile.Data.AutoBattle; SavePreferences(); break;
+            case 6: paused = false; ShowHelp(); break;
+            case 7: paused = false; ShowAbout(); break;
+            case 8: paused = false; EditControls(); break;
             case 9: Exit(); break;
         }
     }
@@ -272,7 +421,13 @@ internal sealed partial class TownGame : Game
     {
         if (saving?.IsCompleted == true)
         {
-            try { saving.GetAwaiter().GetResult(); menuMessage = saves.JournalWarning.Length == 0 ? "Your game is saved." : "Game saved. Map notes\ncould not be saved."; }
+            try
+            {
+                saving.GetAwaiter().GetResult();
+                menuMessage = SavePreferences()
+                    ? saves.JournalWarning.Length == 0 ? "Your game is saved." : "Game saved. Map notes\ncould not be saved."
+                    : "Game saved. Preferences\ncould not be saved.";
+            }
             catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException)
             {
                 Console.Error.WriteLine(error.Message);
@@ -282,6 +437,7 @@ internal sealed partial class TownGame : Game
         }
         if (loading?.IsCompleted == true)
         {
+            if (smoke) loading.GetAwaiter().GetResult(); // Verification must fail instead of masking a bad selected save.
             try
             {
                 var next = loading.GetAwaiter().GetResult();
@@ -308,36 +464,73 @@ internal sealed partial class TownGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
+        if (studioSplashRemaining > 0) { DrawStudioSplash(); base.Draw(gameTime); return; }
+        var outdoor = session.CurrentMap.Id is >= 1 and <= 40;
+        var daylight = outdoor ? DayNightCycle.At(dayNightSeconds, timeOfDayMode)
+            : new DayNightCycle.Light(Color.White, 1);
+        sunShafts.Daylight = daylight.Daylight;
+        lighting.NightAmount = daylight.Night;
+        town.Sunlight = null;
         if (mapOpen && !worldMapOpen) RenderAreaMap();
+        town.Sunlight = sunShaftStrength > 0 && session.CurrentMap.Id is >= 1 and <= 40 ? sunShafts : null;
         // Round both axes together: one world pixel always occupies one canvas pixel.
         var camera = Matrix.CreateTranslation(-MathF.Round(cameraPosition.X), -MathF.Round(cameraPosition.Y), 0);
+        if (sunShaftStrength > 0 && session.CurrentMap.Id is >= 1 and <= 40)
+            sunShafts.Prepare(batch, cameraPosition, sceneTime, cloudShadowStrength);
         if (pixelLighting) lighting.Prepare(batch, adventure, camera, sceneTime);
         GraphicsDevice.SetRenderTarget(miniatureMode == 0 && !vignette ? canvas : miniature.World);
         GraphicsDevice.Clear(Background);
+        var rainAmount = rainStrength == 0 ? 0 : rainStrength * Rain.WeatherAmount(outdoorWeatherTime);
         batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
-        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0);
-        else world.Draw(batch, adventure, player, town, sceneTime, miniatureMode != 0);
+        if (session.CurrentMap.Id == TownMap.Id) town.Draw(batch, player, sceneTime, miniatureMode != 0, rainAmount);
+        else
+        {
+            world.OutdoorDaylight = daylight.Daylight;
+            world.Draw(batch, adventure, player, town, sceneTime, miniatureMode != 0, rainAmount);
+        }
         if (pixelLighting) lighting.DrawTorches(batch, adventure.Visibility, sceneTime);
         batch.End();
+        sunShafts.DrawClouds(batch, session.CurrentMap, cameraPosition, sceneTime, cloudShadowStrength);
+        lighting.ApplyAmbient(batch, daylight.Ambient);
+        if (WorldRenderer.IsFire(session.CurrentMap)) lighting.ApplyFireAmbient(batch, session.CurrentMap.Id > 80);
         if (pixelLighting) lighting.Apply(batch);
+        sunShafts.Draw(batch, session.CurrentMap, cameraPosition, sceneTime, sunShaftStrength, cloudShadowStrength);
+        if (outdoor)
+        {
+            batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
+            Rain.DrawStreaks(batch, pixel, sceneTime, rainAmount,
+                session.CurrentMap.Id == TownMap.Id ? null
+                    : (x, y) => world.SnowColdAt(x, y) && adventure.Visibility.Contains(new(x / 32, y / 32)));
+            if (session.CurrentMap.Id != TownMap.Id) world.DrawSnowfall(batch, adventure, sceneTime, rainAmount);
+            batch.End();
+        }
 
         Texture2D? presentedWorld = miniatureMode == 0 && vignette ? miniature.World : null;
         var hell = session.CurrentMap.Id is >= 117 and <= 120;
+        var crispCave = hell || WorldRenderer.IsFire(session.CurrentMap);
         if (miniatureMode != 0)
         {
             var focusY = player.VisualPosition.Y * 32 + 12 - cameraPosition.Y;
             // Hell keeps its contact shadows, but its pixel art must not be blurred.
-            miniature.Apply(batch, focusY, miniatureMode == 2, hell ? 0f : 1f);
+            miniature.Apply(batch, focusY, miniatureMode == 2, crispCave ? 0f : 1f);
             presentedWorld = miniature.Result;
         }
-        if (session.CurrentMap.Id != TownMap.Id && world.HasHeat)
+        if (session.CurrentMap.Id != TownMap.Id && world.HasHeat && (!outdoor || daylight.Daylight > 0))
             presentedWorld = heat.Apply(batch, presentedWorld ?? canvas, world,
                 new(MathF.Round(cameraPosition.X), MathF.Round(cameraPosition.Y)),
-                player.VisualPosition * 32 + new Vector2(16, 12), sceneTime, hell);
+                player.VisualPosition * 32 + new Vector2(16, 12), sceneTime, crispCave, daylight.Daylight);
         if (presentedWorld is not null)
         {
             GraphicsDevice.SetRenderTarget(canvas);
             GraphicsDevice.Clear(Color.Transparent);
+        }
+
+        // Keep awareness cues crisp above heat, lighting and miniature effects.
+        if (!mapOpen && overlay is null && !paused && pauseAmount <= .005f)
+        {
+            batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera);
+            world.DrawPursuitAlerts(batch, adventure, sceneTime);
+            batch.End();
         }
 
         batch.Begin(samplerState: SamplerState.PointClamp);
@@ -356,26 +549,38 @@ internal sealed partial class TownGame : Game
             var offset = (int)MathF.Round((1 - pauseAmount) * 4);
             Fill(new(0, 0, CanvasWidth, CanvasHeight), Color.Black * 0.5f);
             DrawPanel(new(32, 4 + offset, 256, 172));
-            font.Draw(batch, "Paused", 46, 14 + offset, Accent, 2);
+            font.Draw(batch, graphicsMenuOpen ? "Graphics" : "Paused", 46, 14 + offset, Accent, 2);
             font.Draw(batch, controllerConnected ? "EAST: BACK" : "ESC: BACK", 210, 19 + offset, Muted);
             font.Draw(batch, $"{LocationName()} / {player.Position.X}, {player.Position.Y}", 46, 34 + offset, Muted);
-            var rowY = 42 + (int)MathF.Round(selectionY) + offset;
+            var menu = graphicsMenuOpen ? GraphicsMenu : Menu;
+            var firstMenuRow = Math.Clamp(selected - 9, 0, Math.Max(0, menu.Length - 10));
+            var rowY = 42 + Math.Clamp((int)MathF.Round(selectionY) - firstMenuRow * 10, 0, 90) + offset;
             Fill(new(44, rowY, 232, 9), new Color(64, 73, 87));
             Fill(new(49, rowY + 3, 1, 5), Accent);
             Fill(new(50, rowY + 4, 1, 3), Accent);
             Fill(new(51, rowY + 5, 1, 1), Accent);
-            for (var i = 0; i < Menu.Length; i++)
+            for (var i = firstMenuRow; i < Math.Min(firstMenuRow + 10, menu.Length); i++)
             {
-                var label = i switch
+                var label = graphicsMenuOpen ? i switch
                 {
-                    4 => $"Fullscreen: {(graphics.IsFullScreen ? "on" : "off")}",
-                    5 => $"Scanlines: {(scanlines ? "on" : "off")}",
-                    6 => $"Miniature effect: {MiniatureModes[miniatureMode]}",
-                    7 => $"Vignette: {(vignette ? "on" : "off")}",
-                    8 => $"Pixel lighting: {(pixelLighting ? "on" : "off")}",
-                    _ => Menu[i],
-                };
-                font.Draw(batch, label, 60, 44 + i * 10 + offset, i == selected ? Accent : Ink);
+                    0 => $"Fullscreen: {(graphics.IsFullScreen ? "on" : "off")}",
+                    1 => $"Scanlines: {(scanlines ? "on" : "off")}",
+                    2 => $"Miniature effect: {EffectStrengths[miniatureMode]}",
+                    3 => $"Vignette: {(vignette ? "on" : "off")}",
+                    4 => $"Pixel lighting: {(pixelLighting ? "on" : "off")}",
+                    5 => $"Sun shafts: {EffectStrengths[sunShaftStrength]}",
+                    6 => $"Cloud shadows: {EffectStrengths[cloudShadowStrength]}",
+                    7 => rainStrength == 0 ? "Rain: Off" : $"Rain: Auto {EffectStrengths[rainStrength]}",
+                    8 => $"Screen shake: {(screenShake ? "on" : "off")}",
+                    9 => $"Time of day: {TimesOfDay[timeOfDayMode]}",
+                    _ => menu[i],
+                } : i == 5 ? $"Battle pacing: {(profile.Data.AutoBattle ? "Auto" : "Manual")}" : menu[i];
+                font.Draw(batch, label, 60, 44 + (i - firstMenuRow) * 10 + offset, i == selected ? Accent : Ink);
+            }
+            for (var step = 0; step < 3; step++)
+            {
+                if (firstMenuRow > 0) Fill(new(280 - step, 44 + step + offset, step * 2 + 1, 1), Muted);
+                if (firstMenuRow + 10 < menu.Length) Fill(new(280 - step, 139 - step + offset, step * 2 + 1, 1), Muted);
             }
             font.Draw(batch, menuMessage, 46, 145 + offset, Ink);
             font.Draw(batch, controllerConnected ? "D-PAD/STICK MOVE  SOUTH SELECT" : "ARROWS/WASD MOVE  ENTER SELECT", 46, 166 + offset, Muted);
@@ -383,14 +588,11 @@ internal sealed partial class TownGame : Game
         batch.End();
         GraphicsDevice.SetRenderTarget(null);
         GraphicsDevice.Clear(Color.Black);
-        var viewport = GraphicsDevice.Viewport;
-        var scale = Math.Min(viewport.Width / (float)CanvasWidth, viewport.Height / (float)CanvasHeight);
-        // Whole-number enlargement keeps every pixel the same size at normal window sizes.
-        if (scale >= 1) scale = MathF.Floor(scale);
-        var width = (int)(CanvasWidth * scale);
-        var height = (int)(CanvasHeight * scale);
+        var destination = CanvasDestination();
+        var scale = destination.Width / (float)CanvasWidth;
+        var shake = CombatShake();
+        destination.Offset((int)MathF.Round(shake.X * scale), (int)MathF.Round(shake.Y * scale));
         batch.Begin(samplerState: SamplerState.PointClamp);
-        var destination = new Rectangle((viewport.Width - width) / 2, (viewport.Height - height) / 2, width, height);
         if (presentedWorld is not null) batch.Draw(presentedWorld, destination, Color.White);
         if (vignette)
         {
@@ -404,10 +606,10 @@ internal sealed partial class TownGame : Game
         batch.Draw(canvas, destination, Color.White);
         if (scanlines && scale >= 2)
             for (var y = 0; y < CanvasHeight; y++)
-                Fill(new(destination.X, destination.Y + (int)((y + 1) * scale) - 1, width, 1), Color.Black * 0.12f);
+                Fill(new(destination.X, destination.Y + (int)((y + 1) * scale) - 1, destination.Width, 1), Color.Black * 0.12f);
         batch.End();
 
-        if (smoke && ++smokeFrames == 3)
+        if (smoke && loading is null && ++smokeFrames == 3)
         {
             var rendered = presentedWorld ?? canvas;
             var pixels = new Color[rendered.Width * rendered.Height];
@@ -422,6 +624,48 @@ internal sealed partial class TownGame : Game
             Exit();
         }
         base.Draw(gameTime);
+    }
+
+    private Rectangle CanvasDestination()
+    {
+        var viewport = GraphicsDevice.Viewport;
+        var scale = Math.Min(viewport.Width / (float)CanvasWidth, viewport.Height / (float)CanvasHeight);
+        // Whole-number enlargement keeps every pixel the same size at normal window sizes.
+        if (scale >= 1) scale = MathF.Floor(scale);
+        var width = (int)(CanvasWidth * scale);
+        var height = (int)(CanvasHeight * scale);
+        return new((viewport.Width - width) / 2, (viewport.Height - height) / 2, width, height);
+    }
+
+    private void UpdateStudioSplash(InputFrame actions, double elapsed)
+    {
+        studioSplashRemaining = actions.Confirm || actions.Back || actions.Pause ? 0 : Math.Max(0, studioSplashRemaining - elapsed);
+        if (studioSplashRemaining <= 0) { paused = false; ShowWelcome(); }
+    }
+
+    private void DrawStudioSplash()
+    {
+        GraphicsDevice.SetRenderTarget(canvas);
+        GraphicsDevice.Clear(new Color(9, 14, 22));
+        var elapsed = StudioSplashDuration - studioSplashRemaining;
+        var opacity = MathHelper.SmoothStep(0, 1, (float)Math.Min(1, elapsed / .45))
+            * MathHelper.SmoothStep(0, 1, (float)Math.Min(1, studioSplashRemaining / .55));
+        var aspect = studioLogo.Width / (float)studioLogo.Height;
+        var height = Math.Min(CanvasHeight * .64f, CanvasWidth * .70f / aspect);
+        var width = height * aspect;
+        var bounds = new Rectangle((int)((CanvasWidth - width) / 2),
+            (int)(CanvasHeight * .48f - height / 2), (int)width, (int)height);
+        batch.Begin(blendState: BlendState.NonPremultiplied, samplerState: SamplerState.PointClamp);
+        batch.Draw(studioLogo, bounds, new Color(1f, 1f, 1f, opacity));
+        var hint = controllerConnected ? "SOUTH: CONTINUE" : "ENTER: CONTINUE";
+        var caption = new Color(Muted.R, Muted.G, Muted.B, (byte)(opacity * 200));
+        font.Draw(batch, hint, (CanvasWidth - hint.Length * 6) / 2, 159, caption);
+        batch.End();
+        GraphicsDevice.SetRenderTarget(null);
+        GraphicsDevice.Clear(Color.Black);
+        batch.Begin(samplerState: SamplerState.PointClamp);
+        batch.Draw(canvas, CanvasDestination(), Color.White);
+        batch.End();
     }
 
     private void Fill(Rectangle rectangle, Color color) => batch.Draw(pixel, rectangle, color);
@@ -445,13 +689,16 @@ internal sealed partial class TownGame : Game
         miniature?.Dispose();
         heat?.Dispose();
         lighting?.Dispose();
+        sunShafts?.Dispose();
         mapView?.Dispose();
         canvas?.Dispose();
         vignetteMask?.Dispose();
         pixel?.Dispose();
+        studioLogo?.Dispose();
         font?.Dispose();
         batch?.Dispose();
     }
+
 
     protected override void EndRun()
     {

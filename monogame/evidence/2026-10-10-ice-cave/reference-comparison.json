@@ -1,0 +1,98 @@
+[
+  {
+    "file": "map-17.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-17.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-17.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-17-unlit.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "map-51.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-51.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-51.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-51-unlit.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "map-57.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-57.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-57.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-57-unlit.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "map-59.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-59.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-59.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-59-unlit.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "map-67.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-67.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-67.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-67-unlit.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "map-117.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "light-117.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-117.png",
+    "pixels_equal": true
+  },
+  {
+    "file": "gameplay-117-unlit.png",
+    "pixels_equal": true
+  }
+]

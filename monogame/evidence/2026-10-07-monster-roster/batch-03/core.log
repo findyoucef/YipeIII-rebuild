@@ -1,0 +1,28 @@
+Could not open preferences and scores. The existing file is preserved. Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+Could not open preferences and scores. The existing file is preserved. The profile is invalid or from another version.
+The map journal does not match this saved adventure.
+The map journal is invalid.
+Is a directory : '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-map-7a814c1f5c274e7dbb0cfd4ecb18bbcd/game.map.json'
+Earned opening saved before Wormoid; writer exiting.
+Fresh process earned Wormoid, second rescue and King's reward with matching C++ state.
+--write-save-fixture passed.
+--read-save-fixture passed.
+--write-import-fixtures passed (24 imports, four reopen/item cycles each).
+--read-import-fixtures passed (24 imports, four reopen/item cycles each).
+Created /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-c1ff471089c24a5699a6c8e454b81f45/cli.y3m. Source unchanged.
+Preview migration creates a default Warrior at the saved position; no character progress existed in this format.
+See SAVE_FORMAT.md for supported import formats and inherited save behavior.
+Import failed: The file '/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-p1-import-c1ff471089c24a5699a6c8e454b81f45/cli.y3m' already exists.
+Import failed: The import is truncated or contains invalid data.
+Passed 569 checks, including 624 town movement cases, 8192 RNG output/state records, 11322 player records, 311728 map/world records, 21511 session records, 17883 shop/spell/casino records, 37096 exploration records, 28363 combat records, 20311 quest records and 88298 encounter records from C++.

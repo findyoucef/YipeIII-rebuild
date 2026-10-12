@@ -1,0 +1,17 @@
+{
+  "monogame/Yipe.Desktop/WorldRenderer.cs": "61bc5f2af99fdb8a6a1a2241fd14eb593bcb68722e31808c577f5af11ee8418e",
+  "monogame/Yipe.Desktop/WorldTerrain.cs": "3f00611343c62d6024f2b543e7df0fdfc0c410ce961fe24821bb949da9da9cb0",
+  "monogame/Yipe.Desktop/WorldDesert.cs": "4a0fd5816079af79e801aae5115354c71a2823b9f008f4204ca7bedfcf5e3175",
+  "monogame/Yipe.Desktop/WorldMonsterAnimation.cs": "b83e6881d0dfccd77634072075669632bcecae52fc62d3b47c7cfbf5a7a82e4c",
+  "monogame/Yipe.Desktop/PixelLighting.cs": "231315584055895e5251b116d5732797e7b4b5623619ad78a6a463811f6186e6",
+  "monogame/Yipe.Desktop/TownGame.cs": "08a1d029f3671ebf16afcfe872d9280387f2bd5a44dfeba6815bb9a010e74bf5",
+  "monogame/Yipe.Desktop/GameAudio.cs": "9290cffd3b6b6bab144c3ee5af8a92f67ceb330eb3dca0722043916c09ef73d2",
+  "monogame/Yipe.Desktop/WorldFire.cs": "fb5ccee07507326c70f484ddecb4b6eea2fcbaf3f24b5d1ea7d3378786518d49",
+  "monogame/Yipe.GraphicsChecks/FireCaveChecks.cs": "f7e593a8d32bbd27470c3f982ce3f8ebcd1e7b0dd3e45e7dfd57836b2703b062",
+  "monogame/Yipe.GraphicsChecks/Program.cs": "e6487e02a2c4d4cdbe64259e9cac4b9ef1ed8cf7a3c3930a0637b30025187a67",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/fire-cave.wav": "e70ca7d82adc5a8963c444b1bc283f3c3061406cac97c6bc9c7e653fe0d48ff8",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/fire-cave-sources.json": "a21988721f15a6dc0ac6cb6ecc51254141447fffcf6c89d328ae41d1278408a8",
+  "monogame/Yipe.Desktop/Content/Audio/Ambience/FIRE-CAVE-CREDITS.txt": "360f8fa8e6eb49c938c93dcfd294f228ef9e21533ce3d7bfab1e5589b91b04b8",
+  "monogame/Yipe.Desktop/bin/Release/net10.0/Content/maps.json": "af96e9781947128514566dd1207073f335b4e9d55ff7b4076363cbb72e85361e",
+  "monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop.dll": "519396600bcdf2b41f50cc1874397aa2371b5d01fc0f25c01c4e564f9742adc6"
+}

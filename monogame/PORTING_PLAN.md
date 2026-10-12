@@ -6,7 +6,7 @@ already approved by the user. This document is the working checklist and handoff
 record for the port. Update it during implementation so a later session can
 resume from repository evidence without needing the conversation history.
 
-Last updated: **2026-10-05**. **P1, P2, P3 and P4 are complete.** The continuous
+Last updated: **2026-10-11**. **P1, P2, P3 and P4 are complete.** The continuous
 P2–P4 goal delivered the connected opening, complete exploration and earned
 campaign ending with the approved retro presentation. The [completion evidence](evidence/2026-10-04-p234-complete/README.md)
 contains runnable inputs, full saves, independent comparisons, screenshots and
@@ -17,15 +17,16 @@ integration remain separate; this is a playable desktop port, not a release clai
 
 | Field | Current state |
 | --- | --- |
+| Local gameplay launch | The latest local Release includes the Final Cave remaster and the approved Water Cave raft fix. The last requested launch used an isolated copy of the current Water Cave preview in Final Cave upper B3 (map 54, tile 6,5); its source adventure is retained as `main_adventure_save` in the [launch record](../build/local-game-launch.json). For a requested launch, inspect running processes and read that record; do not substitute a demo or overwrite the main adventure. Rebuild `build/cloud-rework/launcher` to refresh its copied Desktop assembly before reuse; its process-only refresh-sync workaround avoids the known macOS display-link stall. |
 | Current milestone | P1–P4 Done. P0 support work and P5/P6 remain; P7 deferred. |
-| Next task | Select a queued presentation feature from the backlog (e.g., Rain and surface splashes), or close the P5/P6 UI items (About screen, Help, control remapping) and remaining desktop verification. |
-| Last completed work | Matched mountain stone to the cave's darker slate gray, retained small authored highlight cores, and lifted only the cave's outer border to the same gray. Shared native art import covers town, world, area maps and desert foothills. References: Maynard E3 / 1,1 and F3 / 7,4, near the original F3 / 2,6 ridge report. See [cave-stone evidence](evidence/2026-10-05-cave-stone/README.md). |
-| Latest verification | Checked Release build: zero warnings/errors. 1,203 current GPU integration checks pass, including 360 gameplay tour frames, all 36 surface mountain layouts, 40,960 matching overlap pixels, cave/stone brightness, dark doorway preservation, secret equivalence, fog and save/RNG isolation. The earlier graphics-context blocker is resolved. |
+| Next task | Recommended next: a pixel-art animation and interaction pass for the King, Princess and Skill Teacher; implementation has not yet been requested. All cave families now have dedicated remaster treatments. Final Cave and the Water Cave raft presentation were approved on 2026-10-11. Prior aesthetic review and physical-controller verification remain separate. |
+| Last completed work | Remastered Final Cave: connected dark rock, broad worn bedrock floors, crimson crystals with contour lighting, sparse ash/grit/haze, recorded cavern ambience and cohesive creatures. Original hazards, routes, secrets, encounters, platforms and rescues are preserved. [Preview](evidence/2026-10-11-final-cave/gameplay-92.png) and [evidence](evidence/2026-10-11-final-cave/review.json). |
+| Latest verification | Final Cave: 632 core/input checks, 265 focused checks and 3,862 full graphics checks passed, including 360 tour frames. Local Release: zero warnings/errors. Exactly the fifteen Final Cave rooms differ among 115 native maps; 32 other-region reference captures are identical. All 33 personal files and 27 Core/original-map files are unchanged. [Verification](evidence/2026-10-11-final-cave/review.json). |
 | Earned frontend evidence | Opening matches all 42 C++ checkpoints plus King reward and separate-process continuation. Late frontend opens an earned C# save, defeats the empowered Gatekeeper, rescues 19, saves, restarts in another process, rescues 20 and displays the live Maynard finale. |
-| Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. |
-| Work left running or half implemented | No incomplete implementation or running task for the cave-stone correction. The user's game was not navigated or restarted; graphics checks ran their own isolated game. Preserve the accepted native rock detail, cave/Hell artwork and existing effects. |
+| Approved presentation | 16:9 play, overlay menus, retro palette, reflections, 250 ms walking at four animation frames/second, scanlines on and Strong miniature by default. Optional vignette defaults to Off; localized pixel lighting defaults to On. Sun shafts and cloud shadows independently default to Subtle. Cloud shadows are not yet visually approved. The October 9 revision uses varied small puffy silhouettes, curved bases, irregular spacing and soft edges; user visual review remains pending. The user approved rain and surface splashes; automatic Subtle showers are the default for profiles without a rain preference. |
+| Work left running or half implemented | Final Cave implementation and verification are complete, with user visual approval received on 2026-10-11. No test process remains running. The full monster roster is complete: 41 types and 656 poses; three NPC atlas entries remain separate. Revised clouds still await user review. Physical-controller testing remains open. Changes remain in the working tree; preserve existing saves, art/effects and all unrelated edits. |
 | Blocking dependencies | Physical-controller/other-OS verification needs the actual environments; official console work needs approved access. |
-| Save preservation | Mountain checks use isolated saves and profiles and compare complete gameplay snapshots before/after rendering. No gameplay, collision, encounter, map-template or save-format code changed. `.y3m` version 1 and `.map.json` remain unchanged. Earlier lighting evidence retains its personal save/journal/profile hashes. |
+| Save preservation | Final Cave checks use isolated saves/profiles and compare complete gameplay/RNG snapshots. All 33 personal files and 27 Core/original-map files remain unchanged, with no new personal files or save-format changes. [Latest file checks](evidence/2026-10-11-final-cave/preservation.json). |
 | Repository checkpoint | The first MonoGame checkpoint on main is titled `Add complete MonoGame desktop port with retro presentation`, based on C++ commit 349fffe71e052dd4e011f1fe09c0e3080f5bb723. It includes the port, artwork, fixtures, evidence and resume documentation. Use `git log -- monogame/PORTING_PLAN.md` to locate it. Evidence hashes describe files at capture time; later documentation updates may differ. |
 
 At the start of a resumed session:
@@ -47,6 +48,757 @@ At the start of a resumed session:
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
 
+
+## Final Cave remaster — 2026-10-11
+
+Authorized scope: fifteen rooms, upper C1/B2/C2/B3/C3/C4
+(43/48/49/54/55/61) and deep C1/D1/E1/F1/C2/E2/F2/E3/F3
+(83/84/85/86/89/91/92/97/98). The cave skill's approved contour and
+material-specific floor techniques guide an ancient endgame cavern, distinct
+from the volcanic Fire Cave.
+
+- [x] Connected dark rock with chipped contours, small facets, stratification
+  and shaded front faces, anchored across matching room overlaps.
+- [x] Broad worn bedrock slabs, selective shallow fissures, abrasion and sparse
+  wall-foot chips. Keep original collapsing-floor warnings and open holes clear.
+- [x] Visible crimson crystal clusters on suitable front/side walls supply
+  contour-clipped light; secret rock aliases cast identical shadows.
+- [x] Sparse native-pixel ash, falling grit and thin broken ground haze, clipped
+  to discovered terrain and driven solely by presentation time.
+- [x] Dedicated quiet recorded ambience: dungeon air/rumble and distant stone
+  creaks, credited CC0 sources, existing volume/pause/focus/transition lifecycle.
+- [x] Cohesive monster tint, contact shadows and landing dust; unchanged poses,
+  scale, hover and battle artwork.
+- [x] Verify 632 core/input, 265 focused and 3,862 full graphics checks,
+  including 360 tour frames. Preserve before/after and motion evidence. No repackaging.
+
+Implementation and verification are complete. The user approved the appearance
+after reviewing the local build on 2026-10-11 ("ok looks good").
+Original maps, mechanics, routes, secrets, platforms, rescues and encounters are
+unchanged. Visual checks use isolated adventures. Matching rock/crystal/floor
+overlaps are verified against their actual neighboring-room context, preserving
+authored differences where rooms meet other caves. The scoped simplicity review
+found no remaining issues. [Preview](evidence/2026-10-11-final-cave/gameplay-92.png),
+[atmosphere clip](evidence/2026-10-11-final-cave/atmosphere.mp4), and
+[verification](evidence/2026-10-11-final-cave/review.json).
+
+## Water Cave raft presentation — 2026-10-11
+
+User reported standing beside the logs and abrupt tile jumps. The generic prop
+offset placed the deck 19 native pixels above the hero's boots, while raft and
+hero used separate movement presentations.
+
+- [x] Align the existing pixel-art deck beneath the boots; preserve the atlas.
+- [x] Interpolate each accepted raft move over 0.9 seconds, sharing position and
+  one-pixel buoyancy with the rider. Keep its original route/tick cadence.
+- [x] Preserve walking onto/off the raft, including a raft tick during boarding;
+  keep the carried hero planted and silent, with a wood contact on boarding.
+- [x] Verify 632 core/input checks and 257 focused Water Cave checks, including
+  all eight rafts, pause, map/actions, save/load aboard and other-cave isolation.
+- [x] Finish 3,606 full graphics checks and 360 tour frames, including the existing
+  raft rescue/save/reload/return route. All 33 personal files and 27 Core/map files
+  remain byte-identical; the local Release has zero warnings/errors.
+
+Only the eight raft rooms differ among 115 native map captures; 32 other-cave/town
+references are identical. The scoped simplicity review found no remaining issues.
+[Raft motion](evidence/2026-10-11-water-raft/raft-glide.mp4) and
+[verification](evidence/2026-10-11-water-raft/review.json). Local builds only;
+implementation is complete and the user approved the raft presentation after local verification on 2026-10-11.
+
+## Water Cave remaster — 2026-10-10
+
+User approved proceeding with the next cave remaster. Scope: thirteen authored
+rooms, upper D1/E1/F1 and D2–D6 (44/45/46/50/56/62/68/74), deep D2–D6
+(90/96/102/108/114). Final Cave is separate. The cave skill's approved connected
+stone and material-specific floor techniques guide this treatment.
+
+1. [x] Resolve all rooms, inspect native maps and approved breeding/Fire references;
+   retain matching native, lit and unlit before views plus unaffected references.
+2. [x] Replace tiled rock with connected eroded limestone, shaded wet faces,
+   small facets, mineral trails and sparse teeth at the rock foot.
+3. [x] Replace the water-like dry floor with quiet worn limestone and silt;
+   distinguish deep turquoise pools and soften banks using world-anchored erosion.
+4. [x] Motivate turquoise contour light with visible algae; add pixel drips,
+   ripples, submerged caustic fragments and thin water-only mist. Keep native pixels.
+5. [x] Integrate creature tint/contact shadows, actual-pool hero reflections below
+   rafts, and a dedicated quiet CC0 cave/water audio mix using existing recordings.
+6. [x] Finish focused and full local verification, inspect final gameplay views,
+   retain evidence and confirm original maps/Core/personal-save preservation.
+
+Core movement, raft rules, doors, secrets, stairs, rescues and encounters remain
+unchanged. Water Cave has ordinary traction; Ice Cave's new sliding is separate.
+Implementation and aesthetic approval are tracked separately. No packaging.
+
+Verification passed: **627 core/input checks, 211 focused Water checks, 3,560 full
+graphics checks and 360 tour frames**. Local Release: zero warnings/errors. Only
+the thirteen Water rooms changed among 115 native maps; 32 other-room reference
+captures are identical. All 33 personal files and 27 Core/original-map files are
+unchanged. The scoped simplicity review found no remaining issues. Matching
+authored overlap neighborhoods retain identical sediment; original mismatched
+banks are preserved. [Gameplay](evidence/2026-10-10-water-cave/gameplay-62.png),
+[motion](evidence/2026-10-10-water-cave/water-cave.mp4), and
+[verification record](evidence/2026-10-10-water-cave/review.json).
+
+## Ice Cave traction — 2026-10-10
+
+User follow-up: make the character slide and struggle for traction on the frozen
+floor. Applies by default to the eleven resolved Zephyr Cave rooms, on visible
+ice floor 0x53 and its matching 0x49 alias.
+
+- [x] Slower accelerating push-off (340 ms), steady glide (220 ms), and one
+  decelerating tile (420 ms) after releasing or changing direction.
+- [x] Reuse eight-way keyboard/controller intent and the existing pixel sprite;
+  planted-foot glides stop the walking cycle and suppress repeated footfalls.
+- [x] Route every accepted step through Adventure.Move, preserving collision,
+  monsters, encounters and events. Automatic drift stops before doors, stairs,
+  boundaries, secret walls and changes of floor material.
+- [x] Clear momentum for pause, focus loss, menus, interactions, load and restore.
+  Preserve the existing 250 ms walking and input buffering outside the Ice Cave.
+- [x] Verify 627 core/input checks, 254 focused graphics/integration checks, and
+  3,358 full graphics checks with 360 tour frames. Retain an authored-room
+  movement clip from an isolated adventure. The Release build has zero warnings/errors.
+
+No save-schema, original-map, Core gameplay or packaging changes. Momentum is
+transient desktop state. Current controls explains the early-turn/braking behavior.
+[Movement clip](evidence/2026-10-10-ice-movement/ice-slide.mp4) and
+[validation evidence](evidence/2026-10-10-ice-movement/review.json).
+
+## Reflective Ice Cave floors — 2026-10-10
+
+User follow-up: make the remastered ice reflective. Keep the existing frozen
+terrain, lights, sounds and gameplay; add quiet pixel-art reflections beneath
+the hero and monsters throughout the same eleven Zephyr Cave rooms.
+
+- [x] Reuse the actual hero/monster poses, native pixels, animated foot anchors,
+  facing, creature size and hover height.
+- [x] Cache reflectivity with the existing floor. Clear sheets reflect more;
+  frost, fractures and scuffs weaken the image. Fade with distance; no water ripples.
+- [x] Draw beneath scenery/actors; clip at walls, closed doors, stairs and fog.
+  Occlusion stops a reflection from resuming beyond a blocking wall or door.
+- [x] Inspect entrance, rescue and large-monster gameplay views and test frozen
+  and moving poses, aliases, clipping, changed terrain and gameplay/RNG isolation.
+- [x] Finish shared renderer regressions, retain evidence and open the updated preview.
+
+Focused validation: **219 Ice checks passed**, including 17 reflection checks.
+The local Release build has zero warnings/errors. The implementation adds one
+cached byte mask to `WorldIce` and reuses the sprite atlases/animation selection;
+no render targets, shaders, settings, new artwork or per-frame buffers.
+
+The shared reflection/animation integration passed **3,322 full graphics checks**
+and 360 tour frames. A final Ice-only mask refinement then enabled reflection in
+the exposed floor at carved rock corners; the 219-check focused run verifies
+that boundary and retains a walking sequence on a valid open route. Other cave
+and town water reflections remain pixel-identical in 24 comparison captures.
+Among 115 native full-map captures, only the eleven Ice rooms changed. All 33
+personal files and 27 core/map files remain unchanged. The scoped simplicity
+review found no remaining issues. User aesthetic approval is pending.
+[Updated preview, motion, comparisons and logs](evidence/2026-10-10-ice-reflections/review.json).
+
+## Ice / Zephyr Cave remaster — 2026-10-10
+
+Scope resolved from the surface A3/map13 Zephyr sign, its cave entrance, the
+original terrain/events and connected cave rooms. Upper: A1/B1/A2/A3, maps
+41/42/47/53. Deep: A1/B1/A2/B2/A3/B3/A4, maps81/82/87/88/93/94/99. All eleven
+rooms are authorized; surface snow and neighboring cave families are separate.
+
+Apply the `remaster-yipe-caves` skill: connected frozen rock with small ice facets,
+broad quiet ice sheets, sparse fractures/scuffs/frost, visible cold crystal light
+with native contour occlusion, cohesive creatures and restrained frost motion.
+Recorded wind/ice ambience uses the existing audio lifecycle. Preserve topology,
+doors, secrets, stairs, encounters, rescues and personal saves. Local build only.
+
+- [x] Resolve scope; inspect current native Ice Cave and accepted breeding/Fire references.
+- [x] Retain baseline native, gameplay, unlit and isolated-light captures for all
+  eleven Ice rooms and six unaffected references.
+- [x] Implement cached terrain, contour lights, sparse glints/falling frost, world
+  creature integration and a quiet recorded ambience loop.
+- [x] Inspect all eleven native rooms and representative gameplay views; retain
+  before/after captures and an eight-second motion clip. User aesthetic review is pending.
+- [x] Verify all linked rooms, overlap/secret/cache/fog/door behavior, audio lifecycle,
+  creature/battle isolation and full gameplay/RNG preservation; run shared regressions.
+- [x] Retain evidence, review the scoped diff for simplicity and record the ready local build.
+
+The floor reads as broad frozen sheets with shallow selected seams, scuffs and
+frost deposits. Wall facets are small and connected, with dark front faces;
+mineral inclusions retain the secondary stone's identity. Embedded cyan crystals
+cast steady local light, while icicles, occasional glints and slow frost motes
+provide restrained activity. Deep floors and ambience are slightly quieter.
+
+Audio uses Thimras's CC0 recorded wind and ecfike's CC0 *Ice Crack 5.wav*, mixed
+into one quiet 58-second loop. The public HQ MP3 preview was the crack input;
+the original WAV requires a separate login. Source URLs, hashes, processing
+recipe and credits are retained. No synthesized audio or new audio framework.
+Existing sampled stone footfalls suit the hard frozen ground.
+
+The scoped simplicity review follows the existing Stone/Earth partial renderer:
+one cached terrain texture, tile signature, contour mask and local source lists;
+shared lighting, monster shading and the existing single ambient voice. No new
+settings, gameplay state, asset framework or package dependencies. Four older
+cave tests now use untreated map54 instead of newly remastered map53 for their
+neutral creature/audio reference. No unrelated production edits were needed.
+
+Validation: **202 focused Ice checks**, **3,306 full graphics checks** and
+**613 core checks** passed; the full suite also rendered 360 tour frames.
+The local Release rebuild has zero warnings/errors. All nine matching floor
+overlaps align; source/destination fog, closed/open doors, secret aliases and
+changed-map caches pass. All 115 native map captures were compared with the
+preceding overworld run: only the eleven Ice rooms differ. All 24 current-task
+comparison captures for Maynard/Stone/Earth/Breeding/Fire/Hell are pixel-identical.
+All 33 personal files and 27 core/original-map files remain unchanged.
+
+The focused run also passed with overflow checking enabled. A full checked run
+hit the existing outdoor hash's intentional wraparound arithmetic; the final
+full run used a fresh normal Release rebuild. Temporary diagnostic edits were
+restored. User aesthetic/audio review remains pending; no personal adventure
+was launched or staged. [Captures, clip, source credits and verification](evidence/2026-10-10-ice-cave/review.json).
+
+## Cloud silhouette rework — 2026-10-09
+
+Goal: rework the unapproved cloud shadows into small, recognizable puffy pixel-art
+silhouettes with restrained shading, feathered edges and natural drift. Preserve
+terrain sharpness, coordinated sunlight/hero/dust response, weather, controls,
+gameplay and personal saves. Test locally without repackaging and open the finished
+build with the existing adventure for user review.
+
+- [x] Inspect the existing mask and in-game captures: repeated flat-bottom shapes,
+  regular spacing and broad blur weaken the cloud crowns.
+- [x] Replace the common stamp with varied connected puff silhouettes, rounded
+  undersides, irregular separated placement, smaller sizes and thinner edges.
+- [x] Inspect native masks, normal gameplay captures and moving sequences; refine
+  based on the rendered result.
+- [x] Verify clouds, sunlight/actor sampling, weather/day-night, settings, native
+  pixels and gameplay isolation; review the scoped diff for simplicity.
+- [x] Open the verified local build with the user's latest existing adventure.
+
+Validation: clean local Release build and **211 focused graphics checks** passed.
+The final mask contains 20 separate clouds, 46–65 native pixels wide and 27–37 high
+at alpha >= 32; occupied area is 9.9%. Connected crowns share one density envelope
+so the lobes do not become separate dark bubbles. The feather radius is three
+native pixels rather than six; scene artwork remains sharp. Horizontal drift is
+2.4 rather than 3.2 pixels/second. Existing shade strengths remain unchanged.
+
+The scoped simplicity review covered the mask/drift change, focused runner and
+capture additions: no new production fields, settings, dependencies, per-frame
+allocations or gameplay paths. No findings remain. Six outdoor scenes, neutral
+masks and sampled frames across 24 seconds were inspected. All 33 personal files
+remained unchanged through verification. The latest adventure is open and verified
+by screenshot. Normal startup encountered a local macOS display-link wait; a
+temporary launcher runs the identical Desktop assembly with refresh sync disabled
+for this process only. Game timing and saved preferences are unchanged. Diagnose
+the normal-launch stall separately. User aesthetic approval is still pending.
+[Captures, motion clip, logs and review](evidence/2026-10-09-cloud-rework/review.json).
+
+## Overworld remaster — 2026-10-09
+
+Goal: complete a cohesive pixel-art presentation pass across all 36 surface
+regions, with Maynard as the accepted quality reference. Preserve routes,
+encounters, secrets, map/save formats and the approved snow footprint. Use local
+builds, without repackaging. The region audit identified Ervyn C5/map27, Quizilog
+B2/map8, the D3/D4/E4 travel corridor and B4/map20 woodland as initial references.
+
+- [x] Extend Ervyn with clustered garden planting and tended soil beds; extend
+  Quizilog with dry scrub, pebbles, palm shade/litter and quieter sand variation.
+  Existing paved shop approaches remain intact.
+- [x] Replace repeated meadow fields with connected, restrained native-pixel
+  variation, greener banks, shaded tree ground and broken worn road verges.
+  Shared world coordinates account for overlapping rooms and wrapping edges.
+- [x] Dress every remaining surface region with grouped low vegetation following
+  rivers, cliffs, existing trees and flower clearings. Reuse the Maynard plant
+  art and preserve open ground, door approaches, water and snow.
+- [x] Add canopy leaves, shrub leaves in Ervyn, butterflies, bank insects and
+  drifting meadow seeds. Surface crowns/reeds sway by one pixel with stationary
+  roots. Daytime wildlife stays out of night/rain; dry dust stays out of showers.
+- [x] Add smoothly mixed daytime birds, quiet night crickets and habitat wind.
+  Proximity-based water fades/pans from actual water pixels; lakes are quieter
+  than streams. Mute, master volume, focus, overlays and action ducking apply.
+  Sources and processing: `Content/Audio/Ambience/outdoor-sources.json` and
+  `OUTDOOR-CREDITS.txt`; reuse existing Maynard wind/river recordings.
+- [x] Finish full graphics verification, retained comparisons and review record.
+
+Validation: Release build has zero warnings/errors; 184 focused overworld checks,
+38 focused Maynard transition checks, **3,104 full graphics checks**, **360 tour
+frames** and **613 core checks** pass. Full verification used `--record
+--capture-monsters 1`: all monster checks run, with extra videos limited to one
+unchanged roster example. The old river-transition assertion was updated to
+verify the intentional fade and eventual voice disposal instead of immediate
+silence. All 27 core/map source files remain byte-identical to the task baseline.
+Of 115 matching full-map captures, precisely the 35 targeted surface maps changed;
+Maynard and all 79 underground/alternate captures remain byte-identical.
+[Region checklist, previews, logs, audio provenance and review](evidence/2026-10-09-overworld/review.json).
+
+Implementation uses a cached surface texture and bounded lists in the existing
+partial WorldRenderer; it introduces no gameplay objects or persistent state.
+The initial smooth ground patches were revised to lower contrast with broken
+pixel edges and more grouped vegetation after visual review. Maynard's own
+renderer and reduced river mix remain intact. User aesthetic review is pending.
+
+## Maynard leaves and ambient sound — 2026-10-09
+
+Resolved Maynard as surface E3/map17 from the original tables and inspected its
+actual town renderer. The river bends west and runs beneath bridges at 3,3 and 2,6.
+The request adds atmosphere; terrain, buildings, collision and gameplay stay intact.
+
+- Replaced four faint leaf flecks with sparse native-pixel leaves that flutter,
+  drift, settle and fade. Four turning poses use existing green/ochre colours;
+  deterministic 12Hz presentation time consumes no gameplay RNG. Leaves draw
+  behind buildings and the character, over open grass and paths.
+- Added CC0 recordings: isaiah658’s birds, Thimras’s wind and small river. Daytime
+  birds/wind give way to quieter wind at night; no synthesized sound. Three
+  58-second loops have crossfaded seams, hashes, processing records and credits.
+- River audio measures nearby pixels in the rendered water mask, including bends
+  and both bridges. Its independent loop eases up/down with interpolated player
+  distance, pans toward the bank, fades out inland and releases its voice.
+- Reused master volume, sound toggle, pause/map/overlay/focus gates, action-sound
+  ducking and exit disposal. Leaving Maynard restores existing biome ambience;
+  other towns do not inherit these sounds or leaf drawing.
+
+Checked Release build passes with zero warnings/errors; 37 focused checks,
+2,941 full graphics checks with 360 tour frames, and 613 core checks pass.
+All 120 map, 116 Earth, 68 Stone, 73 breeding, 129 Fire, 71 Hell and 64 other-town
+captures match the previous local build. Isolated checks cover leaf timing and
+occlusion, both bridges, walking attenuation/pan, sound gates, day/night changes,
+voice cleanup and full gameplay/RNG preservation. Original map tables and Core
+source are unchanged. The separately running personal game saved and exited
+during final checks; its newer 55-region save, matching journal and preferences
+were preserved. [Evidence](evidence/2026-10-09-maynard-atmosphere/review.json)
+contains screenshots, an eight-second leaf/ambient preview and a separately
+labelled river-distance audio demonstration. The user accepted the presentation
+with “this is great,” then requested a quieter river. The follow-up lowers only
+the river gain from 0.32 to 0.24 (25%); bird/wind levels, distance fade and panning
+are unchanged. The local checked Release rebuild and all 37 focused checks pass.
+The earlier river audio preview uses the original, louder level. Local build
+only; no repackaging.
+
+## Hell colour and ambient audio — 2026-10-09
+
+The user likes Hell’s existing architecture but requested richer reds and missing
+atmospheric sound. Resolved the alternate-layer A4–D4/maps117–120 independently
+from map labels, original map117 events and current native/gameplay captures.
+Maps118–120 regenerate; fixed-seed fixtures do not claim to reproduce the live
+adventure’s current layout.
+
+- Preserved the connected stone, floor structure, grey entrance paving, ironwork,
+  creature art, heat shimmer, embers, smoke, ash and flame animation.
+- Enriched the existing warm palette after quantization and slightly strengthened
+  the red molten-seam glow; retained native pixel boundaries and neutral ash.
+- Added a dedicated 58-second recorded ambient loop: lava flow, a lower-pitched
+  rumble layer, restrained fire crackle and filtered cavern air. It reuses verified
+  Blender Foundation (CC BY 3.0), PagDev (CC0) and JaggedStone (CC0) recordings,
+  with full attribution and processing/hash records alongside the asset. No new
+  downloads or synthesized noise. The adapted mix is CC BY 3.0.
+- Reused the single ambient voice, entry fade, volume/mute and pause/map/overlay/
+  focus gates, action-sound ducking and biome-exit disposal. All four Hell rooms
+  continue the same loop; neighboring alternate regions do not inherit it.
+
+Checked Release build passes without warnings/errors; 119 focused checks,
+2,913 full graphics checks with 360 tour frames, and 613 core checks pass.
+Before/after captures cover all four rooms and nine generated layouts. Exactly
+four full-map captures changed; Earth, Stone, Fire and breeding references match
+byte-for-byte. Gameplay, RNG, terrain, events and personal files are preserved.
+[Evidence](evidence/2026-10-09-hell-atmosphere/review.json) includes local logs,
+comparisons, source hashes and a six-second preview with default-volume audio.
+User visual/audio review is pending. Local build only; no repackaging.
+
+## Stone Cave remaster — 2026-10-09 (implemented and verified)
+
+Scope independently resolved from map labels, original tables and current native
+captures: upper E2 map51, F2 map52, F3 map58 (entrance at7,4), F4 map64,
+F5 map70, F6 map76 (down stair10,9); deep F4 map104, F5 map110 and F6 map116
+(up stair10,9 and rescue1,1). E2's flooded rescue chamber stays intact.
+
+- Replace repeated wall tiles with connected cool limestone/granite, small facets,
+  chipped ledges, mineral seams and shaded front faces.
+- Make a quieter worn stone floor: broad shelves, sparse shallow fissures, mineral
+  grit and damp water deposits. Keep doors, secrets, stairs and event cells clear.
+- Share the stone silhouette with contour lighting; visible wall torches, no
+  unmotivated glow or square contact shadows.
+- Add restrained native-pixel drips, settling grit and localized lamp dust;
+  reuse the existing credited cave ambience through the normal audio lifecycle.
+- Ground creatures with a mild mineral tint, contact shadows and matching dust;
+  retain their animations, silhouettes and battle art.
+- Build and test locally, inspect all nine rooms, preserve full gameplay/RNG and
+  personal saves, compare other caves, and retain before/after evidence.
+
+All items above are implemented. Local checked Release builds pass with zero
+warnings/errors; 183 focused Stone checks, 2,874 full graphics checks with 360
+tour frames, and 613 core checks pass. Original water coverage, seven matching
+room overlaps, secrets, doors, visibility, cache restoration, sound lifecycle,
+creature silhouettes/battle art and full gameplay/RNG preservation are covered.
+Only the nine Stone rooms differ in full-map comparisons. All Earth, Fire,
+breeding and other lighting references match their current baselines exactly.
+The personal save, map journal, profile, Core source and original map tables are
+unchanged. Native before/after captures, default gameplay views, isolated lights,
+a five-second atmosphere clip, source hashes and logs are retained in
+[evidence](evidence/2026-10-09-stone-cave/review.json). Ambience reuses the existing
+credited CC0 air loop and wetter Earth mix; no new audio assets were downloaded.
+The user accepted the local Stone Cave build with “this looks good” and moved on to Hell. Local build only; no repackaging.
+
+## Earth Cave remaster implementation — 2026-10-09
+
+Completed goal: implement all six approved review recommendations across upper E3–E6
+(57/63/69/75) and deep E4–E6 (103/109/115). Keep the native pixel-art treatment,
+original topology, events, secrets, creatures, saves and gameplay RNG intact.
+
+1. **Ambience:** separate upper/deep loops built from licensed cave air, dripping
+   water and quiet granular samples; reuse the shared fade, volume, pause, focus,
+   overlay and biome-exit lifecycle. Source credits ship alongside the WAV files.
+2. **Atmosphere:** brighter drips and ripples, localized lamp dust, fungus spores,
+   occasional falling grit, and more frequent drips below ground; deterministic
+   scene time and discovered tiles only.
+3. **Lighting:** the terrain's cached rock silhouette drives light occlusion;
+   lamps and visible fungi supply warm/green local light, including door shadows.
+4. **Walls:** smaller warm sedimentary facets, chipped contour edges and deeper
+   front faces; preserve roots, fossils, old masonry and mineral veins.
+5. **Floor:** compacted soil, sparse embedded stones and damp silt by actual
+   shorelines; granular dry footsteps and existing water contacts/reflections.
+   Avoid the dense slate fractures rejected in the breeding-ground iteration.
+6. **Creatures:** restrained earthy world tint, stronger existing contact shadows,
+   and soil-coloured landing dust. Preserve silhouettes, animation and battle art.
+
+All six steps are implemented and locally verified. The full graphics run passed
+2,700 checks and 360 tour frames; core checks passed 613. Final focused runs
+passed Earth 240, breeding 131 and Fire 207 checks. All 73 breeding and 129 Fire
+reference captures match exactly; the personal save/journal/profile, Core source
+and original map tables are byte-identical to the pre-task checkpoint. Native
+before/after, gameplay, lighting, a five-second atmosphere clip, source credits,
+source hashes and verification logs are retained in
+[evidence](evidence/2026-10-09-earth-remaster/review.json).
+The new sound uses CC0 material from Independent.nu, JaggedStone and Fantozzi.
+The user accepted the local Earth Cave build with “ok great” and moved on to Stone Cave. No repackaging.
+
+## Earth Cave review — 2026-10-09
+
+Reviewed seven rooms with `remaster-yipe-caves`: upper E3–E6 (57/63/69/75),
+deep E4–E6 (103/109/115). Confirmed that ambient audio selects only Fire and
+breeding tracks; Earth starts no ambient loop. Its visual drips, ripples, dust
+and fungus glow already exist, but are sparse and faint. Earth also retains the
+older tile-based light occlusion and torch cutoff, with no contour mask.
+
+Recommended order: add suitable recorded cave ambience and clearer localized
+atmosphere; adapt contour lighting to Earth's own rock silhouette and sources;
+then refine warm sedimentary walls, compacted-earth floors, material footsteps
+and creature integration. Preserve roots, fossils, puddles/reflections and room
+identity. Avoid the dense fractured-slate treatment the user disliked elsewhere.
+
+This was a review only: no rendering/audio/gameplay changes or new test run.
+Compared all seven native maps, representative gameplay views and current source.
+Retained captures come from the prior 2,629-check run; the relevant renderer source
+matches the pre-breeding-floor snapshot. No live adventure was navigated.
+
+[Lit entrance view](evidence/2026-10-09-earth-review/gameplay-57-lit.png) ·
+[Deep damp chamber](evidence/2026-10-09-earth-review/gameplay-109-presentation.png) ·
+[Findings and proposed work](evidence/2026-10-09-earth-review/review.json).
+
+## Breeding-ground calmer slate — 2026-10-09
+
+The user found the exposed slate too fractured. Reduced seed density by about
+half, narrowed and lightened the joints, and interrupted them with earth. An even
+slate tone removes the contrast that outlined every piece; fewer interior marks
+leave larger intact areas. The original prop/dust shades remain in place, with
+one added slate base colour to keep the floor below the wall tops in brightness.
+
+Checked Release is clean and all 131 focused GPU checks pass across six rooms.
+An intermediate brighter floor failed the existing contrast check in map 66;
+the final tone passes the unchanged assertion. Before/after comparison confirms
+60,288 unchanged wall-core pixels and six identical light masks. Other desktop,
+core and map sources are unchanged. Full suite was not rerun for this localized
+floor correction. Tests used isolated sessions; personal-file observations are
+in the evidence. Local build only; no restart of the live adventure.
+
+[Before](evidence/2026-10-09-breeding-floor-soft-seams/gameplay-59-before.png) ·
+[After](evidence/2026-10-09-breeding-floor-soft-seams/gameplay-59.png) ·
+[Evidence](evidence/2026-10-09-breeding-floor-soft-seams/review.json).
+User visual review is pending.
+
+## Superseded: breeding-ground exposed slate floor — 2026-10-09
+
+The user found this floor too fractured. The calmer slate correction above
+replaces its dense dark joints and individually contrasted faces.
+
+The user found the previous floor barely different. Replaced the sparse, faint
+fragments with exposed fractured slate beds covering much more of the open floor.
+Broader grey faces and dark joints remain visible with the normal Strong miniature
+effect and scanlines. Worn-earth deposits interrupt the stone; shallow cleavage
+marks and fine grit provide smaller detail. The floor uses the existing mineral
+palette and stays flatter and darker than the wall tops.
+
+This is a localized replacement of the floor branch in `WorldBreeding.cs`. Checked
+Release builds cleanly and all 131 focused GPU checks pass. Before/after captures
+verify 60,288 unchanged wall-core pixels and six identical lighting masks. Other
+desktop/core/map sources and personal save/journal/profile hashes are unchanged.
+The prior full run passed 2,629 checks; it was not rerun for this floor correction.
+No repackaging or live-game restart. User visual review is pending.
+
+[Before](evidence/2026-10-09-breeding-floor-bedrock/gameplay-59-before.png) ·
+[After](evidence/2026-10-09-breeding-floor-bedrock/gameplay-59.png) ·
+[Entrance](evidence/2026-10-09-breeding-floor-bedrock/gameplay-60.png) ·
+[Evidence](evidence/2026-10-09-breeding-floor-bedrock/review.json).
+
+## Superseded: subtle breeding-ground floor refinement — 2026-10-09
+
+The user reported that this looked too similar to the previous ground. The
+stronger exposed-slate revision above replaces this treatment.
+
+Applied the updated cave-remaster skill to the six breeding-ground rooms: upper
+A4/B4/A5/B5 and deep A5/B5 (59/60/65/66/105/106). Compacted mineral-earth patches,
+partly buried slate fragments, short scrape marks and sparse fine grit give the
+floor a clearer material. Flattened the initial stones and broke their highlights
+so they read as ground instead of raised obstacles. The approved four-colour ramp,
+wall contours, lighting, nests, creature treatment and gameplay remain intact.
+
+Only the non-stone texture branch in `WorldBreeding.cs` changed. The checked local
+Release is clean and all 131 focused GPU checks pass, including linked-room
+continuity, secrets, fog, cache changes and full session/RNG preservation. Across
+all six rooms, 60,288 sampled wall-core pixels and every local-light mask match
+the prior build. Core and original-map source hashes are unchanged. Tests used
+isolated sessions; personal-file observations are recorded without restoring or
+replacing the live adventure. The previous full suite passed 2,629 checks; it was
+not rerun for this floor-only correction. No repackaging or relaunch.
+
+[Before](evidence/2026-10-09-breeding-floor/gameplay-59-before.png) ·
+[After](evidence/2026-10-09-breeding-floor/gameplay-59.png) ·
+[Entrance](evidence/2026-10-09-breeding-floor/gameplay-60.png) ·
+[Evidence](evidence/2026-10-09-breeding-floor/review.json).
+User visual review is pending.
+
+## Graphics submenu — 2026-10-09
+
+All ten visual options now live in **Pause > Graphics**: Fullscreen, Scanlines,
+Miniature effect, Vignette, Pixel lighting, Sun shafts, Cloud shadows, Rain,
+Screen shake and Time of day. The main pause menu fits on one page and retains
+Battle pacing. Escape/East or Start returns from Graphics to its highlighted
+parent entry without resuming play. Existing defaults and saved preferences
+are preserved, and the in-game help describes this navigation.
+
+Checked local Release builds cleanly. All 66 focused menu checks and 2,629 full
+GPU checks pass, including each moved setting and its persistence behavior.
+The full run also renders 360 tour frames and verifies the latest Fire Cave floor.
+Menu captures cover 640×360, 1024×768 and 1920×1080. Synthetic controller actions
+pass; physical-controller testing remains open. Personal save/journal hashes
+are unchanged; observed profile updates were left intact. No package was rebuilt.
+
+[Pause](evidence/2026-10-09-graphics-submenu/pause-menu.png) ·
+[Graphics](evidence/2026-10-09-graphics-submenu/graphics-menu.png) ·
+[Evidence](evidence/2026-10-09-graphics-submenu/review.json).
+
+## Fire Cave cooled-lava floor — 2026-10-09
+
+The user preferred the red-hot walls/room (“this is much better”) and requested a
+better floor. Replaced the broad smooth floor patches with irregular flat crust
+plates, shallow folded flow ridges, fine ash/grit and sparse sealed ember seams.
+The thicker unstable-floor cracks retain their last-drawn warning detail.
+
+This changes only the non-stone terrain branch in `WorldFire.cs`. The preferred
+wall joints, magma, red ambient light and creature treatment are retained. All
+eleven rooms render successfully; checked Release is clean and 207 focused GPU
+checks pass. Wall/magma core pixels and all eleven local-light masks are identical
+to the prior version. The full suite was not rerun for this floor-only correction;
+the previous red-glow revision passed 2,615 checks. Tests used isolated saves.
+Personal files changed during the session; their updated contents were left intact.
+
+[Before](evidence/2026-10-09-fire-floor/gameplay-67-before.png) ·
+[Open room](evidence/2026-10-09-fire-floor/gameplay-67.png) ·
+[Entrance](evidence/2026-10-09-fire-floor/gameplay-72.png) ·
+[Evidence](evidence/2026-10-09-fire-floor/review.json).
+Local build only. The user accepted the floor ("awesome") before requesting the Graphics submenu above.
+
+## Preferred Fire Cave red heat correction — 2026-10-09
+
+The user reviewed this revision and said “this is much better,” then requested
+the floor improvement recorded above.
+
+The user rejected the first remaster's cool appearance and specifically requested
+red joints between wall rocks plus red light throughout the room. The same eleven
+Fire Cave rooms now have ember-red/orange joints, hotter segments near magma,
+warmer dark rock/floor colours and room-wide red ambient bounce, stronger below.
+The outside wall foot stays dark so the silhouette keeps its depth.
+
+The ambient pass reuses the existing blend states, scales existing world pixels
+before heat/UI composition and keeps black/alpha intact. No new texture, shader,
+blur or gameplay state was added. Other caves retain their lighting path. Local
+Release builds cleanly and 207 focused checks pass. The new real-device check
+covers black/transparent controls, unchanged alpha and stronger deep red bounce.
+The full suite passes 2,615 checks and 360 tour frames. Only the eleven Fire Cave
+map captures changed; 104 other maps, 22 lighting references and all 73 breeding
+captures are identical. Personal save/journal/profile hashes stayed unchanged.
+
+[Before](evidence/2026-10-09-fire-red-glow/gameplay-72-before.png) ·
+[Entrance](evidence/2026-10-09-fire-red-glow/gameplay-72.png) ·
+[Deep chamber](evidence/2026-10-09-fire-red-glow/gameplay-113.png) ·
+[Evidence](evidence/2026-10-09-fire-red-glow/README.md).
+The hotter wall/room treatment is retained in the floor revision above.
+
+## Initial Fire Cave volcano remaster — 2026-10-09
+
+The implementation below passed its checks, but the user found it too cool and
+requested the red-heat correction above. Its captures retain the initial version.
+
+User approved the six-part plan and requested a goal plus complete implementation.
+Scope: upper caves C5/A6/B6/C6 (67,71,72,73), deep caves C3/B4/C4/C5/A6/B6/C6
+(95,100,101,107,111,112,113), entered from surface B6. Current native entrance,
+unstable-floor and deep rescue-room renders were inspected before editing.
+
+- [x] Connected finely fractured basalt and quiet cooled-lava/ash floors.
+- [x] Animated magma recessed into existing blocked rock, with cooling crust and bubbles.
+- [x] Amber light using the visible contour, with stronger heat deeper down.
+- [x] Crisp localized heat shimmer, rising embers, intermittent vent smoke and falling ash.
+- [x] Warm creature integration, coherent volcanic details, original routes and events retained.
+- [x] Licensed sample-based rumble/bubbling/crackle/hiss ambience and stone/grit footsteps.
+
+All eleven native rooms and entrance/deep gameplay captures were inspected.
+Fine stone, floor contrast and magma containment retain crisp pixel art. Magma
+openings are authored by room, with sulfur flecks and cooled fragments around
+them. Deep rooms have stronger heat, more particles and louder ambience.
+Unstable-floor cracks, doors, secrets, stairs, encounters and rescues are intact.
+
+The 58-second loop mixes Blender Foundation's CC-BY-3.0 Lava loop and PagDev's
+CC0 Fireplace Sound loop; source links, attribution, processing and hashes ship
+with the content. Existing audio controls/lifecycle and sampled footsteps are
+reused. No synthetic oscillator or new gameplay system was added.
+
+Checked Release has zero warnings/errors. 613 core, 206 focused GPU and 2,614
+full GPU checks pass, including all 41 monsters and 360 tour frames. Of 115 map
+captures, only the eleven Fire Cave rooms changed. The other 104 maps, 22 lighting
+references and all 73 breeding-ground captures are byte-identical to the approved
+breeding-contour build. Core source and original map data remain unchanged.
+
+The runner uses isolated saves. The previously open personal adventure's files
+changed during this work; their later contents were left intact, with no restore
+or replacement performed. Hash observations are retained separately rather than
+claiming the entire session's personal files were byte-identical.
+
+Local build only, no package. [Captures, clip and verification](evidence/2026-10-09-fire-cave/README.md).
+Implementation is complete; user visual/audio review remains pending.
+
+## Approved: breeding-ground light contours — 2026-10-09
+
+User reviewed the updated local build and approved the result: “this looks great!”
+
+Reusable workflow: `$remaster-yipe-caves`, installed at
+`~/.codex/skills/remaster-yipe-caves/SKILL.md`. Its companion reference records
+the approved pixel-art, floor/creature, contour-lighting and verification
+techniques. Adapt the treatment to each cave's own palette, theme and resolved
+map scope; the breeding grounds supply a quality reference, not a shared layout.
+
+The user noticed square-looking cave lighting after the floor/monster update.
+The breeding grounds' upper A4/map59 reference showed two separate causes:
+ground darkness measured from square cells instead of the chipped rock, and
+light visibility accepted or rejected whole 32-pixel tiles.
+
+Ground contact now uses the actual stone silhouette with a short two-shade edge.
+The light pass shares that cached silhouette, traces native-pixel visibility and
+feathers occlusion by one pixel. Cave lamps retain circular reach above their
+source; doors and discovery masks still block light. Terrain mutations rebuild
+the mask, secret aliases remain identical, and the existing tile-lighting path
+continues outside these six rooms. The wall artwork itself is unchanged.
+
+Seven new focused regressions cover lamp reach, light grazing a carved corner,
+a partial-light edge, secret equivalence, blocked/restored door paths and bare
+earth at cut corners. Captures include the isolated light masks and lighting
+on/off views at default gameplay scale. Rendering uses isolated sessions and
+leaves the personal save, journal and profile unchanged. Checked Release builds
+cleanly; 131 focused and 2,414 full GPU checks pass, including 360 tour frames.
+Only the six breeding-room map captures changed; 109 other map captures and
+22 other-biome lighting captures are byte-identical.
+[Before](evidence/2026-10-09-breeding-light-contours/gameplay-59-before.png) ·
+[After](evidence/2026-10-09-breeding-light-contours/gameplay-59.png) ·
+[Verification](evidence/2026-10-09-breeding-light-contours/review.json).
+
+## Review pending: breeding-ground floor and creature lighting — 2026-10-09
+
+The user preferred the finer walls but found the floor out of place and clarified
+that the monsters stood out as if they did not belong in the environment. The
+live save resolved to upper A4/map59 at 8,3; current native and gameplay references
+were inspected without moving the live player.
+
+The floor uses four restrained mineral-dirt shades, fine grey gravel and low
+contrast patches. Nest hollows and debris shadows share the new ground, while
+straw stays warm. Drifting grit and creature foot dust use the same mineral shade.
+The wall rendering and all authored layouts remain intact.
+
+World monsters receive a subtle cool ambient colour and stronger contact shadows
+only in these six rooms. The existing sprite poses, scales, hover heights and
+shadow footprints remain; battle portraits and appearance elsewhere are unchanged.
+This reuses the existing scene map and sprite tint/shadow inputs; no new texture,
+lighting framework, animation asset or gameplay state was added.
+
+Checked Release builds cleanly. All 124 focused checks and 2,407 full GPU checks
+pass. Nine new assertions cover grounded, hovering and large creatures, combat
+artwork isolation and exact appearance restoration on biome exit. Comparing all
+115 map captures changes only the six breeding rooms; the other 109 are identical.
+[Before](evidence/2026-10-09-breeding-cohesion/gameplay-59-before.png) ·
+[After](evidence/2026-10-09-breeding-cohesion/gameplay-59.png) ·
+[Verification](evidence/2026-10-09-breeding-cohesion/review.json).
+The local build is ready; the live game was not relaunched during this task.
+
+## Preferred wall direction: breeding-ground stone detail matched to Hell — 2026-10-09
+
+The user found the angular walls better, but too low resolution beside Hell.
+Both renderers use the same native resolution; the mismatch was detail scale.
+The breeding stone spacing was 34×24 pixels, versus 13×11 in current Hell.
+Compared the current verified Hell A4/map117 native and gameplay captures to
+upper-cave B4/map60 before modifying only `WorldBreeding.cs`.
+
+The revised stone pass uses Hell's smaller facets, narrow joints and upper-face
+highlights, anchored in world coordinates for matching overlaps. It keeps the
+slate palette, angular wall silhouette and shaded front faces, and removes the
+redundant broad-slab crack/speckle rules. Hell rendering itself is unchanged.
+All six revised native views and the default entrance gameplay view were inspected.
+All 115 existing focused checks pass; pixel comparisons found zero changes outside
+wall cells. No new tests, assets, state, helper types or packaging were needed.
+
+[Before](evidence/2026-10-09-breeding-wall-detail/gameplay-60-before.png) ·
+[Hell reference](evidence/2026-10-09-breeding-wall-detail/hell-reference-gameplay.png) ·
+[After](evidence/2026-10-09-breeding-wall-detail/gameplay-60.png) ·
+[Verification](evidence/2026-10-09-breeding-wall-detail/review.json).
+User review remains pending. The existing game was left running with its previous
+build; use the canonical full adventure on the next requested launch.
+
+## Superseded: breeding-ground broad wall correction — 2026-10-09
+
+The user rejected the first walls as visually wrong. The bright continuous rim,
+rounded corners and disconnected grey/purple patches made them read as barriers.
+The correction stays in `WorldBreeding.cs`: chipped angular silhouettes,
+world-aligned slate slabs with short broken fractures and tiny weathering marks,
+11–15-pixel shaded front faces, and narrow foot shadows. The shared rock palette
+and native pixel grid remain intact; purple is removed from stone and claw marks.
+
+The entrance (upper B4/map 60) was compared at native and default gameplay size,
+then all six native rooms were inspected. The same correction covers their shared
+wall pass and still joins matching original region overlaps. No pixels outside
+wall cells changed in the six before/after map captures. Existing focused checks
+cover secrets, fog, cache invalidation, region continuity and gameplay isolation;
+all 115 pass. No new tests, frameworks, assets or gameplay state were introduced.
+
+[Before](evidence/2026-10-09-breeding-walls/gameplay-60-before.png) ·
+[After](evidence/2026-10-09-breeding-walls/gameplay-60.png) ·
+[Verification](evidence/2026-10-09-breeding-walls/review.json).
+User visual approval is still pending; do not describe these walls as approved.
+
+## Complete: Monster Breeding Grounds remaster — 2026-10-09
+
+Goal: bring maps 59, 60, 65, 66, 105 and 106 to the remastered terrain standard
+with connected plum/charcoal rock, quiet packed earth, deliberate nesting details,
+individual room landmarks, localized light and restrained animation/ambience.
+The entry sign is upper B4, map 60 at 4,10. Earth Cave's completed treatment is
+retained. This scope uses the six explicit map IDs, not every environment-7 map
+(which would incorrectly include Hell).
+
+- [x] Connected irregular walls, broad rock facets and shaded front faces.
+- [x] Quiet floor patches, damp hollows, gravel and worn approaches; readable paths.
+- [x] Authored nests, straw, eggshells, shed scales, bones and claw marks.
+- [x] Entrance chamber (60), communal nests (59), holding cell (65), feeding area (66),
+      deep brood chamber (105) and large-monster den (106), respecting their events.
+- [x] Sparse fungi and warm entrance/holding-area lights using existing pixel lighting.
+- [x] Scene-time drips/ripples, spores and grit; a quiet CC0 cave ambience loop that
+      respects Sound/Volume, pause, overlays, focus loss and biome transitions.
+- [x] Inspect all six native views and default presentation; verify fog, secrets,
+      cache invalidation, gameplay/RNG preservation and audio lifecycle locally.
+
+Implementation uses a cached terrain pass following `WorldEarth`, authored
+native-pixel detail shapes and existing lighting/audio boundaries. No new movement,
+encounter rules, save fields or gameplay randomness. Review the scoped diff for
+simplicity and retain before/after captures and verification evidence. No package.
 
 ## Complete: mountain form and cave stone — 2026-10-05
 
@@ -200,12 +952,13 @@ The user approved all six recommendations and selected localized lighting first.
 | Feature | Status | Intended behavior |
 | --- | --- | --- |
 | Localized pixel lighting | Done | Windows, wall torches and lava light nearby scenery and actors with restrained flicker, stepped shading and a saved toggle. Respects walls, fog and existing gameplay. |
-| Moving cloud shadows | Queued | Broad, faint shadows drift across outdoor scenery; separate saved strength. |
-| Sun shafts | Queued | Restrained warm diagonal shafts through cloud openings, native pixel shading and a separate saved strength. |
-| Rain and surface splashes | Queued | Fine rain, small ground splashes and water rings, with adjustable intensity. |
-| Combat feedback | Queued | Brief hit flashes, impact bursts, damage numbers and optional light screen shake. |
+| Moving cloud shadows | Reworked; awaiting user visual review | Four distinct small puff silhouettes, shallow curved bases, irregular separated placement, coherent density and three-pixel feathering replace the repeated flat-bottom stamps. Drift is 25% slower horizontally. Retains 7%/14% shade, coordinated shafts and hero/dust sampling, saved Off/Subtle/Strong control and native scene pixels. [Evidence](evidence/2026-10-09-cloud-rework/review.json). |
+| Sun shafts | Implemented; ready for visual review | Restrained warm diagonal bands drift outdoors, with native pixel shading and separate saved Off/Subtle/Strong settings. Walking through them adds a warm character highlight, small equipment glint and sparse dry-ground dust. [Shaft evidence](evidence/2026-10-07-sun-shafts/README.md), [actor evidence](evidence/2026-10-07-sun-actor/README.md). |
+| Rain and surface splashes | Appearance approved; automatic weather verified | Fine pixel streaks, ground splashes and shoreline-clipped rings. Off/Auto Subtle/Auto Strong control; 5–10 minute clear spells, 30–60 second showers and four-second transitions, timed only during active outdoor play. Existing saved intensity choices remain. [Rain evidence](evidence/2026-10-07-rain/README.md), [automatic weather evidence](evidence/2026-10-07-automatic-rain/README.md). |
+| Combat feedback | Expanded presentation and simplified Enemy info accepted | Animated outgoing and individual incoming turns with timed sound, persistent HP/SP/AP and animated bars, direct targeting/area previews, distinct spell/ability effects, optional automatic return to commands, and victory/level-up celebrations. Enemy info now separates a focused portrait/stats card from optional Details after the user found the first panel crowded; inspection remains free and preserves the attack target. Pacing defaults Manual; Screen shake stays separately Off by default. Core combat/reward/RNG/save behavior is preserved. [Plan](BATTLE_UPGRADE_PLAN.md), [battle evidence](evidence/2026-10-07-battle-upgrades/README.md), [inspection layout evidence](evidence/2026-10-07-enemy-info-layout/README.md). |
+| Monster animation and movement | All 41 types implemented: 656 native pixel-art poses | Creature-specific idle, travel, attack, hurt and defeat animation; independent 250 ms roaming/pursuing travel and encounter approach; alternating plants, hops, hovers and slithers; dry dust and shoreline-clipped water contacts. Hidden movement stays quiet and modal clocks freeze. Regional bosses retain doubled world scale; the waiting Gatekeeper and its empowered combat variant are covered. Core rules, rewards, RNG and save formats remain unchanged. [Plan](MONSTER_ANIMATION_PLAN.md), [evidence](evidence/2026-10-07-monster-roster/README.md). |
 | Walking puddle ripples | Queued | Footsteps create small water rings and disturb the character's reflection. |
-| Dusk/night palettes | Queued | Selectable sunset and moonlight palettes with readable terrain and illuminated windows; a day/night cycle can follow later. |
+| Dusk/night palettes and automatic cycle | Implemented and verified; ready for visual review | Auto is enabled by default for new and legacy profiles. Twenty minutes of exploration: day 10, dusk 2, night 6, dawn 2. Fixed Day/Dusk/Night modes suspend the persisted phase. Moonlight and stronger warm windows preserve readability; sunlight, cloud shade and outdoor heat follow daylight. Modal/focus freezes and underground lighting are preserved. [Plan](DAY_NIGHT_PLAN.md), [evidence](evidence/2026-10-08-day-night/README.md). |
 
 Weather, time-of-day lighting and screen shake should have separate controls.
 Do not implement the queued features as incidental parts of localized lighting.
@@ -242,9 +995,9 @@ Do not implement the queued features as incidental parts of localized lighting.
 | Character and gameplay | Creation, twelve appearances, all combat/spells/shops/casinos, twenty rescues, six stamps, secrets, Hell/recovery, statistics and ending | Three additional class/difficulty/seed completion fixtures in P6.1 |
 | Randomness and fidelity | Independent rule comparisons plus 43,080 earned campaign state/RNG observations and 66 complete saves | Original-runtime unknowns remain inherited; do not infer original-executable parity |
 | Rendering/audio | All 115 map instances and 97 tile variants covered; monsters, quest art, audio effects/aliases, overlays, original defaults | Supported-size polish, physical input, accessibility and cost review |
-| Input | Keyboard/D-pad/stick actions and synthetic input coverage; real frontend opening/late play | Physical-controller checks, remapping and remaining desktop conveniences |
+| Input | Keyboard/D-pad/stick, gameplay remapping/conflicts, fixed safe menus and persisted profiles; real frontend opening/late play | Physical-controller checks and remaining desktop conveniences |
 | Saving | Full-state format, explicit safe imports, generated/static reopen, platform saving and early/late fresh-process continuations | Wider lifecycle/OS matrix and file chooser/history/Save As |
-| Profiles | Scanline/miniature/vignette/pixel-lighting/audio settings, score tables, original score code and Silly Mode | Remaining display/input preferences and clipboard/help/profile information UI |
+| Profiles | Presentation/audio settings, remapped controls, scores, score code, Silly Mode, Help/About and profile policy | Wider preference/lifecycle validation and clipboard conveniences |
 
 The user approved the overall appearance and direction after the reflection and
 walking-speed changes. Preserve that baseline while expanding functionality.
@@ -317,10 +1070,10 @@ derive an overall completion percentage from lines of code or map counts.
   `docs/DECISIONS.md`, especially D7 and D8, and retain unresolved evidence limits.
   Completed in [FEATURE_DISPOSITIONS.md](FEATURE_DISPOSITIONS.md); assigned P5/P6
   work stays open until implemented and verified.
-- [ ] **P0.5** Establish a source-control checkpoint containing the approved
+- [x] **P0.5** Establish a source-control checkpoint containing the approved
   preview, plan and evidence when committing is requested or otherwise authorized.
-  Local files currently exist outside the recorded HEAD; do not treat the old
-  commit as a recoverable copy of the MonoGame baseline.
+  Baseline checkpoint 0638981 contains the complete MonoGame port and evidence.
+  Later UI/control/package working-tree changes are not part of that checkpoint.
 
 ### P1 Character and game state
 
@@ -510,6 +1263,9 @@ check, not a reason to postpone presentation until all rules are translated.
   paths; record any map-specific art exceptions.
 - [ ] **P5.2** Complete monster, boss, NPC and character-action artwork with clear
   targeting and combat feedback. Document new assets and generation/edit prompts.
+  All 41 canonical monsters now have 656 native pixel-art poses, creature-specific
+  travel, real combat/defeat presentation and ordinary/empowered Gatekeeper support.
+  [Roster plan and rollout](MONSTER_ANIMATION_PLAN.md); final earned opening, restart and finale all pass. NPC artwork remains a separate scope.
 - [ ] **P5.3** Finish dialogue, inventory, equipment, spells, shops, combat,
   creation and results overlays. Test long text, focus, back/cancel and readable
   layouts at supported display sizes.
@@ -518,8 +1274,12 @@ check, not a reason to postpone presentation until all rules are translated.
 - [ ] **P5.5** Verify all original actions have reachable keyboard/controller
   mappings, including diagonals and Other. Test held input, reconnect, focus loss,
   pause, saving mid-step and resuming with a physical controller.
+  Keyboard/controller gameplay remapping, conflicts, safe menu controls, persistence
+  and failure feedback now pass automated checks. A physical controller remains required.
 - [ ] **P5.6** Close the P0.4 feature inventory, including explicit dispositions
   for original desktop menu conveniences, help, history and profile information.
+  Help, 21 gameplay guide topics, About and stat/save information now pass.
+  File/history/printing/text conveniences remain explicitly open.
 - [ ] **P5.7** Review new regions against V0 and check effect costs on large
   encounters and dense scenes. Preserve the user's chosen visual defaults.
 
@@ -538,9 +1298,12 @@ check, not a reason to postpone presentation until all rules are translated.
 - [ ] **P6.4** Run full map/asset coverage, overlay/input checks and physical play
   sessions. Separate automated results from manual observations and unresolved
   original-runtime comparisons.
-- [ ] **P6.5** Build clearly named MonoGame desktop packages; test extracted
+- [x] **P6.5** Build clearly named MonoGame desktop packages; test extracted
   assets, runtime/native dependencies and startup outside the checkout. Verify
   each claimed operating system separately and document signing/install behavior.
+  Done for the sole packaged target: Apple Silicon macOS 26+ (tested 26.7.1),
+  self-contained .NET 10.0.8, ad-hoc signed preview. See the 2026-10-07 evidence.
+  Other operating systems, physical-controller play and notarization remain unclaimed.
 - [ ] **P6.6** Update user documentation and this plan with the actual supported
   feature/platform matrix, remaining limitations and reproducible release evidence.
 
@@ -638,13 +1401,13 @@ The full codec/storage contract is in [SAVE_FORMAT.md](SAVE_FORMAT.md).
 | --- | --- | --- |
 | Missing historical replay artifacts | The docs report corrected completion runs with 108,879 matching observations, but `evidence/corrected-completion/`, `evidence/persistence-parity/` and `evidence/verification-milestone/` are absent from this checkout. This is historical documentation, not a newly verified local result. | One new default completion now passes; P0.2/P6.1 retain the missing three-fixture matrix |
 | Graphics runner portability | P0.1 is complete with configurable paths, isolated saves and optional recording. Real graphics checks have passed on Apple Silicon macOS. | Keep the window focused; validate other platforms separately |
-| Uncommitted baseline | The approved MonoGame code and this plan are not represented by the recorded HEAD. | Preserve the working tree; record a real checkpoint when committing is authorized |
+| Source checkpoint | The baseline is committed at 0638981, followed by the mountain and deferred-effect checkpoints. UI/control/package work is currently uncommitted. | Preserve the working tree and its evidence; do not reset it to the baseline |
 | Original diagonal movement | P1.3 restores eight-direction rules and preview input/animation. Diagonals use destination-only collision, horizontal-facing art and one 250 ms grid step. | P5.5: physical-controller validation and full-action/overlay coverage remain |
 | Slower walking and timed gameplay | The approved pace can affect the practical difficulty of timed routes. | P3.5 passed timed platform/fire routes at 250 ms; retain this regression coverage |
 | Save compatibility | `.y3m` v1 and explicit preview/C++ v20/original imports are complete. Original unknown/absent fields and selected Windows-1252 decoding are documented; earlier C++ versions require upgrading in the rebuild. | Keep formats/source files distinct; extend supported variants only with reference evidence. See `SAVE_FORMAT.md`. |
 | Inherited adaptations | C++ D7 restores platform support on reopen; D8 sets new-character stat cap 50 and weapon upgrade ceiling 29. Other fidelity limits remain documented. | Dispositions are recorded in FEATURE_DISPOSITIONS.md; retain original-runtime limits |
 | Menu coverage | Every original menu/system row is mapped in FEATURE_DISPOSITIONS.md; convenience features remain explicit. | P5.6: implement and verify the assigned remaining desktop work |
-| Current CI and release labels | The root workflow builds/packages C++/SDL; it does not validate or publish the MonoGame game. | P0.3 and P6.5: add distinct coverage and artifacts |
+| Current CI and release labels | Root hosted CI/releases still target C++/SDL. A distinct local MonoGame macOS package now passes extraction/signature/startup/save checks. | P0.3: add hosted MonoGame coverage; keep artifacts separate |
 
 ## Session record
 
@@ -936,3 +1699,62 @@ Evidence: [town before](evidence/2026-10-05-pixel-lighting/town-off.png) /
 [preserved saves](evidence/2026-10-05-pixel-lighting/preserved-saves.sha256).
 Full run: `build/graphics-checks/yipe-graphics-20261005-064202-3a796283`.
 The other five visual features remain queued; none is partially implemented.
+
+### UI/control completion and first macOS package — 2026-10-07
+
+Completed the existing draft and restored the public GameInput API so the solution
+builds again. Controls now share persisted, validated gameplay bindings, with
+fixed menu/text navigation, conflict rejection, cancellation, reset and visible
+write-failure handling. Help reflects those bindings; all 28 original manual
+topics, current profile policy and recovered About attribution are reachable.
+The bitmap font now supports the manual/contact punctuation.
+
+The first standalone MonoGame preview contains the official self-contained .NET
+10.0.8 runtime, SDL/OpenAL, retro assets/audio and dependency notices. Packaging
+uses official NuGet runtime packs, rather than shipping Homebrew's runtime with
+its external Brotli dependency. The signed app keeps managed data in Resources.
+Extraction verifies every byte, native dependencies/signatures, empty-directory
+startup, macOS LaunchServices and save/RNG continuation against packaged binaries.
+
+[Evidence and reproduction](evidence/2026-10-07-ui-package/README.md). P6.5 is
+complete for the sole macOS arm64 preview target. P5.5/P5.6 remain open for
+physical-controller verification and the separately listed desktop conveniences;
+the initial draft's checked boxes were premature. No hosted release or other
+platform is claimed, and no personal save/profile was modified.
+
+### Remove obsolete commercial language — 2026-10-07
+
+The user clarified that this port is not shareware and has no registration system.
+Removed the seven original commercial/hintbook/distribution topics from the shipped
+guide, retained its 21 gameplay topics, and replaced the registration explanation
+with Stats and saves. Original reverse-engineering evidence remains historical;
+it does not establish the port's distribution policy. Updated package preview.4
+and its verification to require the gameplay guide without old commercial text.
+
+Verification: zero-warning/error Release build, all 1,239 GPU checks, and
+preview.4 extraction/signature/dependency/selected-save/LaunchServices checks pass.
+[Guide-update evidence](evidence/2026-10-07-gameplay-guide/README.md).
+
+### icosium labs pixel-art studio ident — 2026-10-07
+
+Added a Casbah-inspired pixel-art icosium labs logo before the normal title menu,
+with white terraced houses, an arched passage, ochre edges and Mediterranean blue.
+The transparent logo is generated artwork; exact prompts and provenance are in
+`Yipe.Desktop/Content/Branding/`. Its lettering is ivory for dark-background
+readability. It renders on the native 320×180 canvas with point sampling and
+shared whole-number enlargement, without world effects. The 3.2-second ident
+fades in/out, pauses its timer on focus loss and accepts standard Confirm/Back/
+Pause skip inputs without triggering title actions. Direct save and smoke startup
+continue to bypass the title sequence. About credits the port/remaster to
+icosium labs while preserving original credits.
+
+Checked Release: zero warnings/errors, 558 gameplay/input checks, 1,246 GPU
+checks and a visually inspected splash capture. Updated macOS preview.5 includes
+the brand PNG and company attribution. No adventure/profile format or gameplay
+change; the running personal game is not restarted.
+
+### Simplify studio splash caption — 2026-10-07
+
+Removed the PORT / REMASTER BY heading from the opening ident at the user's
+request. The logo and skip hint remain. About and bundle attribution name
+icosium labs without that label. Updated macOS preview.6.

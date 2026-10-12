@@ -1,0 +1,90 @@
+{
+  "task": "Reduce the breeding-ground floor fracture density following user feedback",
+  "scope": [
+    59,
+    60,
+    65,
+    66,
+    105,
+    106
+  ],
+  "changes": [
+    "Slab seed spacing 36x25 instead of 26x18, about half the former seed density",
+    "Thinner and lighter joints that stop where earth fills the seam",
+    "Uniform slate base tone avoids outlining pieces through abrupt shade changes",
+    "Fewer internal cleavage marks and lighter earth scuffs"
+  ],
+  "palette": "Appended slate base (59,62,68). Original four shades and existing dust/prop palette indices retained.",
+  "verification": {
+    "build": "Checked Release, zero warnings/errors",
+    "focused_gpu_checks": 131,
+    "comparison": [
+      {
+        "map": 59,
+        "wall_core_pixels_checked": 10560,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      },
+      {
+        "map": 60,
+        "wall_core_pixels_checked": 7872,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      },
+      {
+        "map": 65,
+        "wall_core_pixels_checked": 11520,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      },
+      {
+        "map": 66,
+        "wall_core_pixels_checked": 7680,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      },
+      {
+        "map": 105,
+        "wall_core_pixels_checked": 11328,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      },
+      {
+        "map": 106,
+        "wall_core_pixels_checked": 11328,
+        "wall_core_changes": 0,
+        "light_mask_identical": true
+      }
+    ],
+    "other_desktop_core_and_map_sources": "unchanged",
+    "local_assembly_matches_tested_build": true,
+    "full_suite": "Not rerun for this localized floor correction; prior full menu build passed 2629 checks."
+  },
+  "iteration_note": "An intermediate uniform bright floor failed the unchanged wall/floor contrast check in map 66. The final slate base restores contrast; all original assertions remain intact. The only checker edit updates the palette description.",
+  "visual_review": "Inspected upper A4/B4 and deep B5 gameplay plus native A4. Continuous outlined polygons are replaced by larger intact areas, partial quiet seams and visible earth/stone texture. User review pending.",
+  "simplicity_review": "Reviewed the complete scoped diff. Existing floor geometry, world seeds, cache and noise are reused; one palette entry provides a quieter uniform base without altering dust or props. No new renderer types, assets or settings. No actionable findings.",
+  "personal_files": [
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.y3m",
+      "before": "bfff58592157f16e2b562eeeb5d0874e8cf29eccb480fe1557986c418156719a",
+      "after": "bfff58592157f16e2b562eeeb5d0874e8cf29eccb480fe1557986c418156719a",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.map.json",
+      "before": "34764c2d03818616849b44d05b34d24969ad0c645569ef4bf1007b0359315de6",
+      "after": "34764c2d03818616849b44d05b34d24969ad0c645569ef4bf1007b0359315de6",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/baouchiy/Library/Application Support/YipeIII-MonoGame/Saved Adventures/Full adventure - footsteps 20261008-173843/game.profile.json",
+      "before": "8aefa9d2f540fd7aa017e4478643f7756a1b6ea5a2fe38b370c712b9a0afe4db",
+      "after": "8aefa9d2f540fd7aa017e4478643f7756a1b6ea5a2fe38b370c712b9a0afe4db",
+      "unchanged": true
+    }
+  ],
+  "personal_file_note": "Isolated test sessions; live adventure not navigated, replaced or relaunched. Observed changes, if any, left intact.",
+  "source_sha256": "b263f38223c067e2ccd25e341979a0dfc65f11270966c248e0425a6341d891cf",
+  "focused_output": "build/breeding-floor-soft-seams/balanced/yipe-graphics-20261009-065225-c5c13a5b",
+  "delivery": "Local build only; ready for requested relaunch."
+}

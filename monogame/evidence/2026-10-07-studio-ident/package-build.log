@@ -1,0 +1,9 @@
+  Determining projects to restore...
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/Yipe.Core.csproj (in 106 ms).
+  Restored /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/Yipe.Desktop.csproj (in 117 ms).
+  Yipe.Core -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Core/bin/Release/net8.0/Yipe.Core.dll
+  Yipe.Desktop -> /Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/osx-arm64/Yipe.Desktop.dll
+  Yipe.Desktop -> /var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-monogame-package-1iv8a_72/Yipe III MonoGame.app/Contents/Resources/Game/
+/var/folders/05/xq70vjhj5b93zm96j1wq8_j00000gp/T/yipe-monogame-package-1iv8a_72/Yipe III MonoGame.app/Contents/Resources/Game/Yipe.Desktop: replacing existing signature
+Created /Users/baouchiy/source/repos/YipeIII-rebuild/build/monogame-packages/YipeIII-MonoGame-0.1.0-preview.5-macOS-arm64.tar.gz
+SHA-256: 5686f98741f4c6be1dc9409502054705783f19aa744f79250a4470fa6ef14c30

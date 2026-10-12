@@ -1,0 +1,15 @@
+{
+  "batch": 4,
+  "id": 13,
+  "name": "Fire Bug",
+  "motion": "Antenna/mandible movement and shell highlights; alternating six-leg scuttle based on the beetle treatment",
+  "action": "Mandible bite/lunge; shell dips on hurt; legs fold beneath the shell and ember highlights dim",
+  "slug": "fire-bug",
+  "source": "/Users/baouchiy/.codex/generated_images/01a117b4-228b-7910-8dfa-e79d7b1b727f/exec-1bd1fe6d-6152-41ae-93d2-be9bb516d938.png",
+  "original_source": null,
+  "destination": "monogame/Yipe.Desktop/Content/Art/Retro/World/monster-fire-bug-animation.png",
+  "prompt": "Use case: stylized-concept. Production transparent pixel-art sprite animation sheet for Fire Bug. Use ONLY row 4, column 1 from the supplied original monster atlas as identity/style reference. Preserve that creature's EXACT recognizable body plan, face, palette, silhouette and anatomy; no redesign into another species.\nExactly SIXTEEN full-body poses in a FOUR-COLUMN FOUR-ROW equal square grid. Same RIGHT-facing slight top-down three-quarter camera, palette, head/body scale and pixel size in all cells. Genuine coarse 16-bit RPG PIXEL ART: author at native48x48 logical pixels per cell and enlarge NEAREST NEIGHBOR. Hard chunky square clusters, dark stepped outlines and a small flat-color palette. No smooth digital painting, tiny brush texture, gradients, antialiasing, blur, bloom or subpixel shading.\nEvery entire horn, wing, tail, tongue, staff, axe and claw must fit wholly inside its ORIGINAL equal cell, with at least 15% EMPTY TRANSPARENT padding on EVERY edge. Common lowest foot/body ground baseline at 85% cell height. Airborne offsets are game-rendered: keep lowest body edge at that baseline even for tucked flight poses. Consistent body scale across sixteen poses; the final collapsed creature stays recognizable and substantial, not tiny particles.\nEvery row must contain at least THREE unmistakably different silhouettes at native48. True transparent alpha. No checkerboard, opaque background, labels, words, numbers, guides, borders, shadows, ground lines, detached particles/flame specks/electrical dots, speed streaks or extra monsters. All fire/electric accents must be small flat pixel clusters attached to the body. Return the complete transparent 4x4 pixel sheet.\nRow ONE: four small distinct IDLE poses based on Antenna/mandible movement and shell highlights. Do not walk in row ONE.\nRow TWO: four sequential TRAVEL poses exclusively based on alternating six-leg scuttle based on the beetle treatment. Make moving limbs/wings unmistakable, with crouch/push/tuck/plant for hops or opposing leg groups for six-legged scuttling.\nRow THREE: C1 clear wind-up, C2 STRIKE, C3 recovery, using Mandible bite/lunge; C4 clear HURT recoil based on shell dips on hurt.\nRow FOUR: four progressive DEFEAT stages from losing balance through buckling/sinking to the final resting pose, based on legs fold beneath the shell and ember highlights dim. Keep final heap full-body and substantial.",
+  "correction": null,
+  "status": "Native art and movement inspected; batch 4 verified",
+  "source_sha256": "868b8746b3f9167ecc47726169b5aeac884fbcff87af28e04d49b07429c59467"
+}

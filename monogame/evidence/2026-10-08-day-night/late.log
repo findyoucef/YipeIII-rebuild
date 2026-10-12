@@ -1,0 +1,18 @@
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-late/yipe-graphics-20261008-100215-f6a382f4
+PASS The late frontend starts with the campaign's earned movement and quest prerequisites
+PASS The compared C# campaign save opens before the final boss
+PASS Cancelling New adventure restores the active combat interaction
+PASS The earned late save defeats the empowered Gatekeeper through combat overlays (HP 32, Gatekeeper 2, battle Victory)
+PASS The boss passage reaches the nineteenth princess with earned progress
+PASS The earned late route reaches the final fire-wall landing
+PASS Production pause-menu save preserves the complete earned late-game state
+PASS earned late frontend boss and saved continuation; 49434 update frames.
+Graphics artifacts: /Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-late/yipe-graphics-20261008-100215-f6a382f4/yipe-graphics-20261008-100219-1f7abccf
+PASS The late frontend starts with the campaign's earned movement and quest prerequisites
+PASS A fresh graphics process reopens the earned final-princess checkpoint
+PASS At 250 ms per step, the reopened adventure earns the twentieth rescue through the fire opening
+PASS The final Hell exit returns the earned adventure to Maynard
+PASS The hero leaves town through its normal map edge
+PASS Normal town entry displays the live finale after all earned rescues, stamps and Gatekeeper progression
+PASS Production pause-menu save preserves the complete earned late-game state
+PASS earned late frontend restart and finale; 128 update frames.

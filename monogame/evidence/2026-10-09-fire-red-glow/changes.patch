@@ -1,0 +1,104 @@
+--- before/WorldFire.cs
++++ monogame/Yipe.Desktop/WorldFire.cs
+@@ -9,10 +9,11 @@
+     private const int FireWidth = Map.Width * 32, FireHeight = Map.Height * 32;
+     internal static readonly Color[] FirePalette =
+     [
+-        new(21, 20, 25), new(31, 27, 32), new(38, 34, 38), new(43, 38, 42), new(49, 44, 46),
+-        new(44, 41, 47), new(59, 55, 63), new(82, 76, 82), new(110, 99, 96), new(141, 109, 74),
++        new(23, 16, 19), new(35, 23, 25), new(44, 29, 29), new(50, 32, 31), new(57, 37, 33),
++        new(46, 34, 37), new(64, 47, 49), new(85, 62, 59), new(112, 81, 70), new(156, 93, 51),
+         new(74, 31, 29), new(127, 44, 24), new(194, 63, 19), new(235, 100, 23),
+         new(255, 157, 40), new(255, 216, 87), new(255, 240, 170), new(117, 98, 47), new(80, 69, 53),
++        new(114, 22, 13), new(168, 34, 15), new(215, 59, 20),
+     ];
+     private readonly Texture2D fireGround, fireLava;
+     private readonly ushort[] fireTiles = new ushort[Map.TileCount];
+@@ -168,9 +169,16 @@
+                     else if (d < second) second = d;
+                 }
+                 var seam = MathF.Sqrt(second) - MathF.Sqrt(closest);
+-                shade = seam < 1.1f ? 1 : facetY < 2 ? 7 : 6;
++                shade = facetY < 2 ? 7 : 6;
+                 if (seam is >= 1.1f and < 2 && facetY < -1) shade = 8;
+-                if (!Stone(x, y + 12 + ledge[(wx / 9) & 15])) shade = seam < 1.1f ? 0 : 5;
++                if (!Stone(x, y + 12 + ledge[(wx / 9) & 15])) shade = 5;
++                // Incandescent joints show heat inside the rock. Keep the outer
++                // silhouette dark so the wall still has depth against the floor.
++                if (seam < 1.1f)
++                {
++                    var heat = EarthNoise(wx / 23f, wy / 19f, 103 + layer);
++                    shade = pool < 1.8f || heat > .67f ? 21 : heat > .4f ? 20 : 19;
++                }
+                 if (!Stone(x, y + 2)) shade = 0;
+                 if (pool < 1.3f && shade is 7 or 8) shade = 9;
+                 if (pool < 1.08f && Stone(x - 3, y) && Stone(x + 3, y) && Stone(x, y - 3) && Stone(x, y + 3))
+--- before/PixelLighting.cs
++++ monogame/Yipe.Desktop/PixelLighting.cs
+@@ -105,6 +105,16 @@
+         if (color == Color.White) return;
+         batch.Begin(blendState: ambient, samplerState: SamplerState.PointClamp);
+         batch.Draw(pixel, lightMap.Bounds, color);
++        batch.End();
++    }
++
++    public void ApplyFireAmbient(SpriteBatch batch, bool deep)
++    {
++        // Red bounce from the glowing joints fills the room. Both passes scale
++        // existing pixels, retaining dark outlines and keeping black/alpha intact.
++        ApplyAmbient(batch, new Color(255, deep ? 185 : 198, deep ? 153 : 169));
++        batch.Begin(blendState: illuminate, samplerState: SamplerState.PointClamp);
++        batch.Draw(pixel, lightMap.Bounds, new Color(deep ? 100 : 80, 4, 0));
+         batch.End();
+     }
+ 
+--- before/TownGame.cs
++++ monogame/Yipe.Desktop/TownGame.cs
+@@ -429,6 +429,7 @@
+         batch.End();
+         sunShafts.DrawClouds(batch, session.CurrentMap, cameraPosition, sceneTime, cloudShadowStrength);
+         lighting.ApplyAmbient(batch, daylight.Ambient);
++        if (WorldRenderer.IsFire(session.CurrentMap)) lighting.ApplyFireAmbient(batch, session.CurrentMap.Id > 80);
+         if (pixelLighting) lighting.Apply(batch);
+         sunShafts.Draw(batch, session.CurrentMap, cameraPosition, sceneTime, sunShaftStrength, cloudShadowStrength);
+         if (outdoor)
+--- before/FireCaveChecks.cs
++++ monogame/Yipe.GraphicsChecks/FireCaveChecks.cs
+@@ -133,6 +133,37 @@
+             var day = (Color[])presentedPixels.Clone(); Set("timeOfDayMode", 3); Call("Draw", new GameTime()); host.GraphicsDevice.GetBackBufferData(presentedPixels);
+             check(day.SequenceEqual(presentedPixels), "Fire Cave keeps its internal heat and lighting through surface night"); Set("timeOfDayMode", 1);
+ 
++            // Exercise the room-wide pass on real terrain/actors with black and
++            // transparent controls; illumination must not add a flat red veil.
++            room.Visibility.Initialize(room.Map, new(1, 1));
++            var shaded = World(room, 1);
++            shaded[0] = Color.Black; shaded[1] = Color.Transparent;
++            using (var input = new Texture2D(host.GraphicsDevice, 416, 384))
++            {
++                input.SetData(shaded);
++                var upper = Ambient(false); var lower = Ambient(true);
++                var black = 0; var changedBlack = 0; var changedAlpha = 0; var brighter = 0;
++                for (var i = 0; i < shaded.Length; i++)
++                {
++                    if (shaded[i].R == 0 && shaded[i].G == 0 && shaded[i].B == 0)
++                    { black++; if (upper[i] != shaded[i] || lower[i] != shaded[i]) changedBlack++; }
++                    if (upper[i].A != shaded[i].A || lower[i].A != shaded[i].A) changedAlpha++;
++                    if (upper[i].R > shaded[i].R) brighter++;
++                }
++                var deepGain = lower.Sum(p => (long)p.R) - upper.Sum(p => (long)p.R);
++                check(black > 0 && changedBlack == 0 && changedAlpha == 0 && brighter > 1000 && deepGain > 0,
++                    $"Room-wide red glow preserves black/transparent controls and alpha, with stronger deep bounce (black {black}, changed {changedBlack}/{changedAlpha}, bright {brighter}, deep {deepGain})");
++                Color[] Ambient(bool deep)
++                {
++                    host.GraphicsDevice.SetRenderTarget(target); host.GraphicsDevice.Clear(Color.Transparent);
++                    batch.Begin(blendState: BlendState.Opaque, samplerState: SamplerState.PointClamp);
++                    batch.Draw(input, Vector2.Zero, Color.White); batch.End();
++                    lightType.GetMethod("ApplyFireAmbient")!.Invoke(light, [batch, deep]);
++                    host.GraphicsDevice.SetRenderTarget(null);
++                    var data = new Color[416 * 384]; target.GetData(data); return data;
++                }
++            }
++
+             var materials = new HashSet<string>();
+             foreach (var id in new[] { 67, 72, 95, 113 })
+             {

@@ -1,0 +1,217 @@
+UTC: 2026-10-09T22:35:59.5892340Z
+Runtime: .NET 10.0.8
+OS: macOS 26.7.1
+Content startup and five initial frames: 2.76 s.
+Graphics session active: True
+PASS: Explicit selected-file startup loads an imported preview into a paused, synchronized session
+PASS: Miniature effect defaults to Strong
+PASS: Scanlines default to on
+PASS: Localized pixel lighting defaults to on
+PASS: Sun shafts default to Subtle
+PASS: Cloud shadows default to Subtle
+PASS: Rain defaults to automatic Subtle showers
+PASS: Screen shake defaults to Off
+PASS: Automatic day/night cycle is enabled by default, starting near midday as startup time elapses
+PASS: Map 17: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 17: moonlight preserves opacity and at least half the scene's average intensity with local lighting Off
+PASS: Map 17: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Map 1: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 1: moonlight preserves opacity and at least half the scene's average intensity with local lighting Off
+PASS: Map 1: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Map 8: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 8: moonlight preserves opacity and at least half the scene's average intensity with local lighting Off
+PASS: Map 8: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Map 33: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 33: moonlight preserves opacity and at least half the scene's average intensity with local lighting Off
+PASS: Map 33: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Map 41: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 41: torch and flame lighting retain their existing nighttime appearance
+PASS: Map 41: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Map 117: time-of-day color affects outdoor scenery while underground rendering stays unchanged
+PASS: Map 117: torch and flame lighting retain their existing nighttime appearance
+PASS: Map 117: all time-of-day rendering preserves the complete adventure and RNG
+PASS: Night removes sun shafts and cloud shade without changing their saved preferences
+PASS: Day restores the same enabled sunlight and cloud effects
+PASS: Active exploration advances the cycle independently of Rain Off
+PASS: Rain Off retains its independent weather clock while daylight advances
+PASS: Underground exploration advances the outside clock without resetting it at map entry
+PASS: Pause advances the automatic cycle while keeping gameplay frozen
+PASS: Action panels advance the automatic cycle while keeping gameplay frozen
+PASS: Map viewing advances the automatic cycle while keeping gameplay frozen
+PASS: An in-flight save advances the automatic cycle without simulating gameplay
+PASS: An in-flight load advances the automatic cycle without simulating gameplay
+PASS: The company ident advances the automatic cycle without simulating gameplay
+PASS: An inactive app advances the automatic cycle while movement, encounters and RNG remain frozen
+PASS: A suspension gap catches up to Night using wall time, not the frame's clamped elapsed time
+PASS: Returning after suspension updates night lighting immediately, even while paused
+PASS: Long suspension gaps wrap multiple cycles without simulating missed gameplay
+PASS: The next frame never reapplies a suspension interval
+PASS: A backward system-clock adjustment never rewinds the cosmetic phase
+PASS: A fixed palette suspends the previous automatic phase
+PASS: Returning to Auto resumes the previous phase without counting time spent in fixed mode
+PASS: Area maps retain their normal navigation colors at night
+PASS: World maps retain their normal navigation colors at night
+PASS: Night color never dims action panels or their text
+PASS: Time-of-day menu persists mode 1 without discarding its automatic phase
+PASS: Time-of-day menu persists mode 2 without discarding its automatic phase
+PASS: Time-of-day menu persists mode 3 without discarding its automatic phase
+PASS: Time-of-day menu persists mode 0 without discarding its automatic phase
+PASS: Selecting Night cannot reveal an undiscovered underground fire source
+PASS: Three-enemy battle portraits, health bars and commands keep their normal nighttime brightness
+PASS: A live battle menu advances the automatic cycle while combat state and RNG remain frozen
+PASS: Night composes with rain, local lights, miniature, vignette and scanlines
+PASS: Map 17: rain and impacts affect only outdoor scenes
+PASS: Map 17: rain preserves gameplay state and RNG
+PASS: Map 1: rain and impacts affect only outdoor scenes
+PASS: Map 1: rain preserves gameplay state and RNG
+PASS: Map 7: rain and impacts affect only outdoor scenes
+PASS: Map 7: rain preserves gameplay state and RNG
+PASS: Map 41: rain and impacts affect only outdoor scenes
+PASS: Map 41: rain preserves gameplay state and RNG
+PASS: Map 57: rain and impacts affect only outdoor scenes
+PASS: Map 57: rain preserves gameplay state and RNG
+PASS: Map 117: rain and impacts affect only outdoor scenes
+PASS: Map 117: rain preserves gameplay state and RNG
+PASS: Map 118: rain and impacts affect only outdoor scenes
+PASS: Map 118: rain preserves gameplay state and RNG
+PASS: Automatic weather begins with a clear spell and an exact rain bypass
+PASS: The production renderer starts a scheduled shower without advancing its timer during Draw
+PASS: A completed shower returns to the exact clear-weather frame
+PASS: Active outdoor play advances the weather timer
+PASS: Rain Off suspends the weather timer
+PASS: Indoor play suspends the outdoor weather timer
+PASS: Action overlays suspend the weather timer
+PASS: Map viewing suspends the weather timer
+PASS: Rain and splashes preserve exact native pixels
+PASS: Rain repeats at fixed scene time and animates when it advances
+PASS: Rain Off bypasses rendering; Strong increases drop density
+PASS: Automatic transitions thin rainfall gradually while keeping visible drops
+PASS: Rain stays anchored to the world when the camera moves
+PASS: Water impact rings stay inside the supplied shoreline mask
+PASS: Water rings never appear on bridge decks
+PASS: Ground impacts exclude solid building tiles
+PASS: Open ground receives small splash pixels
+PASS: Production pause freezes rainfall, splashes and the automatic weather timer
+PASS: Rain menu cycles to 0 and saves independently of cloud shadows
+PASS: Rain menu cycles to 1 and saves independently of cloud shadows
+PASS: Rain menu cycles to 2 and saves independently of cloud shadows
+PASS: Rain leaves the pause panel and other settings unchanged
+PASS: Rain never draws over action panels or text
+PASS: Rain and splashes are omitted from the area map
+PASS: Rain composes with lighting, sun, clouds, miniature, vignette and scanlines
+PASS: Map 17: cloud shadows affect only outdoor scenery and actors
+PASS: Map 17: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 17: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 1: cloud shadows affect only outdoor scenery and actors
+PASS: Map 1: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 1: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 7: cloud shadows affect only outdoor scenery and actors
+PASS: Map 7: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 7: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 8: cloud shadows affect only outdoor scenery and actors
+PASS: Map 8: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 8: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 22: cloud shadows affect only outdoor scenery and actors
+PASS: Map 22: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 22: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 27: cloud shadows affect only outdoor scenery and actors
+PASS: Map 27: clouds compose with sun, local lighting, miniature, heat, vignette and scanlines
+PASS: Map 27: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 41: cloud shadows affect only outdoor scenery and actors
+PASS: Map 41: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 57: cloud shadows affect only outdoor scenery and actors
+PASS: Map 57: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 117: cloud shadows affect only outdoor scenery and actors
+PASS: Map 117: cloud rendering preserves the full gameplay state and RNG
+PASS: Map 118: cloud shadows affect only outdoor scenery and actors
+PASS: Map 118: cloud rendering preserves the full gameplay state and RNG
+PASS: Cloud strengths gently shade existing colors, keep clear sky and never brighten or change alpha
+PASS: Cloud banks retain gentle density variation within their shade
+PASS: Cloud shade preserves black outlines and hidden pixels exactly
+PASS: Cloud shadows Off is an exact rendering bypass
+PASS: Clouds freeze at a fixed clock and drift with advancing scene time
+PASS: Fractional cloud travel changes edge opacity smoothly between whole-pixel steps
+PASS: Cloud shade stays attached to world pixels when the camera moves
+PASS: Cloud coverage survives texture wrapping at the far camera bounds
+PASS: Independently drifting clouds attenuate shafts without cutting gaps in their silhouettes at time 1
+PASS: Hero highlights and dust sample the same blocked sunlight as the renderer at time 1
+PASS: Independently drifting clouds attenuate shafts without cutting gaps in their silhouettes at time 9
+PASS: Hero highlights and dust sample the same blocked sunlight as the renderer at time 9
+PASS: Independently drifting clouds attenuate shafts without cutting gaps in their silhouettes at time 250
+PASS: Hero highlights and dust sample the same blocked sunlight as the renderer at time 250
+PASS: Cloud shadows work independently with sun shafts disabled
+PASS: Cloud shade retains exact native pixels at window scale
+PASS: Production pause freezes cloud movement and its framebuffer
+PASS: Cloud menu cycles to 0 and saves independently of the sun-shaft preference
+PASS: Cloud menu cycles to 1 and saves independently of the sun-shaft preference
+PASS: Cloud menu cycles to 2 and saves independently of the sun-shaft preference
+PASS: Cloud shadows leave the pause panel and every other label unchanged
+PASS: Cloud shade leaves the action panel and text unchanged
+PASS: Clouds never shade the area map or its labels
+PASS: Map 17: sun shafts affect only outdoor scenery
+PASS: Map 17: sunlight composes with lighting, miniature, heat, scanlines and vignette
+PASS: Map 17: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 1: sun shafts affect only outdoor scenery
+PASS: Map 1: sunlight composes with lighting, miniature, heat, scanlines and vignette
+PASS: Map 1: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 7: sun shafts affect only outdoor scenery
+PASS: Map 7: sunlight composes with lighting, miniature, heat, scanlines and vignette
+PASS: Map 7: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 41: sun shafts affect only outdoor scenery
+PASS: Map 41: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 57: sun shafts affect only outdoor scenery
+PASS: Map 57: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 117: sun shafts affect only outdoor scenery
+PASS: Map 117: sunlight rendering preserves full gameplay state and RNG
+PASS: Map 118: sun shafts affect only outdoor scenery
+PASS: Map 118: sunlight rendering preserves full gameplay state and RNG
+PASS: Both strengths give restrained warm light without reducing contrast or changing alpha
+PASS: Sun shafts preserve black outlines and hidden cells exactly
+PASS: Off skips the sunlight pass entirely
+PASS: Shafts freeze at a fixed scene clock and drift when it advances
+PASS: Sun shafts stay attached to world pixels as the camera moves
+PASS: The drifting mask covers the camera extremes across its texture seam
+PASS: Sunlight retains exact native pixels when scaled to the window
+PASS: The pause menu freezes the sunlight clock
+PASS: The sun-shaft menu cycles to 0 and persists it in the isolated profile
+PASS: The sun-shaft menu cycles to 1 and persists it in the isolated profile
+PASS: The sun-shaft menu cycles to 2 and persists it in the isolated profile
+PASS: Sun shafts leave the pause panel and every other label unchanged
+PASS: Sunlight leaves the action panel and text unchanged
+PASS: Sun shafts never tint the area map or its labels
+PASS: The actor samples the actual sun mask at head/shoulder height
+PASS: Appearance 0: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 1: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 2: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 3: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 4: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 5: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 6: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 7: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 8: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 9: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 10: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 11: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Appearance 12: sunlight follows directional/animated poses without changing silhouette or dark outlines
+PASS: Entering sunlight adds only a one- or two-pixel equipment glint
+PASS: The glint cooldown prevents repeated flashes on consecutive updates
+PASS: The warm rim fades away within 0.2 seconds of leaving a shaft
+PASS: Terrain 02: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 08: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 2d: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 0c: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 0b: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 24: sunlit dust is limited to dry grass, roads and sand
+PASS: Terrain 71: sunlit dust is limited to dry grass, roads and sand
+PASS: Dry ground outside a sun shaft produces no illuminated dust
+PASS: Sunlit footfall motes render and freeze at a fixed scene clock
+PASS: Dust rises in whole pixels and fades as scene time advances
+PASS: Stopping leaves no persistent motes or new footfalls
+PASS: Teleporting clears the transient highlight and dust trail
+PASS: Map 41: caves and Hell have no sunlit actor effects
+PASS: Map 117: caves and Hell have no sunlit actor effects
+PASS: Switching sun shafts Off immediately clears the actor effects
+PASS: Production pause freezes the highlight, glint and dust clocks together
+PASS: The area map omits the hero highlight and dust as well as the world shafts
+PASS: Actor sunlight and all diagnostic draws preserve full gameplay state and RNG
+Passed 211 visual integration checks. Focused cloud and sunlight run.

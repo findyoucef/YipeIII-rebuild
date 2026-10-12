@@ -1,0 +1,45 @@
+{
+  "output": "hell.wav",
+  "sources": [
+    {
+      "title": "Lava loop",
+      "author": "Blender Foundation",
+      "source": "https://opengameart.org/content/lava-loop",
+      "download": "https://opengameart.org/sites/default/files/lavaloop.zip",
+      "license": "CC-BY-3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "original": "LavaLoop.wav",
+      "sha256": "62d3a3fb1d42bbd5e5fc0cf35bb0a956fb08b27b19c0e2a861a1adfb7da90aff"
+    },
+    {
+      "title": "Fireplace Sound loop",
+      "author": "PagDev",
+      "source": "https://opengameart.org/content/fireplace-sound-loop",
+      "download": "https://opengameart.org/sites/default/files/fire.wav",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "original": "fire.wav",
+      "sha256": "85ca0cc60d0c037fff8b185e31ad1fcdbda6ce45eee17c3ee1318d1b8f59e330"
+    },
+    {
+      "title": "Loopable Dungeon Ambience",
+      "author": "JaggedStone",
+      "source": "https://opengameart.org/content/loopable-dungeon-ambience",
+      "download": "https://opengameart.org/sites/default/files/dungeon_ambient_1_0.ogg",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "df491823e4877371c34dbda4e9321cd83a4a14fa7573cee0ebca1ae423b70e6e"
+    }
+  ],
+  "processing": "58-second stereo PCM16 22050 Hz loop. Lava flow filtered 60\u20131700 Hz at gain 0.70; lava pitched down to 75% speed and filtered 45\u2013240 Hz at gain 0.85; fire crackle filtered 180\u20133200 Hz at gain 0.24; cavern air filtered 60\u2013500 Hz at gain 0.65. No synthesized oscillators or noise. 0.85 peak ceiling; two-second wrap crossfade. Existing verified source recordings reused; no new downloads.",
+  "ffmpeg_filter": "[0:a]asplit=2[lava][bass];[lava]atrim=duration=60,highpass=f=60,lowpass=f=1700,volume=0.70[flow];[bass]asetrate=33075,aresample=44100,atrim=duration=60,highpass=f=45,lowpass=f=240,volume=0.85[rumble];[1:a]atrim=duration=60,highpass=f=180,lowpass=f=3200,volume=0.24[fire];[2:a]atrim=duration=60,highpass=f=60,lowpass=f=500,volume=0.65[air];[flow][rumble][fire][air]amix=inputs=4:normalize=0:duration=shortest,alimiter=limit=0.85:level=0,asplit=3[head][body][tail];[head]atrim=0:2,asetpts=PTS-STARTPTS[h];[body]atrim=2:58,asetpts=PTS-STARTPTS[b];[tail]atrim=58:60,asetpts=PTS-STARTPTS[t];[t][h]acrossfade=d=2:c1=tri:c2=tri[seam];[b][seam]concat=n=2:v=0:a=1[out]",
+  "output_sha256": "58e1e4193daf9ac7386479b7faa7b04c4d097ebb6527e5407e2d98076612699e",
+  "metrics": {
+    "duration_seconds": 58.0,
+    "sample_rate": 22050,
+    "channels": 2,
+    "rms": 0.0614868406742955,
+    "peak": 0.56915283203125,
+    "seam_delta": 0.008148193359375
+  }
+}

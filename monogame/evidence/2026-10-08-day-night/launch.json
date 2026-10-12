@@ -1,0 +1,17 @@
+{
+  "pid": 84343,
+  "executable": "/Users/baouchiy/source/repos/YipeIII-rebuild/monogame/Yipe.Desktop/bin/Release/net10.0/Yipe.Desktop",
+  "save": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-town-preview-20261008-101035/game.y3m",
+  "profile": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-town-preview-20261008-101035/game.profile.json",
+  "log": "/Users/baouchiy/source/repos/YipeIII-rebuild/build/day-night-town-preview-20261008-101035/launch.log",
+  "initial_preview_phase": 600,
+  "mode": "Auto",
+  "town_preview": true,
+  "existing_game_pids_preserved": [
+    84058
+  ],
+  "process_verified": true,
+  "window_id": 13447,
+  "live_mode_persistence_verified": true,
+  "live_persisted_phase": 705.6495774000491
+}

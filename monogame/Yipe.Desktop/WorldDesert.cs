@@ -26,12 +26,13 @@ internal sealed partial class WorldRenderer
     internal static bool FullSand(ushort tile) => tile is 0x2c or 0x2d or 0x2e or 0x2f or 0x36 or 0x42 or 0x57
         or >= 0x65 and <= 0x68;
 
-    internal bool HasHeat => sandMap is { Id: >= 117 and <= 120 }
+    internal bool HasHeat => sandMap is { } hotMap && IsFire(hotMap) || sandMap is { Id: >= 117 and <= 120 }
         || sandMap is { Id: < 41 } && desertActive;
 
     internal float HeatAt(Vector2 position)
     {
         if (!HasHeat) return 0;
+        if (IsFire(sandMap!)) return FireHeatAt(position);
         if (sandMap!.Id >= 117) return 1.15f;
         var x = Math.Clamp((int)position.X, 0, SandWidth - 1);
         var y = Math.Clamp((int)position.Y, 0, SandHeight - 1);
@@ -103,16 +104,27 @@ internal sealed partial class WorldRenderer
                 var index = y * SandWidth + x;
                 var tile = sandTiles[y / 32 * Map.Width + x / 32];
                 if (WaterTile(tile) != 0 || tile is 3 or 9 or 0x39 or 0x45) continue;
-                var weathering = MathF.Sin(x * .045f + y * .061f) * .10f
-                    + MathF.Sin(x * .17f - y * .11f) * .035f;
+                var gx = map.Id <= 36 ? Mod((map.Id - 1) % 6 * 352 + x, 2112) : x;
+                var gy = map.Id <= 36 ? Mod((map.Id - 1) / 6 * 320 + y, 1920) : y;
+                var weathering = map.Id <= 36
+                    ? MathF.Sin(gx * MathF.Tau * 15 / 2112 + gy * MathF.Tau * 18 / 1920) * .10f
+                        + MathF.Sin(gx * MathF.Tau * 57 / 2112 - gy * MathF.Tau * 34 / 1920) * .035f
+                    : MathF.Sin(x * .045f + y * .061f) * .10f + MathF.Sin(x * .17f - y * .11f) * .035f;
                 var coverage = Math.Clamp((sandField[index] - .5f + weathering) * 3.5f + .5f, 0, 1);
                 if (sandField[index] == 0) coverage = 0;
-                var grain = (x * 13 + y * 7 + x * y * 3) % 23 / 23f;
-                var variant = tile == 0x2c ? 3 : (x / 32 + y / 32) % 2;
+                var grain = map.Id <= 36 ? OutdoorHash(gx, gy) % 23 / 23f : (x * 13 + y * 7 + x * y * 3) % 23 / 23f;
+                var variant = tile == 0x2c ? 3 : (gx / 32 + gy / 32) % 2;
                 var color = sandPattern[(variant / 2 * 32 + y % 32) * 64 + variant % 2 * 32 + x % 32];
+                if (map.Id <= 36)
+                {
+                    var field = MeadowField(gx, gy);
+                    // Slightly quieter sand between worn, wind-combed patches, using the existing sand art.
+                    if (field > .57f + grain * .06f) color = Color.Lerp(color, RetroArt.Palette[18], .25f);
+                    else if (field < .31f + grain * .05f) color = Color.Lerp(color, RetroArt.Palette[17], .10f);
+                }
                 // A broken dry-grass fringe replaces the ruler-straight contrast line.
                 if (coverage > grain) sandPixels[index] = coverage < .65f && grain > coverage * .6f
-                    ? RetroArt.Palette[(x + y * 3) % 3 == 0 ? 12 : 13] : color;
+                    ? RetroArt.Palette[(gx + gy * 3) % 3 == 0 ? 12 : 13] : color;
                 sandClear[index] = coverage > .94f && tile is 2 or 0x46 or 0x2d or 0x42 or >= 0x1b and <= 0x1e;
             }
         sandLayer.SetData(sandPixels);

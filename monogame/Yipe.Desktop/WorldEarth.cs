@@ -9,10 +9,19 @@ internal sealed partial class WorldRenderer
     private const int EarthWidth = Map.Width * 32, EarthHeight = Map.Height * 32;
     private readonly Texture2D earthGround;
     private readonly ushort[] earthTiles = new ushort[Map.TileCount];
-    private readonly List<Point> earthFungi = new(), earthDrips = new();
+    private readonly List<Point> earthFungi = new(), earthLamps = new(), earthDrips = new();
+    private bool[] earthStone = [];
+    internal static readonly Color[] EarthSoilPalette =
+    [
+        new(36, 31, 25), new(49, 41, 31), new(61, 49, 36), new(65, 52, 38),
+        new(74, 60, 43), new(84, 70, 50), new(52, 47, 34), new(62, 57, 40),
+    ];
     private Map? earthMap;
 
-    private static bool IsEarth(Map map) => map.Id is >= 41 and < 117 && map.Environment == 1;
+    internal static bool IsEarth(Map map) => map.Id is 57 or 63 or 69 or 75 or 103 or 109 or 115;
+    internal bool[] EarthStone(Map map) { PrepareEarth(map); return earthStone; }
+    internal Point[] EarthFungi(Map map) { PrepareEarth(map); return earthFungi.ToArray(); }
+    internal Point[] EarthLamps(Map map) { PrepareEarth(map); return earthLamps.ToArray(); }
     // Secret walls have precisely the same silhouette and decoration as ordinary rock.
     private static bool EarthWall(Map map, int x, int y) =>
         map.Tile(new(Math.Clamp(x, 0, Map.Width - 1), Math.Clamp(y, 0, Map.Height - 1))) is 0x22 or 0x43;
@@ -45,94 +54,132 @@ internal sealed partial class WorldRenderer
                 changed |= earthTiles[index] != tile; earthTiles[index] = tile;
             }
         if (!changed) return;
-        earthMap = map; earthFungi.Clear(); earthDrips.Clear();
-        var data = new Color[EarthWidth * EarthHeight];
-        var stone = new bool[data.Length];
-        var deep = map.Id > 80;
-        var light = map.Id switch
+        earthMap = map; earthFungi.Clear(); earthLamps.Clear(); earthDrips.Clear();
+        PrepareWater(map);
+        var layer = (map.Id - 1) / 40; var region = map.Id - layer * 40 - 1;
+        var column = region % 6; var row = region / 6;
+        var ox = column * 352; var oy = row * 320;
+        var neighbors = new Map?[3, 3]; neighbors[1, 1] = map;
+        for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++)
         {
-            57 => new Vector2(48, 48), 63 => new(300, 225), 69 => new(144, 144),
-            75 => new(112, 185), 103 => new(285, 35), 109 => new(245, 190), _ => new(110, 240),
-        };
-        ReadOnlySpan<int> dither = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-        for (var y = 0; y < EarthHeight; y++)
-            for (var x = 0; x < EarthWidth; x++)
+            if (dx == 0 && dy == 0) continue;
+            var next = catalog.CreateMap(layer * 40 + (row + dy + 6) % 6 * 6 + (column + dx + 6) % 6 + 1);
+            if (next is not null && IsEarth(next)) neighbors[dx + 1, dy + 1] = next;
+        }
+        bool Wall(int x, int y)
+        {
+            if (Map.Contains(new(x, y))) return EarthWall(map, x, y);
+            var dx = x < 0 ? -1 : x >= Map.Width ? 1 : 0; var dy = y < 0 ? -1 : y >= Map.Height ? 1 : 0;
+            return neighbors[dx + 1, dy + 1] is { } next
+                ? EarthWall(next, x - dx * 11, y - dy * 10) : EarthWall(map, x, y);
+        }
+        int[] ledge = [0, 1, 2, 1, 3, 2, 0, 1, 2, 1, 0, 2, 1, 3, 1, 0];
+        var stone = earthStone = new bool[EarthWidth * (EarthHeight + 16)];
+        for (var y = 0; y < EarthHeight + 16; y++) for (var x = 0; x < EarthWidth; x++)
+            stone[y * EarthWidth + x] = StoneAt(x, y);
+        bool StoneAt(int x, int y)
+        {
+            var tx = x >> 5; var ty = y >> 5;
+            if (!Wall(tx, ty)) return false;
+            var edge = 32f;
+            for (var cy = ty - 1; cy <= ty + 1; cy++) for (var cx = tx - 1; cx <= tx + 1; cx++)
             {
-                var index = y * EarthWidth + x; var tx = x / 32; var ty = y / 32;
-                var wall = EarthWall(map, tx, ty);
-                var edge = 32f;
-                for (var cy = ty - 1; cy <= ty + 1; cy++)
-                    for (var cx = tx - 1; cx <= tx + 1; cx++)
-                    {
-                        if (EarthWall(map, cx, cy) == wall) continue;
-                        var dx = Math.Max(0, Math.Abs(x + .5f - (cx * 32 + 16)) - 16);
-                        var dy = Math.Max(0, Math.Abs(y + .5f - (cy * 32 + 16)) - 16);
-                        edge = Math.Min(edge, MathF.Sqrt(dx * dx + dy * dy));
-                    }
-                if (wall)
-                    for (var sy = -1; sy <= 1; sy += 2)
-                        for (var sx = -1; sx <= 1; sx += 2)
-                        {
-                            if (EarthWall(map, tx + sx, ty) || EarthWall(map, tx, ty + sy)) continue;
-                            const float radius = 9;
-                            var dx = Math.Max(0, radius - (sx < 0 ? x % 32 + .5f : 31.5f - x % 32));
-                            var dy = Math.Max(0, radius - (sy < 0 ? y % 32 + .5f : 31.5f - y % 32));
-                            edge = Math.Min(edge, radius - MathF.Sqrt(dx * dx + dy * dy));
-                        }
-                var broad = EarthNoise(x / 91f, y / 83f, map.Id);
-                var grain = EarthSeed(x, y, map.Id);
-                var dust = EarthNoise(x / 34f, y / 39f, map.Id + 17);
-                var damp = Math.Clamp((EarthNoise(x / 69f, y / 57f, map.Id + 41) - .58f) * 3, 0, 1);
-                if (map.Id != 109) damp *= .35f;
-                // Solid palette steps and small pixel clusters keep the floor earthy
-                // without the blended brown gradients that flattened the cave.
-                var threshold = (dither[(y & 3) * 4 + (x & 3)] + .5f) / 16f;
-                var floor = broad + (threshold - .5f) * .10f < (deep ? .48f : .36f) ? 15 : 38;
-                if (damp > (map.Id == 109 ? .28f : .32f) + threshold * .12f) floor = damp > .72f ? 8 : 9;
-                var cluster = EarthSeed(x / 3, y / 2, map.Id + 71);
-                if (cluster % 19 == 0 && dust > .43f && x % 3 != 2) floor = 16;
-                if (grain % 113 == 0) floor = 14;
-                if (edge < 2.5f) floor = 14;
-                else if (edge < 5 && threshold < .5f) floor = 15;
-                var bank = 2.5f + 1.1f * MathF.Sin(x * .14f + y * .09f) + .6f * MathF.Sin(y * .31f - x * .17f);
-                stone[index] = wall && edge > bank;
-                var shade = floor;
-                if (stone[index])
+                if (Wall(cx, cy)) continue;
+                var dx = Math.Max(0, Math.Abs(x + .5f - (cx * 32 + 16)) - 16);
+                var dy = Math.Max(0, Math.Abs(y + .5f - (cy * 32 + 16)) - 16);
+                edge = Math.Min(edge, MathF.Sqrt(dx * dx + dy * dy));
+            }
+            for (var sy = -1; sy <= 1; sy += 2) for (var sx = -1; sx <= 1; sx += 2)
+            {
+                if (Wall(tx + sx, ty) || Wall(tx, ty + sy)) continue;
+                var dx = Math.Max(0, 8 - (sx < 0 ? (x & 31) + .5f : 31.5f - (x & 31)));
+                var dy = Math.Max(0, 8 - (sy < 0 ? (y & 31) + .5f : 31.5f - (y & 31)));
+                edge = Math.Min(edge, 8 - dx - dy);
+            }
+            return edge > 1 + ledge[((x + ox) / 7 + (y + oy) / 9 * 3) & 15];
+        }
+        bool Stone(int x, int y) => x >= 0 && x < EarthWidth && y >= 0 && y < EarthHeight + 16
+            ? stone[y * EarthWidth + x] : StoneAt(x, y);
+        var data = new Color[EarthWidth * EarthHeight];
+        ReadOnlySpan<int> dither = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+        for (var y = 0; y < EarthHeight; y++) for (var x = 0; x < EarthWidth; x++)
+        {
+            var index = y * EarthWidth + x; var wx = x + ox; var wy = y + oy;
+            var grain = EarthSeed(wx, wy, 211 + layer);
+            if (!stone[index])
+            {
+                // Compacted soil: broad deposits, shallow embedded stones and
+                // sparse grains. No outlined paving or web of slate fractures.
+                var field = EarthNoise(wx / 67f, wy / 49f, 193 + layer);
+                var threshold = (dither[(wy & 3) * 4 + (wx & 3)] + .5f) / 16f;
+                var shade = field + (threshold - .5f) * .05f > .52f ? 3 : 2;
+                var wash = EarthNoise(wx / 29f, wy / 13f, 197 + layer);
+                if (wash > .68f && field > .42f) shade = 3;
+                var bed = EarthNoise(wx / 13f, wy / 9f, 199 + layer);
+                if (bed > .71f)
                 {
-                    // Broken rock facets use a brighter ramp than the walkable earth.
-                    // Sediment crosses tiles, but no longer shades them like smooth wood.
-                    var strata = y + 8 * MathF.Sin(x * .021f) + 3 * MathF.Sin(x * .067f + map.Id);
-                    var facet = EarthNoise((x / 2 * 2) / 14f, (y / 2 * 2) / 12f, map.Id + 19);
-                    shade = facet < .36f ? 16 : 17;
-                    if (facet > .75f) shade = 18;
-                    if (map.Id == 63 && MathF.Sin(strata * .17f) > .82f) shade = 16;
-                    var fissure = EarthNoise(x / 27f, y / 23f, map.Id + 5);
-                    if (fissure is > .485f and < .505f) shade = 15;
-                    var front = !EarthWall(map, tx, ty + 1) && 32 - y % 32 < 9 + bank;
-                    if (front) shade = facet < .4f ? 15 : 16;
-                    if (edge < bank + 1.2f) shade = 14;
-                    else if (!front && edge < bank + 2.4f) shade = 18;
-                    if (!front && grain % 71 == 0) shade = 18;
+                    shade = 4;
+                    if (bed > .8f) shade = 5;
+                    // Only a short down-slope seam gives stones shallow relief.
+                    if (bed < .73f && EarthNoise(wx / 13f, (wy - 1) / 9f, 199 + layer) > bed) shade = 2;
                 }
-                var distance = Vector2.DistanceSquared(new(x, y), light);
-                var illumination = MathF.Exp(-distance / (map.Id == 57 ? 11000 : 4300));
-                // Local light promotes a palette step with sparse dithering, not a wash.
-                if (threshold < illumination * .22f && edge > 5)
-                    shade = shade switch { 15 => 38, 16 => 17, _ => shade };
+                // Deposited damp silt carries across the deep E5 overlaps.
+                var dampDistance = Vector2.DistanceSquared(new(wx, wy), new(4 * 352 + 245, 4 * 320 + 190));
+                var wet = layer == 2 ? Math.Max(0, 1 - dampDistance / 105000f) : 0;
+                if (wet > .2f && wash > .6f + (1 - wet) * .2f) shade = wash > .76f ? 7 : 6;
+                // Silt follows the existing irregular puddle shorelines.
+                if (shoreDistance[index] < 7 + wash * 3) shade = threshold < .7f ? 6 : 2;
+                if (EarthSeed(wx / 3, wy / 2, 239 + layer) % 31 == 0 && wx % 3 != 2) shade = 4;
+                if (grain % 151 == 0) shade = shade is 6 or 7 ? 7 : 4;
+                else if (grain % 223 == 0) shade = 1;
+                var nearest = 10;
+                for (var dy = -3; dy <= 3; dy++) for (var dx = -3; dx <= 3; dx++)
+                    if (dx * dx + dy * dy < nearest && Stone(x + dx, y + dy)) nearest = dx * dx + dy * dy;
+                if (nearest <= 2) shade = 0;
+                else if (nearest <= 5) shade = 1;
+                data[index] = EarthSoilPalette[shade];
+            }
+            else
+            {
+                // Small sedimentary facets, interrupted joints and chipped
+                // ledges retain the warm stone without a continuous bright rim.
+                var closest = float.MaxValue; var second = float.MaxValue; var facetY = 0;
+                for (var sy = wy / 10 - 1; sy <= wy / 10 + 1; sy++) for (var sx = wx / 15 - 1; sx <= wx / 15 + 1; sx++)
+                {
+                    var seed = EarthSeed(sx, sy, 223 + layer);
+                    var dx = wx - (sx * 15 + 3 + seed % 9); var dy = wy - (sy * 10 + 2 + seed / 11 % 6);
+                    var distance = dx * dx + dy * dy;
+                    if (distance < closest) { second = closest; closest = distance; facetY = dy; }
+                    else if (distance < second) second = distance;
+                }
+                var seam = MathF.Sqrt(second) - MathF.Sqrt(closest);
+                var shade = facetY < 2 ? 17 : 16;
+                if (seam < .65f) shade = 15;
+                else if (seam < 1.5f && facetY < -1) shade = 18;
+                var strata = (wy + (int)(3 * MathF.Sin(wx * .029f)) + 64) % 17;
+                if (strata == 0 && grain % 5 != 0) shade = 16;
+                var front = !Stone(x, y + 10 + ledge[(wx / 9) & 15]);
+                if (front) shade = seam < .65f ? 14 : facetY < 1 ? 16 : 15;
+                if (!Stone(x - 1, y) || !Stone(x + 1, y) || !Stone(x, y + 1)) shade = 14;
+                else if (!Stone(x, y - 1)) shade = 16;
+                if (!front && seam > 2 && grain % 113 == 0) shade = 18;
                 data[index] = RetroArt.Palette[shade];
             }
+        }
 
         // Paint details into the cached terrain. They cannot rise over actors or
         // spill into a neighboring fog tile, and never select by a secret tile ID.
         for (var y = 0; y < Map.Height; y++)
             for (var x = 0; x < Map.Width; x++)
             {
-                var seed = EarthSeed(x, y, map.Id);
+                var seed = EarthSeed(x + column * 11, y + row * 10, 229 + layer);
                 if (EarthWall(map, x, y))
                 {
                     if (seed % (map.Id == 57 ? 3 : 7) == 0)
                         Root(x * 32 + 8 + seed % 15, y * 32 + 2, 16 + seed % 22, seed);
-                    if (!EarthWall(map, x, y + 1) && seed % 6 == 0 && earthFungi.Count < 5)
+                    if (!Wall(x, y + 1) && y + 1 < Map.Height && seed % 7 == 0)
+                        earthLamps.Add(new(x * 32 + 16, y * 32 + 20));
+                    if (!Wall(x, y + 1) && seed % 7 != 0 && seed % 4 == 0)
                     {
                         var point = new Point(x * 32 + 12 + seed % 8, y * 32 + 24);
                         earthFungi.Add(point);
@@ -158,7 +205,7 @@ internal sealed partial class WorldRenderer
                             Line(px, py, px + width, py, new Color(133, 109, 76));
                             if (width == 3) Line(px + 1, py - 1, px + 2, py - 1, new Color(148, 122, 83));
                         }
-                    if (earthDrips.Count < (map.Id == 109 ? 5 : 2) && seed % 11 == 0 && EarthWall(map, x, y - 1))
+                    if (earthDrips.Count < (map.Id == 109 ? 3 : 1) && seed % 7 == 0 && Wall(x, y - 1))
                     {
                         var point = new Point(x * 32 + 16, y * 32 + 12);
                         earthDrips.Add(point);
@@ -218,6 +265,9 @@ internal sealed partial class WorldRenderer
                     }
                 }
         }
+        foreach (var (cell, _) in EarthPools(map.Id))
+            if (WaterAt(cell.X * 32 + 16, cell.Y * 32 + 32))
+                earthDrips.Add(new(cell.X * 32 + 16, cell.Y * 32 + 32));
         earthGround.SetData(data);
 
         void Put(int x, int y, Color color, bool wallOnly = false)
@@ -279,21 +329,23 @@ internal sealed partial class WorldRenderer
         }
     }
 
+    private static (MapPosition Cell, Point Radius)[] EarthPools(int id) => id switch
+    {
+        57 => [(new(3, 4), new(24, 16)), (new(8, 8), new(21, 14))],
+        63 => [(new(5, 5), new(23, 15)), (new(9, 3), new(18, 13))],
+        69 => [(new(8, 6), new(21, 16)), (new(4, 2), new(24, 14))],
+        75 => [(new(7, 6), new(20, 14)), (new(8, 2), new(22, 15))],
+        103 => [(new(6, 5), new(24, 16)), (new(8, 8), new(20, 14))],
+        109 => [(new(7, 5), new(21, 15)), (new(7, 1), new(23, 14))],
+        115 => [(new(4, 8), new(23, 16)), (new(8, 2), new(19, 13))],
+        _ => [],
+    };
+
     private void AddEarthPuddles(Map map)
     {
         // Small hollows in the earth, with an uneven basin, a shallow finger and
         // a bite of dry ground. The existing floor remains freely walkable.
-        (MapPosition Cell, Point Radius)[] pools = map.Id switch
-        {
-            57 => [(new(3, 4), new(24, 16)), (new(8, 8), new(21, 14))],
-            63 => [(new(5, 5), new(23, 15)), (new(9, 3), new(18, 13))],
-            69 => [(new(8, 6), new(21, 16)), (new(4, 2), new(24, 14))],
-            75 => [(new(7, 6), new(20, 14)), (new(8, 2), new(22, 15))],
-            103 => [(new(6, 5), new(24, 16)), (new(8, 8), new(20, 14))],
-            109 => [(new(7, 5), new(21, 15)), (new(7, 1), new(23, 14))],
-            115 => [(new(4, 8), new(23, 16)), (new(8, 2), new(19, 13))],
-            _ => [],
-        };
+        var pools = EarthPools(map.Id);
         foreach (var (cell, radius) in pools)
         {
             var center = new Point(cell.X * 32 + 16, cell.Y * 32 + 32);
@@ -320,25 +372,24 @@ internal sealed partial class WorldRenderer
     {
         if (!IsEarth(game.Map)) return;
         var t = Math.Floor(time * 8) / 8;
-        for (var i = 0; i < earthFungi.Count; i++)
-        {
-            var point = earthFungi[i];
-            var breath = .75f + .25f * MathF.Sin((float)t * .65f + i * 2);
-            for (var dy = -9; dy <= 9; dy++)
-                for (var dx = -11; dx <= 11; dx++)
-                {
-                    var falloff = 1 - dx * dx / 121f - dy * dy / 81f;
-                    if (falloff > 0) Pixel(point.X + dx, point.Y + dy, new Color(129, 183, 135) * (falloff * falloff * breath * .13f));
-                }
-        }
+        // A few bright spores orbit visible fungi. Illumination itself comes
+        // from PixelLighting's contour mask, not an unoccluded painted halo.
+        foreach (var point in earthFungi)
+            for (var mote = 0; mote < 3; mote++)
+            {
+                var phase = (t + mote * 1.4 + point.X * .03) % 5;
+                var x = point.X + (int)(Math.Sin(phase * 1.4 + mote) * 9);
+                var y = point.Y - (int)(phase * 3);
+                Pixel(x, y, new Color(151, 181, 119) * (float)(Math.Sin(phase / 5 * Math.PI) * .45));
+            }
         for (var i = 0; i < earthDrips.Count; i++)
         {
-            var point = earthDrips[i]; var phase = (t + i * 1.37) % 4.7;
+            var point = earthDrips[i]; var phase = (t + i * 1.37) % (game.Map.Id > 80 ? 3.7 : 4.7);
             if (phase < .65)
             {
                 var y = point.Y - 17 + (int)(phase / .65 * 17);
-                Pixel(point.X, y, new Color(143, 169, 145) * .55f);
-                Pixel(point.X, y - 1, new Color(143, 169, 145) * .25f);
+                Pixel(point.X, y, new Color(158, 177, 143) * .8f);
+                Pixel(point.X, y - 1, new Color(158, 177, 143) * .4f);
             }
             else if (phase < 1.65)
             {
@@ -347,18 +398,27 @@ internal sealed partial class WorldRenderer
                 {
                     var angle = step * MathF.Tau / 20;
                     Pixel(point.X + (int)(MathF.Cos(angle) * radius), point.Y + (int)(MathF.Sin(angle) * radius * .35f),
-                        new Color(148, 166, 137) * (float)((1.65 - phase) * .28));
+                        new Color(148, 166, 137) * (float)((1.65 - phase) * .48));
                 }
             }
         }
-        for (var mote = 0; mote < 12; mote++)
+        foreach (var point in earthLamps)
+            for (var mote = 0; mote < 5; mote++)
+            {
+                var phase = (t + mote * 1.73 + point.X * .017) % 8;
+                var x = point.X - 16 + mote * 8 + (int)(Math.Sin(t + mote) * 2);
+                var y = point.Y + 5 + (int)(phase * 3);
+                if (x >= 0 && x < EarthWidth && y >= 0 && y < EarthHeight && !earthStone[y * EarthWidth + x])
+                    Pixel(x, y, EarthSoilPalette[5] * (float)(Math.Sin(phase / 8 * Math.PI) * .7));
+            }
+        // Occasional grains shed at damp wall feet, disappearing on landing.
+        for (var i = 0; i < earthDrips.Count; i++)
         {
-            var seed = EarthSeed(mote, 23, game.Map.Id);
-            var phase = (t + seed % 79) % 9;
-            if (phase > 3) continue;
-            var x = 8 + seed % (EarthWidth - 16) + (int)(Math.Sin(t + mote) * 2);
-            var y = 12 + seed / 17 % (EarthHeight - 48) + (int)(phase * 7);
-            Pixel(x, y, new Color(187, 158, 109) * (float)(Math.Sin(phase / 3 * Math.PI) * .35));
+            var point = earthDrips[i]; var phase = (t + i * 3.17) % 12;
+            if (phase > 1) continue;
+            for (var grain = 0; grain < 3; grain++)
+                Pixel(point.X + 7 + grain * 2, point.Y - 20 + (int)(phase * phase * 20) - grain,
+                    EarthSoilPalette[5] * (float)((1 - phase) * .7));
         }
         void Pixel(int x, int y, Color color)
         {
