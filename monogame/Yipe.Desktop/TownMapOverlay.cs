@@ -51,6 +51,17 @@ internal sealed partial class TownGame
         font.Draw(batch, controllerConnected
             ? $"SOUTH: {(worldMapOpen ? "AREA" : "WORLD")}   VIEW/EAST: CLOSE"
             : $"ENTER: {(worldMapOpen ? "AREA" : "WORLD")}   M/ESC: CLOSE", 12, 166, Muted);
+        if (touchEnabled)
+        {
+            Fill(new(10, 162, 300, 13), Panel);
+            DrawTouchButton(new(12, 158, 66, 16), "CLOSE", TouchBack);
+            DrawTouchButton(new(84, 158, 98, 16), worldMapOpen ? "AREA" : "WORLD", TouchConfirm);
+            if (worldMapOpen)
+            {
+                DrawTouchButton(new(202, 158, 46, 16), "<", new(new(-1, 0), false, false, false));
+                DrawTouchButton(new(258, 158, 46, 16), ">", new(new(1, 0), false, false, false));
+            }
+        }
     }
 
     private void DrawAreaMap(MappedRegion current)

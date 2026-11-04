@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yipe III · Android prototype review</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #111720; color: #e4e9ec; }
+  body { max-width: 1150px; margin: auto; padding: 42px 24px 72px; line-height: 1.6; }
+  h1 { font-size: clamp(28px, 5vw, 48px); margin: 8px 0; line-height: 1.1; }
+  h2 { margin-top: 36px; font-size: 22px; }
+  p { max-width: 850px; color: #bfcbd2; }
+  a { color: #edd09b; }
+  .eyebrow { color: #d5b878; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }
+  .checks { display: flex; gap: 10px; flex-wrap: wrap; margin: 24px 0; }
+  .checks span { border: 1px solid #39574f; background: #1e302c; color: #b8e2d1; padding: 6px 12px; border-radius: 6px; }
+  figure { margin: 0; padding: 0; overflow: hidden; border: 1px solid #35414c; background: #19212a; border-radius: 10px; }
+  figure img, video { display: block; width: 100%; height: auto; background: black; }
+  img { image-rendering: pixelated; }
+  figcaption { padding: 12px 16px; color: #c4cfd5; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 410px), 1fr)); gap: 18px; }
+  .note { border-left: 3px solid #d5b878; padding: 12px 18px; background: #1b2430; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  td, th { text-align: left; vertical-align: top; border-bottom: 1px solid #35414c; padding: 12px; }
+  th { color: #e3c388; }
+</style>
+<header>
+  <div class="eyebrow">icosium labs · 12 October 2026</div>
+  <h1>Yipe! III on Android ARM64</h1>
+  <p>The same game and artwork now run in a separate Android app. This first
+  controller prototype reaches the title, creates an adventure and explores the
+  town and overworld. macOS remains supported with its existing build and release path.</p>
+  <div class="checks"><span>Installable APK</span><span>Save / reload verified</span><span>macOS regressions pass</span></div>
+</header>
+<figure><a href="title.png"><img src="title.png" alt="Yipe III title running on the Android ARM64 emulator with controller prompts"></a>
+  <figcaption>Actual Android capture. The native pixel canvas is centered at 6× scale within the 2400 × 1080 landscape screen.</figcaption></figure>
+<h2>Controller gameplay</h2>
+<figure><video controls preload="metadata" poster="overworld.png" src="gameplay.mp4"></video>
+  <figcaption>Ten seconds of emulator gameplay and map navigation through Android's virtual controller. This screen recording has no audio track.</figcaption></figure>
+<p>The native music player was checked separately: active Vorbis streaming and
+looping, pause/mute on Home, and resumed playback after returning. Listening on
+a physical Android device remains unverified.</p>
+<div class="grid">
+  <figure><a href="town.png"><img loading="lazy" src="town.png" alt="Player walking beside the shops in the starting town"></a><figcaption>New adventure in the starting town, with the existing graphics enabled.</figcaption></figure>
+  <figure><a href="overworld.png"><img loading="lazy" src="overworld.png" alt="Overworld river and mountains after loading the saved adventure"></a><figcaption>The saved adventure reopened after force-stop and a same-key APK update.</figcaption></figure>
+  <figure><a href="saved.png"><img loading="lazy" src="saved.png" alt="Adventure menu confirming the game is saved"></a><figcaption>Private save storage keeps adventures separate from installed assets.</figcaption></figure>
+  <figure><a href="disconnected.png"><img loading="lazy" src="disconnected.png" alt="Game automatically paused with controller disconnected message"></a><figcaption>Disconnect pauses play. Reconnecting restores input.</figcaption></figure>
+</div>
+<h2>macOS stays supported</h2>
+<p>The desktop solution still builds without Android tools. Its windowing,
+save location and GPU lighting path remain intact. The Android light map was
+compared pixel by pixel with the desktop rendering, including overlapping lights,
+camera clipping and cave contours.</p>
+<table>
+  <thead><tr><th>Verification</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Release builds</td><td>Android + macOS: zero warnings or errors</td></tr>
+    <tr><td>Core / persistence</td><td>660 checks passed</td></tr>
+    <tr><td>Menus / controls / music</td><td>163 focused checks passed</td></tr>
+    <tr><td>Lighting</td><td>68 checks passed; software/GPU agreement within one channel level</td></tr>
+    <tr><td>macOS normal startup</td><td>Ident/title, resize, fullscreen, return to window and save preservation passed</td></tr>
+    <tr><td>Packaged assets</td><td>All 208 match the source in both builds; APK signature and alignment verified</td></tr>
+    <tr><td>Android pacing</td><td>About 60 FPS during a 14.2-second emulator sample; 851 app frames, zero reported drops</td></tr>
+  </tbody>
+</table>
+<div class="note"><strong>Prototype scope</strong><br>
+  Controller input was synthetic, using Android's real input stack. Touch controls,
+  physical phone/controller testing, full Android cave/battle/campaign coverage,
+  sustained phone performance and permanent release signing come next.
+  The new Android CI workflow is added and linted locally; its hosted run awaits a push.
+</div>
+<p><a href="results.txt">Complete test record and APK checksum</a> ·
+<a href="../../packaging/README.md#android-arm64-prototype">Build and install instructions</a> ·
+<a href="macos-title.png">macOS startup capture</a></p>
+</html>

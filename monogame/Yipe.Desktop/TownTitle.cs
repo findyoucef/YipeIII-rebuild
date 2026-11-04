@@ -127,11 +127,15 @@ internal sealed partial class TownGame
             font.Draw(batch, "YIPE! III", 31, 47, Background, 3);
             font.Draw(batch, "YIPE! III", 29, 45, Accent, 3);
             Fill(new(30, 72, 158, 1), Accent * .65f);
-            DrawPanel(new(24, 84, 172, 66));
-            Fill(new(30, 89 + titleSelected * 14, 160, 13), new Color(64, 73, 87));
+            var rowHeight = touchEnabled ? 17 : 14;
+            DrawPanel(new(24, 84, 172, touchEnabled ? 74 : 66));
+            Fill(new(30, 89 + titleSelected * rowHeight, 160, rowHeight - 1), new Color(64, 73, 87));
             for (var i = 0; i < TitleMenu.Length; i++)
-                font.Draw(batch, (i == titleSelected ? "> " : "  ") + TitleMenu[i], 37, 92 + i * 14, i == titleSelected ? Accent : Ink);
-            font.Draw(batch, controllerConnected ? "SOUTH: SELECT" : "ENTER: SELECT", 30, 158, Muted);
+            {
+                font.Draw(batch, (i == titleSelected ? "> " : "  ") + TitleMenu[i], 37, 92 + i * rowHeight, i == titleSelected ? Accent : Ink);
+                TouchChoice(new(30, 89 + i * rowHeight, 160, rowHeight), i);
+            }
+            font.Draw(batch, controllerConnected ? "SOUTH: SELECT" : touchEnabled ? "TAP TO SELECT" : "ENTER: SELECT", 30, touchEnabled ? 164 : 158, Muted);
         }
         if (paused) DrawPauseMenu();
         batch.End();

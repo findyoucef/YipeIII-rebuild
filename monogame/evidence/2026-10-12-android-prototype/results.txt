@@ -1,0 +1,62 @@
+Yipe III Android ARM64 prototype — 2026-10-12 (America/Denver)
+
+Source: working tree based on 82da9fae62b29afbec4cde36c1a38386fcc65810.
+Implementation is not yet committed/pushed. Published macOS preview.9 unchanged.
+APK: build/android-prototype/YipeIII-Android-arm64-prototype.apk
+Size: 180,740,478 bytes
+SHA-256: 84920247183b7d496e97247489df0ec0de005d8243b17cca0444312e26490528
+Signing: local Android development key; APK v2/v3 verified; zipalign -c -P 16 4 passed.
+APK verifier: 208 source-identical assets, ARM64-only native libraries and OpenAL.
+
+Environment
+Apple M5 Max, macOS 26.7.1; .NET SDK 10.0.300; runtime 10.0.8.
+.NET Android pack 36.1.2; JDK 21; SDK API 36/build-tools 36.0.0.
+MonoGame Android and DesktopGL 3.8.5.1.
+AVD YipeIII_ARM64, Pixel 7 profile, API 36 Google APIs ARM64 image.
+Emulator 37.2.12, host GPU, 2400x1080 landscape; native 320x180 canvas scaled 6x.
+Virtual USB controller through AOSP uinput; numeric evdev events, Xbox key layout.
+No physical phone/controller used. No personal saves accessed or altered.
+
+Android runtime checks (actual installed Release APK)
+PASS: normal studio/title startup, centered fullscreen landscape rendering.
+PASS: controller menus, creation/name UI and new adventure/King greeting.
+PASS: D-pad and left-stick movement, town to overworld region transitions, area/world map.
+PASS: default graphics/light composition runs without the GLES maximum-blend crash.
+PASS: manual save, safe suspension autosave, preferences and discovery journal storage.
+PASS: Home pauses the app/audio; foreground restores paused gameplay; system Back resumes.
+PASS: native music player actively streams Vorbis, loops, mutes in background and resumes.
+PASS: controller disconnect visibly pauses; reconnect restores input.
+PASS: force-stop and same-key APK reinstall preserve all 3 save/profile/journal files.
+PASS: cold title -> Load game restores Yipie in map 29 at 4,1.
+PASS: Android save decoded with the desktop Core library, same format, health 13.
+PASS: crash buffer empty after fixed build's final runtime sequence.
+Performance: short 14.2-second overworld sample, approximately 60 FPS,
+851 app frames and 0 dropped frames reported by SurfaceFlinger. Emulator only.
+Video: 10-second Android screenrecord of controller movement/map; no audio track.
+
+macOS regression on shared changes
+PASS: normal locked restore/Release build with 0 warnings and 0 errors.
+PASS: 660 core/input/persistence checks with existing C++ expectations.
+PASS: 163 focused menu/help/controller/music checks, including real stream repeat boundaries.
+PASS: 68 lighting checks, including Android software vs desktop GPU maximum composition.
+PASS: normal Game.Run ident/title, loaded save, resize/fullscreen/window return,
+bounded presentation (60.6 FPS sample), and selected save preservation.
+PASS: all 208 desktop asset bytes still match the shared source.
+PASS: actionlint for both workflows, Python compile checks, git diff whitespace check.
+No new macOS distributable was built; normal local builds used as requested.
+The historic music repeat failure did not recur; no claim of a root-cause fix.
+
+Remaining qualification / scope
+Touch controls, physical Android/controller/audio listening, API 26-35 compatibility,
+full Android battle/cave/campaign regression, sustained phone battery/thermal/GPU testing,
+backup/export, permanent signing and store/AAB publication are not part of this prototype.
+Android pauses/saves only at safe interaction boundaries; OS termination during an
+unfinished interaction reloads the last completed save. Uninstall clears private saves.
+CI artifact workflow is added and locally linted, not yet pushed or hosted-run verified.
+Its runner development signing key can differ across builds; updates require the same key.
+macOS project, desktop save location, GPU lighting path and release workflow retained.
+
+Reproduce builds and controller checks: ../../packaging/README.md#android-arm64-prototype
+Graphics runner modes: --menus-only and --startup-check DIRECTORY.
+Lighting parity checks are part of the full graphics suite; this focused run invoked
+the existing PixelLightingChecks.Run entry point via a temporary reflection harness.

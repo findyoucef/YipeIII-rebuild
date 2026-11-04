@@ -12,6 +12,7 @@ internal sealed class Overlay
     public int Selected { get; set; }
     public int Page { get; set; }
     public bool Combat { get; init; }
+    public bool Keyboard { get; init; }
     public CombatPresentation? Presentation { get; init; }
     public bool Targeting { get; set; }
     public int PreviewSpell { get; set; } = -1;

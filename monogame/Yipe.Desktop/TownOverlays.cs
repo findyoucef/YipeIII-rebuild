@@ -472,6 +472,7 @@ internal sealed partial class TownGame
         DrawPanel(new(12, 5, 296, 170));
         if (current.Combat && adventure.Battle is { } battle) { DrawCombatOverlay(current, battle); return; }
         font.Draw(batch, current.Title, 24, 14, Accent, current.Title.Length <= 22 ? 2 : 1);
+        if (current.Keyboard) { DrawTouchKeyboard(current); return; }
         var textY = current.Npc == NpcActor.None ? 37 : 64;
         if (current.Npc != NpcActor.None)
         {
@@ -485,18 +486,23 @@ internal sealed partial class TownGame
             font.Draw(batch, current.Lines[index], 24, textY + i * 10, Ink);
         }
         if (current.Options.Length == 1 && current.Page < current.PageCount - 1)
-            font.Draw(batch, $"Continue  {current.Page + 1}/{current.PageCount}", 24, 154, Accent);
+        {
+            font.Draw(batch, $"Continue  {current.Page + 1}/{current.PageCount}", 24, touchEnabled ? 144 : 154, Accent);
+            TouchTarget(new(22, 140, 275, 18), TouchConfirm);
+        }
         else
         {
             var remainingLines = Math.Min(current.LinesPerPage, current.Lines.Length - current.Page * current.LinesPerPage);
-            var startY = current.Options.Length > 1 ? textY + 10 + remainingLines * 10 : 150;
-            var visible = Math.Min(current.Options.Length, (159 - startY) / 11 + 1);
+            var startY = current.Options.Length > 1 ? textY + 10 + remainingLines * 10 : touchEnabled ? 143 : 150;
+            var rowHeight = touchEnabled ? 18 : 11;
+            var visible = Math.Min(current.Options.Length, ((touchEnabled ? 157 - rowHeight + 2 : 159) - startY) / rowHeight + 1);
             var first = Math.Clamp(current.Selected - visible / 2, 0, Math.Max(0, current.Options.Length - visible));
             for (var row = 0; row < visible; row++)
             {
                 var index = first + row;
-                var y = startY + row * 11;
-                if (index == current.Selected) Fill(new(22, y - 2, 275, 11), new Color(64, 73, 87));
+                var y = startY + row * rowHeight;
+                if (index == current.Selected) Fill(new(22, y - 2, 275, rowHeight), new Color(64, 73, 87));
+                TouchChoice(new(22, y - 2, 275, rowHeight), index);
                 var label = current.Options[index].Label;
                 // Long labels are shown in full by their confirmation/details screen.
                 font.Draw(batch, (index == current.Selected ? "> " : "  ") + (label.Length > 43 ? label[..40] + "..." : label), 24, y, index == current.Selected ? Accent : Ink);
@@ -506,5 +512,6 @@ internal sealed partial class TownGame
         }
         if (current.FirstPortrait > 0)
             world.DrawPortrait(batch, current.FirstPortrait + current.Selected, new(223, 87, 64, 64));
+        if (touchEnabled) DrawTouchNavigation(current.PageCount > 1);
     }
 }

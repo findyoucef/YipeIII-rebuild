@@ -42,6 +42,7 @@ if (args.Length != 0 && (args.Length != 2 || args[0] is not ("--player-trace" or
 var checks = 0;
 ItemNameChecks.Run(Check, args.Length == 2 && args[0] == "--items-trace" ? args[1] : null);
 ProfileChecks.Run(Check);
+TouchInputChecks.Run(Check);
 RainWeatherChecks.Run(Check);
 DayNightClockChecks.Run(Check);
 FootstepAssetChecks.Run(Check);

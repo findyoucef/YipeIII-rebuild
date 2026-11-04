@@ -17,17 +17,17 @@ integration remain separate; this is a playable desktop port, not a release clai
 
 | Field | Current state |
 | --- | --- |
-| Local gameplay launch | Local Release rebuilt and reopened with the original walking speed, pose cadence and motion trail. Local builds remain the default for iteration. |
-| Current milestone | Walking-speed and trail experiments reverted at user request. Pursuit alerts still play their creature voice with the visible `!`. The published preview.9 is unchanged. |
-| Next task | Investigate the separate music-stream repeat check before the next release. Physical-controller and additional historical campaign-route coverage remain unverified. |
-| Last completed work | Restored the previous walking animation and blur; retained monster pursuit voices. Previous release automation and release-readiness evidence remain separate. |
-| Latest verification | Rollback: clean Release build, all 660 core checks and all 23 original motion-trail renderer checks pass. Remaining source changes are the previously verified monster pursuit audio. A full run remains unverified due to the separate music-stream repeat check below. |
+| Local gameplay launch | macOS Release builds normally without the Android workload. Touch/controller ARM64 APK 0.2.0-touch is installed on the connected Pixel and the API 36 emulator. Local desktop builds remain the default for iteration. |
+| Current milestone | Android touch controls complete; macOS support retained. [Touch review and Pixel video](evidence/2026-10-12-android-touch/review.html). Published macOS preview.9 unchanged. |
+| Next task | Run Android cave/battle/campaign and sustained phone performance checks. Add save export/backup and durable signing before distribution. Physical-controller and hands-on multi-touch testing remain unverified. |
+| Last completed work | Eight-direction touch pad; ACT/BACK/MAP/MENU; tappable/scrollable menus, volume and touch-setting sliders, name keyboard, safe display insets and controller auto-hide. Installed and tested on Pixel 11 Pro XL (API 37). |
+| Latest verification | Clean Android/macOS Release builds; 681 core and 173 focused menu/music/touch checks pass. macOS normal startup/resize/fullscreen/save preservation pass. Pixel movement/map/menus/swipes/sliders/save/load/Home-resume pass; final APK name keyboard verified on emulator. APK assets, signature and alignment pass. |
 | Earned frontend evidence | Fresh opening matches all 42 C++ checkpoints plus King return and separate-process continuation. Fresh late frontend defeats the empowered Gatekeeper, saves/restarts, rescues 20 and displays the live Maynard finale. |
 | Approved presentation | The user's existing pixel-art, miniature, lighting, clouds, weather and sound defaults remain unchanged. Current clouds, music, river junctions and precise Ice Cave entrance movement are user-approved. |
-| Work left running or half implemented | No unfinished movement changes. Recheck the music-stream repeat failure before the next release; the release tag still points to `fb9a885`. |
-| Blocking dependencies | No controller available; user explicitly approved recording physical testing as unverified. Other-platform/other-Mac and official console checks need their environments. Hosted VM sustained graphics remain unreliable, so full startup/display/frame pacing are verified locally on the exact download. |
-| Save preservation | Pursuit tests used isolated saves/profiles and verify unchanged session/RNG. No save-format changes. The previous release pass additionally verified all 33 personal files stayed byte-identical. |
-| Repository checkpoint | Release automation and the save-import race fix culminate in `fb9a885`, tagged `monogame-v0.1.0-preview.9`; release documentation was pushed as `bb16d7e`. Pursuit audio is the only subsequent gameplay change; walking and blur experiments were reverted before committing. |
+| Work left running or half implemented | No unfinished touch feature. Pixel left running the level-23 adventure for review. Existing Android CI workflow awaits commit/push; no hosted run claimed. |
+| Blocking dependencies | No physical controller tested. API 26–35, other phone layouts, hands-on simultaneous multi-touch, sustained thermal/battery performance and full mobile campaign remain unverified. |
+| Save preservation | Same-key Pixel update retained both adventures; level-23 transfer saved/reloaded through normal UI. Mac source saves unchanged. Private transfer backups stay under ignored build/android-save-transfer. No save-format changes. |
+| Repository checkpoint | Work starts from pushed `82da9fa`. Android prototype and touch work are uncommitted/unpushed working-tree changes. macOS release tag remains `monogame-v0.1.0-preview.9` at `fb9a885`. |
 
 At the start of a resumed session:
 
@@ -47,6 +47,76 @@ At the start of a resumed session:
 
 Suggested future instruction: **“Read `monogame/PORTING_PLAN.md`, reconcile it
 with the working tree, and continue from the next unfinished task.”**
+
+## Android touch controls — complete 2026-10-12
+
+The controller prototype now supports play without a separate input device.
+
+1. **Done:** Eight-direction translucent movement pad and ACT/BACK/MAP/MENU,
+   feeding the existing movement timing and interaction actions.
+2. **Done:** Direct menu taps, swipe scrolling, footer navigation, draggable
+   audio sliders, touch name keyboard and readable combat choices.
+3. **Done:** Persisted control size/opacity, display cutout and gesture margins,
+   hide controls while a controller is connected, cancel contacts on context/focus changes.
+4. **Done:** Core boundary checks plus real shared-renderer menus/combat tests;
+   preserve macOS controls, layout, build and normal startup behavior.
+5. **Done:** Same-key APK update on Pixel 11 Pro XL, API 37. ADB touch events
+   verified movement, map/menu taps, scrolling, sliders, save/load and Home/resume.
+   Both existing adventures remain present; level-23 adventure reopened for the user.
+6. **Done:** Screenshots, Pixel video, final signed APK/checksum and build/test
+   documentation. No macOS repackaging or commit/push performed.
+
+Fresh verification: 681 core and 173 focused menu/music/touch checks pass. Both
+Release builds are clean. APK content, signature and 16 KiB alignment pass.
+The final emulator APK accepts direct keyboard taps. Simultaneous two-contact
+behavior is tested synthetically; physical-controller/hands-on multi-touch,
+full Android campaign and sustained performance qualification are still separate.
+
+[Review and video](evidence/2026-10-12-android-touch/review.html),
+[test record](evidence/2026-10-12-android-touch/results.txt).
+Local APK: `build/android-touch/YipeIII-Android-arm64-touch.apk`.
+
+## Android ARM64 prototype — complete 2026-10-12
+
+Goal: produce an installable Android ARM64 APK that reaches the normal title,
+creates an adventure and explores the overworld with the existing controller
+controls. Keep macOS supported and verify its existing build and regressions.
+
+1. Add a separate Android entry point/backend, compiling the existing game source
+   and sharing one asset manifest. Keep `Yipe.slnx` desktop-only so macOS needs no
+   Android workload.
+2. Install packaged content in Android private storage; isolate saves/preferences
+   from assets and preserve them on APK upgrades.
+3. Use landscape integer-scaled presentation and existing controller menus/name
+   entry. Touch movement/UI is a later milestone.
+4. Handle audio file URIs, suspension/resume and safe background saving.
+5. Build an ARM64 APK, install on the available emulator, capture the title and
+   overworld, exercise movement/save/reload/backgrounding and inspect logs/audio.
+   Physical Android/controller testing is reported separately if unavailable.
+6. Rebuild/test macOS, review the full diff, add a separate Android CI artifact
+   build and document reproducible commands and limitations.
+
+All six steps are complete. The APK reaches the normal title, creates an adventure
+and explores the town and overworld through Android's gamepad input path. Native
+music playback pauses/resumes with the app; safe suspension writes the existing
+save format. Force-stop, same-key APK reinstall and cold load preserve the adventure.
+The Android GLES backend rejects maximum blending, so a cached 320×180 software
+light map reproduces the desktop GPU output within one channel level. Desktop
+still uses its original GPU path. Normal macOS builds need no Android tools.
+
+Fresh verification: both Release builds clean; 660 core, 163 focused menu/music
+and 68 lighting checks pass. Normal macOS startup, display changes and save
+preservation pass at about 60 FPS. The API 36 ARM64 emulator sustained about
+60 FPS in a short overworld sample with zero reported dropped app frames. This
+is emulator evidence, not a phone performance claim. APK signature/alignment,
+all 208 packaged assets and ARM64 native libraries verify. CI YAML is linted;
+the new workflow has not yet run remotely.
+
+[Review, captures and video](evidence/2026-10-12-android-prototype/review.html),
+[test record](evidence/2026-10-12-android-prototype/results.txt) and
+[reproduction commands](packaging/README.md#android-arm64-prototype).
+Touch UI, real-device/controller testing, complete mobile campaign regression,
+save export and durable store signing remain outside this first prototype goal.
 
 ## Walking and trail experiments reverted — 2026-10-12
 

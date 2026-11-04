@@ -35,12 +35,15 @@ internal static class ProfileChecks
             Set(data, "RainStrength", 2);
             Set(data, "ScreenShake", true); Set(data, "AutoBattle", true);
             Set(data, "TimeOfDayMode", 3); Set(data, "DayNightSeconds", 987.5d);
+            Set(data, "TouchSize", 1.2f); Set(data, "TouchOpacity", .4f);
             var controls = (ControlBindings)Get(data, "Controls");
             controls.BindKey(4, Keys.E);
             controls.BindButton(0, Buttons.X);
             HighScores.Update((HighScoreEntry[])Get(data, "Scores"), new Player { Name = "Profile Hero", Gold = 12345 }, true);
             Save(fresh);
             var reopened = Data(Open());
+            check((float)Get(reopened, "TouchSize") == 1.2f && (float)Get(reopened, "TouchOpacity") == .4f,
+                "Touch size and opacity survive a profile reopen");
             check(!(bool)Get(reopened, "Music") && (float)Get(reopened, "MusicVolume") == .2f && (float)Get(reopened, "EffectsVolume") == .7f,
                 "Music and effects volumes persist independently of master sound");
             check((int)Get(reopened, "TimeOfDayMode") == 3 && (double)Get(reopened, "DayNightSeconds") == 987.5,
@@ -65,6 +68,7 @@ internal static class ProfileChecks
             legacy.Remove("RainStrength");
             legacy.Remove("ScreenShake"); legacy.Remove("AutoBattle");
             legacy.Remove("Controls");
+            legacy.Remove("TouchSize"); legacy.Remove("TouchOpacity");
             legacy.Remove("Music"); legacy.Remove("MusicVolume"); legacy.Remove("EffectsVolume");
             legacy.Remove("TimeOfDayMode"); legacy.Remove("DayNightSeconds");
             File.WriteAllText(path, legacy.ToJsonString());
@@ -84,7 +88,10 @@ internal static class ProfileChecks
             check(((ControlBindings)Get(reopened, "Controls")).Keyboard[4] == Keys.Enter
                 && ((ControlBindings)Get(reopened, "Controls")).Controller[0] == Buttons.A,
                 "Profiles without bindings migrate to standard controls without rewriting their file");
+            check((float)Get(reopened, "TouchSize") == 1f && (float)Get(reopened, "TouchOpacity") == .55f,
+                "Existing profiles receive touch defaults without migration writes");
             foreach (var invalid in new[] { "{", "{\"Version\":99}", "{\"Version\":1,\"Volume\":9}", "{\"Version\":1,\"Scores\":[]}",
+                "{\"TouchSize\":0}", "{\"TouchSize\":2}", "{\"TouchOpacity\":1e999}", "{\"TouchOpacity\":0}",
                 "{\"Controls\":null}", "{\"Controls\":{\"Keyboard\":[]}}", "{\"Controls\":{\"Controller\":[1,1,1,1]}}",
                 "{\"SunShaftStrength\":-1}", "{\"SunShaftStrength\":3}", "{\"CloudShadowStrength\":-1}", "{\"CloudShadowStrength\":3}", "{\"RainStrength\":-1}", "{\"RainStrength\":3}",
                 "{\"TimeOfDayMode\":-1}", "{\"TimeOfDayMode\":4}", "{\"DayNightSeconds\":-1}", "{\"DayNightSeconds\":1200}", "{\"DayNightSeconds\":1e999}",

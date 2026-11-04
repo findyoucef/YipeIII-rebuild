@@ -1,4 +1,4 @@
-# MonoGame macOS preview packaging
+# MonoGame builds and packaging
 
 Download [preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9).
 Its hosted build, published checksum and local download verification are retained
@@ -119,6 +119,88 @@ still need manual verification. The user confirmed no controller is available
 on 2026-10-12 and requested that this remain documented as unverified. Synthetic input and real graphics checks are
 reported separately. The ordinary GPU runner is documented in
 [graphics checks](../Yipe.GraphicsChecks/README.md).
+
+## Android ARM64 prototype
+
+The separate `Yipe.Android` project compiles the existing game against MonoGame
+Android 3.8.5.1. `GameContent.props` supplies the same 208 assets to both platforms.
+The desktop solution and macOS workflow remain independent of Android tooling.
+The APK declares Android 8 / API 26 or newer and ARM64 only; the tested environment
+is an API 36 ARM64 emulator on an Apple M5 Max, not a physical phone.
+
+Install the .NET 10 SDK, JDK 21 and Android SDK command-line tools, then install
+the workload and SDK packages. On this Mac the SDK is under
+`$HOME/Library/Android/sdk`; set these paths for your installation:
+
+```sh
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+dotnet workload install android --skip-manifest-update
+"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0' 'platform-tools'
+dotnet restore monogame/Yipe.Android --locked-mode
+dotnet build monogame/Yipe.Android -c Release --no-restore -t:SignAndroidPackage \
+  -p:AndroidSdkDirectory="$ANDROID_HOME" -p:JavaSdkDirectory="$JAVA_HOME"
+python3 monogame/tools/verify_android_apk.py \
+  monogame/Yipe.Android/bin/Release/net10.0-android/android-arm64/com.icosiumlabs.yipeiii-Signed.apk
+"$ANDROID_HOME/platform-tools/adb" install --no-incremental -r \
+  monogame/Yipe.Android/bin/Release/net10.0-android/android-arm64/com.icosiumlabs.yipeiii-Signed.apk
+"$ANDROID_HOME/platform-tools/adb" shell am start -n com.icosiumlabs.yipeiii/.MainActivity
+```
+
+This is a self-contained, development-signed sideload APK: no desktop CLI,
+fast-deployment server, AOT or trimming is required. The package is about 181 MB;
+first launch also extracts the assets into app-private storage. The app requests
+no external-storage permission. Untrimmed builds disable LLVM marshal methods
+because the tested .NET Android combination otherwise failed to register the
+activity's native startup callback. This setting is confined to Android.
+
+Touch controls are enabled by default: the lower-left pad supports eight movement
+directions, with ACT/BACK at lower right and MAP/MENU above. Tap menu rows, swipe
+to scroll, drag sound sliders and use the touch keyboard to name an adventure.
+Options → Touch controls adjusts size (80–130%) and opacity (20–100%). World
+controls avoid display cutouts/system gesture edges and hide while a controller
+is connected. Version `0.2.0-touch` uses version code 2.
+
+Controller controls remain D-pad/left stick to move, South to select, East to go
+back, Start to pause and View/Back to open the map. Android system Back navigates
+the game menus. Presentation is landscape, fullscreen and integer-scaled with
+centered black margins. macOS keeps its existing layout and controls.
+
+Assets and saves occupy separate private directories. Updating with `adb install
+-r` and the **same signing key** preserves saves, journals and preferences; this
+was verified byte-for-byte before reopening the saved adventure. Uninstalling or
+clearing app data deletes them. Keep the local development keystore for compatible
+updates. Suspension pauses audio and play, writes preferences and saves at a safe
+interaction boundary. During an unfinished interaction, the process can resume
+in place; if Android kills it, loading returns to the last completed save.
+
+The [Android workflow](../../.github/workflows/android.yml) builds on relevant
+pushes/PRs and manual dispatch, verifies every packaged content byte and ARM64
+native payload, then uploads `YipeIII-Android-arm64-prototype` with its checksum.
+It has been linted locally; its first hosted run is pending a push. Each runner's
+temporary development key can differ, so CI artifacts are **not guaranteed to
+update an existing installation**. Stable signing, backup/export, AAB/store
+publication and physical-device qualification remain later work. The job does
+not publish releases or run device tests.
+
+The [review](../evidence/2026-10-12-android-prototype/review.html) records emulator
+screenshots/video, native audio state, save/reload and controller disconnect
+checks. To repeat synthetic controller testing on a disposable emulator:
+
+```sh
+"$ANDROID_HOME/platform-tools/adb" -s emulator-5554 root
+python3 monogame/tools/android_controller.py --adb "$ANDROID_HOME/platform-tools/adb"
+```
+
+Enter `a`, `b`, `start`, `map`, `up`, `down`, `left`, `right`, or
+`stick_right 0.5` (any stick direction); `quit` disconnects. This uses Android's
+virtual input device interface and the real MonoGame gamepad path. It is not
+physical-controller validation. Test creation, movement, saving, Home/resume,
+system Back, disconnect/reconnect and cold launch/load before claiming a mobile
+build works. The [touch review](../evidence/2026-10-12-android-touch/review.html)
+records the subsequent physical Pixel installation and touch checks. Full
+cave/battle campaign coverage, hands-on multi-touch/controller usability and
+battery/thermal performance remain unverified.
 
 ## Dependency notices
 

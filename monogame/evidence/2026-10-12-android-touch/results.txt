@@ -1,0 +1,63 @@
+Android touch milestone — 2026-10-12 (America/Denver)
+
+IMPLEMENTED
+Eight-direction translucent D-pad and ACT/BACK/MAP/MENU buttons.
+Direct menu taps, swipe scrolling, footer navigation, draggable sound/touch sliders.
+Touch name keyboard; size 80–130%, opacity 20–100%, persisted in existing profile.
+Display-cutout/system-gesture insets; virtual world controls hide with a controller.
+Existing input cadence, combat buffering, macOS controls and save format retained.
+
+BUILDS AND AUTOMATED CHECKS
+Android ARM64 Release: 0 warnings/errors. Version 0.2.0-touch, code 2.
+macOS graphics/desktop Release: 0 warnings/errors; no macOS repackaging.
+681 core/input/persistence checks pass (15 touch input + 6 touch profile additions).
+173 focused menu/music/touch integration checks pass (10 touch additions).
+Normal macOS ident/title, resize/fullscreen/window return and save preservation pass.
+208 APK assets byte-match source. ARM64 payload, APK signature and 16 KiB zip alignment pass.
+The prior prototype's 68 lighting checks remain recorded separately, not rerun here.
+The historical 4,226-check full graphics/campaign pass was not rerun for this touch milestone.
+
+PHYSICAL PIXEL
+Pixel 11 Pro XL, ARM64, API 37, 2992x1344 landscape.
+Updated the existing installation with the same development key; no uninstall/data clear.
+Installed package reports version code 2, 0.2.0-touch, non-debuggable flags.
+ADB-injected touch events through the real Android/MonoGame path verified:
+- left/right held movement and return to the original tile (video);
+- MAP opening and CLOSE, MENU and option row taps;
+- music slider 50% -> 80%, selected row retained, then restored to 50%;
+- Options swipe to Touch controls, size adjustment, then restored to 100%;
+- default opacity remains 55%, master 65%, sound effects 100%;
+- manual save, Home/resume, return to title and saved-adventure list;
+- transferred level-23 character and existing level-2 character remain listed;
+- level-23 adventure reopened successfully and left running for the user.
+No entries in the current game process crash buffer.
+The 12-second device video has no audio track. It is a movement/map/menu demo,
+not a performance or audio-listening benchmark. Device testing used injected
+single-finger events; simultaneous two-finger handling is covered by core tests.
+
+EMULATOR / SHARED RENDERER
+API 36 ARM64 emulator: final APK installed; tap creation -> attributes -> name
+keyboard and enter 'touch' using five direct taps. Earlier iteration verified
+world movement, sound slider persistence and Home/resume on an isolated adventure.
+Shared-renderer GPU tests verify real combat Attack, buffered rapid Continue,
+controller hide/reappear, inset geometry, menus and keyboard entry.
+
+SAVE PRESERVATION
+Phone update retained both existing slots. Normal in-game save/background save
+updated the active phone adventure during testing; it was reloaded successfully.
+Mac original save files were not edited. Private transfer backups remain under
+ignored build/android-save-transfer, not in this evidence folder.
+
+LIMITS / NEXT WORK
+Physical controller and hands-on multi-touch feel remain unverified.
+No full Android cave/battle campaign or sustained thermal/battery/performance pass.
+API 26–35 and other device layouts remain unverified. Durable signing, save
+export/backup and store distribution remain later milestones.
+Android CI is still local/unpushed; no hosted run is claimed. macOS preview.9 unchanged.
+Changes remain uncommitted. APK: build/android-touch/YipeIII-Android-arm64-touch.apk.
+
+REVIEW
+Complete local diff and relevant new files reviewed with the simplify skill.
+No material simplicity/correctness findings remain in the reviewed changes.
+Touch decoding is a small contact-state helper; hit regions reuse rendered bounds
+and feed the existing input/menu actions rather than introducing a second UI stack.

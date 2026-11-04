@@ -116,16 +116,21 @@ internal sealed partial class TownGame
         for (var row = 0; row < lines; row++)
             font.Draw(batch, text[current.Page * current.LinesPerPage + row], 24, 101 + row * 10, Ink);
         if (current.Options.Length == 1 && current.Page < current.PageCount - 1)
-            font.Draw(batch, $"Continue  {current.Page + 1}/{current.PageCount}", 24, 151, Accent);
+        {
+            font.Draw(batch, $"Continue  {current.Page + 1}/{current.PageCount}", 24, touchEnabled ? 144 : 151, Accent);
+            TouchTarget(new(22, 140, 275, 18), TouchConfirm);
+        }
         else
         {
-            var startY = current.Options.Length == 1 ? 151 : lines == 0 ? 100 : 105 + lines * 10;
-            var visible = Math.Min(current.Options.Length, (159 - startY) / 11 + 1);
+            var startY = current.Options.Length == 1 ? touchEnabled ? 143 : 151 : lines == 0 ? 100 : 105 + lines * 10;
+            var rowHeight = touchEnabled ? 18 : 11;
+            var visible = Math.Min(current.Options.Length, ((touchEnabled ? 157 - rowHeight + 2 : 159) - startY) / rowHeight + 1);
             var first = Math.Clamp(current.Selected - visible / 2, 0, Math.Max(0, current.Options.Length - visible));
             for (var row = 0; row < visible; row++)
             {
-                var index = first + row; var y = startY + row * 11;
-                if (index == current.Selected) Fill(new(22, y - 2, 275, 11), new Color(64, 73, 87));
+                var index = first + row; var y = startY + row * rowHeight;
+                if (index == current.Selected) Fill(new(22, y - 2, 275, rowHeight), new Color(64, 73, 87));
+                TouchChoice(new(22, y - 2, 275, rowHeight), index);
                 var label = current.ContinueRequested ? "Continuing..." : current.Options[index].Label;
                 font.Draw(batch, (index == current.Selected ? "> " : "  ") + (label.Length > 43 ? label[..40] + "..." : label),
                     24, y, index == current.Selected ? Accent : Ink);
@@ -136,6 +141,7 @@ internal sealed partial class TownGame
             ? "LEFT/RIGHT: TARGET   ESC: FLEE" : "LEFT/RIGHT: TARGET", 24, 164, Muted);
         else if (current.PageCount > 1) font.Draw(batch, $"PAGE {current.Page + 1}/{current.PageCount}", 24, 164, Muted);
         else if (current.AutoAdvance && profile.Data.AutoBattle) font.Draw(batch, "AUTO - CONTINUE TO SPEED UP", 24, 164, Muted);
+        if (touchEnabled) DrawTouchNavigation(current.Targeting || current.PageCount > 1);
     }
 
     private void DrawEnemyInfo(Overlay current, CombatEncounter battle, int inspected)
@@ -172,6 +178,17 @@ internal sealed partial class TownGame
         }
 
         Fill(new(24, 147, 272, 1), Muted * .3f);
+        if (touchEnabled)
+        {
+            for (var row = 0; row < current.Options.Length; row++)
+            {
+                var bounds = new Rectangle(24 + row * 138, 141, 130, 17);
+                DrawTouchButton(bounds, current.Options[row].Label.ToUpperInvariant(), TouchConfirm);
+                TouchChoice(bounds, row);
+            }
+            DrawTouchNavigation(horizontal: true);
+            return;
+        }
         for (var row = 0; row < current.Options.Length; row++)
         {
             var selected = current.Selected == row;

@@ -1,0 +1,16 @@
+<Project>
+  <!-- One asset list for the desktop filesystem and the Android APK. -->
+  <ItemGroup>
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/original-help.json" Link="Content/original-help.json" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Branding/*.png" Link="Content/Branding/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Audio/Footsteps/*" Link="Content/Audio/Footsteps/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Audio/Ambience/*" Link="Content/Audio/Ambience/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Credits/**/*" Link="Content/Credits/%(RecursiveDir)%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Audio/Music/*" Link="Content/Audio/Music/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)../assets/maps/original-map-tables.json" Link="Content/maps.json" />
+    <GameContent Include="$(MSBuildThisFileDirectory)Yipe.Desktop/Content/Art/Retro/**/*.png" Link="Content/Art/Retro/%(RecursiveDir)%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)../assets/embedded/audio/*.wav" Link="Content/Audio/Effects/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)../assets/original/MonsterSounds/*.wav" Link="Content/Audio/Monsters/%(Filename)%(Extension)" />
+    <GameContent Include="$(MSBuildThisFileDirectory)../assets/original/Yipe3Items.txt" Link="Content/Yipe3Items.txt" />
+  </ItemGroup>
+</Project>

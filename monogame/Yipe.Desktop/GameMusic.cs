@@ -18,11 +18,19 @@ internal sealed class GameMusic : IDisposable
         try
         {
             var directory = Path.GetFullPath(Path.Combine(content, "Audio", "Music"));
-            town = Song.FromUri("Woodland Fantasy", new Uri(Path.Combine(directory, "woodland-fantasy.ogg")));
-            overworld = Song.FromUri("Celtic Impulse", new Uri(Path.Combine(directory, "celtic-impulse.ogg")));
-            cave = Song.FromUri("Cave Theme", new Uri(Path.Combine(directory, "cave-theme.ogg")));
-            crystalCave = Song.FromUri("Crystal Caves", new Uri(Path.Combine(directory, "crystal-caves.ogg")));
-            battle = Song.FromUri("Battle Theme A", new Uri(Path.Combine(directory, "battle-theme-a.ogg")));
+            town = Load("Woodland Fantasy", "woodland-fantasy.ogg");
+            overworld = Load("Celtic Impulse", "celtic-impulse.ogg");
+            cave = Load("Cave Theme", "cave-theme.ogg");
+            crystalCave = Load("Crystal Caves", "crystal-caves.ogg");
+            battle = Load("Battle Theme A", "battle-theme-a.ogg");
+
+            Song Load(string name, string file)
+            {
+                var uri = new Uri(Path.Combine(directory, file));
+                // Android's Song backend treats plain paths as APK assets. Extracted files need file://.
+                if (OperatingSystem.IsAndroid()) uri = new Uri(uri.AbsoluteUri);
+                return Song.FromUri(name, uri);
+            }
         }
         catch (Exception error) when (error is NoAudioHardwareException or IOException or InvalidOperationException or NotSupportedException)
         { Fail(error); }
@@ -64,7 +72,8 @@ internal sealed class GameMusic : IDisposable
                 MediaPlayer.IsRepeating = true;
                 // A fresh battle gets its opening cue. Exploration returns where it left off.
                 var position = positions.GetValueOrDefault(current);
-                if (position > TimeSpan.Zero && position < current.Duration) MediaPlayer.Play(current, position);
+                // Android's FromUri songs have no reported duration; their native player supports seeking.
+                if (position > TimeSpan.Zero && (current.Duration == TimeSpan.Zero || position < current.Duration)) MediaPlayer.Play(current, position);
                 else MediaPlayer.Play(current);
             }
             if (current is null) return;

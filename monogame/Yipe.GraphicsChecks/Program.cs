@@ -290,6 +290,7 @@ internal static class Program
             MusicChecks.Run(game, outputDirectory, Check);
             HelpControlChecks.Run(game, outputDirectory, Check);
             TitleScreenChecks.Run(game, outputDirectory, Check);
+            TouchMenuChecks.Run(game, outputDirectory, Check);
             Log($"Passed {checks} visual integration checks. Focused menu/help/control run.");
             return;
         }
@@ -387,6 +388,7 @@ internal static class Program
         MusicChecks.Run(game, outputDirectory, Check);
         HelpControlChecks.Run(game, outputDirectory, Check);
         TitleScreenChecks.Run(game, outputDirectory, Check);
+        TouchMenuChecks.Run(game, outputDirectory, Check);
         // Isolate existing blur measurements from scanlines, then exercise the full mode cycle.
         Set("scanlines", false);
         Set("miniatureMode", 1);

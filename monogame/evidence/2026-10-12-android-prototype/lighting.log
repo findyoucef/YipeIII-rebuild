@@ -1,0 +1,69 @@
+PASS: Map 17: local lights visibly affect scenery and nearby actors
+PASS: Map 17: lighting repeats exactly at a paused scene clock
+PASS: Map 17: lighting preserves gameplay, map contents and RNG
+PASS: Map 17: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 17: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 57: local lights visibly affect scenery and nearby actors
+PASS: Map 57: lighting repeats exactly at a paused scene clock
+PASS: Map 57: lighting preserves gameplay, map contents and RNG
+PASS: Map 57: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 57: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 63: local lights visibly affect scenery and nearby actors
+PASS: Map 63: lighting repeats exactly at a paused scene clock
+PASS: Map 63: lighting preserves gameplay, map contents and RNG
+PASS: Map 63: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 63: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 117: local lights visibly affect scenery and nearby actors
+PASS: Map 117: lighting repeats exactly at a paused scene clock
+PASS: Map 117: lighting preserves gameplay, map contents and RNG
+PASS: Map 117: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 117: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 118: local lights visibly affect scenery and nearby actors
+PASS: Map 118: lighting repeats exactly at a paused scene clock
+PASS: Map 118: lighting preserves gameplay, map contents and RNG
+PASS: Map 118: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 118: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 119: local lights visibly affect scenery and nearby actors
+PASS: Map 119: lighting repeats exactly at a paused scene clock
+PASS: Map 119: lighting preserves gameplay, map contents and RNG
+PASS: Map 119: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 119: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 120: local lights visibly affect scenery and nearby actors
+PASS: Map 120: lighting repeats exactly at a paused scene clock
+PASS: Map 120: lighting preserves gameplay, map contents and RNG
+PASS: Map 120: lighting composes with heat, miniature, vignette and scanlines
+PASS: Map 120: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: A wall-mounted cave torch emits a local light field
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: A closed door blocks torchlight from reaching the floor behind it
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Opening a door invalidates the lighting cache and restores the light path
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Wall variant 43 cannot reveal a secret through its lighting
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Wall variant 23 cannot reveal a secret through its lighting
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Wall variant 44 cannot reveal a secret through its lighting
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Wall variant 25 cannot reveal a secret through its lighting
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Wall variant 5a cannot reveal a secret through its lighting
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Torch flicker advances only with scene time and preserves its fixed footprint
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Removing a torch wall leaves no stale light behind
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: An undiscovered fire source cannot cast light into a discovered room
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Visible fire light never paints undiscovered map cells
+PASS: Map 78: Android software maximum matches desktop GPU lighting within one channel level
+PASS: Overlapping flames stay below one source's peak brightness instead of accumulating bloom
+PASS: Local lighting preserves black outlines and opaque alpha instead of adding haze
+PASS: The light pass brightens existing colors gently without flattening terrain contrast
+PASS: Pixel lighting switches off through the pause menu
+PASS: The lighting menu preference survives reopening its profile
+PASS: Pixel lighting leaves the pause panel and every other label unchanged
+PASS: Local lighting leaves the area map and its labels unchanged
+Passed 68 lighting checks.

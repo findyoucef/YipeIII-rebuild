@@ -24,6 +24,13 @@ renderer. It is separate from `Yipe.Tests`, which runs without a game window.
 
 ## Run
 
+The Android prototype adds comparison of its software maximum-light composition
+against the existing desktop GPU path. The focused lighting run passed **68
+checks**, including translated-camera clipping, overlapping sources, fog,
+doors, flicker and cave contours; every output channel agrees within one level.
+These comparisons also run with the normal full suite. This does not substitute
+for cave performance or a full campaign run on an Android device.
+
 From the repository root, with the .NET 10 SDK installed:
 
 ```sh
@@ -81,6 +88,15 @@ Captures under `help-controls/` and `title-menu/` show the menus
 at 640×360, 1024×768 and 1920×1080. The full suite additionally exercises every
 moved graphics setting and its existing persistence behavior. Controller actions
 are synthesized; physical-controller verification remains separate.
+
+The Android touch milestone adds ten checks to `--menus-only` (173 total): title
+and option taps, absolute volume dragging with stable selection, touch settings,
+name keyboard entry, display insets, controller hide/reappear, real combat Attack
+and buffered rapid Continue. Captures are under `touch/`. These use the actual
+shared renderer and synthetic contacts on macOS; Android device evidence is
+separate. Core checks also exercise two-contact input, diagonal movement, dead
+zones, tap cancellation, context/focus reset, swipe-versus-tap separation and
+slider persistence. See the [touch review](../evidence/2026-10-12-android-touch/review.html).
 
 For local breeding-ground iterations, use `--breeding-only`. This renders all six
 rooms and checks palette/contrast, cache invalidation, secret equivalence, fog,

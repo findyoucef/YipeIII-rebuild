@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yipe! III · Android touch controls</title><style>
+body{margin:0;background:#111820;color:#eee8ce;font:17px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:36px 24px 64px}h1{font-size:38px;line-height:1.15}h2{margin-top:40px}p{max-width:850px;color:#d2d7d8}a{color:#eac877}img,video{display:block;width:100%;background:#070b10;border-radius:8px}figure{margin:24px 0}figcaption{font-size:14px;color:#bfc8cf;margin:8px 0}.tag{color:#eac877;letter-spacing:.13em;text-transform:uppercase;font-size:13px}li{margin:8px 0}code{font-size:14px}
+</style><main><div class="tag">Icosium Labs · Android ARM64 · 12 October 2026</div>
+<h1>Touch controls, on your Pixel</h1>
+<p>Installed version <strong>0.2.0-touch</strong>. Move with the eight-direction pad, tap ACT/BACK/MAP/MENU, tap menu rows, swipe to scroll and drag volume sliders. Adjust size and opacity under Options → Touch controls. Connecting a controller hides the virtual world buttons.</p>
+<figure><video controls preload="metadata" poster="pixel-world.png" src="pixel-touch.mp4"></video><figcaption>12-second recording from the Pixel: movement, map and menu taps. No audio track. Inputs injected through Android; this is not a performance benchmark.</figcaption></figure>
+<h2>Actual phone captures</h2>
+<figure><img src="pixel-world.png" alt="Pixel gameplay with translucent direction and action controls"><figcaption>Pixel 11 Pro XL, API 37. World controls sit inside the display’s safe edges.</figcaption></figure>
+<figure><img src="pixel-sound.png" alt="Music slider at 80 percent with its row selected"><figcaption>Dragging music from 50% to 80% keeps the row selected. Restored to 50% after testing.</figcaption></figure>
+<figure><img src="pixel-touch-settings.png" alt="Touch control size and opacity sliders"><figcaption>Default control size 100%, opacity 55%. Size adjustment checked and restored.</figcaption></figure>
+<figure><img src="pixel-saves.png" alt="Both existing saved adventures in the load menu"><figcaption>Both existing adventures survived the update. The level-23 adventure was saved, reloaded and left open.</figcaption></figure>
+<h2>Name entry and combat</h2>
+<figure><img src="emulator-keyboard-entered.png" alt="Android touch keyboard after typing touch"><figcaption>Final APK on the API 36 ARM64 emulator: direct taps enter a name.</figcaption></figure>
+<figure><img src="shared-battle.png" alt="Touch battle commands in the shared renderer"><figcaption>Shared-renderer test on macOS. Attack and buffered rapid Continue pass; physical Android campaign combat remains a separate test.</figcaption></figure>
+<h2>Verification</h2><ul><li>681 core/input/persistence checks and 173 focused menu/music/touch checks pass.</li><li>Clean Android and macOS builds; normal macOS startup and display changes pass.</li><li>208 APK assets verified, signature verified, 16 KiB zip alignment checked.</li><li>Pixel movement, map/menu taps, scrolling, sliders, save/load and Home/resume pass.</li></ul>
+<p>Physical controllers, hands-on simultaneous multi-touch, a full mobile campaign and sustained phone performance remain unverified. Durable distribution signing and save export are still later work.</p>
+<p><a href="results.txt">Detailed test record and limits</a> · <a href="menus-final.log">173 menu checks</a> · <a href="core.log">681 core checks</a> · <a href="YipeIII-Android-arm64-touch.apk.sha256">APK checksum</a></p></main></html>

@@ -5,7 +5,7 @@ using Yipe.Core;
 namespace Yipe.Desktop;
 
 /// <summary>Local, stepped light that brightens existing world pixels before presentation effects.</summary>
-internal sealed class PixelLighting : IDisposable
+internal sealed partial class PixelLighting : IDisposable
 {
     private const int MaskSize = 128;
     private static readonly int[] Radii = [36, 56, 44];
@@ -63,6 +63,10 @@ internal sealed class PixelLighting : IDisposable
                 changed |= tiles[i] != tile; tiles[i] = tile;
             }
         if (changed) Build(game.Map);
+#if ANDROID
+        // MonoGame's GLES backend rejects BlendFunction.Max. Preserve the same per-pixel maximum.
+        PrepareSoftware(game, camera, time);
+#else
         device.SetRenderTarget(lightMap);
         device.Clear(Color.Transparent);
         // Max blending caps overlapping fire sources instead of washing out dense Hell walls.
@@ -75,6 +79,7 @@ internal sealed class PixelLighting : IDisposable
                 light.Color * (Flicker(light, time) * (light.Window ? 1 + NightAmount * 1.8f : 1)));
         }
         batch.End();
+#endif
     }
 
     public void DrawTorches(SpriteBatch batch, MapVisibility visibility, double time)

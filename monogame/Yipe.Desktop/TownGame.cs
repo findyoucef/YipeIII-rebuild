@@ -37,7 +37,8 @@ internal sealed partial class TownGame : Game
     private TownMap map = null!;
     private GameSession session = null!;
     private MapCatalog catalog = null!;
-    private string contentDirectory = null!;
+    private readonly string contentDirectory;
+    private readonly string dataDirectory;
     private GameSaveStore saves = null!;
     private TownRenderer town = null!;
     private WorldRenderer world = null!;
@@ -88,23 +89,36 @@ internal sealed partial class TownGame : Game
     private Task<GameSession>? loading;
 
     public TownGame(bool smoke = false, string? screenshot = null, string? selectedSave = null)
+        : this(smoke, screenshot, selectedSave, null, null) { }
+
+    internal TownGame(bool smoke, string? screenshot, string? selectedSave, string? contentRoot, string? dataRoot)
     {
+        contentDirectory = contentRoot ?? Path.Combine(AppContext.BaseDirectory, "Content");
+        dataDirectory = dataRoot ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YipeIII-MonoGame");
         this.smoke = smoke;
         this.selectedSave = selectedSave;
         this.screenshot = screenshot;
         graphics = new GraphicsDeviceManager(this)
         {
+#if !ANDROID
             PreferredBackBufferWidth = CanvasWidth * 4,
             PreferredBackBufferHeight = CanvasHeight * 4,
+#endif
             // SDL's macOS OpenGL display-link wait can stall before the first frame.
             // The fixed 60 Hz game loop below also paces presentation without VSync.
             SynchronizeWithVerticalRetrace = !smoke && !OperatingSystem.IsMacOS(),
             HardwareModeSwitch = false,
         };
+#if ANDROID
+        graphics.IsFullScreen = true;
+        graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+#else
         Window.Title = "Yipe! III | Enter / A: actions | Esc / Start: pause";
         Window.AllowUserResizing = true;
         Window.TextInput += (_, e) => { if (IsActive && !paused) textReceiver?.Invoke(e.Character); };
         IsMouseVisible = true;
+#endif
         IsFixedTimeStep = true;
         TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 60);
         Deactivated += (_, _) => { if (studioSplashRemaining <= 0 && !titleScreen) paused = true; };
@@ -133,7 +147,6 @@ internal sealed partial class TownGame : Game
         heat = new HeatEffect(GraphicsDevice, CanvasWidth, CanvasHeight);
         sunShafts = new SunShafts(GraphicsDevice, CanvasWidth, CanvasHeight);
         mapView = new RenderTarget2D(GraphicsDevice, Map.Width * 32, Map.Height * 32);
-        contentDirectory = Path.Combine(AppContext.BaseDirectory, "Content");
         using (var stream = File.OpenRead(Path.Combine(contentDirectory, "Branding", "icosium-labs.png")))
             studioLogo = Texture2D.FromStream(GraphicsDevice, stream);
         using (var stream = File.OpenRead(Path.Combine(contentDirectory, "maps.json")))
@@ -147,9 +160,7 @@ internal sealed partial class TownGame : Game
         adventure = new Adventure(session);
         renderedMap = session.CurrentMap;
         journal.Observe(adventure);
-        saves = new GameSaveStore(selectedSave ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "YipeIII-MonoGame", "game.y3m"), catalog);
+        saves = new GameSaveStore(selectedSave ?? Path.Combine(dataDirectory, "game.y3m"), catalog);
 
         adventureDirectory = Path.GetDirectoryName(saves.FilePath)!;
         var saveFolder = new DirectoryInfo(adventureDirectory);
@@ -160,7 +171,7 @@ internal sealed partial class TownGame : Game
         audio = new GameAudio(contentDirectory);
         music = new GameMusic(contentDirectory);
         profile = new DesktopProfile(selectedSave is not null ? Path.ChangeExtension(selectedSave, ".profile.json")
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YipeIII-MonoGame", "profile.json"));
+            : Path.Combine(dataDirectory, "profile.json"));
         scanlines = profile.Data.Scanlines; miniatureMode = profile.Data.Miniature;
         vignette = profile.Data.Vignette;
         pixelLighting = profile.Data.PixelLighting;
@@ -203,14 +214,25 @@ internal sealed partial class TownGame : Game
         if (controllerConnected && !pad.IsConnected && studioSplashRemaining <= 0 && !titleScreen)
         {
             paused = true;
-            menuMessage = "Controller disconnected.\nReconnect or use the keyboard.";
+            menuMessage = touchEnabled ? "Controller disconnected.\nTouch controls are available." : "Controller disconnected.\nReconnect or use the keyboard.";
         }
         controllerConnected = pad.IsConnected;
 
         var keyboard = Keyboard.GetState();
+        var touch = touchEnabled ? ReadTouch(Microsoft.Xna.Framework.Input.Touch.TouchPanel.GetState()) : default;
         var actions = input.Update(keyboard, pad, elapsed, IsActive,
             repeatInterval: titleScreen || paused || overlay is not null || mapOpen ? 0.12 : PlayerMotion.StepDuration, textInput: textReceiver is not null,
-            controls: titleScreen || studioSplashRemaining > 0 || paused || overlay is not null || mapOpen ? null : profile.Data.Controls);
+            controls: titleScreen || studioSplashRemaining > 0 || paused || overlay is not null || mapOpen ? null : profile.Data.Controls,
+            touchDirection: touchEnabled ? touchInput.HeldDirection : default);
+        if (touchEnabled) actions = new(actions.Direction != Point.Zero ? actions.Direction : touch.Direction,
+            actions.Confirm || touch.Confirm, actions.Back || touch.Back, actions.Pause || touch.Pause, actions.Map || touch.Map);
+#if ANDROID
+        if (androidBack)
+        {
+            androidBack = false;
+            actions = actions with { Back = true, Pause = true };
+        }
+#endif
 
         audio.Update(IsActive);
         UpdateCaveAmbience(elapsed);
@@ -446,6 +468,7 @@ internal sealed partial class TownGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
+        BeginTouchDraw();
         if (studioSplashRemaining > 0) { DrawStudioSplash(); base.Draw(gameTime); return; }
         if (titleScreen) { DrawTitleScreen(); base.Draw(gameTime); return; }
         var outdoor = session.CurrentMap.Id is >= 1 and <= 40;
@@ -552,6 +575,7 @@ internal sealed partial class TownGame : Game
                 Fill(new(destination.X, destination.Y + (int)((y + 1) * scale) - 1, destination.Width, 1), Color.Black * 0.12f);
         batch.End();
 
+        DrawTouchControls();
         if (smoke && loading is null && ++smokeFrames == 3)
         {
             var rendered = presentedWorld ?? canvas;
@@ -600,7 +624,7 @@ internal sealed partial class TownGame : Game
             (int)(CanvasHeight * .48f - height / 2), (int)width, (int)height);
         batch.Begin(blendState: BlendState.NonPremultiplied, samplerState: SamplerState.PointClamp);
         batch.Draw(studioLogo, bounds, new Color(1f, 1f, 1f, opacity));
-        var hint = controllerConnected ? "SOUTH: CONTINUE" : "ENTER: CONTINUE";
+        var hint = controllerConnected ? "SOUTH: CONTINUE" : touchEnabled ? "TAP TO CONTINUE" : "ENTER: CONTINUE";
         var caption = new Color(Muted.R, Muted.G, Muted.B, (byte)(opacity * 200));
         font.Draw(batch, hint, (CanvasWidth - hint.Length * 6) / 2, 159, caption);
         batch.End();
@@ -609,6 +633,7 @@ internal sealed partial class TownGame : Game
         batch.Begin(samplerState: SamplerState.PointClamp);
         batch.Draw(canvas, CanvasDestination(), Color.White);
         batch.End();
+        TouchTarget(new(0, 0, CanvasWidth, CanvasHeight), TouchConfirm);
     }
 
     private void Fill(Rectangle rectangle, Color color) => batch.Draw(pixel, rectangle, color);

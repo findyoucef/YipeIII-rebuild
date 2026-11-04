@@ -21,6 +21,8 @@ internal sealed class ProfileData
     public int RainStrength { get; set; } = 1;
     public bool ScreenShake { get; set; }
     public bool AutoBattle { get; set; }
+    public float TouchSize { get; set; } = 1f;
+    public float TouchOpacity { get; set; } = .55f;
     public int TimeOfDayMode { get; set; }
     public double DayNightSeconds { get; set; } = DayNightCycle.OpeningTime;
     public HighScoreEntry[] Scores { get; set; } = HighScores.Create();
@@ -49,6 +51,8 @@ internal sealed class DesktopProfile
             if (data is null || data.Version != 1 || !float.IsFinite(data.Volume) || data.Volume is < 0 or > 1
                 || !float.IsFinite(data.EffectsVolume) || data.EffectsVolume is < 0 or > 1
                 || !float.IsFinite(data.MusicVolume) || data.MusicVolume is < 0 or > 1
+                || !float.IsFinite(data.TouchSize) || data.TouchSize is < .8f or > 1.3f
+                || !float.IsFinite(data.TouchOpacity) || data.TouchOpacity is < .2f or > 1
                 || data.Miniature is < 0 or > 2 || data.SunShaftStrength is < 0 or > 2
                 || data.CloudShadowStrength is < 0 or > 2 || data.RainStrength is < 0 or > 2
                 || data.TimeOfDayMode is < 0 or > 3 || !double.IsFinite(data.DayNightSeconds)

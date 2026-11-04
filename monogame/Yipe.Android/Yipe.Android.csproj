@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <ApplicationId>com.icosiumlabs.yipeiii</ApplicationId>
+    <ApplicationTitle>Yipe! III</ApplicationTitle>
+    <ApplicationVersion>2</ApplicationVersion>
+    <ApplicationDisplayVersion>0.2.0-touch</ApplicationDisplayVersion>
+    <RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+    <AndroidPackageFormats>apk</AndroidPackageFormats>
+    <!-- A self-contained sideload prototype; no fast-deployment dependency. -->
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
+    <!-- .NET 10's LLVM registration omits MainActivity callbacks in this untrimmed build. -->
+    <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
+  </PropertyGroup>
+  <Import Project="../GameContent.props" />
+  <ItemGroup>
+    <ProjectReference Include="../Yipe.Core/Yipe.Core.csproj" />
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5.1" />
+    <!-- Compile the same game against the Android backend, without the desktop entry point. -->
+    <Compile Include="../Yipe.Desktop/*.cs" Exclude="../Yipe.Desktop/Program.cs" Link="Game/%(Filename)%(Extension)" />
+    <AndroidAsset Include="@(GameContent)" />
+    <AndroidResource Include="../packaging/icons/YipeIII.png" Link="Resources/drawable/yipe.png" />
+  </ItemGroup>
+</Project>

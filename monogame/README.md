@@ -1,4 +1,4 @@
-# MonoGame desktop port
+# MonoGame port
 
 Current verification: **660 core/input/persistence checks**, **4,226 visual
 integration checks**, and the earned campaign's **43,080 C++ state/RNG observations
@@ -25,6 +25,18 @@ root remains the gameplay reference.
 Download the standalone [MonoGame macOS preview.9](https://github.com/findyoucef/YipeIII-rebuild/releases/tag/monogame-v0.1.0-preview.9),
 built separately from the C++ release. See [packaging and verification](packaging/README.md)
 for the self-contained Apple Silicon app, extraction checks and supported-platform limits.
+
+An **Android ARM64 touch/controller prototype** now builds alongside macOS from
+shared game source and assets. It includes an eight-direction touch pad, action,
+back, map and menu buttons, tappable menus, draggable volume sliders and a name
+keyboard. Options → Touch controls adjusts size and opacity; world controls hide
+when a controller connects. macOS keeps its existing controls, project and release
+workflow, and `Yipe.slnx` does not require the Android workload. See the
+[touch review](evidence/2026-10-12-android-touch/review.html) and
+[APK build instructions](packaging/README.md#android-arm64-prototype).
+Fresh checks: **681 core** and **173 focused menu/music/touch checks** pass.
+Full Android campaign coverage, physical controllers, sustained phone performance
+and durable distribution signing remain later work.
 
 Use the [port plan and progress tracker](PORTING_PLAN.md) for the full-game
 milestones, acceptance criteria, current task, and session resume instructions.

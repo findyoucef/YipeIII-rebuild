@@ -16,20 +16,21 @@ public sealed class GameInput
     public Point HeldDirection { get; private set; }
 
     public InputFrame Update(KeyboardState keyboard, GamePadState pad, double elapsed, bool active = true,
-        double repeatInterval = PlayerMotion.StepDuration, bool textInput = false, ControlBindings? controls = null)
+        double repeatInterval = PlayerMotion.StepDuration, bool textInput = false, ControlBindings? controls = null, Point touchDirection = default)
     {
         controls = textInput ? Defaults : controls ?? Defaults;
+        var direction = Direction(keyboard, pad, controls, textInput);
+        if (direction == Point.Zero) direction = touchDirection;
         if (!active || pad.IsConnected != previousPad.IsConnected)
         {
             previousKeyboard = keyboard;
             previousPad = pad;
-            previousDirection = Direction(keyboard, pad, controls, textInput);
+            previousDirection = direction;
             repeatRemaining = 0.28;
             HeldDirection = Point.Zero;
             return default;
         }
 
-        var direction = Direction(keyboard, pad, controls, textInput);
         var step = Point.Zero;
         if (direction != Point.Zero)
         {

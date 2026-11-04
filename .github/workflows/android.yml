@@ -1,0 +1,60 @@
+name: MonoGame Android prototype
+
+on:
+  push:
+    branches: [main]
+    paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['monogame/**', 'assets/**', 'global.json', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Install Android workload and SDK
+        shell: bash
+        run: |
+          dotnet workload install android --skip-manifest-update
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Restore locked dependencies
+        run: dotnet restore monogame/Yipe.Android --locked-mode
+      - name: Build self-contained ARM64 APK
+        run: >-
+          dotnet build monogame/Yipe.Android -c Release --no-restore
+          -t:SignAndroidPackage -p:AndroidSdkDirectory="$ANDROID_HOME"
+          -p:JavaSdkDirectory="$JAVA_HOME" -p:ContinuousIntegrationBuild=true
+      - name: Verify packaged content and native ABI
+        run: python3 monogame/tools/verify_android_apk.py monogame/Yipe.Android/bin/Release/net10.0-android/android-arm64/com.icosiumlabs.yipeiii-Signed.apk
+      - name: Stage prototype and checksum
+        shell: bash
+        run: |
+          mkdir -p build/android
+          cp monogame/Yipe.Android/bin/Release/net10.0-android/android-arm64/*-Signed.apk build/android/YipeIII-Android-arm64-prototype.apk
+          cd build/android
+          sha256sum YipeIII-Android-arm64-prototype.apk > YipeIII-Android-arm64-prototype.apk.sha256
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: YipeIII-Android-arm64-prototype
+          path: build/android/*
+          compression-level: 0
+          if-no-files-found: error
+
+# Sideload prototype, signed with the runner's temporary development key.
+# No store publication or durable update signing; macOS has its own unchanged workflow.
+# Emulator/device execution is recorded locally, not implied by this build-only job.

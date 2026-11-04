@@ -74,7 +74,7 @@ internal sealed partial class TownGame
         void Cancel() { textReceiver = null; cancel(); }
         void Refresh()
         {
-            Choices(title, prompt + "\n\n" + value + "_", [new("Done", Finish), new("Delete last character", Delete), new("Controller keyboard", Letters)], Cancel);
+            Choices(title, prompt + "\n\n" + value + "_", [new("Done", Finish), new("Delete last character", Delete), new(touchEnabled ? "Touch keyboard" : "Controller keyboard", Letters)], Cancel);
             textReceiver = character =>
             {
                 if (character == '\b') { Delete(); return; }
@@ -86,11 +86,12 @@ internal sealed partial class TownGame
         void Letters()
         {
             textReceiver = null;
-            var options = "abcdefghijklmnopqrstuvwxyz0123456789 -'.".Select(c => new OverlayOption(c == ' ' ? "Space" : c.ToString(), () =>
+            var letters = touchEnabled ? "qwertyuiopasdfghjklzxcvbnm0123456789 -'." : "abcdefghijklmnopqrstuvwxyz0123456789 -'.";
+            var options = letters.Select(c => new OverlayOption(c == ' ' ? "Space" : c.ToString(), () =>
             { if (value.Length < 128) value += c; Letters(); })).ToList();
             options.Insert(0, new("Done typing", Refresh));
             options.Insert(1, new("Delete", () => { if (value.Length > 0) value = value[..^1]; Letters(); }));
-            Choices(title, value + "_", options, Refresh);
+            overlay = new(title, value + "_", options, Refresh) { Keyboard = touchEnabled };
         }
         Refresh();
     }

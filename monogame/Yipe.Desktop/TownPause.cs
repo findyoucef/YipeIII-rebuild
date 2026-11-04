@@ -5,7 +5,7 @@ namespace Yipe.Desktop;
 
 internal sealed partial class TownGame
 {
-    private enum PausePage { Main, Adventure, Options, Display, Atmosphere, Audio }
+    private enum PausePage { Main, Adventure, Options, Display, Atmosphere, Audio, Touch }
     private const int PauseRowHeight = 12;
     private static readonly string[][] PauseMenus =
     [
@@ -15,7 +15,10 @@ internal sealed partial class TownGame
         ["Fullscreen", "Scanlines", "Miniature effect", "Vignette", "Screen shake", "Back"],
         ["Pixel lighting", "Sun shafts", "Cloud shadows", "Rain", "Time of day", "Back"],
         ["Sound", "Master volume", "Sound effects volume", "Music", "Music volume", "Back"],
+        ["Control size", "Opacity", "Back"],
     ];
+    private static readonly string[] TouchOptions = ["Display", "Atmosphere", "Sound", "Battle pacing", "Edit controls", "Help & credits", "Touch controls", "Back"];
+    private string[] CurrentPauseItems => touchEnabled && pausePage == PausePage.Options ? TouchOptions : PauseMenus[(int)pausePage];
     private PausePage pausePage;
     private Action? restorePauseOverlay;
     private Overlay? soundMenuParent;
@@ -38,6 +41,7 @@ internal sealed partial class TownGame
                 break;
             case PausePage.Display: OpenPausePage(PausePage.Options); break;
             case PausePage.Atmosphere: OpenPausePage(PausePage.Options, 1); break;
+            case PausePage.Touch: OpenPausePage(PausePage.Options, 6); break;
             case PausePage.Audio:
                 if (soundMenuParent is not null)
                 {
@@ -52,7 +56,7 @@ internal sealed partial class TownGame
     private void UpdatePauseMenu(InputFrame actions)
     {
         if (actions.Back || actions.Pause) { BackPausePage(); return; }
-        var count = PauseMenus[(int)pausePage].Length;
+        var count = CurrentPauseItems.Length;
         if (actions.Direction.Y != 0) selected = (selected + actions.Direction.Y + count) % count;
         if (pausePage == PausePage.Audio && actions.Direction.X != 0)
         {
@@ -66,6 +70,13 @@ internal sealed partial class TownGame
                 case 4: profile.Data.MusicVolume = Math.Clamp(MathF.Round(profile.Data.MusicVolume + change, 2), 0, 1); break;
                 default: return;
             }
+            SavePreferences();
+        }
+        else if (pausePage == PausePage.Touch && actions.Direction.X != 0)
+        {
+            if (selected == 0) profile.Data.TouchSize = Math.Clamp(profile.Data.TouchSize + actions.Direction.X * .1f, .8f, 1.3f);
+            else if (selected == 1) profile.Data.TouchOpacity = Math.Clamp(profile.Data.TouchOpacity + actions.Direction.X * .1f, .2f, 1f);
+            else return;
             SavePreferences();
         }
         else if (actions.Confirm) ActivateMenu();
@@ -90,7 +101,7 @@ internal sealed partial class TownGame
 
     private void ActivateMenu()
     {
-        if (pausePage != PausePage.Main && selected == PauseMenus[(int)pausePage].Length - 1)
+        if (pausePage != PausePage.Main && selected == CurrentPauseItems.Length - 1)
         { BackPausePage(); return; }
         switch (pausePage)
         {
@@ -124,12 +135,14 @@ internal sealed partial class TownGame
                     case 3: profile.Data.AutoBattle = !profile.Data.AutoBattle; break;
                     case 4: ShowPauseOverlay(() => EditControls()); return;
                     case 5: ShowPauseOverlay(ShowHelp); return;
+                    case 6 when touchEnabled: OpenPausePage(PausePage.Touch); return;
                 }
                 break;
             case PausePage.Display:
                 switch (selected)
                 {
                     case 0:
+                        if (OperatingSystem.IsAndroid()) { menuMessage = "Android always uses fullscreen."; return; }
                         graphics.IsFullScreen = !graphics.IsFullScreen;
                         graphics.PreferredBackBufferWidth = graphics.IsFullScreen
                             ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : CanvasWidth * 4;
@@ -160,6 +173,7 @@ internal sealed partial class TownGame
                     case 3: profile.Data.Music = !profile.Data.Music; break;
                 }
                 break;
+            case PausePage.Touch: return;
         }
         SavePreferences();
     }
@@ -188,6 +202,7 @@ internal sealed partial class TownGame
 
     private void DrawPauseMenu()
     {
+        if (touchEnabled) { DrawTouchPauseMenu(); return; }
         var offset = (int)MathF.Round((1 - pauseAmount) * 4);
         Fill(new(0, 0, CanvasWidth, CanvasHeight), Color.Black * .5f);
         DrawPanel(new(28, 4 + offset, 264, 172));

@@ -52,6 +52,7 @@ internal static class PixelLightingChecks
                 check(Frame(1).All(p => p.A == 255), $"Map {id}: lighting composes with heat, miniature, vignette and scanlines");
                 Save(Frame(1), $"map-{id}-combined.png");
                 Set("miniatureMode", 0); Set("vignette", false); Set("scanlines", false);
+                CompareSoftware(adventure, Matrix.CreateTranslation(-73, -111, 0), 1.5);
             }
 
             // Every authored cave now has dedicated contours. Retain fallback
@@ -158,9 +159,20 @@ internal static class PixelLightingChecks
         }
         Color[] LightFrame(Adventure adventure, double time)
         {
-            prepare.Invoke(lighting, [batch, adventure, Matrix.Identity, time]); game.GraphicsDevice.SetRenderTarget(null);
+            return CompareSoftware(adventure, Matrix.Identity, time);
+        }
+        Color[] CompareSoftware(Adventure adventure, Matrix camera, double time)
+        {
+            prepare.Invoke(lighting, [batch, adventure, camera, time]); game.GraphicsDevice.SetRenderTarget(null);
             var texture = (Texture2D)lightType.GetField("lightMap", flags)!.GetValue(lighting)!;
-            var pixels = new Color[320 * 180]; texture.GetData(pixels); return pixels;
+            var pixels = new Color[320 * 180]; texture.GetData(pixels);
+            lightType.GetMethod("PrepareSoftware", flags)!.Invoke(lighting, [adventure, camera, time]);
+            var software = new Color[pixels.Length]; texture.GetData(software);
+            check(pixels.Zip(software).All(p => Math.Abs(p.First.R - p.Second.R) <= 1 &&
+                Math.Abs(p.First.G - p.Second.G) <= 1 && Math.Abs(p.First.B - p.Second.B) <= 1 &&
+                Math.Abs(p.First.A - p.Second.A) <= 1),
+                $"Map {adventure.Map.Id}: Android software maximum matches desktop GPU lighting within one channel level");
+            return pixels;
         }
         Color[] Frame(double time)
         {
