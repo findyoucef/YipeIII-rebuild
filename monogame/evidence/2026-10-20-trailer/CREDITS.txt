@@ -1,0 +1,54 @@
+QUEST OF YIPE! III — TRAILER, CUT 3
+Icosium Labs • 20 October 2026
+
+CURRENT GAME AND TRAILER
+Port/remaster development and creative direction: Icosium Labs.
+Footage: current local MonoGame desktop build, captured through the real game renderer.
+New artwork created with OpenAI image generation, adapted and integrated by Icosium Labs.
+Development and trailer production assistance: OpenAI Codex.
+
+ORIGINAL GAME
+Quest of Yipe! III, original version 1.16.
+Copyright (C) 2002–03 Kevin Kinell.
+Programming and concept: Kevin Kinell.
+Graphics: Pat Kelley.
+Lead beta tester: Eric Johnson.
+Original game recordings are retained, including the combat hit recordings in this trailer.
+
+MUSIC
+“Celtic Impulse” — Kevin MacLeod (incompetech.com).
+Source: https://www.incompetech.com/music/royalty-free/index.html?isrc=USUAN1100297
+Licensed under Creative Commons Attribution 4.0:
+https://creativecommons.org/licenses/by/4.0/
+The existing game adaptation is excerpted, faded, mixed and loudness adjusted for this trailer.
+Attribution and the license URL also appear in the video endcard and metadata.
+The endcard also acknowledges the original game by Kevin Kinell and artwork by Pat Kelley.
+
+AMBIENT RECORDINGS — CC0 1.0
+Ambient Bird Sounds — isaiah658
+https://opengameart.org/content/ambient-bird-sounds
+
+Park ambiences (wind and river) — Thimras
+https://opengameart.org/content/park-ambiences
+
+Ice Crack 5.wav — ecfike
+https://freesound.org/people/ecfike/sounds/177217/
+
+Loopable Dungeon Ambience — JaggedStone
+https://opengameart.org/content/loopable-dungeon-ambience
+
+Footstep sources: Impact Sounds 1.0 — Kenney
+https://kenney.nl/assets/impact-sounds
+
+CC0 dedication: https://creativecommons.org/publicdomain/zero/1.0/
+These are the existing game adaptations: filtering, mixing and loop preparation
+by Icosium Labs, with additional excerpting, fades and level changes for this trailer.
+Full asset provenance remains in monogame/Yipe.Desktop/Content/Audio.
+
+PRODUCTION
+MonoGame game rendering; FFmpeg/libx264 video editing and encoding.
+Capture uses staged isolated adventures and normal game actions. Ambient and
+footstep recordings are mixed in post; combat hits and footfalls use captured event timing.
+Location changes use short cross-dissolves. The Fire Cave approach and Flame Flier
+fight are an uninterrupted capture of walking into an authored monster placement.
+This trailer has not been published. It is a revised cut for internal review.

@@ -1,0 +1,9 @@
+01-ident -> 02-maynard: midpoint blend error 0.69, source differences 40.51/41.37; PASS
+02-maynard -> 03-overworld: midpoint blend error 0.75, source differences 12.17/12.23; PASS
+03-overworld -> 04-snow: midpoint blend error 0.82, source differences 45.88/46.29; PASS
+04-snow -> 05-ice: midpoint blend error 0.95, source differences 55.16/54.23; PASS
+05-ice -> 06-raft: midpoint blend error 0.78, source differences 14.78/14.08; PASS
+06-raft -> 07-fire-battle: midpoint blend error 1.00, source differences 21.27/20.96; PASS
+07-fire-battle -> 09-hell: midpoint blend error 0.87, source differences 18.43/18.59; PASS
+09-hell -> 10-night: midpoint blend error 0.86, source differences 19.64/19.58; PASS
+10-night -> 11-title: midpoint blend error 1.01, source differences 22.68/21.67; PASS

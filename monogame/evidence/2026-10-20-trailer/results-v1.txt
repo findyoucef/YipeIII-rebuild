@@ -1,0 +1,43 @@
+Quest of Yipe! III — first trailer review
+2026-10-20
+
+DELIVERABLE
+yipe-iii-trailer-v1.mp4
+45.000 seconds; 2,700 video frames
+1920 x 1080, 60 fps, H.264, yuv420p
+Stereo AAC, 48 kHz, 256 kb/s target
+11,804,723 bytes (approximately 11.3 MiB)
+Fast-start metadata enabled
+
+CHECKS COMPLETED
+- Capture tool compiled and ran against the current local desktop build.
+- All 11 input clips matched their planned durations and 1280x720 / 60 fps format.
+- The corrected Maynard and snow clips end without accidental menus or encounters.
+- Main battle footage uses a generated encounter and normal game action/presentation code.
+- Combat sound timestamps came from the actual captured presentation, including
+  only monster counters that dealt damage.
+- Final encode contains exactly 2,700 video frames and 45-second video/audio streams.
+- Full video/audio decode completed with FFmpeg -xerror and no decoder errors.
+- Extracted frames from every shot inspected for framing, menus and title readability.
+- Nearest-neighbor scaling used for the 1080p export.
+- Encoded audio measured -16.0 LUFS integrated; true peak -1.2 dBFS; LRA 1.9 LU.
+- Music attribution, license URL and edit notice included on the endcard and in metadata.
+- Complete source credits included in CREDITS.txt.
+- git diff --check passed. New capture/edit tools reviewed for scope and simplicity.
+
+SCOPE AND LIMITS
+This is a first cut for creative review. Audio checks measure levels and encoding;
+the user should judge the musical mood, balance and pacing during playback.
+Footage was generated offline through the real game renderer with fixed timesteps,
+isolated adventures and scripted normal game actions. It is not a real-time
+performance benchmark. Music, ambience and footsteps were mixed in post.
+No personal saves were used. No gameplay production code was changed for this task.
+Earlier Android development changes remain in the working tree.
+No package, commit, push or publication was performed.
+
+REPRODUCTION
+See monogame/tools/TrailerCapture/README.md.
+Raw clips, screenshots and isolated saves: build/trailer-20261020/
+Edit: monogame/tools/edit_trailer.py
+Timeline and audio source/cue manifest: timeline.json
+Encoded stream metadata: probe.json

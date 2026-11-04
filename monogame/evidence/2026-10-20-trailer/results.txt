@@ -1,0 +1,58 @@
+Quest of Yipe! III — revised trailer review (cut 3)
+2026-10-20
+
+DELIVERABLE
+yipe-iii-trailer-v3.mp4
+42.000 seconds; 2,520 video frames
+1920 x 1080, 60 fps, H.264, yuv420p
+Stereo AAC, 48 kHz, 256 kb/s target
+16,269,367 bytes (approximately 15.5 MiB)
+Fast-start metadata enabled
+
+REVISION
+- Nine 20-frame cross-dissolves soften location changes. Their overlaps turn
+  45 seconds of source footage into a 42-second edit.
+- Replaced the separate Fire Cave/combat clips with one continuous eight-second take.
+- The character walks 11 steps into the authored Flame Flier at (7,1) in map 111.
+  Its actual encounter opens at 3.100 seconds into the shot / 24.100 seconds
+  into the finished trailer. No direct battle construction or assignment remains.
+- Two normal attacks and the monster's counters follow. The second attack misses;
+  its hit sound is correctly omitted. Combat outcomes/stats are not edited.
+- Longer walking routes, synchronized footsteps, and the closing credit to
+  original creators Kevin Kinell and Pat Kelley are retained.
+- Previous v1/v2 MP4s and their results are preserved.
+
+CHECKS COMPLETED
+- Capture tool compiled and ran against the current local desktop build.
+- All 10 input clips matched their planned durations and 1280x720 / 60 fps format.
+- Nine unchanged clips were reused from the checked v2 capture.
+- New encounter position, monster identity and route completion asserted;
+  encounter.json records the result. Approach, contact and battle frames inspected.
+- Combat sound timestamps came from the actual captured presentation, including
+  only monster counters that dealt damage.
+- Final encode contains exactly 2,520 video frames and 42-second video/audio streams.
+- Full video/audio decode completed with FFmpeg -xerror and no decoder errors.
+- All nine encoded transition midpoints match the blend of their source frames
+  rather than hard cuts. See transition-checks.txt for measured pixel differences.
+- Nearest-neighbor scaling used for the 1080p export.
+- Encoded audio measured -16.1 LUFS integrated; true peak -1.4 dBFS; LRA 1.9 LU.
+- Music attribution, license URL and edit notice included on the endcard and in metadata.
+- Complete source credits included in CREDITS.txt.
+- git diff --check passed. New capture/edit tools reviewed for scope and simplicity.
+
+SCOPE AND LIMITS
+This is a revised cut for creative review. Audio checks measure levels and encoding;
+the user should judge the musical mood, balance and pacing during playback.
+Footage was generated offline through the real game renderer with fixed timesteps,
+isolated adventures and scripted normal game actions. It is not a real-time
+performance benchmark. Music, ambience and footsteps were mixed in post.
+No personal saves were used. No gameplay production code was changed for this task.
+Earlier Android development changes remain in the working tree.
+No package, commit, push or publication was performed.
+
+REPRODUCTION
+See monogame/tools/TrailerCapture/README.md.
+Raw clips, screenshots, motion traces and isolated saves: build/trailer-20261020-v3/
+Edit: monogame/tools/edit_trailer.py
+Shot, transition and audio source/cue manifest: timeline.json
+Encoded stream metadata: probe.json

@@ -1,0 +1,12 @@
+{
+  "At": 3.1,
+  "Map": 111,
+  "Position": {
+    "X": 7,
+    "Y": 1
+  },
+  "TypeId": 14,
+  "Name": "Flame Flier",
+  "StepsCompleted": 11,
+  "Entry": "Adventure.Move into authored placement"
+}

@@ -1,0 +1,54 @@
+Quest of Yipe! III — revised trailer review (cut 2)
+2026-10-20
+
+DELIVERABLE
+yipe-iii-trailer-v2.mp4
+45.000 seconds; 2,700 video frames
+1920 x 1080, 60 fps, H.264, yuv420p
+Stereo AAC, 48 kHz, 256 kb/s target
+13,787,470 bytes (approximately 13.1 MiB)
+Fast-start metadata enabled
+
+REVISION
+- Removed the capture-only pause between each walking step.
+- Longer paths: Maynard 15 steps / 4.00 seconds continuously moving;
+  woods 14 steps / 3.73 seconds; Fire Cave 10 steps / 2.67 seconds;
+  nighttime Maynard 8 steps / 2.13 seconds.
+- Per-frame motion traces confirm zero standing frames between walking steps.
+- Footstep cues now use captured completion times and the actual surface material.
+- Closing card: "Based on the original adventure by Kevin Kinell",
+  followed by "With original artwork by Pat Kelley".
+- Original v1 MP4 and results-v1.txt retained for comparison.
+
+CHECKS COMPLETED
+- Capture tool compiled and ran against the current local desktop build.
+- All 11 input clips matched their planned durations and 1280x720 / 60 fps format.
+- The corrected Maynard and snow clips end without accidental menus or encounters.
+- Main battle footage uses a generated encounter and normal game action/presentation code.
+- Combat sound timestamps came from the actual captured presentation, including
+  only monster counters that dealt damage.
+- Final encode contains exactly 2,700 video frames and 45-second video/audio streams.
+- Full video/audio decode completed with FFmpeg -xerror and no decoder errors.
+- Extracted frames from every shot inspected for framing, menus and title readability.
+- Nearest-neighbor scaling used for the 1080p export.
+- Encoded audio measured -16.0 LUFS integrated; true peak -1.3 dBFS; LRA 1.9 LU.
+- Music attribution, license URL and edit notice included on the endcard and in metadata.
+- Complete source credits included in CREDITS.txt.
+- git diff --check passed. New capture/edit tools reviewed for scope and simplicity.
+
+SCOPE AND LIMITS
+This is a revised cut for creative review. Audio checks measure levels and encoding;
+the user should judge the musical mood, balance and pacing during playback.
+Footage was generated offline through the real game renderer with fixed timesteps,
+isolated adventures and scripted normal game actions. It is not a real-time
+performance benchmark. Music, ambience and footsteps were mixed in post.
+No personal saves were used. No gameplay production code was changed for this task.
+Earlier Android development changes remain in the working tree.
+No package, commit, push or publication was performed.
+
+REPRODUCTION
+See monogame/tools/TrailerCapture/README.md.
+Raw clips, screenshots, motion traces and isolated saves: build/trailer-20261020-v2/
+Edit: monogame/tools/edit_trailer.py
+Timeline and audio source/cue manifest: timeline.json
+Encoded stream metadata: probe.json

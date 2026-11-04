@@ -1,0 +1,594 @@
+{
+  "shots": [
+    {
+      "Name": "01-ident",
+      "Map": 17,
+      "At": {
+        "X": 3,
+        "Y": 3
+      },
+      "Seconds": 2.5,
+      "Route": "",
+      "Start": 0.0
+    },
+    {
+      "Name": "02-maynard",
+      "Map": 17,
+      "At": {
+        "X": 3,
+        "Y": 10
+      },
+      "Seconds": 6,
+      "Route": "UUUURRUUURRRRRU",
+      "Start": 2.1666666666666665
+    },
+    {
+      "Name": "03-overworld",
+      "Map": 20,
+      "At": {
+        "X": 11,
+        "Y": 10
+      },
+      "Seconds": 4,
+      "Route": "LLLLLUUURRURRR",
+      "Start": 7.833333333333333
+    },
+    {
+      "Name": "04-snow",
+      "Map": 13,
+      "At": {
+        "X": 6,
+        "Y": 5
+      },
+      "Seconds": 3.5,
+      "Route": "",
+      "Start": 11.5
+    },
+    {
+      "Name": "05-ice",
+      "Map": 41,
+      "At": {
+        "X": 6,
+        "Y": 5
+      },
+      "Seconds": 4,
+      "Route": "LL",
+      "Start": 14.666666666666666
+    },
+    {
+      "Name": "06-raft",
+      "Map": 62,
+      "At": {
+        "X": 4,
+        "Y": 7
+      },
+      "Seconds": 3,
+      "Route": "",
+      "Start": 18.333333333333332
+    },
+    {
+      "Name": "07-fire-battle",
+      "Map": 111,
+      "At": {
+        "X": 6,
+        "Y": 9
+      },
+      "Seconds": 8,
+      "Route": "RRUUUUUUUUL",
+      "Start": 21.0
+    },
+    {
+      "Name": "09-hell",
+      "Map": 117,
+      "At": {
+        "X": 5,
+        "Y": 5
+      },
+      "Seconds": 3,
+      "Route": "",
+      "Start": 28.666666666666668
+    },
+    {
+      "Name": "10-night",
+      "Map": 17,
+      "At": {
+        "X": 10,
+        "Y": 2
+      },
+      "Seconds": 3,
+      "Route": "LLLLLLDD",
+      "Start": 31.333333333333332
+    },
+    {
+      "Name": "11-title",
+      "Map": 17,
+      "At": {
+        "X": 8,
+        "Y": 3
+      },
+      "Seconds": 8,
+      "Route": "",
+      "Start": 34.0
+    }
+  ],
+  "transitions": [
+    {
+      "from": "01-ident",
+      "to": "02-maynard",
+      "at": 2.1666666666666665,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "02-maynard",
+      "to": "03-overworld",
+      "at": 7.833333333333333,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "03-overworld",
+      "to": "04-snow",
+      "at": 11.5,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "04-snow",
+      "to": "05-ice",
+      "at": 14.666666666666666,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "05-ice",
+      "to": "06-raft",
+      "at": 18.333333333333332,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "06-raft",
+      "to": "07-fire-battle",
+      "at": 21.0,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "07-fire-battle",
+      "to": "09-hell",
+      "at": 28.666666666666668,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "09-hell",
+      "to": "10-night",
+      "at": 31.333333333333332,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    },
+    {
+      "from": "10-night",
+      "to": "11-title",
+      "at": 34.0,
+      "duration": 0.3333333333333333,
+      "type": "cross-dissolve"
+    }
+  ],
+  "audio_cues": [
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/maynard-day.wav",
+      "at": 2.1666666666666665,
+      "length": 6,
+      "gain": 0.28,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/maynard-day.wav",
+      "at": 7.833333333333333,
+      "length": 4,
+      "gain": 0.22,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/maynard-night.wav",
+      "at": 11.5,
+      "length": 3.5,
+      "gain": 0.35,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/ice-cave.wav",
+      "at": 14.666666666666666,
+      "length": 4,
+      "gain": 0.45,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/water-cave.wav",
+      "at": 18.333333333333332,
+      "length": 3,
+      "gain": 0.6,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Ambience/maynard-night.wav",
+      "at": 31.333333333333332,
+      "length": 3,
+      "gain": 0.3,
+      "fade": 0.25
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 2.583333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 2.8499999999999996,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 3.1166666666666663,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 3.383333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 3.65,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-2.wav",
+      "at": 3.9166666666666665,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 4.183333333333334,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 4.449999999999999,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 4.716666666666667,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 4.983333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 5.25,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-2.wav",
+      "at": 5.516666666666667,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 5.783333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 6.05,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 6.316666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 8.25,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 8.516666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 8.783333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 9.049999999999999,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 9.316666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 9.583333333333332,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 9.85,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 10.116666666666667,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 10.383333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 10.65,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 10.916666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 11.183333333333334,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 11.45,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 11.716666666666667,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 15.166666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 15.95,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 21.416666666666668,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 21.683333333333334,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-2.wav",
+      "at": 21.95,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 22.216666666666665,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/sand-1.wav",
+      "at": 22.483333333333334,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-2.wav",
+      "at": 22.75,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 23.016666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 23.28333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-2.wav",
+      "at": 23.55,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-0.wav",
+      "at": 23.816666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 24.083333333333332,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 31.75,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/stone-1.wav",
+      "at": 32.016666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 32.28333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 32.55,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 32.81666666666666,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-2.wav",
+      "at": 33.08333333333333,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-0.wav",
+      "at": 33.35,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "monogame/Yipe.Desktop/Content/Audio/Footsteps/grass-1.wav",
+      "at": 33.61666666666667,
+      "length": 0.4,
+      "gain": 0.45,
+      "fade": 0
+    },
+    {
+      "source": "assets/embedded/audio/130_HIT-1033.wav",
+      "at": 24.73,
+      "length": 0.6,
+      "gain": 2,
+      "fade": 0
+    },
+    {
+      "source": "assets/embedded/audio/134_MON_HIT-1033.wav",
+      "at": 25.25,
+      "length": 0.6,
+      "gain": 2,
+      "fade": 0
+    },
+    {
+      "source": "assets/embedded/audio/134_MON_HIT-1033.wav",
+      "at": 27.25,
+      "length": 0.6,
+      "gain": 2,
+      "fade": 0
+    }
+  ]
+}

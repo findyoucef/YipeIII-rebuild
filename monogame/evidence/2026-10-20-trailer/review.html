@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quest of Yipe! III · Trailer review</title>
+<style>
+  :root { color-scheme:dark; font-family:system-ui,-apple-system,sans-serif; background:#0b1218; color:#ece9df }
+  * { box-sizing:border-box } body { margin:0; padding:42px 5vw 64px; max-width:1540px; margin-inline:auto }
+  .eyebrow { color:#dfbb70; font-size:12px; font-weight:700; letter-spacing:.22em; text-transform:uppercase }
+  h1 { font-size:clamp(28px,4vw,48px); letter-spacing:-.04em; margin:12px 0 }
+  .intro { color:#aebcc2; line-height:1.6; margin:0 0 26px }
+  video { display:block; width:100%; aspect-ratio:16/9; background:#060a0e; border:1px solid #344047; border-radius:8px }
+  .links { display:flex; flex-wrap:wrap; gap:12px 24px; margin:18px 0 34px }
+  a { color:#e4c37c; text-underline-offset:4px } a:hover { color:white }
+  .grid { display:grid; grid-template-columns:1.2fr 1fr; gap:36px }
+  h2 { font-size:20px; margin:0 0 18px } p { line-height:1.65; color:#b5c2c8 }
+  ol { list-style:none; padding:0; margin:0; border-top:1px solid #27353d }
+  li { display:grid; grid-template-columns:70px 1fr; padding:12px 0; border-bottom:1px solid #27353d; color:#cbd4d7 }
+  button { border:0; background:transparent; color:#dfbb70; font:inherit; padding:0; text-align:left; cursor:pointer }
+  button:hover,button:focus { text-decoration:underline }
+  .note { background:#131f27; border-left:3px solid #bf9b57; padding:14px 20px; border-radius:0 6px 6px 0 }
+  .muted { font-size:13px; color:#8e9fa8 } footer { margin-top:38px; border-top:1px solid #27353d; padding-top:20px }
+  @media(max-width:760px) { body { padding:26px 5vw } .grid { grid-template-columns:1fr } }
+</style>
+<header>
+  <div class="eyebrow">Icosium Labs · Cut 3 · 20 October 2026</div>
+  <h1>Quest of Yipe! III</h1>
+  <p class="intro">A cozy adventure with a dangerous side. 42 seconds · 1920 × 1080 · 60 fps</p>
+</header>
+<video id="trailer" controls playsinline preload="metadata" poster="poster.png">
+  <source src="yipe-iii-trailer-v3.mp4" type="video/mp4">
+  <p><a href="yipe-iii-trailer-v3.mp4">Open the MP4</a></p>
+</video>
+<nav class="links" aria-label="Review files">
+  <a href="yipe-iii-trailer-v3.mp4" download>Download revised MP4</a>
+  <a href="yipe-iii-trailer-v2.mp4">Previous cut</a>
+  <a href="CREDITS.txt">Music &amp; credits</a>
+  <a href="timeline.json">Edit timeline</a>
+  <a href="results.txt">Export checks</a>
+</nav>
+<div class="grid">
+  <section aria-labelledby="sequence"><h2 id="sequence">The sequence</h2>
+    <ol>
+      <li><button data-time="0">00:00</button><span>Icosium Labs</span></li>
+      <li><button data-time="2.166667">00:02.2</button><span>A walk through Maynard</span></li>
+      <li><button data-time="7.833333">00:07.8</button><span>Into the wooded overworld</span></li>
+      <li><button data-time="11.5">00:11.5</button><span>Snow, mountains and monsters</span></li>
+      <li><button data-time="14.666667">00:14.7</button><span>Sliding across reflective ice</span></li>
+      <li><button data-time="18.333333">00:18.3</button><span>The Water Cave raft</span></li>
+      <li><button data-time="21">00:21</button><span>Approaching a Flame Flier in the Fire Cave</span></li>
+      <li><button data-time="24.1">00:24.1</button><span>Contact starts the fight—same continuous take</span></li>
+      <li><button data-time="28.666667">00:28.7</button><span>A glimpse of Hell</span></li>
+      <li><button data-time="31.333333">00:31.3</button><span>Back to Maynard at night</span></li>
+      <li><button data-time="34">00:34</button><span>Title, original creators and music credit</span></li>
+    </ol>
+  </section>
+  <section aria-labelledby="notes"><h2 id="notes">About this cut</h2>
+    <p>Fresh footage from the current local game build, staged in isolated adventures.
+    It uses the actual world, movement, ice traction, raft and battle animations.
+    The company ident and final title are custom trailer cards.</p>
+    <p>“Celtic Impulse” by Kevin MacLeod gives the trailer its acoustic, adventurous
+    feel. Birds, wind, water, footsteps and the original battle effects sit underneath.
+    The sound mix is edited for the trailer; combat cues follow the recorded hit timing.</p>
+    <div class="note"><p>Cut 3 adds short cross-dissolves between locations. In the Fire
+    Cave, the character walks into the visible Flame Flier and starts its actual fight,
+    all in one continuous shot. The longer walking routes, synchronized footsteps and
+    closing credit to Kevin Kinell and Pat Kelley remain. Overlapping transitions bring
+    the running time to 42 seconds.</p></div>
+    <p class="muted">Pixel art uses nearest-neighbor scaling. Display scanlines are
+    disabled for capture. Android is marked as in development. No release date or
+    storefront is announced. Personal saves were not used.</p>
+  </section>
+</div>
+<footer class="muted">Music: Kevin MacLeod ·
+  <a href="https://www.incompetech.com/music/royalty-free/index.html?isrc=USUAN1100297">Celtic Impulse</a> ·
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · Excerpt edited and mixed.
+  Original game: Kevin Kinell; graphics: Pat Kelley. <a href="CREDITS.txt">Full credits</a>.
+</footer>
+<script>
+  document.querySelectorAll('[data-time]').forEach(button => button.addEventListener('click', () => {
+    const video = document.getElementById('trailer');
+    video.currentTime = Number(button.dataset.time);
+    video.scrollIntoView({ behavior:'smooth', block:'center' });
+    video.play().catch(() => {});
+  }));
+</script>
+</html>
